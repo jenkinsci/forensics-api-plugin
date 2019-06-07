@@ -1,8 +1,8 @@
-package io.jenkins.plugins.git.forensics;
+package io.jenkins.plugins.forensics;
 
 import org.junit.jupiter.api.Test;
 
-import static io.jenkins.plugins.plugins.git.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
  * Tests the class {@link FilteredLog}.
@@ -65,6 +65,6 @@ class FilteredLogTest {
 
         assertThat(filteredLog.getErrorMessages()).contains(TITLE,
                 "Message", "java.lang.IllegalArgumentException: Cause",
-                "\tat io.jenkins.plugins.git.forensics.FilteredLogTest.shouldLogExceptions(FilteredLogTest.java:63)");
+                "\tat io.jenkins.plugins.forensics.FilteredLogTest.shouldLogExceptions(FilteredLogTest.java:63)");
     }
 }

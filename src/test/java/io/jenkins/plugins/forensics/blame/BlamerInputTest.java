@@ -1,10 +1,10 @@
-package io.jenkins.plugins.git.forensics.blame;
+package io.jenkins.plugins.forensics.blame;
 
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
-import static io.jenkins.plugins.plugins.git.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
  * Tests the class {@link BlamerInput}.

@@ -1,9 +1,8 @@
-package io.jenkins.plugins.git.forensics.blame;
+package io.jenkins.plugins.forensics.blame;
 
 import org.junit.jupiter.api.Test;
 
-import static io.jenkins.plugins.git.forensics.blame.FileBlame.*;
-import static io.jenkins.plugins.plugins.git.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
  * Tests the class {@link FileBlame}.
@@ -70,9 +69,9 @@ class FileBlameTest {
         verifyDetails(request, 1);
         verifyDetails(request, 2);
 
-        otherLine.setCommit(2, EMPTY);
-        otherLine.setName(2, EMPTY);
-        otherLine.setEmail(2, EMPTY);
+        otherLine.setCommit(2, FileBlame.EMPTY);
+        otherLine.setName(2, FileBlame.EMPTY);
+        otherLine.setEmail(2, FileBlame.EMPTY);
         request.merge(otherLine);
         verifyDetails(request, 1);
         verifyDetails(request, 2);
@@ -86,8 +85,8 @@ class FileBlameTest {
     void shouldReturnMeaningfulDefaults() {
         FileBlame request = new FileBlame("file");
 
-        assertThat(request.getCommit(2)).isEqualTo(EMPTY);
-        assertThat(request.getEmail(2)).isEqualTo(EMPTY);
-        assertThat(request.getName(2)).isEqualTo(EMPTY);
+        assertThat(request.getCommit(2)).isEqualTo(FileBlame.EMPTY);
+        assertThat(request.getEmail(2)).isEqualTo(FileBlame.EMPTY);
+        assertThat(request.getName(2)).isEqualTo(FileBlame.EMPTY);
     }
 }

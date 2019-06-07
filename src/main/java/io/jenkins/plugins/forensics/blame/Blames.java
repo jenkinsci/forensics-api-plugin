@@ -1,4 +1,4 @@
-package io.jenkins.plugins.git.forensics.blame;
+package io.jenkins.plugins.forensics.blame;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.google.errorprone.annotations.FormatMethod;
 
-import io.jenkins.plugins.git.forensics.FilteredLog;
+import io.jenkins.plugins.forensics.FilteredLog;
 
 /**
  * Provides access to the blame information of report. Collects all blames for a set of affected files. Additionally,

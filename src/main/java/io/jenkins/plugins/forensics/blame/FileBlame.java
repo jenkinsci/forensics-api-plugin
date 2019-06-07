@@ -1,4 +1,4 @@
-package io.jenkins.plugins.git.forensics.blame;
+package io.jenkins.plugins.forensics.blame;
 
 import java.io.Serializable;
 import java.util.HashMap;

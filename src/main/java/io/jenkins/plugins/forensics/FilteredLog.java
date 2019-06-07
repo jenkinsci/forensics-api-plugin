@@ -1,4 +1,4 @@
-package io.jenkins.plugins.git.forensics;
+package io.jenkins.plugins.forensics;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -155,5 +155,4 @@ public class FilteredLog implements Serializable {
     public List<String> getErrorMessages() {
         return Collections.unmodifiableList(errorMessages);
     }
-
 }

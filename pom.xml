@@ -374,9 +374,9 @@
         </executions>
         <configuration>
           <packages>
-            <package>io.jenkins.plugins.git.forensics</package>
+            <package>io.jenkins.plugins.forensics</package>
           </packages>
-          <entryPointClassPackage>io.jenkins.plugins.plugins.git.forensics.assertions</entryPointClassPackage>
+          <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
           <cleanTargetDir>true</cleanTargetDir>
           <hierarchical>false</hierarchical>
           <generateBddAssertions>false</generateBddAssertions>
