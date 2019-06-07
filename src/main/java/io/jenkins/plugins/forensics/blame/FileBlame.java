@@ -74,7 +74,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @param id
      *         the commit ID
      */
-    void setCommit(final int lineNumber, final String id) {
+    public void setCommit(final int lineNumber, final String id) {
         setInternedStringValue(commitByLine, lineNumber, id);
     }
 
@@ -98,7 +98,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @param name
      *         the author name
      */
-    void setName(final int lineNumber, final String name) {
+    public void setName(final int lineNumber, final String name) {
         setInternedStringValue(nameByLine, lineNumber, name);
     }
 
@@ -122,7 +122,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @param emailAddress
      *         the email address of the author
      */
-    void setEmail(final int lineNumber, final String emailAddress) {
+    public void setEmail(final int lineNumber, final String emailAddress) {
         setInternedStringValue(emailByLine, lineNumber, emailAddress);
     }
 
