@@ -1,6 +1,8 @@
 package io.jenkins.plugins.forensics.blame;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import hudson.ExtensionPoint;
 import hudson.scm.SCM;
@@ -15,17 +17,6 @@ import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
  */
 public abstract class BlamerFactory implements ExtensionPoint {
     /**
-     * Returns whether the specified {@link SCM} is supported by this factory.
-     *
-     * @param scm
-     *         the {@link SCM} to check
-     *
-     * @return {@code true} if the {@link SCM} is supported by this factory, {@code false} otherwise
-     */
-    // FIXME: remove method and use optional
-    public abstract boolean supports(SCM scm);
-
-    /**
      * Returns a blamer for the specified {@link SCM}.
      *
      * @param scm
@@ -33,7 +24,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
      *
      * @return a blamer instance that can blame authors for the specified {@link SCM}
      */
-    public abstract Blamer createBlamer(SCM scm);
+    public abstract Optional<Blamer> createBlamer(SCM scm);
 
     /**
      * Returns a blamer for the specified {@link SCM}.
@@ -46,9 +37,9 @@ public abstract class BlamerFactory implements ExtensionPoint {
      */
     public static Blamer findBlamerFor(final SCM scm) {
         return findAllExtensions(scm).stream()
-                .filter(b -> b.supports(scm))
-                .findFirst()
                 .map(blamerFactory -> blamerFactory.createBlamer(scm))
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .findFirst()
                 .orElse(new NullBlamer());
     }
 
