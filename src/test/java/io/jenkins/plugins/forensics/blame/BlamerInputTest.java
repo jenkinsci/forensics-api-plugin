@@ -2,6 +2,7 @@ package io.jenkins.plugins.forensics.blame;
 
 import java.util.NoSuchElementException;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -95,7 +96,7 @@ class BlamerInputTest {
         assertThat(blames.get(ANOTHER_FILE)).containsExactly(2);
 
         String wrongFile = "wrong file";
-        assertThatThrownBy(() -> blames.get(wrongFile))
+        Assertions.assertThatThrownBy(() -> blames.get(wrongFile))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessageContaining(wrongFile);
     }

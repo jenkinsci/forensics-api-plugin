@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics;
+package io.jenkins.plugins.forensics.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;

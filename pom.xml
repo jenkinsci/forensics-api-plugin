@@ -226,10 +226,10 @@
           <outputFormats>XML,HTML</outputFormats>
           <verbose>true</verbose>
           <targetClasses>
-            <param>io.jenkins.plugins.analysis.*</param>
+            <param>io.jenkins.plugins.*</param>
           </targetClasses>
           <targetTests>
-            <param>io.jenkins.plugins.analysis.*</param>
+            <param>io.jenkins.plugins.*</param>
           </targetTests>
           <excludedTestClasses>
             <param>*ITest</param>

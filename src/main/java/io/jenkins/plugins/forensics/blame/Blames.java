@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.google.errorprone.annotations.FormatMethod;
 
-import io.jenkins.plugins.forensics.FilteredLog;
+import io.jenkins.plugins.forensics.util.FilteredLog;
 
 /**
  * Provides access to the blame information of report. Collects all blames for a set of affected files. Additionally,

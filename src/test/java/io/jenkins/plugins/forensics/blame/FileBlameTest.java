@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.blame;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -76,7 +77,7 @@ class FileBlameTest {
         verifyDetails(request, 1);
         verifyDetails(request, 2);
 
-        assertThatThrownBy(() -> request.merge(new FileBlame("wrong")))
+        Assertions.assertThatThrownBy(() -> request.merge(new FileBlame("wrong")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("wrong").hasMessageContaining("file");
     }

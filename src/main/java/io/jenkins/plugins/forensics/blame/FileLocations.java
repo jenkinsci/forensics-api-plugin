@@ -28,7 +28,7 @@ public class FileLocations implements Serializable {
     /**
      * Creates an empty instance of {@link FileLocations}.
      */
-    // FIXME: still required?
+    // Just for testing
     public FileLocations() {
         this(StringUtils.EMPTY);
     }
