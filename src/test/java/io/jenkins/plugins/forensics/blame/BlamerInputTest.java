@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
- * Tests the class {@link BlamerInput}.
+ * Tests the class {@link FileLocations}.
  *
  * @author Ullrich Hafner
  */
@@ -22,7 +22,7 @@ class BlamerInputTest {
 
     @Test
     void shouldCreateEmptyInstance() {
-        BlamerInput empty = new BlamerInput();
+        FileLocations empty = new FileLocations();
 
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
@@ -30,7 +30,7 @@ class BlamerInputTest {
 
     @Test
     void shouldCreateSingleBlame() {
-        BlamerInput blames = new BlamerInput(WORKSPACE);
+        FileLocations blames = new FileLocations(WORKSPACE);
 
         blames.addLine(ABSOLUTE_PATH, 1);
 
@@ -45,7 +45,7 @@ class BlamerInputTest {
 
     @Test
     void shouldSkipBlameForFileNotInWorkspace() {
-        BlamerInput blames = new BlamerInput(WORKSPACE);
+        FileLocations blames = new FileLocations(WORKSPACE);
 
         String expectedSkippedFile = "/somewhere-else/" + RELATIVE_PATH;
         blames.addLine(expectedSkippedFile, 1);
@@ -56,7 +56,7 @@ class BlamerInputTest {
 
     @Test
     void shouldConvertWindowsPathToUnix() {
-        BlamerInput blames = new BlamerInput(WINDOWS_WORKSPACE);
+        FileLocations blames = new FileLocations(WINDOWS_WORKSPACE);
 
         blames.addLine(WINDOWS_ABSOLUTE_PATH, 1);
 
@@ -70,7 +70,7 @@ class BlamerInputTest {
 
     @Test
     void shouldAddAdditionalLinesToRequest() {
-        BlamerInput blames = new BlamerInput(WORKSPACE);
+        FileLocations blames = new FileLocations(WORKSPACE);
 
         blames.addLine(ABSOLUTE_PATH, 1);
         blames.addLine(ABSOLUTE_PATH, 2);
@@ -83,7 +83,7 @@ class BlamerInputTest {
 
     @Test
     void shouldCreateTwoDifferentBlamerInput() {
-        BlamerInput blames = new BlamerInput(WORKSPACE);
+        FileLocations blames = new FileLocations(WORKSPACE);
 
         blames.addLine(ABSOLUTE_PATH, 1);
         blames.addLine(WORKSPACE + ANOTHER_FILE, 2);

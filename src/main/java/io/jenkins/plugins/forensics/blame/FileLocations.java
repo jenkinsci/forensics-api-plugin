@@ -12,31 +12,34 @@ import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
- * Defines a request to obtain the blames for a collection of workspace files (and locations inside each file).
+ * Defines a set of file locations. A file location is identified by the file name (relative to the workspace location)
+ * and line number. File locations are grouped by file name, i.e. you can obtain a mapping of file to all affected lines
+ * in that file.
  *
  * @author Ullrich Hafner
  */
-public class BlamerInput implements Serializable {
+public class FileLocations implements Serializable {
     private static final long serialVersionUID = -7884822502506035784L;
 
-    private final MutableMultimap<String, Integer> blamesPerFile = new UnifiedSetMultimap<>();
+    private final MutableMultimap<String, Integer> locationsPerFile = new UnifiedSetMultimap<>();
     private final Set<String> skippedFiles = new HashSet<>();
     private final String workspace;
 
     /**
-     * Creates an empty instance of {@link BlamerInput}.
+     * Creates an empty instance of {@link FileLocations}.
      */
-    public BlamerInput() {
+    // FIXME: still required?
+    public FileLocations() {
         this(StringUtils.EMPTY);
     }
 
     /**
-     * Creates an empty instance of {@link BlamerInput} that will work on the specified workspace.
+     * Creates an empty instance of {@link FileLocations} that will work on the specified workspace.
      *
      * @param workspace
      *         the workspace to get the Git repository from
      */
-    public BlamerInput(final String workspace) {
+    public FileLocations(final String workspace) {
         this.workspace = normalizeFileName(workspace);
     }
 
@@ -50,7 +53,7 @@ public class BlamerInput implements Serializable {
      * @return {@code true} if there a no blames available, {@code false} otherwise
      */
     public boolean isEmpty() {
-        return blamesPerFile.isEmpty();
+        return locationsPerFile.isEmpty();
     }
 
     /**
@@ -59,7 +62,7 @@ public class BlamerInput implements Serializable {
      * @return number of affected files with blames
      */
     public int size() {
-        return blamesPerFile.keySet().size();
+        return locationsPerFile.keySet().size();
     }
 
     /**
@@ -71,7 +74,7 @@ public class BlamerInput implements Serializable {
      * @return {@code true} if the file already has been added, {@code false} otherwise
      */
     public boolean contains(final String fileName) {
-        return blamesPerFile.containsKey(fileName);
+        return locationsPerFile.containsKey(fileName);
     }
 
     public Set<String> getSkippedFiles() {
@@ -91,7 +94,7 @@ public class BlamerInput implements Serializable {
         if (fileName.startsWith(workspace)) {
             String relativeFileName = fileName.substring(workspace.length());
             String cleanFileName = StringUtils.removeStart(relativeFileName, "/");
-            blamesPerFile.put(cleanFileName, lineStart);
+            locationsPerFile.put(cleanFileName, lineStart);
         }
         else {
             skippedFiles.add(fileName);
@@ -104,7 +107,7 @@ public class BlamerInput implements Serializable {
      * @return the file names
      */
     public Set<String> getFiles() {
-        return blamesPerFile.keySet().toSet();
+        return locationsPerFile.keySet().toSet();
     }
 
     /**
@@ -119,7 +122,7 @@ public class BlamerInput implements Serializable {
      */
     public Set<Integer> get(final String fileName) {
         if (contains(fileName)) {
-            return blamesPerFile.get(fileName).toSet();
+            return locationsPerFile.get(fileName).toSet();
         }
         throw new NoSuchElementException(String.format("No information for file %s stored", fileName));
     }
