@@ -24,17 +24,23 @@ public class BlamerFactoryITest {
     /** Jenkins rule per suite. */
     @ClassRule
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
+    private static final String FILE_NAME = "file";
 
     /**
-     * Returns the expected {@link Blamer} from the registerd {@link BlamerFactory} instances.
+     * Returns the expected {@link Blamer} from the registered {@link BlamerFactory} instances.
      */
     @Test
     public void shouldReturnSelectedBlamer() {
         SCM scm = mock(SCM.class);
-        assertThat(BlamerFactory.findBlamerFor(scm)).isInstanceOf(NullBlamer.class);
+        Blamer nullBlamer = BlamerFactory.findBlamerFor(scm);
+        assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
+        assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
 
         when(scm.getKey()).thenReturn("git");
-        assertThat(BlamerFactory.findBlamerFor(scm)).isInstanceOf(TestBlamer.class);
+        Blamer testBlamer = BlamerFactory.findBlamerFor(scm);
+        assertThat(testBlamer).isInstanceOf(TestBlamer.class);
+        assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
+        assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
     }
 
     /**
@@ -70,8 +76,9 @@ public class BlamerFactoryITest {
 
         @Override
         Blames blame(final FileLocations fileLocations) {
-            return new Blames();
+            Blames blames = new Blames();
+            blames.add(new FileBlame(FILE_NAME));
+            return blames;
         }
     }
-
 }
