@@ -177,7 +177,7 @@
             </goals>
             <configuration>
               <includes>
-                <include>**/assertj/*</include>
+                <include>**/*Assert*</include>
               </includes>
             </configuration>
           </execution>

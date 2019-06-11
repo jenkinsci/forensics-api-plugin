@@ -18,16 +18,16 @@ public abstract class Blamer implements Serializable {
      *
      * @return the blames
      */
-    abstract Blames blame(FileLocations fileLocations);
+    public abstract Blames blame(FileLocations fileLocations);
 
     /**
      * A blamer that does nothing.
      */
-    static class NullBlamer extends Blamer {
+    public static class NullBlamer extends Blamer {
         private static final long serialVersionUID = 6235885974889709821L;
 
         @Override
-        Blames blame(final FileLocations fileLocations) {
+        public Blames blame(final FileLocations fileLocations) {
             return new Blames();
         }
     }

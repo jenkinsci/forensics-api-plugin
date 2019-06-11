@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import hudson.ExtensionPoint;
 import hudson.scm.SCM;
-import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
+import io.jenkins.plugins.forensics.util.JenkinsFacade;
 
 /**
  * Jenkins extension point that allows plugins to create {@link Blamer} instances based on a supported {@link SCM}.
@@ -16,6 +18,13 @@ import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
  * @author Ullrich Hafner
  */
 public abstract class BlamerFactory implements ExtensionPoint {
+    private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
+
+    @VisibleForTesting
+    static void setJenkinsFacade(final JenkinsFacade facade) {
+        jenkinsFacade = facade;
+    }
+
     /**
      * Returns a blamer for the specified {@link SCM}.
      *
@@ -44,7 +53,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
     }
 
     private static List<BlamerFactory> findAllExtensions(final SCM scm) {
-        return Jenkins.get().getExtensionList(BlamerFactory.class);
+        return jenkinsFacade.getExtensionsFor(BlamerFactory.class);
     }
 
 }

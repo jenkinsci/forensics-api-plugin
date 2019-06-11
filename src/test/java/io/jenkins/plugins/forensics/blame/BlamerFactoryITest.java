@@ -75,7 +75,7 @@ public class BlamerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        Blames blame(final FileLocations fileLocations) {
+        public Blames blame(final FileLocations fileLocations) {
             Blames blames = new Blames();
             blames.add(new FileBlame(FILE_NAME));
             return blames;
