@@ -1,6 +1,6 @@
-# Contributing to the Git Forensics Jenkins Plugin
+# Contributing to the Forensics API Jenkins Plugin
 
-This page provides information about contributing code to the Git Forensics Jenkins plug-in. This
+This page provides information about contributing code to the Forensics API Jenkins plug-in. This
 library is used by Jenkins' [Warnings Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin). 
 
 ## Beginner Topics
