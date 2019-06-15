@@ -75,20 +75,12 @@ public class FileStatistics implements Serializable {
         return numberOfCommits;
     }
 
-    int getCreationTime() {
-        return creationTime;
-    }
-
     public long getAgeInDays() {
         if (numberOfCommits == 0) {
             return 0;
         }
 
         return computeDaysSince(creationTime);
-    }
-
-    int getLastModificationTime() {
-        return lastModificationTime;
     }
 
     public long getLastModifiedInDays() {
