@@ -7,17 +7,20 @@
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/jenkinsci/forensics-api-plugin.svg)](https://github.com/jenkinsci/forensics-api-plugin/pulls)
 
 This Forensics API Jenkins plug-in defines an API to mine and analyze data from a repository. Currently, this plugin is only used
-by the [Jenkins Warning Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin). 
-[Jenkins Git Forensics Plugin](https://github.com/jenkinsci/git-forensics-plugin) is a plugin that implements the 
-corresponding extension points for Git. Other version control systems are not supported yet.  
-
-The following services are provided by this plugin:
+by the [Jenkins Warning Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin).
+ 
+The API of the following services is defined by this plugin:
 - **Blames**: Shows what revision and author last modified a specified set of lines of a file.
 - **File statistics**: Collects commit statistics for all repository files:
     - total number of commits
     - total number of different authors
     - creation time
     - last modification time
+
+## Implementations
+
+[Jenkins Git Forensics Plugin](https://github.com/jenkinsci/git-forensics-plugin) is a plugin that implements the 
+corresponding extension points for Git. Other version control systems are not supported yet.  
 
 [![Jenkins](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/master/)
 [![Travis](https://img.shields.io/travis/jenkinsci/forensics-api-plugin.svg?logo=travis&label=travis%20build&logoColor=white)](https://travis-ci.org/jenkinsci/forensics-api-plugin)
