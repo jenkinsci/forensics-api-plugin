@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.google.errorprone.annotations.FormatMethod;
 
 import io.jenkins.plugins.forensics.util.FilteredLog;
@@ -23,6 +27,22 @@ public class Blames implements Serializable {
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
     private final FilteredLog log = new FilteredLog("Errors while extracting author and commit information from Git: ");
+    private final String workspace;
+
+    /**
+     * Creates a new instance of {@link Blames}.
+     *
+     * @param workspace
+     *         the workspace path prefix of the files to blame
+     */
+    public Blames(final String workspace) {
+        this.workspace = workspace + "/";
+    }
+
+    @VisibleForTesting
+    Blames() {
+        workspace = StringUtils.EMPTY;
+    }
 
     /**
      * Returns whether there are files with blames in this instance.
@@ -51,7 +71,11 @@ public class Blames implements Serializable {
      * @return {@code true} if the file already has been added, {@code false} otherwise
      */
     public boolean contains(final String fileName) {
-        return blamesPerFile.containsKey(fileName);
+        return blamesPerFile.containsKey(removeWorkspacePrefix(fileName));
+    }
+
+    private String removeWorkspacePrefix(final String fileName) {
+        return StringUtils.removeStart(fileName, workspace);
     }
 
     /**
@@ -60,7 +84,11 @@ public class Blames implements Serializable {
      * @return the file names
      */
     public Set<String> getFiles() {
-        return blamesPerFile.keySet();
+        return blamesPerFile.keySet().stream().map(this::createAbsolutePath).collect(Collectors.toSet());
+    }
+
+    private String createAbsolutePath(final String relativePath) {
+        return workspace + relativePath;
     }
 
     /**
@@ -84,7 +112,7 @@ public class Blames implements Serializable {
      */
     public FileBlame get(final String fileName) {
         if (contains(fileName)) {
-            return blamesPerFile.get(fileName);
+            return blamesPerFile.get(removeWorkspacePrefix(fileName));
         }
         throw new NoSuchElementException(String.format("No information for file %s stored", fileName));
     }
@@ -106,7 +134,7 @@ public class Blames implements Serializable {
      *         the blames to add
      */
     public void addAll(final Blames other) {
-        for (String otherFile : other.blamesPerFile.keySet()) {
+        for (String otherFile : other.getFiles()) {
             FileBlame otherRequest = other.get(otherFile);
             merge(otherFile, otherRequest);
         }
@@ -117,7 +145,7 @@ public class Blames implements Serializable {
             get(otherFile).merge(otherRequest);
         }
         else {
-            blamesPerFile.put(otherFile, otherRequest);
+            blamesPerFile.put(removeWorkspacePrefix(otherFile), otherRequest);
         }
     }
 

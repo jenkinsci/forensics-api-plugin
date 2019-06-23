@@ -19,6 +19,7 @@ class BlamesTest {
     private static final String FILE_NAME = "file.txt";
     private static final String EMPTY = "-";
     private static final String ANOTHER_FILE = "other.txt";
+    private static final String WORKSPACE = "/workspace";
 
     @Test
     void shouldCreateEmptyInstance() {
@@ -60,6 +61,23 @@ class BlamesTest {
         assertThat(blames.get(FILE_NAME).getName(1)).isEqualTo(NAME);
         assertThat(blames.get(FILE_NAME).getEmail(1)).isEqualTo(EMAIL);
         assertThat(blames.get(FILE_NAME).getCommit(1)).isEqualTo(COMMIT);
+    }
+
+    @Test
+    void shouldConcatenateWorkspacePath() {
+        Blames blames = new Blames(WORKSPACE);
+
+        FileBlame fileBlame = createBlame("file.txt", 1, NAME, EMAIL, COMMIT);
+        blames.add(fileBlame);
+
+        assertThat(blames.size()).isEqualTo(1);
+
+        String absolutePath = WORKSPACE + "/" + FILE_NAME;
+        assertThat(blames).hasFiles(absolutePath);
+        assertThat(blames.getFileBlames()).hasSize(1);
+        assertThat(blames).hasFileBlames(fileBlame);
+        assertThat(blames.contains(absolutePath)).isTrue();
+        assertThat(blames.get(absolutePath)).isEqualTo(fileBlame);
     }
 
     @Test

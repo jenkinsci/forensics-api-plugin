@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.multimap.MutableMultimap;
 import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
@@ -28,7 +30,7 @@ public class FileLocations implements Serializable {
     /**
      * Creates an empty instance of {@link FileLocations}.
      */
-    // Just for testing
+    @VisibleForTesting
     public FileLocations() {
         this(StringUtils.EMPTY);
     }
