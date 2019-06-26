@@ -23,19 +23,19 @@ class FileBlameTest {
         assertThat(request.getFileName()).isEqualTo("file");
         assertThat(request).isEqualTo(new FileBlame("file"));
 
-        setDetails(request, 15);
+        addDetails(request, 15);
         verifyDetails(request, 15);
 
         FileBlame other = new FileBlame("file");
-        setDetails(other, 15);
+        addDetails(other, 15);
 
         assertThat(request).isEqualTo(other);
+    }
 
-        request.addLineNumber(25);
-        assertThat(request).hasLines(15, 25);
-
-        setDetails(request, 25);
-        verifyDetails(request, 25);
+    private void addDetails(final FileBlame request, final int lineNumber) {
+        request.setCommit(lineNumber, COMMIT);
+        request.setName(lineNumber, NAME);
+        request.setEmail(lineNumber, EMAIL);
     }
 
     private void verifyDetails(final FileBlame request, final int line) {
@@ -44,16 +44,10 @@ class FileBlameTest {
         assertThat(request.getEmail(line)).isEqualTo(EMAIL);
     }
 
-    private void setDetails(final FileBlame request, final int lineNumber) {
-        request.setCommit(lineNumber, COMMIT);
-        request.setName(lineNumber, NAME);
-        request.setEmail(lineNumber, EMAIL);
-    }
-
     @Test
     void shouldMergeRequest() {
         FileBlame request = new FileBlame("file");
-        setDetails(request, 1);
+        addDetails(request, 1);
         assertThat(request).hasLines(1);
 
         FileBlame sameLine = new FileBlame("file");
@@ -62,7 +56,7 @@ class FileBlameTest {
         verifyDetails(request, 1);
 
         FileBlame otherLine = new FileBlame("file");
-        setDetails(otherLine, 2);
+        addDetails(otherLine, 2);
 
         request.merge(otherLine);
         assertThat(request.iterator()).toIterable().containsExactly(1, 2);

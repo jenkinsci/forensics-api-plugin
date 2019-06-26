@@ -1,121 +1,27 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.annotations.VisibleForTesting;
 import com.google.errorprone.annotations.FormatMethod;
 
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
 /**
- * Provides access to the blame information of report. Collects all blames for a set of affected files. Additionally,
- * info and error messages during the SCM processing will be stored.
+ * Provides access to the blame information for a collection of workspace files. File names must use absolute paths.
+ * Additionally, info and error messages during the SCM processing can be stored.
  *
  * @author Ullrich Hafner
  */
-public class Blames implements Serializable {
-    private static final long serialVersionUID = -7884822502506035784L;
+public class Blames implements java.io.Serializable {
+    private static final long serialVersionUID = -1192940891942480612L;
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
-    private final FilteredLog log = new FilteredLog("Errors while extracting author and commit information from Git: ");
-    private final String workspace;
-
-    /**
-     * Creates a new instance of {@link Blames}.
-     *
-     * @param workspace
-     *         the workspace path prefix of the files to blame
-     */
-    public Blames(final String workspace) {
-        this.workspace = workspace + "/";
-    }
-
-    @VisibleForTesting
-    Blames() {
-        workspace = StringUtils.EMPTY;
-    }
-
-    /**
-     * Returns whether there are files with blames in this instance.
-     *
-     * @return {@code true} if there a no blames available, {@code false} otherwise
-     */
-    public boolean isEmpty() {
-        return blamesPerFile.isEmpty();
-    }
-
-    /**
-     * Returns the number of files that have been added to this instance.
-     *
-     * @return number of affected files with blames
-     */
-    public int size() {
-        return blamesPerFile.size();
-    }
-
-    /**
-     * Returns whether the specified file already has been added.
-     *
-     * @param fileName
-     *         the name of the file
-     *
-     * @return {@code true} if the file already has been added, {@code false} otherwise
-     */
-    public boolean contains(final String fileName) {
-        return blamesPerFile.containsKey(removeWorkspacePrefix(fileName));
-    }
-
-    private String removeWorkspacePrefix(final String fileName) {
-        return StringUtils.removeStart(fileName, workspace);
-    }
-
-    /**
-     * Returns the absolute file names of the affected files that will be processed by Git blame.
-     *
-     * @return the file names
-     */
-    public Set<String> getFiles() {
-        return blamesPerFile.keySet().stream().map(this::createAbsolutePath).collect(Collectors.toSet());
-    }
-
-    private String createAbsolutePath(final String relativePath) {
-        return workspace + relativePath;
-    }
-
-    /**
-     * Returns all stored requests.
-     *
-     * @return the requests
-     */
-    public Collection<FileBlame> getFileBlames() {
-        return blamesPerFile.values();
-    }
-
-    /**
-     * Returns the blames for the specified file.
-     *
-     * @param fileName
-     *         absolute file name
-     *
-     * @return the blames for that file
-     * @throws NoSuchElementException
-     *         if the file name is not registered
-     */
-    public FileBlame get(final String fileName) {
-        if (contains(fileName)) {
-            return blamesPerFile.get(removeWorkspacePrefix(fileName));
-        }
-        throw new NoSuchElementException(String.format("No information for file %s stored", fileName));
-    }
+    private transient FilteredLog log = createLog();
 
     /**
      * Adds the specified blame to this collection of blames.
@@ -128,25 +34,81 @@ public class Blames implements Serializable {
     }
 
     /**
-     * Merges all specified blames with the current set of blames.
+     * Merges all specified blames with the current collection of blames.
      *
      * @param other
      *         the blames to add
      */
     public void addAll(final Blames other) {
         for (String otherFile : other.getFiles()) {
-            FileBlame otherRequest = other.get(otherFile);
+            FileBlame otherRequest = other.getBlame(otherFile);
             merge(otherFile, otherRequest);
         }
     }
 
     private void merge(final String otherFile, final FileBlame otherRequest) {
         if (contains(otherFile)) {
-            get(otherFile).merge(otherRequest);
+            getBlame(otherFile).merge(otherRequest);
         }
         else {
-            blamesPerFile.put(removeWorkspacePrefix(otherFile), otherRequest);
+            blamesPerFile.put(otherFile, otherRequest);
         }
+    }
+
+    /**
+     * Returns whether there are files with blames.
+     *
+     * @return {@code true} if there a no blames available, {@code false} otherwise
+     */
+    public boolean isEmpty() {
+        return blamesPerFile.isEmpty();
+    }
+
+    /**
+     * Returns the number of files with blames.
+     *
+     * @return number of affected files with blames
+     */
+    public int size() {
+        return blamesPerFile.keySet().size();
+    }
+
+    /**
+     * Returns whether there are blames for the specified file.
+     *
+     * @param fileName
+     *         the relative or absolute path of the file
+     *
+     * @return {@code true} if the file already has been added, {@code false} otherwise
+     */
+    public boolean contains(final String fileName) {
+        return blamesPerFile.containsKey(fileName);
+    }
+
+    /**
+     * Returns all files with blames.
+     *
+     * @return the files with blames
+     */
+    public Set<String> getFiles() {
+        return new HashSet<>(blamesPerFile.keySet());
+    }
+
+    /**
+     * Returns the blame information for the specified file.
+     *
+     * @param fileName
+     *         the absolute path of the file
+     *
+     * @return the blame information for the specified file.
+     * @throws NoSuchElementException
+     *         if the file name is not registered
+     */
+    public FileBlame getBlame(final String fileName) {
+        if (blamesPerFile.containsKey(fileName)) {
+            return blamesPerFile.get(fileName);
+        }
+        throw new NoSuchElementException(String.format("No blame information for file '%s' stored", fileName));
     }
 
     /**
@@ -210,5 +172,21 @@ public class Blames implements Serializable {
 
     public List<String> getInfoMessages() {
         return log.getInfoMessages();
+    }
+
+    /**
+     * Called after de-serialization to retain backward compatibility and to restore transient fields.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        if (log == null) {
+            log = createLog();
+        }
+        return this;
+    }
+
+    private FilteredLog createLog() {
+        return new FilteredLog("Errors while extracting author and commit information from Git:");
     }
 }

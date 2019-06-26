@@ -60,6 +60,7 @@
     <revapi-maven-plugin.version>0.11.1</revapi-maven-plugin.version>
     <revapi-java.version>0.19.1</revapi-java.version>
     <archunit.version>0.10.2</archunit.version>
+    <assertj-assertions-generator-maven-plugin.version>2.2.0</assertj-assertions-generator-maven-plugin.version>
 
   </properties>
 
@@ -430,7 +431,7 @@
       <plugin>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-        <version>2.1.0</version>
+        <version>${assertj-assertions-generator-maven-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -442,6 +443,8 @@
           <packages>
             <package>io.jenkins.plugins.forensics</package>
           </packages>
+          <excludes>
+          </excludes>
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
           <cleanTargetDir>true</cleanTargetDir>
           <hierarchical>false</hierarchical>

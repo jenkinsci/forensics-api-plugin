@@ -10,7 +10,8 @@ import java.util.Set;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
- * Stores the repository blames for several lines of a single file.
+ * Stores the repository blames for several lines of a single file. File names are stored using the absolute path
+ * of the file.
  *
  * @author Ullrich Hafner
  */
@@ -36,28 +37,12 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         this.fileName = fileName;
     }
 
-    private FileBlame add(final int lineNumber) {
-        lines.add(lineNumber);
-
-        return this;
+    public String getFileName() {
+        return fileName;
     }
 
     public Set<Integer> getLines() {
         return lines;
-    }
-
-    /**
-     * Adds another line number to this request.
-     *
-     * @param lineNumber
-     *         the line number to add
-     */
-    FileBlame addLineNumber(final int lineNumber) {
-        return add(lineNumber);
-    }
-
-    public String getFileName() {
-        return fileName;
     }
 
     @Override

@@ -19,7 +19,6 @@ class BlamesTest {
     private static final String FILE_NAME = "file.txt";
     private static final String EMPTY = "-";
     private static final String ANOTHER_FILE = "other.txt";
-    private static final String WORKSPACE = "/workspace";
 
     @Test
     void shouldCreateEmptyInstance() {
@@ -28,12 +27,11 @@ class BlamesTest {
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
-        assertThat(empty).hasNoFileBlames();
         assertThat(empty).hasNoErrorMessages();
         assertThat(empty).hasNoInfoMessages();
 
         assertThatExceptionOfType(NoSuchElementException.class)
-                .isThrownBy(() -> empty.get(FILE_NAME));
+                .isThrownBy(() -> empty.getBlame(FILE_NAME));
     }
 
     @Test
@@ -44,40 +42,37 @@ class BlamesTest {
         blames.add(fileBlame);
 
         assertThatBlamesContainsOneFile(blames, fileBlame);
-        assertThat(blames.get(FILE_NAME)).isEqualTo(fileBlame);
+        assertThat(blames.getBlame(FILE_NAME)).isEqualTo(fileBlame);
 
         FileBlame other = createBlame(2, NAME, EMAIL, COMMIT);
         blames.add(other);
 
         assertThatBlamesContainsOneFile(blames, fileBlame);
 
-        assertThat(blames.get(FILE_NAME)).hasFileName(FILE_NAME);
-        assertThat(blames.get(FILE_NAME)).hasLines(1, 2);
+        assertThat(blames.getBlame(FILE_NAME)).hasFileName(FILE_NAME);
+        assertThat(blames.getBlame(FILE_NAME)).hasLines(1, 2);
 
         FileBlame duplicate = createBlame(1, EMPTY, EMPTY, EMPTY);
         blames.add(duplicate);
 
         assertThat(blames.size()).isEqualTo(1);
-        assertThat(blames.get(FILE_NAME).getName(1)).isEqualTo(NAME);
-        assertThat(blames.get(FILE_NAME).getEmail(1)).isEqualTo(EMAIL);
-        assertThat(blames.get(FILE_NAME).getCommit(1)).isEqualTo(COMMIT);
+        assertThat(blames.getBlame(FILE_NAME).getName(1)).isEqualTo(NAME);
+        assertThat(blames.getBlame(FILE_NAME).getEmail(1)).isEqualTo(EMAIL);
+        assertThat(blames.getBlame(FILE_NAME).getCommit(1)).isEqualTo(COMMIT);
     }
 
     @Test
     void shouldConcatenateWorkspacePath() {
-        Blames blames = new Blames(WORKSPACE);
+        Blames blames = new Blames();
 
         FileBlame fileBlame = createBlame("file.txt", 1, NAME, EMAIL, COMMIT);
         blames.add(fileBlame);
 
         assertThat(blames.size()).isEqualTo(1);
 
-        String absolutePath = WORKSPACE + "/" + FILE_NAME;
-        assertThat(blames).hasFiles(absolutePath);
-        assertThat(blames.getFileBlames()).hasSize(1);
-        assertThat(blames).hasFileBlames(fileBlame);
-        assertThat(blames.contains(absolutePath)).isTrue();
-        assertThat(blames.get(absolutePath)).isEqualTo(fileBlame);
+        assertThat(blames).hasFiles(FILE_NAME);
+        assertThat(blames.contains(FILE_NAME)).isTrue();
+        assertThat(blames.getBlame(FILE_NAME)).isEqualTo(fileBlame);
     }
 
     @Test
@@ -128,19 +123,16 @@ class BlamesTest {
     private void verifyBlamesOfTwoFiles(final Blames blames, final FileBlame fileBlame, final FileBlame other) {
         assertThat(blames.size()).isEqualTo(2);
         assertThat(blames).hasFiles(FILE_NAME, ANOTHER_FILE);
-        assertThat(blames.getFileBlames()).hasSize(2);
-        assertThat(blames).hasFileBlames(fileBlame, other);
         assertThat(blames.contains(FILE_NAME)).isTrue();
         assertThat(blames.contains(ANOTHER_FILE)).isTrue();
-        assertThat(blames.get(FILE_NAME)).isEqualTo(fileBlame);
-        assertThat(blames.get(ANOTHER_FILE)).isEqualTo(other);
+        assertThat(blames.getBlame(FILE_NAME)).isEqualTo(fileBlame);
+        assertThat(blames.getBlame(ANOTHER_FILE)).isEqualTo(other);
     }
 
     private void assertThatBlamesContainsOneFile(final Blames blames, final FileBlame fileBlame) {
+        assertThat(blames).isNotEmpty();
         assertThat(blames.size()).isEqualTo(1);
         assertThat(blames).hasFiles(FILE_NAME);
-        assertThat(blames.getFileBlames()).hasSize(1);
-        assertThat(blames).hasFileBlames(fileBlame);
         assertThat(blames.contains(FILE_NAME)).isTrue();
     }
 
