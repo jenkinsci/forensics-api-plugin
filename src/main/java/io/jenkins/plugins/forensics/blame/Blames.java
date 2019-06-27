@@ -21,7 +21,7 @@ public class Blames implements java.io.Serializable {
     private static final long serialVersionUID = -1192940891942480612L;
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
-    private transient FilteredLog log = createLog();
+    private FilteredLog log = createLog();
 
     /**
      * Adds the specified blame to this collection of blames.
@@ -175,7 +175,7 @@ public class Blames implements java.io.Serializable {
     }
 
     /**
-     * Called after de-serialization to retain backward compatibility and to restore transient fields.
+     * Called after de-serialization to retain backward compatibility.
      *
      * @return this
      */
