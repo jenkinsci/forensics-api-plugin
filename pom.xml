@@ -31,7 +31,9 @@
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <git-plugin.version>3.9.1</git-plugin.version>
+    <workflow-api.version>2.34</workflow-api.version>
+    <workflow-cps.version>2.67</workflow-cps.version>
+    <workflow-job.version>2.32</workflow-job.version>
 
     <!-- Test Library Dependencies Versions -->
     <junit.version>5.4.1</junit.version>
@@ -113,6 +115,22 @@
       <groupId>org.eclipse.collections</groupId>
       <artifactId>eclipse-collections</artifactId>
       <version>${eclipse-collections.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-api</artifactId>
+      <version>${workflow-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-cps</artifactId>
+      <version>${workflow-cps.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-job</artifactId>
+      <version>${workflow-job.version}</version>
     </dependency>
 
     <!-- Test Dependencies -->

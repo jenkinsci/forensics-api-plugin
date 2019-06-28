@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
@@ -31,27 +30,32 @@ public class BlamerFactoryITest {
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
 
     private static final String FILE_NAME = "file";
+    private static final FilteredLog LOG = new FilteredLog("Foo");
 
     /**
      * Returns the expected {@link Blamer} from the registered {@link BlamerFactory} instances.
      */
     @Test
-    public void shouldReturnSelectedBlamer() {
-        SCM scm = mock(SCM.class);
-        Run run = mock(Run.class);
-        File file = mock(File.class);
-        when(file.getPath()).thenReturn("/");
-        FilePath workspace = new FilePath(file);
-        TaskListener listener = TaskListener.NULL;
-        Blamer nullBlamer = BlamerFactory.findBlamerFor(scm, run, workspace, listener, new FilteredLog("Bla"));
+    public void shouldUseEmptyFactory() {
+        Blamer nullBlamer = createBlamer("/");
+
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
         assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
 
-        when(scm.getKey()).thenReturn("git");
-        Blamer testBlamer = BlamerFactory.findBlamerFor(scm, run, workspace, listener, new FilteredLog("Bla"));
+        Blamer testBlamer = createBlamer("/test");
         assertThat(testBlamer).isInstanceOf(TestBlamer.class);
         assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
         assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
+    }
+
+    private Blamer createBlamer(final String path) {
+        return BlamerFactory.findBlamerFor(mock(Run.class), createWorkspace(path), TaskListener.NULL, LOG);
+    }
+
+    private FilePath createWorkspace(final String path) {
+        File file = mock(File.class);
+        when(file.getPath()).thenReturn(path);
+        return new FilePath(file);
     }
 
     /**
@@ -68,7 +72,7 @@ public class BlamerFactoryITest {
     }
 
     /**
-     * Factory that returns a blamer.
+     * Factory that returns a blamer if the workspace contains the String {@code test}.
      */
     @TestExtension
     @SuppressWarnings("unused")
@@ -76,10 +80,10 @@ public class BlamerFactoryITest {
         @Override
         public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run,
                 final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
-            if (StringUtils.isBlank(scm.getKey())) {
-                return Optional.empty();
+            if (workspace.getRemote().contains("test")) {
+                return Optional.of(new TestBlamer());
             }
-            return Optional.of(new TestBlamer());
+            return Optional.empty();
         }
     }
 
