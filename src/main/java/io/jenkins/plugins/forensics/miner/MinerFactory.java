@@ -12,14 +12,14 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
-import io.jenkins.plugins.forensics.blame.Blamer;
-import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 import io.jenkins.plugins.forensics.util.FilteredLog;
 import io.jenkins.plugins.forensics.util.JenkinsFacade;
+import io.jenkins.plugins.forensics.util.ScmResolver;
 
 /**
- * Jenkins extension point that allows plugins to create {@link Blamer} instances based on a supported {@link SCM}.
+ * Jenkins extension point that allows plugins to create {@link RepositoryMiner} instances based on a supported {@link
+ * SCM}.
  *
  * @author Ullrich Hafner
  */
@@ -51,10 +51,8 @@ public abstract class MinerFactory implements ExtensionPoint {
             TaskListener listener, FilteredLog logger);
 
     /**
-     * Returns a blamer for the specified {@link SCM}.
+     * Returns a miner for the repository of the specified {@link Run build}.
      *
-     * @param scm
-     *         the {@link SCM} to create the blamer for
      * @param run
      *         the current build
      * @param workspace
@@ -64,11 +62,12 @@ public abstract class MinerFactory implements ExtensionPoint {
      * @param logger
      *         a logger to report error messages
      *
-     * @return a blamer for the specified SCM or a {@link NullBlamer} if no factory is supporting the specified {@link
-     *         SCM}
+     * @return a miner for the SCM of the specified build or a {@link NullMiner} if the SCM is not supported
      */
-    public static RepositoryMiner findMinerFor(final SCM scm, final Run<?, ?> run, final FilePath workspace,
+    public static RepositoryMiner findMinerFor(final Run<?, ?> run, final FilePath workspace,
             final TaskListener listener, final FilteredLog logger) {
+        SCM scm = new ScmResolver().getScm(run);
+
         return findAllExtensions().stream()
                 .map(minerFactory -> minerFactory.createMiner(scm, run, workspace, listener, logger))
                 .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))

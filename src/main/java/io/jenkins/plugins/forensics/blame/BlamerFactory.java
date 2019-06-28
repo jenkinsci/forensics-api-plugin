@@ -61,8 +61,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
      * @param logger
      *         a logger to report error messages
      *
-     * @return a blamer for the specified SCM or a {@link NullBlamer} if no factory is supporting the specified {@link
-     *         SCM}
+     * @return a blamer for the SCM of the specified build or a {@link NullBlamer} if the SCM is not supported
      */
     public static Blamer findBlamerFor(final Run<?, ?> run, final FilePath workspace,
             final TaskListener listener, final FilteredLog logger) {

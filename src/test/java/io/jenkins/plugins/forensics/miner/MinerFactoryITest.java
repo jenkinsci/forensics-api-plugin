@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics.blame;
+package io.jenkins.plugins.forensics.miner;
 
 import java.io.File;
 import java.util.Optional;
@@ -13,18 +13,19 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
-import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
+import io.jenkins.plugins.forensics.blame.Blamer;
+import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the class {@link BlamerFactory}.
+ * Tests the class {@link MinerFactory}.
  *
  * @author Ullrich Hafner
  */
-public class BlamerFactoryITest {
+public class MinerFactoryITest {
     /** Jenkins rule per suite. */
     @ClassRule
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
@@ -34,20 +35,19 @@ public class BlamerFactoryITest {
 
     /** Verifies that different {@link Blamer} instances are created based on the stubbed workspace name. */
     @Test
-    public void shouldSelectBlamerBasedOnWorkspaceName() {
-        Blamer nullBlamer = createBlamer("/");
+    public void shouldSelectMinerBasedOnWorkspaceName() {
+        RepositoryMiner nullMiner = createMiner("/");
 
-        assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
-        assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
+        assertThat(nullMiner).isInstanceOf(NullMiner.class);
+        assertThat(nullMiner.mine()).isEmpty();
 
-        Blamer testBlamer = createBlamer("/test");
-        assertThat(testBlamer).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
-        assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
+        RepositoryMiner repositoryMiner = createMiner("/test");
+        assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
+        assertThat(repositoryMiner.mine()).isNotEmpty();
     }
 
-    private Blamer createBlamer(final String path) {
-        return BlamerFactory.findBlamerFor(mock(Run.class), createWorkspace(path), TaskListener.NULL, LOG);
+    private RepositoryMiner createMiner(final String path) {
+        return MinerFactory.findMinerFor(mock(Run.class), createWorkspace(path), TaskListener.NULL, LOG);
     }
 
     private FilePath createWorkspace(final String path) {
@@ -61,9 +61,9 @@ public class BlamerFactoryITest {
      */
     @TestExtension
     @SuppressWarnings("unused")
-    public static class EmptyFactory extends BlamerFactory {
+    public static class EmptyFactory extends MinerFactory {
         @Override
-        public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run, final FilePath workspace,
+        public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run, final FilePath workspace,
                 final TaskListener listener, final FilteredLog logger) {
             return Optional.empty();
         }
@@ -74,26 +74,26 @@ public class BlamerFactoryITest {
      */
     @TestExtension
     @SuppressWarnings("unused")
-    public static class ActualFactory extends BlamerFactory {
+    public static class ActualFactory extends MinerFactory {
         @Override
-        public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run,
+        public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run,
                 final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
-                return Optional.of(new TestBlamer());
+                return Optional.of(new TestMiner());
             }
             return Optional.empty();
         }
     }
 
     /** A blamer for the test. */
-    private static class TestBlamer extends Blamer {
+    private static class TestMiner extends RepositoryMiner {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public Blames blame(final FileLocations fileLocations) {
-            Blames blames = new Blames();
-            blames.add(new FileBlame(FILE_NAME));
-            return blames;
+        public RepositoryStatistics mine() {
+            RepositoryStatistics statistics = new RepositoryStatistics();
+            statistics.add(new FileStatistics("/file.txt"));
+            return statistics;
         }
     }
 }

@@ -155,4 +155,10 @@ public class RepositoryStatistics {
         statisticsPerFile.putAll(
                 statistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
     }
+
+    public void add(final FileStatistics fileStatistics) {
+        statisticsPerFile.put(fileStatistics.getFileName(), fileStatistics);
+    }
+
+
 }
