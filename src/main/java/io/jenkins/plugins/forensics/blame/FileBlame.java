@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -17,6 +19,9 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  */
 public class FileBlame implements Iterable<Integer>, Serializable {
     private static final long serialVersionUID = -7491390234189584964L;
+
+    private static final String UNIX_SLASH = "/";
+    private static final String WINDOWS_BACK_SLASH = "\\";
 
     static final String EMPTY = "-";
 
@@ -34,7 +39,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         the name of the file that should be blamed
      */
     public FileBlame(final String fileName) {
-        this.fileName = fileName;
+        this.fileName = StringUtils.replace(fileName, WINDOWS_BACK_SLASH, UNIX_SLASH);
     }
 
     public String getFileName() {

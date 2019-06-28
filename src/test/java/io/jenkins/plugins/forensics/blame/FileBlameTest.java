@@ -84,4 +84,13 @@ class FileBlameTest {
         assertThat(request.getEmail(2)).isEqualTo(FileBlame.EMPTY);
         assertThat(request.getName(2)).isEqualTo(FileBlame.EMPTY);
     }
+
+    @Test
+    void shouldNormalizeFileName() {
+        FileBlame request = new FileBlame("C:\\path\\to\\file");
+
+        assertThat(request).hasNoLines();
+        assertThat(request.getFileName()).isEqualTo("C:/path/to/file");
+
+    }
 }
