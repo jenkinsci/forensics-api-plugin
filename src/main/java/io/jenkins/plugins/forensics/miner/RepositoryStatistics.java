@@ -21,7 +21,8 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  */
 public class RepositoryStatistics {
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
-    private final FilteredLog log = new FilteredLog("Errors while extracting author and commit information from Git: ");
+
+    private final FilteredLog log = new FilteredLog("FIXME");
 
     /**
      * Returns whether the repository is empty.
