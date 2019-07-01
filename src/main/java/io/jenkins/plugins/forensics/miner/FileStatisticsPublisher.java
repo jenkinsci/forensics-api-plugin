@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -39,15 +40,17 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
 
     @Override
     public void perform(@Nonnull final Run<?, ?> run, @Nonnull final FilePath workspace,
-            @Nonnull final Launcher launcher, @Nonnull final TaskListener listener)  {
+            @Nonnull final Launcher launcher, @Nonnull final TaskListener listener) throws InterruptedException {
         FilteredLog log = new FilteredLog(
                 "Errors while creating a repository miner for build " + run.getFullDisplayName());
 
         RepositoryMiner miner = MinerFactory.findMinerFor(run, workspace, listener, log);
 
-        log.getInfoMessages().forEach(listener.getLogger()::println);
+        Consumer<String> logMessage = message -> log(listener, message);
+
+        log.getInfoMessages().forEach(logMessage);
         log.logSummary();
-        log.getErrorMessages().forEach(listener.getLogger()::println);
+        log.getErrorMessages().forEach(logMessage);
 
         Instant start = Instant.now();
         RepositoryStatistics statistics = miner.mine();
@@ -57,6 +60,10 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
 
         log(listener, "Analyzed history of %d files in %d seconds", statistics.size(), runtime);
 
+        statistics.getInfoMessages().forEach(logMessage);
+        statistics.logSummary();
+        statistics.getErrorMessages().forEach(logMessage);
+
         List<FileStatistics> sorted = new ArrayList<>(statistics.getFileStatistics());
         if (!sorted.isEmpty()) {
             reportResults(listener, sorted);
@@ -64,9 +71,6 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
 
         run.addAction(new FileStatisticsAction(run, statistics));
 
-        statistics.getInfoMessages().forEach(listener.getLogger()::println);
-        statistics.logSummary();
-        statistics.getErrorMessages().forEach(listener.getLogger()::println);
     }
 
     private void reportResults(@Nonnull final TaskListener listener,
