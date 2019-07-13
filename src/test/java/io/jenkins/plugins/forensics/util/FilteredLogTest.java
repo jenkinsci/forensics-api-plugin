@@ -31,7 +31,9 @@ class FilteredLogTest {
         filteredLog.logError("5");
 
         assertThatExactly5MessagesAreLogged(filteredLog);
+
         filteredLog.logSummary();
+
         assertThatExactly5MessagesAreLogged(filteredLog);
         assertThat(filteredLog.size()).isEqualTo(5);
     }
@@ -51,6 +53,7 @@ class FilteredLogTest {
         assertThatExactly5MessagesAreLogged(filteredLog);
 
         filteredLog.logSummary();
+
         assertThat(filteredLog.getErrorMessages()).containsExactly(TITLE, "1", "2", "3", "4", "5",
                 "  ... skipped logging of 2 additional errors ...");
         assertThat(filteredLog.size()).isEqualTo(7);
