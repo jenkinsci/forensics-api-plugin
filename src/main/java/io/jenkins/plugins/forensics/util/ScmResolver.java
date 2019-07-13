@@ -30,27 +30,41 @@ public class ScmResolver {
     public SCM getScm(final Run<?, ?> run) {
         Job<?, ?> job = run.getParent();
         if (run instanceof AbstractBuild) {
-            AbstractProject<?, ?> project = ((AbstractBuild) run).getProject();
-            if (project.getScm() != null) {
-                return project.getScm();
-            }
-            SCM scm = project.getRootProject().getScm();
-            if (scm != null) {
-                return scm;
-            }
+            return extractFromProject((AbstractBuild) run);
         }
         else if (job instanceof SCMTriggerItem) {
-            Collection<? extends SCM> scms = ((SCMTriggerItem) job).getSCMs();
-            if (!scms.isEmpty()) {
-                return scms.iterator().next(); // TODO: what should we do if more than one SCM has been used
-            }
-            else if (job instanceof WorkflowJob) {
-                FlowDefinition definition = ((WorkflowJob) job).getDefinition();
-                if (definition instanceof CpsScmFlowDefinition) {
-                    return ((CpsScmFlowDefinition) definition).getScm();
-                }
+            return extractFromPipeline(job);
+        }
+        return new NullSCM();
+    }
+
+    private SCM extractFromPipeline(final Job<?, ?> job) {
+        Collection<? extends SCM> scms = ((SCMTriggerItem) job).getSCMs();
+        if (!scms.isEmpty()) {
+            return scms.iterator().next(); // TODO: what should we do if more than one SCM has been used
+        }
+
+        if (job instanceof WorkflowJob) {
+            FlowDefinition definition = ((WorkflowJob) job).getDefinition();
+            if (definition instanceof CpsScmFlowDefinition) {
+                return ((CpsScmFlowDefinition) definition).getScm();
             }
         }
+
+        return new NullSCM();
+    }
+
+    private SCM extractFromProject(final AbstractBuild run) {
+        AbstractProject<?, ?> project = run.getProject();
+        if (project.getScm() != null) {
+            return project.getScm();
+        }
+
+        SCM scm = project.getRootProject().getScm();
+        if (scm != null) {
+            return scm;
+        }
+
         return new NullSCM();
     }
 }

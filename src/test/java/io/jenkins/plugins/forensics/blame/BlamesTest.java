@@ -41,13 +41,13 @@ class BlamesTest {
         FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT);
         blames.add(fileBlame);
 
-        assertThatBlamesContainsOneFile(blames, fileBlame);
+        assertThatBlamesContainsOneFile(blames);
         assertThat(blames.getBlame(FILE_NAME)).isEqualTo(fileBlame);
 
         FileBlame other = createBlame(2, NAME, EMAIL, COMMIT);
         blames.add(other);
 
-        assertThatBlamesContainsOneFile(blames, fileBlame);
+        assertThatBlamesContainsOneFile(blames);
 
         assertThat(blames.getBlame(FILE_NAME)).hasFileName(FILE_NAME);
         assertThat(blames.getBlame(FILE_NAME)).hasLines(1, 2);
@@ -129,7 +129,7 @@ class BlamesTest {
         assertThat(blames.getBlame(ANOTHER_FILE)).isEqualTo(other);
     }
 
-    private void assertThatBlamesContainsOneFile(final Blames blames, final FileBlame fileBlame) {
+    private void assertThatBlamesContainsOneFile(final Blames blames) {
         assertThat(blames).isNotEmpty();
         assertThat(blames.size()).isEqualTo(1);
         assertThat(blames).hasFiles(FILE_NAME);

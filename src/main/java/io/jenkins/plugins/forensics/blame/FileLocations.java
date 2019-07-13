@@ -76,8 +76,8 @@ public class FileLocations implements java.io.Serializable {
     }
 
     /**
-     * Adds the specified affected file and line number. This file and line will be processed by Git
-     * blame later on. Only files that are part of the {@link #workspace} will be processed.
+     * Adds the specified affected file and line number. This file and line will be processed by Git blame later on.
+     * Only files that are part of the {@link #workspace} will be processed.
      *
      * @param fileName
      *         the absolute file name that will be used as a key
@@ -265,6 +265,16 @@ public class FileLocations implements java.io.Serializable {
      */
     @VisibleForTesting
     public static class FileSystem {
+        /**
+         * Resolves the absolute path for a file.
+         *
+         * @param fileName
+         *         the relative file name to resolve
+         * @param log
+         *         a logger
+         *
+         * @return the absolute path (or the original {@code fileName} if the file name could not be resolved
+         */
         public String resolveAbsolutePath(final String fileName, final FilteredLog log) {
             try {
                 return Paths.get(fileName)
@@ -276,7 +286,7 @@ public class FileLocations implements java.io.Serializable {
             catch (IOException | InvalidPathException exception) {
                 log.logException(exception, "Can't resolve absolute workspace path '%s'", fileName);
 
-                return StringUtils.EMPTY;
+                return fileName;
             }
         }
     }

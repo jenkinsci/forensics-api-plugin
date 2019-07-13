@@ -11,8 +11,6 @@ import org.w3c.tidy.Report;
 
 import com.google.errorprone.annotations.FormatMethod;
 
-import static java.lang.String.*;
-
 /**
  * Provides a log file with a limited number of error messages. If the number of errors exceeds this limit, then
  * subsequent error messages will be skipped.
@@ -67,7 +65,7 @@ public class FilteredLog implements Serializable {
      */
     @FormatMethod
     public void logInfo(final String format, final Object... args) {
-        infoMessages.add(format(format, args));
+        infoMessages.add(String.format(format, args));
     }
 
     /**
@@ -85,7 +83,7 @@ public class FilteredLog implements Serializable {
         printTitle();
 
         if (lines < maxLines) {
-            errorMessages.add(format(format, args));
+            errorMessages.add(String.format(format, args));
         }
         lines++;
     }
