@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.blame;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +20,7 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  *
  * @author Ullrich Hafner
  */
-public class Blames implements java.io.Serializable {
+public class Blames implements Serializable {
     private static final long serialVersionUID = -1192940891942480612L;
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();

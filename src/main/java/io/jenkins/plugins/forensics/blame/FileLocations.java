@@ -2,6 +2,7 @@ package io.jenkins.plugins.forensics.blame;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
@@ -27,7 +28,7 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  *
  * @author Ullrich Hafner
  */
-public class FileLocations implements java.io.Serializable {
+public class FileLocations implements Serializable {
     private static final long serialVersionUID = 8063580789984061223L;
 
     private static final String UNIX_SLASH = "/";
