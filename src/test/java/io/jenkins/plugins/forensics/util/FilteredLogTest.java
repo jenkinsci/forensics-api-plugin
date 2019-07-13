@@ -72,6 +72,6 @@ class FilteredLogTest {
 
         assertThat(filteredLog.getErrorMessages()).contains(TITLE,
                 "Message", "java.lang.IllegalArgumentException: Cause",
-                "\tat io.jenkins.plugins.forensics.util.FilteredLogTest.shouldLogExceptions(FilteredLogTest.java:63)");
+                "\tat io.jenkins.plugins.forensics.util.FilteredLogTest.shouldLogExceptions(FilteredLogTest.java:70)");
     }
 }
