@@ -179,6 +179,7 @@ public class Blames implements java.io.Serializable {
      *
      * @return this
      */
+    @SuppressWarnings("NullAway")
     protected Object readResolve() {
         if (log == null) {
             log = createLog();
