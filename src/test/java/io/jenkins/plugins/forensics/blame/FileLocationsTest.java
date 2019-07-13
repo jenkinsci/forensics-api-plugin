@@ -25,7 +25,7 @@ class FileLocationsTest {
 
     @Test
     void shouldCreateEmptyInstance() {
-        FileLocations empty = new FileLocations();
+        FileLocations empty = createLocations(WORKSPACE);
 
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
@@ -120,9 +120,6 @@ class FileLocationsTest {
     private FileLocations createLocations(final String workspace) {
         FileSystem fileSystem = mock(FileSystem.class);
         when(fileSystem.resolveAbsolutePath(anyString(), any())).thenReturn(workspace);
-        FileLocations locations = new FileLocations();
-        locations.setFileSystem(fileSystem);
-        locations.setWorkspace(workspace);
-        return locations;
+        return new FileLocations(workspace, fileSystem);
     }
 }

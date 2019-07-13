@@ -31,6 +31,7 @@ public class BlamerFactoryITest {
 
     private static final String FILE_NAME = "file";
     private static final FilteredLog LOG = new FilteredLog("Foo");
+    private static final String WORKSPACE = "workspace";
 
     /** Verifies that different {@link Blamer} instances are created based on the stubbed workspace name. */
     @Test
@@ -38,12 +39,12 @@ public class BlamerFactoryITest {
         Blamer nullBlamer = createBlamer("/");
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
-        assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
+        assertThat(nullBlamer.blame(new FileLocations(WORKSPACE))).isEmpty();
 
         Blamer testBlamer = createBlamer("/test");
         assertThat(testBlamer).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
-        assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
+        assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).isNotEmpty();
+        assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).hasFiles(FILE_NAME);
     }
 
     private Blamer createBlamer(final String path) {

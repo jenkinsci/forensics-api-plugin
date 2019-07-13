@@ -33,42 +33,55 @@ public class FileLocations implements java.io.Serializable {
     private static final String UNIX_SLASH = "/";
     private static final String WINDOWS_BACK_SLASH = "\\";
 
-    private FileSystem fileSystem = new FileSystem();
-
     private final Set<String> skippedFiles = new HashSet<>();
     private final Map<String, Set<Integer>> linesPerFile = new HashMap<>();
 
-    private String workspace;
+    private final String workspace;
     private final FilteredLog log = new FilteredLog("Errors while marking lines in affected lines:");
 
     /**
-     * Sets the Git workspace for all files that will be added later on.
+     * Creates a new instance of {@link FileLocations}.
      *
      * @param workspace
      *         the workspace to get the Git repository from
      */
-    public void setWorkspace(final File workspace) {
-        setWorkspace(workspace.getPath());
+    public FileLocations(final String workspace) {
+        this(workspace, new FileSystem());
     }
 
     /**
-     * Sets the Git workspace for all files that will be added later on.
+     * Creates a new instance of {@link FileLocations}.
      *
      * @param workspace
      *         the workspace to get the Git repository from
      */
-    public void setWorkspace(final String workspace) {
-        this.workspace = normalizeWorkspace(workspace) + UNIX_SLASH;
+    public FileLocations(final File workspace) {
+        this(workspace.getPath());
+    }
+
+    /**
+     * Creates a new instance of {@link FileLocations}.
+     *
+     * @param workspace
+     *         the workspace to get the Git repository from
+     * @param fileSystem
+     *         file system stub
+     */
+    @VisibleForTesting
+    public FileLocations(final String workspace, final FileSystem fileSystem) {
+        this.workspace = normalizeWorkspace(fileSystem, workspace) + UNIX_SLASH;
+    }
+
+    private String normalizeWorkspace(final FileSystem fileSystem, final String platformFileName) {
+        String absolutePath = fileSystem.resolveAbsolutePath(platformFileName, log);
+        String clean = StringUtils.replace(StringUtils.strip(absolutePath), WINDOWS_BACK_SLASH, UNIX_SLASH);
+
+        return StringUtils.removeEnd(clean, UNIX_SLASH);
     }
 
     @VisibleForTesting
     public String getWorkspace() {
         return workspace;
-    }
-
-    @VisibleForTesting
-    public void setFileSystem(final FileSystem fileSystem) {
-        this.fileSystem = fileSystem;
     }
 
     public Set<String> getSkippedFiles() {
@@ -103,13 +116,6 @@ public class FileLocations implements java.io.Serializable {
         }
         lines.add(lineStart);
         return lines;
-    }
-
-    private String normalizeWorkspace(final String platformFileName) {
-        String absolutePath = fileSystem.resolveAbsolutePath(platformFileName, log);
-        String clean = StringUtils.replace(StringUtils.strip(absolutePath), WINDOWS_BACK_SLASH, UNIX_SLASH);
-
-        return StringUtils.removeEnd(clean, UNIX_SLASH);
     }
 
     private boolean isPartOfWorkspace(final String fileName) {

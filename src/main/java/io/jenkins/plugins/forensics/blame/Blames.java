@@ -9,6 +9,8 @@ import java.util.Set;
 
 import com.google.errorprone.annotations.FormatMethod;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
 /**
@@ -179,7 +181,7 @@ public class Blames implements java.io.Serializable {
      *
      * @return this
      */
-    @SuppressWarnings("NullAway")
+    @SuppressFBWarnings("RCN")
     protected Object readResolve() {
         if (log == null) {
             log = createLog();
