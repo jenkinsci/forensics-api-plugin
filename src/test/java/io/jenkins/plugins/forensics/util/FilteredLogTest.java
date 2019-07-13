@@ -30,9 +30,9 @@ class FilteredLogTest {
         filteredLog.logError("4");
         filteredLog.logError("5");
 
-        assertThat(filteredLog.getErrorMessages()).containsExactly(TITLE, "1", "2", "3", "4", "5");
+        assertThatExactly5MessagesAreLogged(filteredLog);
         filteredLog.logSummary();
-        assertThat(filteredLog.getErrorMessages()).containsExactly(TITLE, "1", "2", "3", "4", "5");
+        assertThatExactly5MessagesAreLogged(filteredLog);
         assertThat(filteredLog.size()).isEqualTo(5);
     }
 
@@ -48,12 +48,16 @@ class FilteredLogTest {
         filteredLog.logError("6");
         filteredLog.logError("7");
 
-        assertThat(filteredLog.getErrorMessages()).containsExactly(TITLE, "1", "2", "3", "4", "5");
+        assertThatExactly5MessagesAreLogged(filteredLog);
 
         filteredLog.logSummary();
         assertThat(filteredLog.getErrorMessages()).containsExactly(TITLE, "1", "2", "3", "4", "5",
                 "  ... skipped logging of 2 additional errors ...");
         assertThat(filteredLog.size()).isEqualTo(7);
+    }
+
+    private void assertThatExactly5MessagesAreLogged(final FilteredLog filteredLog) {
+        assertThat(filteredLog.getErrorMessages()).containsExactly(TITLE, "1", "2", "3", "4", "5");
     }
 
     @Test
