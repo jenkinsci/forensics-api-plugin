@@ -2,13 +2,11 @@ package io.jenkins.plugins.forensics.blame;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -17,7 +15,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.errorprone.annotations.FormatMethod;
 
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
@@ -28,7 +25,7 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  *
  * @author Ullrich Hafner
  */
-public class FileLocations implements Serializable {
+public class FileLocations extends FilteredLog {
     private static final long serialVersionUID = 8063580789984061223L;
 
     private static final String UNIX_SLASH = "/";
@@ -38,7 +35,6 @@ public class FileLocations implements Serializable {
     private final Map<String, Set<Integer>> linesPerFile = new HashMap<>();
 
     private final String workspace;
-    private final FilteredLog log = new FilteredLog("Errors while marking lines in affected lines:");
 
     /**
      * Creates a new instance of {@link FileLocations}.
@@ -70,11 +66,13 @@ public class FileLocations implements Serializable {
      */
     @VisibleForTesting
     public FileLocations(final String workspace, final FileSystem fileSystem) {
+        super("Errors while marking lines in affected lines:");
+
         this.workspace = normalizeWorkspace(fileSystem, workspace) + UNIX_SLASH;
     }
 
     private String normalizeWorkspace(final FileSystem fileSystem, final String platformFileName) {
-        String absolutePath = fileSystem.resolveAbsolutePath(platformFileName, log);
+        String absolutePath = fileSystem.resolveAbsolutePath(platformFileName, this);
         String clean = StringUtils.replace(StringUtils.strip(absolutePath), WINDOWS_BACK_SLASH, UNIX_SLASH);
 
         return StringUtils.removeEnd(clean, UNIX_SLASH);
@@ -137,6 +135,7 @@ public class FileLocations implements Serializable {
      *
      * @return number of affected files with blames
      */
+    @Override
     public int size() {
         return linesPerFile.keySet().size();
     }
@@ -202,69 +201,6 @@ public class FileLocations implements Serializable {
 
     private String createAbsolutePath(final String relativePath) {
         return workspace + relativePath;
-    }
-
-    /**
-     * Logs the specified information message. Use this method to log any useful information when composing this log.
-     *
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logInfo(final String format, final Object... args) {
-        log.logInfo(format, args);
-    }
-
-    /**
-     * Logs the specified error message. Use this method to log any error when composing this log.
-     *
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logError(final String format, final Object... args) {
-        log.logError(format, args);
-    }
-
-    /**
-     * Logs the specified exception. Use this method to log any exception when composing this log.
-     *
-     * @param exception
-     *         the exception to log
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logException(final Exception exception, final String format, final Object... args) {
-        log.logException(exception, format, args);
-    }
-
-    /**
-     * Writes a summary message to the reports' error log that denotes the total number of errors that have been
-     * reported.
-     */
-    public void logSummary() {
-        log.logSummary();
-    }
-
-    public List<String> getErrorMessages() {
-        return log.getErrorMessages();
-    }
-
-    public List<String> getInfoMessages() {
-        return log.getInfoMessages();
     }
 
     /**
