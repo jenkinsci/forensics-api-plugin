@@ -33,9 +33,14 @@ public class MinerFactoryITest {
     private static final String FILE_NAME = "file";
     private static final FilteredLog LOG = new FilteredLog("Foo");
 
-    /** Verifies that different {@link Blamer} instances are created based on the stubbed workspace name. */
+    /**
+     * Verifies that different {@link Blamer} instances are created based on the stubbed workspace name.
+     *
+     * @throws InterruptedException
+     *         never thrown
+     */
     @Test
-    public void shouldSelectMinerBasedOnWorkspaceName() {
+    public void shouldSelectMinerBasedOnWorkspaceName() throws InterruptedException {
         RepositoryMiner nullMiner = createMiner("/");
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);

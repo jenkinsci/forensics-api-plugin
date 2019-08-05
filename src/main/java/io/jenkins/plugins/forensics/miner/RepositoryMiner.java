@@ -5,7 +5,7 @@ import java.io.Serializable;
 public abstract class RepositoryMiner implements Serializable {
     private static final long serialVersionUID = -8878714986510536182L;
 
-    public abstract RepositoryStatistics mine();
+    public abstract RepositoryStatistics mine() throws InterruptedException;
 
     /**
      * A repository miner that does nothing.

@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -39,15 +40,17 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
 
     @Override
     public void perform(@Nonnull final Run<?, ?> run, @Nonnull final FilePath workspace,
-            @Nonnull final Launcher launcher, @Nonnull final TaskListener listener)  {
+            @Nonnull final Launcher launcher, @Nonnull final TaskListener listener) throws InterruptedException {
         FilteredLog log = new FilteredLog(
                 "Errors while creating a repository miner for build " + run.getFullDisplayName());
 
         RepositoryMiner miner = MinerFactory.findMinerFor(run, workspace, listener, log);
 
-        log.getInfoMessages().forEach(listener.getLogger()::println);
+        Consumer<String> logMessage = message -> log(listener, message);
+
+        log.getInfoMessages().forEach(logMessage);
         log.logSummary();
-        log.getErrorMessages().forEach(listener.getLogger()::println);
+        log.getErrorMessages().forEach(logMessage);
 
         Instant start = Instant.now();
         RepositoryStatistics statistics = miner.mine();
@@ -55,35 +58,42 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
 
         int runtime = (int) (Duration.between(start, end).toMillis() / 1000);
 
-        log(listener, "[Forensics] Analyzed history of %d files in %d seconds", statistics.size(), runtime);
+        log(listener, "Analyzed history of %d files in %d seconds", statistics.size(), runtime);
+
+        statistics.getInfoMessages().forEach(logMessage);
+        statistics.logSummary();
+        statistics.getErrorMessages().forEach(logMessage);
 
         List<FileStatistics> sorted = new ArrayList<>(statistics.getFileStatistics());
-
-        sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfCommits).reversed());
-        log(listener, "[Git Forensics] File with most commits (#%d): %s",
-                sorted.get(0).getNumberOfCommits(), sorted.get(0).getFileName());
-
-        sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfAuthors).reversed());
-        log(listener, "[Git Forensics] File with most number of authors (#%d): %s",
-                sorted.get(0).getNumberOfAuthors(), sorted.get(0).getFileName());
-
-        sorted.sort(Comparator.comparingLong(FileStatistics::getAgeInDays).reversed());
-        log(listener, "[Git Forensics] Oldest file (%d days): %s",
-                sorted.get(0).getAgeInDays(), sorted.get(0).getFileName());
-
-        sorted.sort(Comparator.comparingLong(FileStatistics::getLastModifiedInDays));
-        log(listener, "[Git Forensics] Least recently modified file (%d days): %s",
-                sorted.get(0).getLastModifiedInDays(), sorted.get(0).getFileName());
+        if (!sorted.isEmpty()) {
+            reportResults(listener, sorted);
+        }
 
         run.addAction(new FileStatisticsAction(run, statistics));
 
-        statistics.getInfoMessages().forEach(listener.getLogger()::println);
-        statistics.logSummary();
-        statistics.getErrorMessages().forEach(listener.getLogger()::println);
+    }
+
+    private void reportResults(@Nonnull final TaskListener listener,
+            final List<FileStatistics> sorted) {
+        sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfCommits).reversed());
+        log(listener, "File with most commits (#%d): %s",
+                sorted.get(0).getNumberOfCommits(), sorted.get(0).getFileName());
+
+        sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfAuthors).reversed());
+        log(listener, "File with most number of authors (#%d): %s",
+                sorted.get(0).getNumberOfAuthors(), sorted.get(0).getFileName());
+
+        sorted.sort(Comparator.comparingLong(FileStatistics::getAgeInDays).reversed());
+        log(listener, "Oldest file (%d days): %s",
+                sorted.get(0).getAgeInDays(), sorted.get(0).getFileName());
+
+        sorted.sort(Comparator.comparingLong(FileStatistics::getLastModifiedInDays));
+        log(listener, "Least recently modified file (%d days): %s",
+                sorted.get(0).getLastModifiedInDays(), sorted.get(0).getFileName());
     }
 
     private void log(final TaskListener listener, final String format, final Object... args) {
-        listener.getLogger().println(String.format(format, args));
+        listener.getLogger().println("[Forensics] " + String.format(format, args));
     }
 
     @Override
