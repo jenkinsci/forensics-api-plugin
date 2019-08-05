@@ -21,7 +21,7 @@
     <java.level>8</java.level>
     <jenkins-test-harness.version>2.49</jenkins-test-harness.version>
     <spotbugs.failOnError>false</spotbugs.failOnError>
-    <slf4j-nop.version>1.7.26</slf4j-nop.version>
+    <slf4j.version>1.7.26</slf4j.version>
     <module.name>${project.groupId}.forensics.api</module.name>
 
     <!-- Library Dependencies Versions -->
@@ -90,6 +90,11 @@
         <artifactId>workflow-step-api</artifactId>
         <version>2.19</version>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -99,7 +104,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-nop</artifactId>
-      <version>${slf4j-nop.version}</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.spotbugs</groupId>

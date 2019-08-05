@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.jenkinsci.Symbol;
@@ -39,8 +40,8 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
     }
 
     @Override
-    public void perform(@Nonnull final Run<?, ?> run, @Nonnull final FilePath workspace,
-            @Nonnull final Launcher launcher, @Nonnull final TaskListener listener) throws InterruptedException {
+    public void perform(final @NonNull Run<?, ?> run, final @NonNull FilePath workspace,
+            final @NonNull Launcher launcher, final @NonNull TaskListener listener) throws InterruptedException {
         FilteredLog log = new FilteredLog(
                 "Errors while creating a repository miner for build " + run.getFullDisplayName());
 
@@ -73,8 +74,7 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
 
     }
 
-    private void reportResults(@Nonnull final TaskListener listener,
-            final List<FileStatistics> sorted) {
+    private void reportResults(final TaskListener listener, final List<FileStatistics> sorted) {
         sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfCommits).reversed());
         log(listener, "File with most commits (#%d): %s",
                 sorted.get(0).getNumberOfCommits(), sorted.get(0).getFileName());
@@ -104,7 +104,7 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
     @Extension
     @Symbol("recordRepositoryStatistics")
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
-        @Nonnull
+        @NonNull
         @Override
         public String getDisplayName() {
             return "Record Repository Statistics";

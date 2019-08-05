@@ -22,7 +22,7 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
 public class RepositoryStatistics {
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 
-    private final FilteredLog log = new FilteredLog("FIXME");
+    private final FilteredLog log = new FilteredLog("Errors while mining source control repository:");
 
     /**
      * Returns whether the repository is empty.
