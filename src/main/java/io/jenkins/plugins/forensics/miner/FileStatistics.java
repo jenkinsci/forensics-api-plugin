@@ -47,14 +47,23 @@ public class FileStatistics implements Serializable {
         this(fileName, nowInSecondsSinceEpoch());
     }
 
-    private static int nowInSecondsSinceEpoch() {
-        return (int) (new Date().getTime() / 1000L);
-    }
-
+    /**
+     * Creates a new instance of {@link FileStatistics}.
+     *
+     * @param fileName
+     *         the name of the file that should be blamed
+     * @param today
+     *         today (given as number of seconds since the standard base time known as "the epoch", namely January 1,
+     *         1970, 00:00:00 GMT.).
+     */
     @VisibleForTesting
     public FileStatistics(final String fileName, final int today) {
         this.fileName = fileName;
         this.today = today;
+    }
+
+    private static int nowInSecondsSinceEpoch() {
+        return (int) (new Date().getTime() / 1000L);
     }
 
     public String getFileName() {
@@ -80,6 +89,12 @@ public class FileStatistics implements Serializable {
         return numberOfCommits;
     }
 
+    /**
+     * Returns the age of this file. It is given as the number of days starting from today. If the file has been created
+     * today, then 0 is returned.
+     *
+     * @return the age in days (from now)
+     */
     public long getAgeInDays() {
         if (numberOfCommits == 0) {
             return 0;
@@ -88,6 +103,12 @@ public class FileStatistics implements Serializable {
         return computeDaysSince(creationTime);
     }
 
+    /**
+     * Returns the last modification time of this file. It is given as the number of days starting from today. If the
+     * file has been modified today, then 0 is returned.
+     *
+     * @return the age in days (from now)
+     */
     public long getLastModifiedInDays() {
         if (numberOfCommits == 0) {
             return 0;
@@ -96,6 +117,16 @@ public class FileStatistics implements Serializable {
         return computeDaysSince(lastModificationTime);
     }
 
+    /**
+     * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
+     * newest commit until the first commit has been reached.
+     *
+     * @param commitTime
+     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch",
+     *         namely January 1, 1970, 00:00:00 GMT.).
+     * @param author
+     *         author (or committer) name
+     */
     public void inspectCommit(final int commitTime, final String author) {
         if (numberOfCommits == 0) {
             lastModificationTime = commitTime;

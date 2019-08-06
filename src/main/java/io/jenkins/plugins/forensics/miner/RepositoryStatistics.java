@@ -93,6 +93,37 @@ public class RepositoryStatistics implements Serializable {
     }
 
     /**
+     * Adds all additional file statistics.
+     *
+     * @param additionalStatistics
+     *         the additional statistics to add
+     */
+    public void addAll(final Collection<FileStatistics> additionalStatistics) {
+        statisticsPerFile.putAll(
+                additionalStatistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
+    }
+
+    /**
+     * Adds all additional file statistics.
+     *
+     * @param additionalStatistics
+     *         the additional statistics to add
+     */
+    public void addAll(final RepositoryStatistics additionalStatistics) {
+        addAll(additionalStatistics.getFileStatistics());
+    }
+
+    /**
+     * Adds the additional file statistics instance.
+     *
+     * @param additionalStatistics
+     *         the additional statistics to add
+     */
+    public void add(final FileStatistics additionalStatistics) {
+        statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
+    }
+
+    /**
      * Logs the specified information message. Use this method to log any useful information when composing this log.
      *
      * @param format
@@ -154,19 +185,4 @@ public class RepositoryStatistics implements Serializable {
     public List<String> getInfoMessages() {
         return log.getInfoMessages();
     }
-
-    public void addAll(final Collection<FileStatistics> statistics) {
-        statisticsPerFile.putAll(
-                statistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
-    }
-
-    public void addAll(final RepositoryStatistics statistics) {
-        addAll(statistics.getFileStatistics());
-    }
-
-    public void add(final FileStatistics fileStatistics) {
-        statisticsPerFile.put(fileStatistics.getFileName(), fileStatistics);
-    }
-
-
 }
