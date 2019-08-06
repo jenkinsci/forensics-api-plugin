@@ -35,7 +35,7 @@ public class FileStatistics implements Serializable {
     private int lastModificationTime;
 
     private transient Set<String> authors = new HashSet<>();
-    private LocalDate today;
+    private final int today;
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -44,15 +44,15 @@ public class FileStatistics implements Serializable {
      *         the name of the file that should be blamed
      */
     public FileStatistics(final String fileName) {
-        this(fileName, LocalDate.now());
+        this(fileName, nowInSecondsSinceEpoch());
+    }
+
+    private static int nowInSecondsSinceEpoch() {
+        return (int) (new Date().getTime() / 1000L);
     }
 
     @VisibleForTesting
-    FileStatistics(final String fileName, final int today) {
-        this(fileName, toLocalDate(today));
-    }
-
-    private FileStatistics(final String fileName, final LocalDate today) {
+    public FileStatistics(final String fileName, final int today) {
         this.fileName = fileName;
         this.today = today;
     }
@@ -102,7 +102,7 @@ public class FileStatistics implements Serializable {
     }
 
     private long computeDaysSince(final int timeInSecondsSinceEpoch) {
-        return Math.abs(ChronoUnit.DAYS.between(today, toLocalDate(timeInSecondsSinceEpoch)));
+        return Math.abs(ChronoUnit.DAYS.between(toLocalDate(today), toLocalDate(timeInSecondsSinceEpoch)));
     }
 
     private static LocalDate toLocalDate(final int timeInSecondsSinceEpoch) {

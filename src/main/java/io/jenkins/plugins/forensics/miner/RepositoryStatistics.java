@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,9 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  *
  * @author Ullrich Hafner
  */
-public class RepositoryStatistics {
+public class RepositoryStatistics implements Serializable {
+    private static final long serialVersionUID = 3650720039292455024L;
+
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 
     private final FilteredLog log = new FilteredLog("Errors while mining source control repository:");
@@ -155,6 +158,10 @@ public class RepositoryStatistics {
     public void addAll(final Collection<FileStatistics> statistics) {
         statisticsPerFile.putAll(
                 statistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
+    }
+
+    public void addAll(final RepositoryStatistics statistics) {
+        addAll(statistics.getFileStatistics());
     }
 
     public void add(final FileStatistics fileStatistics) {

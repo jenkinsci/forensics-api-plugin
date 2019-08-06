@@ -3,9 +3,12 @@ package io.jenkins.plugins.forensics.miner;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -54,7 +57,7 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
         log.getErrorMessages().forEach(logMessage);
 
         Instant start = Instant.now();
-        RepositoryStatistics statistics = miner.mine();
+        RepositoryStatistics statistics = miner.mine(Collections.emptyList());
         Instant end = Instant.now();
 
         int runtime = (int) (Duration.between(start, end).toMillis() / 1000);
@@ -77,19 +80,23 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
     private void reportResults(final TaskListener listener, final List<FileStatistics> sorted) {
         sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfCommits).reversed());
         log(listener, "File with most commits (#%d): %s",
-                sorted.get(0).getNumberOfCommits(), sorted.get(0).getFileName());
+                sorted.get(0).getNumberOfCommits(), relative(sorted.get(0).getFileName()));
 
         sorted.sort(Comparator.comparingInt(FileStatistics::getNumberOfAuthors).reversed());
         log(listener, "File with most number of authors (#%d): %s",
-                sorted.get(0).getNumberOfAuthors(), sorted.get(0).getFileName());
+                sorted.get(0).getNumberOfAuthors(), relative(sorted.get(0).getFileName()));
 
         sorted.sort(Comparator.comparingLong(FileStatistics::getAgeInDays).reversed());
         log(listener, "Oldest file (%d days): %s",
-                sorted.get(0).getAgeInDays(), sorted.get(0).getFileName());
+                sorted.get(0).getAgeInDays(), relative(sorted.get(0).getFileName()));
 
         sorted.sort(Comparator.comparingLong(FileStatistics::getLastModifiedInDays));
         log(listener, "Least recently modified file (%d days): %s",
-                sorted.get(0).getLastModifiedInDays(), sorted.get(0).getFileName());
+                sorted.get(0).getLastModifiedInDays(), relative(sorted.get(0).getFileName()));
+    }
+
+    private String relative(final String fileName) {
+        return StringUtils.substringAfterLast(fileName, "/");
     }
 
     private void log(final TaskListener listener, final String format, final Object... args) {

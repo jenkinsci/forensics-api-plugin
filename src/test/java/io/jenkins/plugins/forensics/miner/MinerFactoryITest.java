@@ -1,6 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.ClassRule;
@@ -13,7 +15,6 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
-import io.jenkins.plugins.forensics.blame.Blamer;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
@@ -30,11 +31,10 @@ public class MinerFactoryITest {
     @ClassRule
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
 
-    private static final String FILE_NAME = "file";
     private static final FilteredLog LOG = new FilteredLog("Foo");
 
     /**
-     * Verifies that different {@link Blamer} instances are created based on the stubbed workspace name.
+     * Verifies that different {@link RepositoryMiner} instances are created based on the stubbed workspace name.
      *
      * @throws InterruptedException
      *         never thrown
@@ -44,11 +44,11 @@ public class MinerFactoryITest {
         RepositoryMiner nullMiner = createMiner("/");
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
-        assertThat(nullMiner.mine()).isEmpty();
+        assertThat(nullMiner.mine(Collections.emptyList())).isEmpty();
 
         RepositoryMiner repositoryMiner = createMiner("/test");
         assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
-        assertThat(repositoryMiner.mine()).isNotEmpty();
+        assertThat(repositoryMiner.mine(Collections.emptyList())).isNotEmpty();
     }
 
     private RepositoryMiner createMiner(final String path) {
@@ -95,7 +95,7 @@ public class MinerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public RepositoryStatistics mine() {
+        public RepositoryStatistics mine(final Collection<String> paths) {
             RepositoryStatistics statistics = new RepositoryStatistics();
             statistics.add(new FileStatistics("/file.txt"));
             return statistics;
