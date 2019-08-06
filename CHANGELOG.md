@@ -1,7 +1,6 @@
-# Changelog
-All notable changes to this project will be documented in this file.
+# Changelog 
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes of this project will be automatically logged by release drafter in 
+[GitHub releases](https://github.com/jenkinsci/forensics-api-plugin/releases). 
 
-## [Unreleased](https://github.com/jenkinsci/forensics-api-plugin/compare/22474586f22f79492748a82773b4c2404dc88245...master)
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
