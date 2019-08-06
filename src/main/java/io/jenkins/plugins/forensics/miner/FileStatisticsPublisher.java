@@ -74,7 +74,6 @@ public class FileStatisticsPublisher extends Recorder implements SimpleBuildStep
         }
 
         run.addAction(new FileStatisticsAction(run, statistics));
-
     }
 
     private void reportResults(final TaskListener listener, final List<FileStatistics> sorted) {

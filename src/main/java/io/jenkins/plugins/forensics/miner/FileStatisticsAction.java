@@ -18,8 +18,8 @@ public class FileStatisticsAction implements RunAction2 {
     @Nullable
     private transient WeakReference<RepositoryStatistics> statistics;
 
-    public FileStatisticsAction(final Run<?, ?> run, final RepositoryStatistics statistics) {
-        owner = run;
+    FileStatisticsAction(final Run<?, ?> build, final RepositoryStatistics statistics) {
+        owner = build;
         this.statistics = new WeakReference<>(statistics);
     }
 
