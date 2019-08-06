@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
- * Aggregates commit statistics for a given file:
+ * Aggregates commit statistics for a given file. The following statistics are summed up:
  * <ul>
  *     <li>total number of commits</li>
  *     <li>total number of different authors</li>
@@ -61,7 +61,12 @@ public class FileStatistics implements Serializable {
         return fileName;
     }
 
-    private Object readResolve() {
+    /**
+     * Called after de-serialization to retain backward compatibility.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
         authors = new HashSet<>(); // restore an empty set since the authors set is used only during aggregation
 
         return this;
