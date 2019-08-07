@@ -47,4 +47,11 @@ class FileStatisticsTest {
         assertThat(statistics).hasLastModifiedInDays(1);
         assertThat(statistics).hasNumberOfAuthors(3);
     }
+
+    @Test
+    void shouldConvertWindowsName() {
+        assertThat(new FileStatistics("C:\\path\\to\\file.txt")).hasFileName("C:/path/to/file.txt");
+        assertThat(new FileStatistics("C:\\path\\to/file.txt")).hasFileName("C:/path/to/file.txt");
+        assertThat(new FileStatistics("/path/to/file.txt")).hasFileName("/path/to/file.txt");
+    }
 }

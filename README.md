@@ -12,7 +12,7 @@ by the [Jenkins Warning Next Generation Plugin](https://github.com/jenkinsci/war
  
 The API of the following services is defined by this plugin:
 - **Blames**: Shows what revision and author last modified a specified set of lines of a file.
-- **File statistics**: Collects commit statistics for all repository files:
+- **File statistics**: Collects commit statistics for repository files:
     - total number of commits
     - total number of different authors
     - creation time
