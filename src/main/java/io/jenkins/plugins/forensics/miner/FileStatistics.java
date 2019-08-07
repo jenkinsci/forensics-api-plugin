@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -26,6 +27,9 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class FileStatistics implements Serializable {
     private static final long serialVersionUID = -5776167206905031327L;
+
+    private static final String UNIX_SLASH = "/";
+    private static final String WINDOWS_BACK_SLASH = "\\";
 
     private final String fileName;
 
@@ -58,7 +62,7 @@ public class FileStatistics implements Serializable {
      */
     @VisibleForTesting
     public FileStatistics(final String fileName, final int today) {
-        this.fileName = fileName;
+        this.fileName = StringUtils.replace(fileName, WINDOWS_BACK_SLASH, UNIX_SLASH);
         this.today = today;
     }
 
