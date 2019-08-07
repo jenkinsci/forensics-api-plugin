@@ -3,6 +3,9 @@ tag-template: forensics-api-$NEXT_MINOR_VERSION
 name-template: Forensics API $NEXT_PATCH_VERSION 🎁
 version-template: $MAJOR.$MINOR.$PATCH
 
+template: |
+  $CHANGES
+
 categories:
   - title: 🚨 Removed
     label: removed
