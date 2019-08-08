@@ -31,7 +31,7 @@
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <workflow-api.version>2.34</workflow-api.version>
+    <workflow-api.version>2.36</workflow-api.version>
     <workflow-cps.version>2.67</workflow-cps.version>
     <workflow-job.version>2.32</workflow-job.version>
 
