@@ -32,7 +32,7 @@
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <workflow-api.version>2.34</workflow-api.version>
-    <workflow-cps.version>2.67</workflow-cps.version>
+    <workflow-cps.version>2.73</workflow-cps.version>
     <workflow-job.version>2.32</workflow-job.version>
 
     <!-- Test Library Dependencies Versions -->
