@@ -99,7 +99,7 @@ public class FileStatistics implements Serializable {
      *
      * @return the age in days (from now)
      */
-    public long getAgeInDays() {
+    public int getAgeInDays() {
         if (numberOfCommits == 0) {
             return 0;
         }
@@ -113,7 +113,7 @@ public class FileStatistics implements Serializable {
      *
      * @return the age in days (from now)
      */
-    public long getLastModifiedInDays() {
+    public int getLastModifiedInDays() {
         if (numberOfCommits == 0) {
             return 0;
         }
@@ -141,8 +141,12 @@ public class FileStatistics implements Serializable {
         numberOfAuthors = authors.size();
     }
 
-    private long computeDaysSince(final int timeInSecondsSinceEpoch) {
-        return Math.abs(ChronoUnit.DAYS.between(toLocalDate(today), toLocalDate(timeInSecondsSinceEpoch)));
+    private int computeDaysSince(final int timeInSecondsSinceEpoch) {
+        long days = Math.abs(ChronoUnit.DAYS.between(toLocalDate(today), toLocalDate(timeInSecondsSinceEpoch)));
+        if (days > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return (int) days;
     }
 
     private static LocalDate toLocalDate(final int timeInSecondsSinceEpoch) {

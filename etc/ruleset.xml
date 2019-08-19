@@ -9,6 +9,8 @@
     <exclude name="JUnitTestContainsTooManyAsserts"/>
     <exclude name="JUnitTestsShouldIncludeAssert"/>
     <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+    <exclude name="UnusedImports"/>
+    <exclude name="GuardLogStatement"/>
     <exclude name="AccessorMethodGeneration"/>
   </rule>
   <rule ref="category/java/codestyle.xml">
@@ -50,6 +52,7 @@
     <exclude name="LoosePackageCoupling"/>
     <exclude name="LawOfDemeter"/>
     <exclude name="TooManyMethods"/>
+    <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
     <exclude name="ExcessiveParameterList"/>
     <exclude name="ExcessiveMethodLength"/>
     <exclude name="UseObjectForClearerAPI"/>
@@ -88,5 +91,4 @@
   </rule>
   <rule ref="category/java/security.xml">
   </rule>
-
 </ruleset>
