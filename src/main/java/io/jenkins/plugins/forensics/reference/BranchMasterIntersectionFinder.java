@@ -12,6 +12,8 @@ import java.util.Optional;
  */
 public abstract class BranchMasterIntersectionFinder implements RunAction2, Serializable {
 
+    private static final long serialVersionUID = -4549516129641755356L;
+
     /**
      * Method to determine the Reversion of the last Commit which is shared with the master branch.
      *

@@ -6,23 +6,36 @@ import hudson.tasks.Recorder;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
 
+/**
+ * Recorder for the Intersection Finder.
+ *
+ * @author Arne Schöntag
+ */
+@SuppressWarnings("PMD.DataClass")
 public abstract class ReferenceRecorder extends Recorder {
 
-    protected static final String NO_REFERENCE_JOB = "-";
+    /**
+     * String value that indicates that no reference job is given.
+     */
+    public static final String NO_REFERENCE_JOB = "-";
 
-    protected Run<?, ?> run;
+    /**
+     * The Jenkins build
+     */
+    private Run<?, ?> run;
 
-    protected String referenceJobName;
+    /**
+     * The name of the build. Will be used to find the reference job in Jenkins.
+     */
+    private String referenceJobName;
 
-    protected int maxCommits;
+    /**
+     * Indicates the maximal amount of commits which will be compared to find the intersection point.
+     */
+    private int maxCommits;
 
-    // Needed to register in Jenkins?
-    protected String id;
-    protected String name;
-
-    public ReferenceRecorder() {
-        super();
-    }
+    private String id;
+    private String name;
 
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
@@ -70,7 +83,7 @@ public abstract class ReferenceRecorder extends Recorder {
     }
 
     @DataBoundSetter
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -79,8 +92,15 @@ public abstract class ReferenceRecorder extends Recorder {
     }
 
     @DataBoundSetter
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
+    public Run<?, ?> getRun() {
+        return run;
+    }
+
+    public void setRun(final Run<?, ?> run) {
+        this.run = run;
+    }
 }
