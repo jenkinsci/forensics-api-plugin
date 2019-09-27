@@ -16,6 +16,8 @@ import java.util.Optional;
  */
 @SuppressWarnings("unused")
 public abstract class VCSCommit implements RunAction2, Serializable {
+    private static final long serialVersionUID = -5610787867605008348L;
+
     private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
 
     @VisibleForTesting
