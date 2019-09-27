@@ -1,5 +1,8 @@
 package io.jenkins.plugins.forensics.reference;
 
+import com.google.common.annotations.VisibleForTesting;
+import hudson.model.Run;
+import io.jenkins.plugins.forensics.util.JenkinsFacade;
 import jenkins.model.RunAction2;
 
 import java.io.Serializable;
@@ -12,18 +15,25 @@ import java.util.Optional;
  * @author Arne Schöntag
  */
 @SuppressWarnings("unused")
-public interface VCSCommit extends RunAction2, Serializable {
-    void addGitCommitLogs(List<String> revisions);
+public abstract class VCSCommit implements RunAction2, Serializable {
+    private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
 
-    String getSummary();
+    @VisibleForTesting
+    static void setJenkinsFacade(final JenkinsFacade facade) {
+        jenkinsFacade = facade;
+    }
 
-    String getLatestRevision();
+    public abstract void addGitCommitLogs(List<String> revisions);
 
-    List<String> getRevisions();
+    public abstract String getSummary();
 
-    void addRevisions(List<String> list);
+    public abstract String getLatestRevision();
 
-    void addRevision(String revision);
+    public abstract List<String> getRevisions();
+
+    public abstract void addRevisions(List<String> list);
+
+    public abstract void addRevision(String revision);
 
     /**
      * Tries to find the reference point of the GitCommit of another build.
@@ -31,5 +41,13 @@ public interface VCSCommit extends RunAction2, Serializable {
      * @param maxLogs maximal amount of commits looked at.
      * @return the build Id of the reference build or Optional.empty() if none found.
      */
-    Optional<String> getReferencePoint(VCSCommit reference, int maxLogs);
+    public abstract Optional<String> getReferencePoint(VCSCommit reference, int maxLogs);
+
+    public static VCSCommit findVCSCommitFor(final Run<?, ?> run) {
+        return run.getAction(VCSCommit.class);
+    }
+
+    private static List<VCSCommit> findAllExtensions() {
+        return jenkinsFacade.getExtensionsFor(VCSCommit.class);
+    }
 }
