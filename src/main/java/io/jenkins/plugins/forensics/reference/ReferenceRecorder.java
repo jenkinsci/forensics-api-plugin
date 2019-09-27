@@ -20,7 +20,7 @@ public abstract class ReferenceRecorder extends Recorder {
     public static final String NO_REFERENCE_JOB = "-";
 
     /**
-     * The Jenkins build
+     * The Jenkins build.
      */
     private Run<?, ?> run;
 
