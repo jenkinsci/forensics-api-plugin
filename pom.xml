@@ -485,6 +485,7 @@
             <package>io.jenkins.plugins.forensics</package>
           </packages>
           <excludes>
+            <exclude>.*ITest</exclude>
           </excludes>
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
           <cleanTargetDir>true</cleanTargetDir>
