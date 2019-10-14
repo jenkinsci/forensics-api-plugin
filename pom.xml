@@ -366,7 +366,6 @@
           </excludeRoots>
           <excludes>
             <exclude>**/InjectedTest.java</exclude>
-            <exclude>**/*ITest.java</exclude>
           </excludes>
           <includeTests>true</includeTests>
           <minimumTokens>50</minimumTokens>
@@ -477,6 +476,7 @@
             <package>io.jenkins.plugins.forensics</package>
           </packages>
           <excludes>
+            <exclude>.*ITest</exclude>
           </excludes>
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
           <cleanTargetDir>true</cleanTargetDir>
