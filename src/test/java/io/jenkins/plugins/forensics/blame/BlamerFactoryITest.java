@@ -1,8 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Optional;
 
+import org.eclipse.collections.impl.factory.Lists;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -45,6 +47,12 @@ public class BlamerFactoryITest {
         assertThat(testBlamer).isInstanceOf(TestBlamer.class);
         assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).isNotEmpty();
         assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).hasFiles(FILE_NAME);
+
+        Collection<FilePath> directories = Lists.immutable.with(createWorkspace("/"), createWorkspace("/test")).castToCollection();
+        Blamer testBlamerSecondMatch = BlamerFactory.findBlamerFor(mock(Run.class), directories, TaskListener.NULL, LOG);
+        assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
+        assertThat(testBlamerSecondMatch.blame(new FileLocations(WORKSPACE))).isNotEmpty();
+        assertThat(testBlamerSecondMatch.blame(new FileLocations(WORKSPACE))).hasFiles(FILE_NAME);
     }
 
     private Blamer createBlamer(final String path) {
