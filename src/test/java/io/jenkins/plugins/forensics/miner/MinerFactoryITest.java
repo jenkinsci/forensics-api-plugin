@@ -95,7 +95,7 @@ public class MinerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public RepositoryStatistics mine(final Collection<String> relativeFileNames) {
+        public RepositoryStatistics mine(final Collection<String> absoluteFileNames) {
             RepositoryStatistics statistics = new RepositoryStatistics();
             statistics.add(new FileStatistics("/file.txt"));
             return statistics;

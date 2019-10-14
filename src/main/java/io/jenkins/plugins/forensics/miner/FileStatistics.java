@@ -45,7 +45,7 @@ public class FileStatistics implements Serializable {
      * Creates a new instance of {@link FileStatistics}.
      *
      * @param fileName
-     *         the name of the file that should be blamed
+     *         the name of the file for which statistics will be generated
      */
     public FileStatistics(final String fileName) {
         this(fileName, nowInSecondsSinceEpoch());
@@ -55,7 +55,7 @@ public class FileStatistics implements Serializable {
      * Creates a new instance of {@link FileStatistics}.
      *
      * @param fileName
-     *         the name of the file that should be blamed
+     *         the name of the file for which statistics will be generated
      * @param today
      *         today (given as number of seconds since the standard base time known as "the epoch", namely January 1,
      *         1970, 00:00:00 GMT.).

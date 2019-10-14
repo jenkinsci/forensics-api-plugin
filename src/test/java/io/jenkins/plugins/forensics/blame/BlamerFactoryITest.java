@@ -41,18 +41,18 @@ public class BlamerFactoryITest {
         Blamer nullBlamer = createBlamer("/");
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
-        assertThat(nullBlamer.blame(new FileLocations(WORKSPACE))).isEmpty();
+        assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
 
         Blamer testBlamer = createBlamer("/test");
         assertThat(testBlamer).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).isNotEmpty();
-        assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).hasFiles(FILE_NAME);
+        assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
+        assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
 
         Collection<FilePath> directories = Lists.immutable.with(createWorkspace("/"), createWorkspace("/test")).castToCollection();
         Blamer testBlamerSecondMatch = BlamerFactory.findBlamerFor(mock(Run.class), directories, TaskListener.NULL, LOG);
         assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamerSecondMatch.blame(new FileLocations(WORKSPACE))).isNotEmpty();
-        assertThat(testBlamerSecondMatch.blame(new FileLocations(WORKSPACE))).hasFiles(FILE_NAME);
+        assertThat(testBlamerSecondMatch.blame(new FileLocations())).isNotEmpty();
+        assertThat(testBlamerSecondMatch.blame(new FileLocations())).hasFiles(FILE_NAME);
     }
 
     private Blamer createBlamer(final String path) {

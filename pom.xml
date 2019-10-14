@@ -366,6 +366,7 @@
           </excludeRoots>
           <excludes>
             <exclude>**/InjectedTest.java</exclude>
+            <exclude>**/*ITest.java</exclude>
           </excludes>
           <includeTests>true</includeTests>
           <minimumTokens>50</minimumTokens>
