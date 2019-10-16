@@ -6,17 +6,15 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
+import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 import io.jenkins.plugins.forensics.util.FilteredLog;
-import io.jenkins.plugins.forensics.util.JenkinsFacade;
 import io.jenkins.plugins.forensics.util.ScmResolver;
 
 /**
@@ -28,12 +26,6 @@ import io.jenkins.plugins.forensics.util.ScmResolver;
 public abstract class MinerFactory implements ExtensionPoint {
     private static final Function<Optional<RepositoryMiner>, Stream<? extends RepositoryMiner>> OPTIONAL_MAPPER
             = o -> o.map(Stream::of).orElseGet(Stream::empty);
-    private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
-
-    @VisibleForTesting
-    static void setJenkinsFacade(final JenkinsFacade facade) {
-        jenkinsFacade = facade;
-    }
 
     /**
      * Returns a repository miner for the specified {@link SCM}.
@@ -88,6 +80,6 @@ public abstract class MinerFactory implements ExtensionPoint {
     }
 
     private static List<MinerFactory> findAllExtensions() {
-        return jenkinsFacade.getExtensionsFor(MinerFactory.class);
+        return Jenkins.get().getExtensionList(MinerFactory.class);
     }
 }

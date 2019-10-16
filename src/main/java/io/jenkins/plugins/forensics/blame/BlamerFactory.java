@@ -6,17 +6,15 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.google.common.annotations.VisibleForTesting;
-
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
+import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
 import io.jenkins.plugins.forensics.util.FilteredLog;
-import io.jenkins.plugins.forensics.util.JenkinsFacade;
 import io.jenkins.plugins.forensics.util.ScmResolver;
 
 /**
@@ -27,12 +25,6 @@ import io.jenkins.plugins.forensics.util.ScmResolver;
 public abstract class BlamerFactory implements ExtensionPoint {
     private static final Function<Optional<Blamer>, Stream<? extends Blamer>> OPTIONAL_MAPPER
             = o -> o.map(Stream::of).orElseGet(Stream::empty);
-    private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
-
-    @VisibleForTesting
-    static void setJenkinsFacade(final JenkinsFacade facade) {
-        jenkinsFacade = facade;
-    }
 
     /**
      * Returns a blamer for the specified {@link SCM}.
@@ -87,6 +79,6 @@ public abstract class BlamerFactory implements ExtensionPoint {
     }
 
     private static List<BlamerFactory> findAllExtensions() {
-        return jenkinsFacade.getExtensionsFor(BlamerFactory.class);
+        return Jenkins.get().getExtensionList(BlamerFactory.class);
     }
 }
