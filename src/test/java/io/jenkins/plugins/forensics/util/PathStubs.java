@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Ullrich Hafner
  */
-public class PathStubs {
+public final class PathStubs {
     /**
      * Creates a collection of paths.
      *
