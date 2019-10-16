@@ -1,6 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -19,6 +18,7 @@ import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.forensics.util.PathStubs.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -52,13 +52,7 @@ public class MinerFactoryITest {
     }
 
     private RepositoryMiner createMiner(final String path) {
-        return MinerFactory.findMinerFor(mock(Run.class), createWorkspace(path), TaskListener.NULL, LOG);
-    }
-
-    private FilePath createWorkspace(final String path) {
-        File file = mock(File.class);
-        when(file.getPath()).thenReturn(path);
-        return new FilePath(file);
+        return MinerFactory.findMiner(mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, LOG);
     }
 
     /**

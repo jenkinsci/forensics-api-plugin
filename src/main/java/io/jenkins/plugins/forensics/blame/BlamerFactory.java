@@ -25,7 +25,6 @@ import io.jenkins.plugins.forensics.util.ScmResolver;
  * @author Ullrich Hafner
  */
 public abstract class BlamerFactory implements ExtensionPoint {
-    // FIXME: to codingsstyle
     private static final Function<Optional<Blamer>, Stream<? extends Blamer>> OPTIONAL_MAPPER
             = o -> o.map(Stream::of).orElseGet(Stream::empty);
     private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
@@ -59,20 +58,22 @@ public abstract class BlamerFactory implements ExtensionPoint {
      *
      * @param run
      *         the current build
-     * @param workspace
-     *         the workspace of the current build
+     * @param scmDirectories
+     *         paths to search for the SCM repository
      * @param listener
      *         a task listener
      * @param logger
      *         a logger to report error messages
      *
      * @return a blamer for the SCM of the specified build or a {@link NullBlamer} if the SCM is not supported
-     * @deprecated use the improved method {@link #findBlamerFor(Run, Collection, TaskListener, FilteredLog)}
      */
-    @Deprecated
-    public static Blamer findBlamerFor(final Run<?, ?> run, final FilePath workspace,
-            final TaskListener listener, final FilteredLog logger) {
-        return findBlamer(run, workspace, listener, logger).orElse(new NullBlamer());
+    public static Blamer findBlamer(final Run<?, ?> run,
+            final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
+        return scmDirectories.stream()
+                .map(directory -> findBlamer(run, directory, listener, logger))
+                .flatMap(OPTIONAL_MAPPER)
+                .findFirst()
+                .orElse(new NullBlamer());
     }
 
     private static Optional<Blamer> findBlamer(final Run<?, ?> run, final FilePath workTree,
@@ -83,29 +84,6 @@ public abstract class BlamerFactory implements ExtensionPoint {
                 .map(blamerFactory -> blamerFactory.createBlamer(scm, run, workTree, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst();
-    }
-
-    /**
-     * Returns a blamer for the specified {@link Run build}.
-     *
-     * @param run
-     *         the current build
-     * @param scmDirectories
-     *         paths to search for the SCM repository
-     * @param listener
-     *         a task listener
-     * @param logger
-     *         a logger to report error messages
-     *
-     * @return a blamer for the SCM of the specified build or a {@link NullBlamer} if the SCM is not supported
-     */
-    public static Blamer findBlamerFor(final Run<?, ?> run,
-            final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
-        return scmDirectories.stream()
-                .map(directory -> findBlamer(run, directory, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
-                .findFirst()
-                .orElse(new NullBlamer());
     }
 
     private static List<BlamerFactory> findAllExtensions() {
