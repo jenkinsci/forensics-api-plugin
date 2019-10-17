@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.reference;
 
+import hudson.model.Run;
 import jenkins.model.RunAction2;
 
 import java.io.Serializable;
@@ -25,5 +26,11 @@ public abstract class BranchMasterIntersectionFinder implements RunAction2, Seri
     public abstract String getSummary();
 
     public abstract String getBuildId();
+
+    public abstract Run<?, ?> getRun();
+
+    public abstract Run<?, ?> getReference();
+
+    public abstract Optional<Run<?, ?>> getReferenceBuild();
 
 }
