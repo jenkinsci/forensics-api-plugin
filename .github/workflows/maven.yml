@@ -5,7 +5,12 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    name: Build on ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v1
