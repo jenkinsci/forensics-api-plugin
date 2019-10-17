@@ -1,6 +1,6 @@
-name: continuous-integration/github-actions/
+name: Github Actions
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -11,7 +11,7 @@ jobs:
         jdk: [1.8, 11]
 
     runs-on: ${{ matrix.platform }}
-    name: on ${{ matrix.platform }}
+    name: on ${{ matrix.platform }} with ${{ matrix.jdk }}
 
     steps:
     - uses: actions/checkout@v1
