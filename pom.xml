@@ -232,6 +232,7 @@
             <configuration>
               <includes>
                 <include>**/*Assert*</include>
+                <include>**/*PathStubs*</include>
               </includes>
             </configuration>
           </execution>
