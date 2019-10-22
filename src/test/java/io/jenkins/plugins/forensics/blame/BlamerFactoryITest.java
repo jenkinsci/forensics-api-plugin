@@ -1,6 +1,6 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.io.File;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.junit.ClassRule;
@@ -17,6 +17,7 @@ import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.forensics.util.PathStubs.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -31,7 +32,6 @@ public class BlamerFactoryITest {
 
     private static final String FILE_NAME = "file";
     private static final FilteredLog LOG = new FilteredLog("Foo");
-    private static final String WORKSPACE = "workspace";
 
     /** Verifies that different {@link Blamer} instances are created based on the stubbed workspace name. */
     @Test
@@ -39,22 +39,22 @@ public class BlamerFactoryITest {
         Blamer nullBlamer = createBlamer("/");
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
-        assertThat(nullBlamer.blame(new FileLocations(WORKSPACE))).isEmpty();
+        assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
 
         Blamer testBlamer = createBlamer("/test");
         assertThat(testBlamer).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).isNotEmpty();
-        assertThat(testBlamer.blame(new FileLocations(WORKSPACE))).hasFiles(FILE_NAME);
+        assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
+        assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
+
+        Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
+        Blamer testBlamerSecondMatch = BlamerFactory.findBlamer(mock(Run.class), directories, TaskListener.NULL, LOG);
+        assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
+        assertThat(testBlamerSecondMatch.blame(new FileLocations())).isNotEmpty();
+        assertThat(testBlamerSecondMatch.blame(new FileLocations())).hasFiles(FILE_NAME);
     }
 
     private Blamer createBlamer(final String path) {
-        return BlamerFactory.findBlamerFor(mock(Run.class), createWorkspace(path), TaskListener.NULL, LOG);
-    }
-
-    private FilePath createWorkspace(final String path) {
-        File file = mock(File.class);
-        when(file.getPath()).thenReturn(path);
-        return new FilePath(file);
+        return BlamerFactory.findBlamer(mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, LOG);
     }
 
     /**
