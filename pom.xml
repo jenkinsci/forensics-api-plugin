@@ -40,6 +40,7 @@
     <junit-platform-launcher.version>1.5.2</junit-platform-launcher.version>
     <mockito.version>3.1.0</mockito.version>
     <assertj.version>3.13.2</assertj.version>
+    <archunit.version>0.11.0</archunit.version>
 
     <!-- Maven plug-in versions -->
     <maven-pmd-plugin.version>3.12.0</maven-pmd-plugin.version>
@@ -51,7 +52,7 @@
     <maven-surefire.plugin>3.0.0-M3</maven-surefire.plugin>
     <maven-failsafe.plugin>3.0.0-M3</maven-failsafe.plugin>
     <jar.maven.plugin>3.0.2</jar.maven.plugin>
-    <versions-maven-plugin.version>2.7</versions-maven-plugin.version>
+    <versions-maven-pluxgin.version>2.7</versions-maven-pluxgin.version>
     <depgraph-maven-plugin.version>3.3.0</depgraph-maven-plugin.version>
     <animal-sniffer-maven-plugin.version>1.18</animal-sniffer-maven-plugin.version>
     <maven-hpi-plugin.version>2.5</maven-hpi-plugin.version>
@@ -61,7 +62,6 @@
     <pitest-maven.junit5.plugin>0.9</pitest-maven.junit5.plugin>
     <revapi-maven-plugin.version>0.11.1</revapi-maven-plugin.version>
     <revapi-java.version>0.19.1</revapi-java.version>
-    <archunit.version>0.11.0</archunit.version>
     <assertj-assertions-generator-maven-plugin.version>2.2.0</assertj-assertions-generator-maven-plugin.version>
 
   </properties>
@@ -203,6 +203,18 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-api</artifactId>
+      <version>${archunit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5-engine</artifactId>
+      <version>${archunit.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -499,20 +511,6 @@
     </plugins>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven-jar-plugin.version}</version>
-          <configuration>
-            <archive>
-              <manifestEntries>
-                <Built-By>Ullrich Hafner</Built-By>
-                <Url>${project.scm.url}</Url>
-                <Jenkins-ClassFilter-Whitelisted>true</Jenkins-ClassFilter-Whitelisted>
-              </manifestEntries>
-            </archive>
-          </configuration>
-        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>animal-sniffer-maven-plugin</artifactId>
