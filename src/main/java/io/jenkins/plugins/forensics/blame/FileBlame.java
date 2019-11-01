@@ -24,6 +24,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     private static final String WINDOWS_BACK_SLASH = "\\";
 
     static final String EMPTY = "-";
+    static final int EMPTY_INTEGER = 0;
 
     private final String fileName;
     private final Set<Integer> lines = new HashSet<>();
@@ -31,6 +32,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     private final Map<Integer, String> commitByLine = new HashMap<>();
     private final Map<Integer, String> nameByLine = new HashMap<>();
     private final Map<Integer, String> emailByLine = new HashMap<>();
+    private final Map<Integer, Integer> timeByLine = new HashMap<>();
 
     /**
      * Creates a new instance of {@link FileBlame}.
@@ -128,6 +130,30 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         return getStringValue(emailByLine, line);
     }
 
+    /**
+     * Sets the modification time (i.e. the time of the last commit) for the specified line number.
+     *
+     * @param lineNumber
+     *         the line number
+     * @param time
+     *         the time of the commit
+     */
+    public void setTime(final int lineNumber, final int time) {
+        setIntegerValue(timeByLine, lineNumber, time);
+    }
+
+    /**
+     * Returns the modification time (i.e. the time of the last commit) for the specified line.
+     *
+     * @param line
+     *         the affected line
+     *
+     * @return the time of the last commit
+     */
+    public int getTime(final int line) {
+        return getIntegerValue(timeByLine, line);
+    }
+
     private String getStringValue(final Map<Integer, String> map, final int line) {
         if (map.containsKey(line)) {
             return map.get(line);
@@ -137,6 +163,15 @@ public class FileBlame implements Iterable<Integer>, Serializable {
 
     private void setInternedStringValue(final Map<Integer, String> map, final int lineNumber, final String value) {
         map.put(lineNumber, value.intern());
+        lines.add(lineNumber);
+    }
+
+    private int getIntegerValue(final Map<Integer, Integer> map, final int line) {
+        return map.getOrDefault(line, EMPTY_INTEGER);
+    }
+
+    private void setIntegerValue(final Map<Integer, Integer> map, final int lineNumber, final Integer value) {
+        map.put(lineNumber, value);
         lines.add(lineNumber);
     }
 
@@ -157,6 +192,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
                     setInternedStringValue(commitByLine, otherLine, other.getCommit(otherLine));
                     setInternedStringValue(nameByLine, otherLine, other.getName(otherLine));
                     setInternedStringValue(emailByLine, otherLine, other.getEmail(otherLine));
+                    setIntegerValue(timeByLine, otherLine, other.getTime(otherLine));
                 }
             }
         }
@@ -195,6 +231,9 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         if (!nameByLine.equals(request.nameByLine)) {
             return false;
         }
+        if (!timeByLine.equals(request.timeByLine)) {
+            return false;
+        }
         return emailByLine.equals(request.emailByLine);
     }
 
@@ -205,6 +244,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         result = 31 * result + commitByLine.hashCode();
         result = 31 * result + nameByLine.hashCode();
         result = 31 * result + emailByLine.hashCode();
+        result = 31 * result + timeByLine.hashCode();
         return result;
     }
 }

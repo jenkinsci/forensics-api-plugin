@@ -15,9 +15,11 @@ class BlamesTest {
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
+    private static final int TIME = 12_345;
 
     private static final String FILE_NAME = "file.txt";
     private static final String EMPTY = "-";
+    private static final int EMPTY_TIME = 0;
     private static final String ANOTHER_FILE = "other.txt";
 
     @Test
@@ -38,13 +40,13 @@ class BlamesTest {
     void shouldAddBlamesOfSingleFile() {
         Blames blames = new Blames();
 
-        FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT);
+        FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
         assertThatBlamesContainsOneFile(blames);
         assertThat(blames.getBlame(FILE_NAME)).isEqualTo(fileBlame);
 
-        FileBlame other = createBlame(2, NAME, EMAIL, COMMIT);
+        FileBlame other = createBlame(2, NAME, EMAIL, COMMIT, TIME);
         blames.add(other);
 
         assertThatBlamesContainsOneFile(blames);
@@ -52,20 +54,21 @@ class BlamesTest {
         assertThat(blames.getBlame(FILE_NAME)).hasFileName(FILE_NAME);
         assertThat(blames.getBlame(FILE_NAME)).hasLines(1, 2);
 
-        FileBlame duplicate = createBlame(1, EMPTY, EMPTY, EMPTY);
+        FileBlame duplicate = createBlame(1, EMPTY, EMPTY, EMPTY, EMPTY_TIME);
         blames.add(duplicate);
 
         assertThat(blames.size()).isEqualTo(1);
         assertThat(blames.getBlame(FILE_NAME).getName(1)).isEqualTo(NAME);
         assertThat(blames.getBlame(FILE_NAME).getEmail(1)).isEqualTo(EMAIL);
         assertThat(blames.getBlame(FILE_NAME).getCommit(1)).isEqualTo(COMMIT);
+        assertThat(blames.getBlame(FILE_NAME).getTime(1)).isEqualTo(TIME);
     }
 
     @Test
     void shouldConcatenateWorkspacePath() {
         Blames blames = new Blames();
 
-        FileBlame fileBlame = createBlame("file.txt", 1, NAME, EMAIL, COMMIT);
+        FileBlame fileBlame = createBlame("file.txt", 1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
         assertThat(blames.size()).isEqualTo(1);
@@ -79,9 +82,9 @@ class BlamesTest {
     void shouldAddBlamesOfTwoFiles() {
         Blames blames = new Blames();
 
-        FileBlame fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT);
+        FileBlame fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
-        FileBlame other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT);
+        FileBlame other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT, TIME);
         blames.add(other);
 
         verifyBlamesOfTwoFiles(blames, fileBlame, other);
@@ -90,11 +93,11 @@ class BlamesTest {
     @Test
     void shouldMergeBlames() {
         Blames blames = new Blames();
-        FileBlame fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT);
+        FileBlame fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
         Blames otherBlames = new Blames();
-        FileBlame other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT);
+        FileBlame other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT, TIME);
         otherBlames.add(other);
 
         blames.addAll(otherBlames);
@@ -136,16 +139,18 @@ class BlamesTest {
         assertThat(blames.contains(FILE_NAME)).isTrue();
     }
 
-    private FileBlame createBlame(final int lineNumber, final String name, final String email, final String commit) {
-        return createBlame(FILE_NAME, lineNumber, name, email, commit);
+    private FileBlame createBlame(final int lineNumber, final String name, final String email, final String commit,
+            final int time) {
+        return createBlame(FILE_NAME, lineNumber, name, email, commit, time);
     }
 
     private FileBlame createBlame(final String fileName, final int lineNumber, final String name, final String email,
-            final String commit) {
+            final String commit, final int time) {
         FileBlame fileBlame = new FileBlame(fileName);
         fileBlame.setName(lineNumber, name);
         fileBlame.setCommit(lineNumber, commit);
         fileBlame.setEmail(lineNumber, email);
+        fileBlame.setTime(lineNumber, time);
         return fileBlame;
     }
 }
