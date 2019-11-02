@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
- * Stores the repository blames for several lines of a single file. File names are stored using the absolute path
- * of the file.
+ * Stores the repository blames for several lines of a single file. File names are stored using the absolute path of the
+ * file.
  *
  * @author Ullrich Hafner
  */
@@ -167,7 +167,10 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     }
 
     private int getIntegerValue(final Map<Integer, Integer> map, final int line) {
-        return map.getOrDefault(line, EMPTY_INTEGER);
+        if (map != null && map.containsKey(line)) {
+            return map.get(line);
+        }
+        return EMPTY_INTEGER;
     }
 
     private void setIntegerValue(final Map<Integer, Integer> map, final int lineNumber, final Integer value) {
