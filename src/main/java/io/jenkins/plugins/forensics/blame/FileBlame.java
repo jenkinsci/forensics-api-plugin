@@ -32,7 +32,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     private final Map<Integer, String> commitByLine = new HashMap<>();
     private final Map<Integer, String> nameByLine = new HashMap<>();
     private final Map<Integer, String> emailByLine = new HashMap<>();
-    private final Map<Integer, Integer> timeByLine = new HashMap<>();
+    private Map<Integer, Integer> timeByLine = new HashMap<>();
 
     /**
      * Creates a new instance of {@link FileBlame}.
@@ -131,24 +131,28 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     }
 
     /**
-     * Sets the modification time (i.e. the time of the last commit) for the specified line number.
+     * Sets the modification time for the specified line. Essentially, this is the time of the last commit that changed
+     * this line.
      *
      * @param lineNumber
      *         the line number
      * @param time
-     *         the time of the commit
+     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch",
+     *         namely January 1, 1970, 00:00:00 GMT.).
      */
     public void setTime(final int lineNumber, final int time) {
         setIntegerValue(timeByLine, lineNumber, time);
     }
 
     /**
-     * Returns the modification time (i.e. the time of the last commit) for the specified line.
+     * Returns the modification time for the specified line. Essentially, this is the time of the last commit that
+     * changed this line.
      *
      * @param line
      *         the affected line
      *
-     * @return the time of the last commit
+     * @return the time of the commit (given as number of seconds since the standard base time known as "the epoch",
+     *         namely January 1, 1970, 00:00:00 GMT.).
      */
     public int getTime(final int line) {
         return getIntegerValue(timeByLine, line);
@@ -167,15 +171,27 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     }
 
     private int getIntegerValue(final Map<Integer, Integer> map, final int line) {
-        if (map != null && map.containsKey(line)) {
-            return map.get(line);
-        }
-        return EMPTY_INTEGER;
+        return map.getOrDefault(line, EMPTY_INTEGER);
     }
 
     private void setIntegerValue(final Map<Integer, Integer> map, final int lineNumber, final Integer value) {
         map.put(lineNumber, value);
         lines.add(lineNumber);
+    }
+
+    /**
+     * Called after de-serialization to retain backward compatibility.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        // Create an empty map for timeByLine in case it is null.
+        // This could be the case if deserializing blames generated before version 0.6.0.
+        if (timeByLine == null) {
+            timeByLine = new HashMap<>();
+        }
+
+        return this;
     }
 
     /**
