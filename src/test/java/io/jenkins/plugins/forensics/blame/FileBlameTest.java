@@ -13,6 +13,7 @@ class FileBlameTest {
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
+    private static final int TIME = 12_345;
 
     @Test
     void shouldCreateInstance() {
@@ -35,12 +36,14 @@ class FileBlameTest {
         request.setCommit(lineNumber, COMMIT);
         request.setName(lineNumber, NAME);
         request.setEmail(lineNumber, EMAIL);
+        request.setTime(lineNumber, TIME);
     }
 
     private void verifyDetails(final FileBlame request, final int line) {
         assertThat(request.getCommit(line)).isEqualTo(COMMIT);
         assertThat(request.getName(line)).isEqualTo(NAME);
         assertThat(request.getEmail(line)).isEqualTo(EMAIL);
+        assertThat(request.getTime(line)).isEqualTo(TIME);
     }
 
     @Test
@@ -66,6 +69,7 @@ class FileBlameTest {
         otherLine.setCommit(2, FileBlame.EMPTY);
         otherLine.setName(2, FileBlame.EMPTY);
         otherLine.setEmail(2, FileBlame.EMPTY);
+        otherLine.setTime(2, FileBlame.EMPTY_INTEGER);
         request.merge(otherLine);
         verifyDetails(request, 1);
         verifyDetails(request, 2);
@@ -82,6 +86,7 @@ class FileBlameTest {
         assertThat(request.getCommit(2)).isEqualTo(FileBlame.EMPTY);
         assertThat(request.getEmail(2)).isEqualTo(FileBlame.EMPTY);
         assertThat(request.getName(2)).isEqualTo(FileBlame.EMPTY);
+        assertThat(request.getTime(2)).isEqualTo(FileBlame.EMPTY_INTEGER);
     }
 
     @Test
