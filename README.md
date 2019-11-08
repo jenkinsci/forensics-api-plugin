@@ -24,7 +24,7 @@ corresponding extension points for Git. Other version control systems are not ye
 
 [![Jenkins](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/master/)
 [![GitHub Actions](https://github.com/jenkinsci/forensics-api-plugin/workflows/GitHub%20Actions/badge.svg)](https://github.com/jenkinsci/forensics-api-plugin/actions)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1be7bb5b899446968e411e6e59c8ea6c)](https://www.codacy.com/app/uhafner/forensics-api-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jenkinsci/forensics-api-plugin&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1be7bb5b899446968e411e6e59c8ea6c)](https://www.codacy.com/app/jenkins/forensics-api-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jenkinsci/forensics-api-plugin&amp;utm_campaign=Badge_Grade)
 [![Codecov](https://img.shields.io/codecov/c/github/jenkinsci/forensics-api-plugin.svg)](https://codecov.io/gh/jenkinsci/forensics-api-plugin)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/jenkinsci/forensics-api-plugin.svg)](https://github.com/jenkinsci/forensics-api-plugin/pulls)
 
