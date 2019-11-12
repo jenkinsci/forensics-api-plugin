@@ -437,6 +437,7 @@
           </dependency>
         </dependencies>
         <configuration>
+          <skip>true</skip>
           <analysisConfiguration>
             <revapi.semver.ignore>
               <enabled>true</enabled>
@@ -496,6 +497,7 @@
           </packages>
           <excludes>
             <exclude>.*ITest</exclude>
+            <exclude>.*Action</exclude>
           </excludes>
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
           <cleanTargetDir>true</cleanTargetDir>

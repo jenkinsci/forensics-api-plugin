@@ -1,0 +1,13 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
+
+  <t:summary icon="{resURL}/plugin/forensics-api/icons/forensics-48x48.png">
+    SCM Forensics:
+    <ul>
+      <li>Number of repository files: ${size(it.repositoryStatistics)}</li>
+      <li>Scanner runtime: ${it.runTime}</li>
+    </ul>
+  </t:summary>
+
+
+</j:jelly>
