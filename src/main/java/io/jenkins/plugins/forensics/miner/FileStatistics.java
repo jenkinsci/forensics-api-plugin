@@ -38,8 +38,8 @@ public class FileStatistics implements Serializable {
     private int creationTime;
     private int lastModificationTime;
 
-    private transient Set<String> authors = new HashSet<>();
-    private final int today;
+    private transient Set<String> authors = new HashSet<>(); // see readResolve
+    private transient int today; // TODO: remove in 1.0.0
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -81,6 +81,7 @@ public class FileStatistics implements Serializable {
      */
     protected Object readResolve() {
         authors = new HashSet<>(); // restore an empty set since the authors set is used only during aggregation
+        today = nowInSecondsSinceEpoch();
 
         return this;
     }
@@ -118,7 +119,9 @@ public class FileStatistics implements Serializable {
      * today, then 0 is returned.
      *
      * @return the age in days (from now)
+     * @deprecated will be removed in 1.0.0, use UI layer to compute that value
      */
+    @Deprecated
     public int getAgeInDays() {
         if (numberOfCommits == 0) {
             return 0;
@@ -132,7 +135,9 @@ public class FileStatistics implements Serializable {
      * file has been modified today, then 0 is returned.
      *
      * @return the age in days (from now)
+     * @deprecated will be removed in 1.0.0, use UI layer to compute that value
      */
+    @Deprecated
     public int getLastModifiedInDays() {
         if (numberOfCommits == 0) {
             return 0;

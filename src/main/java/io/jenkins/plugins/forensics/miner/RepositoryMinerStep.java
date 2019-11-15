@@ -37,9 +37,15 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
         // TODO: repository mining should be an incremental process
         RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, log);
+        long nano = System.nanoTime();
         RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList());
+        long seconds = 1 + (System.nanoTime() - nano) / 1_000_000_000L;
+        log.logInfo("Mining of the Git repository took %d seconds", seconds);
 
-        run.addAction(new RepositoryStatisticsAction(repositoryStatistics));
+        run.addAction(new BuildAction(run, repositoryStatistics, (int)seconds));
+
+        log.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
+        log.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
     }
 
     /**
