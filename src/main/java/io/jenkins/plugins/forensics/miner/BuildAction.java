@@ -11,8 +11,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 
+import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Action;
-import hudson.model.ModelObject;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.tasks.SimpleBuildStep.LastBuildAction;
@@ -25,7 +25,7 @@ import jenkins.tasks.SimpleBuildStep.LastBuildAction;
  * @author Ullrich Hafner
  */
 // TODO: Results are written to build.xml
-public class BuildAction implements LastBuildAction, RunAction2, ModelObject, Serializable {
+public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, Serializable {
     private static final long serialVersionUID = -2074456133028895573L;
 
     private transient Run<?, ?> owner;
@@ -136,6 +136,16 @@ public class BuildAction implements LastBuildAction, RunAction2, ModelObject, Se
     @Override
     public String getDisplayName() {
         return "SCM Forensics";
+    }
+
+    /**
+     * Returns the detail view for issues for all Stapler requests.
+     *
+     * @return the detail view for issues
+     */
+    @Override
+    public Object getTarget() {
+        return new ForensicsDetail(owner, getRepositoryStatistics());
     }
 
     @Override

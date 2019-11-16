@@ -35,17 +35,19 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
         FilteredLog log = new FilteredLog("Errors while mining source control repository:");
 
-        // TODO: repository mining should be an incremental process
         RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, log);
+        log.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
+        log.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
+
         long nano = System.nanoTime();
+        // TODO: repository mining should be an incremental process
         RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList());
         long seconds = 1 + (System.nanoTime() - nano) / 1_000_000_000L;
-        log.logInfo("Mining of the Git repository took %d seconds", seconds);
 
         run.addAction(new BuildAction(run, repositoryStatistics, (int)seconds));
 
-        log.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
-        log.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
+        repositoryStatistics.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
+        repositoryStatistics.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
     }
 
     /**
