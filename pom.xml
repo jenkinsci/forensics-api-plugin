@@ -129,16 +129,6 @@
       <artifactId>commons-lang3</artifactId>
       <version>${commons.lang.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections-api</artifactId>
-      <version>${eclipse-collections.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections</artifactId>
-      <version>${eclipse-collections.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -157,6 +147,18 @@
     </dependency>
 
     <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections-api</artifactId>
+      <version>${eclipse-collections.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections</artifactId>
+      <version>${eclipse-collections.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
