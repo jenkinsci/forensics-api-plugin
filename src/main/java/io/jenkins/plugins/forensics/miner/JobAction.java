@@ -77,7 +77,7 @@ public class JobAction implements Action {
         Optional<BuildAction> action = getLatestAction();
         if (action.isPresent()) {
             BuildAction buildAction = action.get();
-            response.sendRedirect2(String.format("../%s/%s",
+            response.sendRedirect2(String.format("../../../%s%s",
                     buildAction.getOwner().getUrl(), buildAction.getUrlName()));
         }
     }
