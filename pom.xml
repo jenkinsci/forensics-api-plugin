@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.51</version>
+    <version>3.53</version>
     <relativePath />
   </parent>
 
@@ -12,7 +12,7 @@
   <groupId>io.jenkins.plugins</groupId>
   <packaging>hpi</packaging>
   <name>Forensics API Plugin</name>
-  <version>0.6.1-SNAPSHOT</version>
+  <version>0.6.2-SNAPSHOT</version>
   <description>Jenkins plug-that defines an API to mine and analyze data from a repository.</description>
 
   <properties>
@@ -25,6 +25,7 @@
     <codingstyle.version>0.2.7</codingstyle.version>
 
     <module.name>${project.groupId}.forensics.api</module.name>
+    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
     <!-- Library Dependencies Versions -->
     <error-prone.version>2.3.3</error-prone.version>
@@ -131,16 +132,6 @@
       <artifactId>commons-lang3</artifactId>
       <version>${commons.lang.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections-api</artifactId>
-      <version>${eclipse-collections.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections</artifactId>
-      <version>${eclipse-collections.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -159,6 +150,18 @@
     </dependency>
 
     <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections-api</artifactId>
+      <version>${eclipse-collections.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections</artifactId>
+      <version>${eclipse-collections.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
