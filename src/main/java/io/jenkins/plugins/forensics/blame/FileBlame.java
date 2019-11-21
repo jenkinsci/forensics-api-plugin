@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * Stores the repository blames for several lines of a single file. File names are stored using the absolute path of the
@@ -32,6 +33,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     private final Map<Integer, String> commitByLine = new HashMap<>();
     private final Map<Integer, String> nameByLine = new HashMap<>();
     private final Map<Integer, String> emailByLine = new HashMap<>();
+    @Nullable
     private Map<Integer, Integer> timeByLine = new HashMap<>();
 
     /**

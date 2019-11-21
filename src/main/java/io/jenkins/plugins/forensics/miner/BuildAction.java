@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -151,5 +152,16 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
     @Override
     public String getUrlName() {
         return "forensics";
+    }
+
+    public static Optional<BuildAction> getBuildActionFromHistoryStartingFrom(@Nullable final Run<?, ?> baseline) {
+        for (Run<?, ?> run = baseline; run != null; run = run.getPreviousBuild()) {
+            BuildAction action = run.getAction(BuildAction.class);
+            if (action != null) {
+                return Optional.of(action);
+            }
+        }
+
+        return Optional.empty();
     }
 }

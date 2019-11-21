@@ -1,15 +1,24 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.Action;
 import hudson.model.Job;
 import hudson.model.Run;
+
+import io.jenkins.plugins.echarts.api.charts.Build;
+import io.jenkins.plugins.echarts.api.charts.BuildResult;
+import io.jenkins.plugins.echarts.api.charts.ChartModelConfiguration;
+import io.jenkins.plugins.echarts.api.charts.JacksonFacade;
+import io.jenkins.plugins.echarts.api.charts.LinesChartModel;
 
 /**
  * A job action displays a link on the side panel of a job. This action also is responsible to render the historical
@@ -88,13 +97,51 @@ public class JobAction implements Action {
      * @return the latest results (if available)
      */
     public Optional<BuildAction> getLatestAction() {
-        for (Run<?, ?> run = owner.getLastBuild(); run != null; run = run.getPreviousBuild()) {
-            BuildAction action = run.getAction(BuildAction.class);
-            if (action != null) {
-                return Optional.of(action);
-            }
+        return BuildAction.getBuildActionFromHistoryStartingFrom(owner.getLastBuild());
+    }
+
+    /**
+     * Returns the UI model for an ECharts line chart that shows the issues stacked by severity.
+     *
+     * @return the UI model as JSON
+     */
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // Called by jelly view
+    public String getBuildTrend() {
+        return new JacksonFacade().toJson(createChartModel());
+    }
+
+    private LinesChartModel createChartModel() {
+        return new FilesCountTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
+    }
+
+    private Iterable<? extends BuildResult<RepositoryStatistics>> createBuildHistory() {
+        return (Iterable<BuildResult<RepositoryStatistics>>) () -> new RepositoryStatisticsIterator(getLatestAction());
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private static class RepositoryStatisticsIterator implements Iterator<BuildResult<RepositoryStatistics>> {
+        private Optional<BuildAction> latestAction;
+
+        RepositoryStatisticsIterator(final Optional<BuildAction> latestAction) {
+            this.latestAction = latestAction;
         }
 
-        return Optional.empty();
+        @Override
+        public boolean hasNext() {
+            return latestAction.isPresent();
+        }
+
+        @Override
+        public BuildResult<RepositoryStatistics> next() {
+            if (!latestAction.isPresent()) {
+                throw new NoSuchElementException();
+            }
+            BuildAction buildAction = latestAction.get();
+            Run<?, ?> run = buildAction.getOwner();
+            latestAction = BuildAction.getBuildActionFromHistoryStartingFrom(run.getPreviousBuild());
+
+            return new BuildResult<>(new Build(run), buildAction.getRepositoryStatistics());
+        }
     }
 }
