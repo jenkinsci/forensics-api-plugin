@@ -32,8 +32,9 @@ public class SizePieChart {
         for (FileStatistics file : repositoryStatistics.getFileStatistics()) {
             distribution.merge(determineBreakpoint(sizeMethod.apply(file), breakpoints), 1, Integer::sum);
         }
+        int color = 0;
         for (Integer key : distribution.keySet()) {
-            model.add(new PieData(String.valueOf(key), distribution.get(key)), Palette.color(key));
+            model.add(new PieData(String.valueOf(key), distribution.get(key)), Palette.color(color++));
         }
         return model;
     }
