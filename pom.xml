@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.51</version>
+    <version>3.53</version>
     <relativePath/>
   </parent>
 
@@ -23,7 +23,10 @@
     <jenkins-test-harness.version>2.49</jenkins-test-harness.version>
     <spotbugs.failOnError>false</spotbugs.failOnError>
     <slf4j.version>1.7.29</slf4j.version>
+    <codingstyle.version>0.2.7</codingstyle.version>
+
     <module.name>${project.groupId}.forensics.api</module.name>
+    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
     <!-- Library Dependencies Versions -->
     <error-prone.version>2.3.3</error-prone.version>
@@ -55,11 +58,11 @@
     <maven-pmd-plugin.version>3.12.0</maven-pmd-plugin.version>
     <pmd.version>6.19.0</pmd.version>
     <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
-    <checkstyle.version>8.24</checkstyle.version>
+    <checkstyle.version>8.26</checkstyle.version>
     <spotbugs-maven-plugin.version>3.1.12.2</spotbugs-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
-    <maven-surefire.plugin>3.0.0-M3</maven-surefire.plugin>
-    <maven-failsafe.plugin>3.0.0-M3</maven-failsafe.plugin>
+    <maven-surefire.plugin>3.0.0-M4</maven-surefire.plugin>
+    <maven-failsafe.plugin>3.0.0-M4</maven-failsafe.plugin>
     <jar.maven.plugin>3.0.2</jar.maven.plugin>
     <versions-maven-pluxgin.version>2.7</versions-maven-pluxgin.version>
     <depgraph-maven-plugin.version>3.3.0</depgraph-maven-plugin.version>
@@ -148,16 +151,6 @@
       <artifactId>commons-lang3</artifactId>
       <version>${commons.lang.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections-api</artifactId>
-      <version>${eclipse-collections.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections</artifactId>
-      <version>${eclipse-collections.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
@@ -202,6 +195,18 @@
     </dependency>
 
     <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections-api</artifactId>
+      <version>${eclipse-collections.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections</artifactId>
+      <version>${eclipse-collections.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -411,7 +416,7 @@
         </executions>
         <configuration>
           <failOnViolation>false</failOnViolation>
-          <configLocation>etc/checkstyle-configuration.xml</configLocation>
+          <configLocation>checkstyle-configuration.xml</configLocation>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <excludes>**/*Assert*.java,**/InjectedTest.java,**/Messages.java</excludes>
         </configuration>
@@ -420,6 +425,11 @@
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
             <version>${checkstyle.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>edu.hm.hafner</groupId>
+            <artifactId>codingstyle</artifactId>
+            <version>${codingstyle.version}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -439,7 +449,7 @@
         </executions>
         <configuration>
           <rulesets>
-            <ruleset>etc/pmd-configuration.xml</ruleset>
+            <ruleset>pmd-configuration.xml</ruleset>
           </rulesets>
           <excludeRoots>
             <excludeRoot>target/generated-sources/localizer</excludeRoot>
@@ -461,6 +471,11 @@
             <groupId>net.sourceforge.pmd</groupId>
             <artifactId>pmd-java</artifactId>
             <version>${pmd.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>edu.hm.hafner</groupId>
+            <artifactId>codingstyle</artifactId>
+            <version>${codingstyle.version}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -484,9 +499,16 @@
           <effort>Max</effort>
           <relaxed>false</relaxed>
           <fork>true</fork>
-          <excludeFilterFile>etc/spotbugs-exclusion-filter.xml</excludeFilterFile>
+          <excludeFilterFile>spotbugs-exclusion-filter.xml</excludeFilterFile>
           <includeTests>true</includeTests>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>edu.hm.hafner</groupId>
+            <artifactId>codingstyle</artifactId>
+            <version>${codingstyle.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.revapi</groupId>
