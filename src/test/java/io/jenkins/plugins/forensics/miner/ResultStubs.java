@@ -6,11 +6,22 @@ import io.jenkins.plugins.echarts.api.charts.BuildResult;
 import static org.mockito.Mockito.*;
 
 /**
- * FIXME: comment class.
+ * Provides some factory methods to create stubs of {@link BuildResult build results}.
  *
  * @author Ullrich Hafner
  */
-public class ResultStubs {
+public final class ResultStubs {
+    /**
+     * Creates a new build result for the given build.
+     *
+     * @param buildNumber
+     *         the number of the build
+     * @param numberOfFiles
+     *         the number of files in the build
+     *
+     * @return the {@link BuildResult} stub, that contains a {@link RepositoryStatistics} instance with the specified
+     *         behavior
+     */
     @SuppressWarnings("unchecked")
     public static BuildResult<RepositoryStatistics> createResult(final int buildNumber,
             final int numberOfFiles) {
@@ -26,4 +37,7 @@ public class ResultStubs {
         return buildResult;
     }
 
+    private ResultStubs() {
+        // prevents instantiation
+    }
 }

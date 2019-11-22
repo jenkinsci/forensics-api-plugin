@@ -1,5 +1,7 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
@@ -47,7 +49,7 @@ class FilesCountSeriesBuilderTest {
 
         BuildResult<RepositoryStatistics> singleResult = createResult(1, 1);
 
-        LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Lists.newArrayList(singleResult));
+        LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Arrays.asList(singleResult));
 
         assertThat(dataSet.getXAxisSize()).isEqualTo(1);
         assertThat(dataSet.getXAxisLabels()).containsExactly("#1");
@@ -68,7 +70,7 @@ class FilesCountSeriesBuilderTest {
         when(configuration.getBuildCount()).thenReturn(3);
         when(configuration.isBuildCountDefined()).thenReturn(true);
 
-        LinesDataSet dataSet = builder.createDataSet(configuration, Lists.newArrayList(
+        LinesDataSet dataSet = builder.createDataSet(configuration, Arrays.asList(
                 createResult(4, 4),
                 createResult(3, 3),
                 createResult(2, 2),

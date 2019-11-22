@@ -84,9 +84,15 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
     @Override
     public Collection<? extends Action> getProjectActions() {
         return Collections.singleton(new JobAction(owner.getParent()));
-
     }
 
+    /**
+     * Returns the repository statistics. Since the object requires some amount of memory, it is stored in a {@link
+     * WeakReference}. So if the current instance has been destroyed by the garbage collector then a new instance will
+     * be automatically created by reading the persisted XML data from Jenkins build folder.
+     *
+     * @return the statistics
+     */
     public RepositoryStatistics getRepositoryStatistics() {
         lock.lock();
         try {

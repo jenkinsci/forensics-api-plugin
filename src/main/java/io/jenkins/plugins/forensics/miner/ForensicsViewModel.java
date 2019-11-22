@@ -1,10 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 
 import io.jenkins.plugins.datatables.api.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.api.TableModel;
+import io.jenkins.plugins.echarts.api.charts.JacksonFacade;
 
 /**
  * Server side model that provides the data for the details view of the repository statistics. The layout of the
@@ -41,5 +43,29 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @Override
     public TableModel getTableModel(final String id) {
         return new ForensicsTableModel(repositoryStatistics);
+    }
+
+    /**
+     * Returns the UI model for an ECharts doughnut chart that shows the severities.
+     *
+     * @return the UI model as JSON
+     */
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // Called by jelly view
+    public String getAuthorsModel() {
+        return new JacksonFacade().toJson(new SizePieChart().create(repositoryStatistics,
+                FileStatistics::getNumberOfAuthors, 5, 10, 15, 25, 50));
+    }
+
+    /**
+     * Returns the UI model for an ECharts doughnut chart that shows the severities.
+     *
+     * @return the UI model as JSON
+     */
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // Called by jelly view
+    public String getCommitsModel() {
+        return new JacksonFacade().toJson(new SizePieChart().create(repositoryStatistics,
+                FileStatistics::getNumberOfCommits, 5, 10, 25, 50, 100, 250));
     }
 }
