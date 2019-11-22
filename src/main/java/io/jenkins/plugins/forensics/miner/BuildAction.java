@@ -25,18 +25,14 @@ import jenkins.tasks.SimpleBuildStep.LastBuildAction;
  *
  * @author Ullrich Hafner
  */
-// TODO: Results are written to build.xml
 public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, Serializable {
     private static final long serialVersionUID = -2074456133028895573L;
 
     private transient Run<?, ?> owner;
     private transient ReentrantLock lock = new ReentrantLock();
-    /**
-     * All outstanding issues: i.e. all issues, that are part of the current and reference report.
-     */
+
     @Nullable
     private transient WeakReference<RepositoryStatistics> repositoryStatistics;
-    private final int runTime;
 
     /**
      * Creates a new instance of {@link BuildAction}.
@@ -45,11 +41,9 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
      *         the associated build that created the statistics
      * @param repositoryStatistics
      *         the statistics to persist with this action
-     * @param runTime
-     *         the runtime of the repository scanner (in seconds)
      */
-    public BuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics, final int runTime) {
-        this(owner, repositoryStatistics, runTime, true);
+    public BuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
+        this(owner, repositoryStatistics, true);
     }
 
     /**
@@ -59,17 +53,13 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
      *         the associated build that created the statistics
      * @param repositoryStatistics
      *         the statistics to persist with this action
-     * @param runTime
-     *         the runtime of the repository scanner (in seconds)
      * @param canSerialize
      *         determines whether the result should be persisted in the build folder
      */
     @VisibleForTesting
-    public BuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final int runTime, final boolean canSerialize) {
+    BuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics, final boolean canSerialize) {
         this.owner = owner;
         this.repositoryStatistics = new WeakReference<>(repositoryStatistics);
-        this.runTime = runTime;
 
         if (canSerialize) {
             new RepositoryStatisticsXmlStream().write(getResultXmlPath(), repositoryStatistics);
@@ -97,10 +87,6 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
 
     }
 
-    public int getRunTime() {
-        return runTime;
-    }
-
     public RepositoryStatistics getRepositoryStatistics() {
         lock.lock();
         try {
@@ -119,8 +105,7 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
     }
 
     private RepositoryStatistics readStatistics() {
-        RepositoryStatistics statistics = new RepositoryStatisticsXmlStream().read(
-                getResultXmlPath());
+        RepositoryStatistics statistics = new RepositoryStatisticsXmlStream().read(getResultXmlPath());
         repositoryStatistics = new WeakReference<>(statistics);
         return statistics;
     }
@@ -131,12 +116,12 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
 
     @Override
     public String getIconFileName() {
-        return "/plugin/forensics-api/icons/forensics-24x24.png";
+        return JobAction.SMALL_ICON;
     }
 
     @Override
     public String getDisplayName() {
-        return "SCM Forensics";
+        return Messages.ForensicsView_Title();
     }
 
     /**
@@ -146,14 +131,24 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
      */
     @Override
     public Object getTarget() {
-        return new ForensicsDetail(owner, getRepositoryStatistics());
+        return new ForensicsViewModel(owner, getRepositoryStatistics());
     }
 
     @Override
     public String getUrlName() {
-        return "forensics";
+        return JobAction.FORENSICS_ID;
     }
 
+    /**
+     * Returns a {@link BuildAction} of the specified baseline build. If there is no such action for the baseline then
+     * the previous build is inspected, and so on. If no previous build contains a {@link BuildAction} then an empty
+     * result is returned.
+     *
+     * @param baseline
+     *         the baseline to start the search with
+     *
+     * @return the next available {@link BuildAction}, or an empty result if there is no such action
+     */
     public static Optional<BuildAction> getBuildActionFromHistoryStartingFrom(@Nullable final Run<?, ?> baseline) {
         for (Run<?, ?> run = baseline; run != null; run = run.getPreviousBuild()) {
             BuildAction action = run.getAction(BuildAction.class);

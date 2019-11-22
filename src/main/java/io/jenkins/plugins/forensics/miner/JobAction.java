@@ -21,12 +21,16 @@ import io.jenkins.plugins.echarts.api.charts.JacksonFacade;
 import io.jenkins.plugins.echarts.api.charts.LinesChartModel;
 
 /**
- * A job action displays a link on the side panel of a job. This action also is responsible to render the historical
- * trend via its associated 'floatingBox.jelly' view.
+ * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
+ * (i.e. a {@link BuildAction} with a {@link RepositoryStatistics} instance). This action also is responsible to render
+ * the historical trend via its associated 'floatingBox.jelly' view.
  *
  * @author Ullrich Hafner
  */
 public class JobAction implements Action {
+    static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
+    static final String FORENSICS_ID = "forensics";
+
     private final Job<?, ?> owner;
 
     /**
@@ -41,7 +45,7 @@ public class JobAction implements Action {
 
     @Override
     public String getDisplayName() {
-        return "SCM Forensics";
+        return Messages.ForensicsView_Title();
     }
 
     /**
@@ -62,12 +66,12 @@ public class JobAction implements Action {
     @Override
     @Nullable
     public String getIconFileName() {
-        return "/plugin/forensics-api/icons/forensics-24x24.png";
+        return SMALL_ICON;
     }
 
     @Override
     public String getUrlName() {
-        return "forensics";
+        return FORENSICS_ID;
     }
 
     /**

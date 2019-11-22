@@ -5,6 +5,8 @@ import java.util.Collection;
 
 /**
  * Obtains commit statistics for a given collection of files.
+ *
+ * @author Ullrich Hafner
  */
 public abstract class RepositoryMiner implements Serializable {
     private static final long serialVersionUID = -8878714986510536182L;

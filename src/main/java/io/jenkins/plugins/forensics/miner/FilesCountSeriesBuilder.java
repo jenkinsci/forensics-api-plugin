@@ -7,7 +7,7 @@ import io.jenkins.plugins.echarts.api.charts.BuildResult;
 import io.jenkins.plugins.echarts.api.charts.SeriesBuilder;
 
 /**
- * Builds the series for a stacked line chart showing all issues by severity.
+ * Builds one x-axis point for the series of a line chart showing the number of files in the repository.
  *
  * @author Ullrich Hafner
  */

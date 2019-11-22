@@ -6,6 +6,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.jenkinsci.Symbol;
+import org.jenkinsci.plugins.workflow.steps.Step;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -19,6 +20,20 @@ import jenkins.tasks.SimpleBuildStep;
 
 import io.jenkins.plugins.forensics.util.FilteredLog;
 
+/**
+ * A pipeline {@link Step} or Freestyle or Maven {@link Recorder} that obtains statistics for all repository files. The
+ * following statistics are computed:
+ * <ul>
+ *     <li>total number of commits</li>
+ *     <li>total number of different authors</li>
+ *     <li>creation time</li>
+ *     <li>last modification time</li>
+ * </ul>
+ * Stores the created statistics in a {@link RepositoryStatistics} instance. The result is attached to
+ * a {@link Run} by registering a {@link BuildAction}.
+ *
+ * @author Ullrich Hafner
+ */
 public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     /**
      * Creates a new instance of {@link  RepositoryMinerStep}.
@@ -40,15 +55,13 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         log.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
         log.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
 
-        long nano = System.nanoTime();
         // TODO: repository mining should be an incremental process
         RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList());
-        long seconds = 1 + (System.nanoTime() - nano) / 1_000_000_000L;
-
-        run.addAction(new BuildAction(run, repositoryStatistics, (int)seconds));
+        run.addAction(new BuildAction(run, repositoryStatistics));
 
         repositoryStatistics.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
-        repositoryStatistics.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
+        repositoryStatistics.getErrorMessages()
+                .forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
     }
 
     /**

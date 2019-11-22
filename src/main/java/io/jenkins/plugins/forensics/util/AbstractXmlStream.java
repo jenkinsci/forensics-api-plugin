@@ -11,7 +11,7 @@ import hudson.XmlFile;
 import hudson.util.XStream2;
 
 /**
- * Base class that provides the basic setup to read and write entities using {@link XStream}.
+ * Base class that provides the basic setup to read and write entities of a given type using {@link XStream}.
  *
  * @param <T>
  *         type of the entities
@@ -20,8 +20,15 @@ import hudson.util.XStream2;
  */
 public abstract class AbstractXmlStream<T> {
     private static final Logger LOGGER = Logger.getLogger(AbstractXmlStream.class.getName());
+
     private final Class<T> type;
 
+    /**
+     * Creates a new instance of {@link AbstractXmlStream}.
+     *
+     * @param type
+     *         the type of the elements that are stored and retrieved
+     */
     protected AbstractXmlStream(final Class<T> type) {
         this.type = type;
     }
@@ -40,10 +47,26 @@ public abstract class AbstractXmlStream<T> {
      */
     protected abstract XStream2 createStream();
 
+    /**
+     * Reads the specified {@code file} and creates a new instance of the given type.
+     *
+     * @param file
+     *         path to the file
+     *
+     * @return the created instance
+     */
     public T read(final Path file) {
         return readXml(createFile(file), createDefaultValue());
     }
 
+    /**
+     * Writes the specified instance to the given {@code file}.
+     *
+     * @param file
+     *         path to the file
+     * @param entity
+     *         the entity to write to the file
+     */
     public void write(final Path file, final T entity) {
         try {
             createFile(file).write(entity);

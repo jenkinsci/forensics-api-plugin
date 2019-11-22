@@ -15,9 +15,7 @@ import io.jenkins.plugins.datatables.api.TableModel;
  * This forensics model consists of the following columns:
  * </p>
  * <ul>
- * <li>issue details (message and description)</li>
  * <li>file name</li>
- * <li>age</li>
  * <li>total number of different authors</li>
  * <li>total number of commits</li>
  * <li>time of last commit</li>
@@ -26,26 +24,23 @@ import io.jenkins.plugins.datatables.api.TableModel;
  *
  * @author Ullrich Hafner
  */
-public class ForensicsModel extends TableModel {
-    static final String UNDEFINED = "-";
-
+public class ForensicsTableModel extends TableModel {
     private final RepositoryStatistics statistics;
 
-    public ForensicsModel(final RepositoryStatistics statistics) {
+    ForensicsTableModel(final RepositoryStatistics statistics) {
         this.statistics = statistics;
     }
 
     @Override
     public String getId() {
-        return "forensics";
+        return JobAction.FORENSICS_ID;
     }
 
     @Override
     public List<TableColumn> getColumns() {
         List<TableColumn> columns = new ArrayList<>();
 
-        columns.add(new TableColumn(Messages.Table_Column_File(), "fileName")
-                .setWidth(2));
+        columns.add(new TableColumn(Messages.Table_Column_File(), "fileName").setWidth(2));
         columns.add(new TableColumn(Messages.Table_Column_AuthorsSize(), "authorsSize"));
         columns.add(new TableColumn(Messages.Table_Column_CommitsSize(), "commitsSize"));
         columns.add(new TableColumn(Messages.Table_Column_LastCommit(), "modifiedAt")
