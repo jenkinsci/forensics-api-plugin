@@ -1,6 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 import io.jenkins.plugins.echarts.api.charts.Palette;
@@ -28,13 +30,13 @@ public class SizePieChart {
     public PieChartModel create(final RepositoryStatistics repositoryStatistics,
             final Function<FileStatistics, Integer> sizeMethod, final int... breakpoints) {
         PieChartModel model = new PieChartModel();
-        HashMap<Integer, Integer> distribution = new HashMap<>();
+        Map<Integer, Integer> distribution = new TreeMap<>();
         for (FileStatistics file : repositoryStatistics.getFileStatistics()) {
             distribution.merge(determineBreakpoint(sizeMethod.apply(file), breakpoints), 1, Integer::sum);
         }
         int color = 0;
-        for (Integer key : distribution.keySet()) {
-            model.add(new PieData(String.valueOf(key), distribution.get(key)), Palette.color(color++));
+        for (Entry<Integer, Integer> entry : distribution.entrySet()) {
+            model.add(new PieData("< " + entry.getKey(), entry.getValue()), Palette.color(color++));
         }
         return model;
     }
