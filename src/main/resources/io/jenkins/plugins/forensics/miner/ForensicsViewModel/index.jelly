@@ -23,7 +23,7 @@
           <div class="col-6">
 
             <bs:card title="${%Number of authors}" fontAwesomeIcon="fa-users">
-              <c:pie-chart id="authors" model="${it.authorsModel}" height="256" title=""/>
+              <c:pie-chart id="authors" model="${it.authorsModel}" height="256" />
             </bs:card>
 
           </div>
@@ -31,7 +31,7 @@
           <div class="col-6">
 
             <bs:card title="${%Number of commits}" fontAwesomeIcon="fa-code-branch">
-              <c:pie-chart id="commits" model="${it.commitsModel}" height="256" title=""/>
+              <c:pie-chart id="commits" model="${it.commitsModel}" height="256" />
             </bs:card>
 
           </div>
