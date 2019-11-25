@@ -886,7 +886,7 @@ public abstract class IntegrationTest extends ResourceTest {
         @Override
         @SuppressWarnings("PMD.SystemPrintln")
         public void scriptException(final HtmlPage page, final ScriptException scriptException) {
-            System.out.println("A JavaScript exception occured at: " + page.toString());
+            System.out.println("A JavaScript exception occurred at: " + page.toString());
             scriptException.printStackTrace();
         }
 
@@ -903,7 +903,7 @@ public abstract class IntegrationTest extends ResourceTest {
         @Override
         @SuppressWarnings("PMD.SystemPrintln")
         public void timeoutError(final HtmlPage page, final long allowedTime, final long executionTime) {
-            System.out.println("A JavaScript timeout occured at: " + page.toString() + ". Allowed: "
+            System.out.println("A JavaScript timeout occurred at: " + page.toString() + ". Allowed: "
                     + allowedTime + " timed out after: " + executionTime);
         }
 
@@ -921,7 +921,7 @@ public abstract class IntegrationTest extends ResourceTest {
         @SuppressWarnings("PMD.SystemPrintln")
         public void malformedScriptURL(final HtmlPage page, final String url,
                 final MalformedURLException malformedURLException) {
-            System.out.println("A JavaScript exception occured at: " + page.toString()
+            System.out.println("A JavaScript exception occurred at: " + page.toString()
                     + ", due to the malformed URL: " + url);
             malformedURLException.printStackTrace();
         }

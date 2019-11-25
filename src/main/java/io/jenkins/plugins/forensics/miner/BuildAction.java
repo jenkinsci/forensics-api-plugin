@@ -73,12 +73,22 @@ public class BuildAction implements LastBuildAction, RunAction2, StaplerProxy, S
     @Override
     public void onAttached(final Run<?, ?> r) {
         owner = r;
-        lock = new ReentrantLock();
     }
 
     @Override
     public void onLoad(final Run<?, ?> r) {
         onAttached(r);
+    }
+
+    /**
+     * Called after de-serialization to improve the memory usage.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        lock = new ReentrantLock();
+
+        return this;
     }
 
     @Override

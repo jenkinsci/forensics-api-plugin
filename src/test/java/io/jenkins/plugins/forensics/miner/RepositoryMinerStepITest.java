@@ -2,8 +2,6 @@ package io.jenkins.plugins.forensics.miner;
 
 import org.junit.Test;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
 import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 
@@ -24,8 +22,6 @@ public class RepositoryMinerStepITest extends IntegrationTestWithJenkinsPerSuite
 
         Run<?, ?> build = buildSuccessfully(job);
 
-        HtmlPage buildOverview = getWebPage(JavaScriptSupport.JS_ENABLED, build, "forensics");
-
-        System.out.println(buildOverview.asText());
+        getWebPage(JavaScriptSupport.JS_ENABLED, build, "forensics");
     }
 }

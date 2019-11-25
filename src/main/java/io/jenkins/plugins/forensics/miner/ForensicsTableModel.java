@@ -24,7 +24,7 @@ import io.jenkins.plugins.datatables.api.TableModel;
  *
  * @author Ullrich Hafner
  */
-class ForensicsTableModel extends TableModel {
+public class ForensicsTableModel extends TableModel {
     private final RepositoryStatistics statistics;
 
     ForensicsTableModel(final RepositoryStatistics statistics) {
