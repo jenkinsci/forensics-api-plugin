@@ -874,6 +874,7 @@ public abstract class IntegrationTest extends ResourceTest {
         }
     }
 
+    @SuppressWarnings({"PMD.AvoidPrintStackTrace", "PMD.SystemPrintln"})
     private static class IntegrationTestJavaScriptErrorListener implements JavaScriptErrorListener {
         /**
          * Informs about a javascript exceptions.
@@ -884,7 +885,6 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the occurred script exception
          */
         @Override
-        @SuppressWarnings("PMD.SystemPrintln")
         public void scriptException(final HtmlPage page, final ScriptException scriptException) {
             System.out.println("A JavaScript exception occurred at: " + page.toString());
             scriptException.printStackTrace();
@@ -901,7 +901,6 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the already consumed time
          */
         @Override
-        @SuppressWarnings("PMD.SystemPrintln")
         public void timeoutError(final HtmlPage page, final long allowedTime, final long executionTime) {
             System.out.println("A JavaScript timeout occurred at: " + page.toString() + ". Allowed: "
                     + allowedTime + " timed out after: " + executionTime);
@@ -918,7 +917,6 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the occurred exception
          */
         @Override
-        @SuppressWarnings("PMD.SystemPrintln")
         public void malformedScriptURL(final HtmlPage page, final String url,
                 final MalformedURLException malformedURLException) {
             System.out.println("A JavaScript exception occurred at: " + page.toString()
@@ -937,7 +935,6 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the occurred exception
          */
         @Override
-        @SuppressWarnings("PMD.SystemPrintln")
         public void loadScriptError(final HtmlPage page, final URL scriptUrl, final Exception exception) {
             System.out.println("A JavaScript exception occured at: " + page.toString()
                     + ", while loading the file from the URL: " + scriptUrl.toString());
