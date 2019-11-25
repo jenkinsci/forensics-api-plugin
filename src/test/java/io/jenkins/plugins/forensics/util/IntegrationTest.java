@@ -1,10 +1,8 @@
 package io.jenkins.plugins.forensics.util;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -584,17 +582,6 @@ public abstract class IntegrationTest extends ResourceTest {
         }
     }
 
-    private void logConsole(final Run<?, ?> run) {
-        try (Reader reader = run.getLogReader()) {
-            try (BufferedReader bufferedReader = new BufferedReader(reader)) {
-                bufferedReader.lines().forEach(System.out::println);
-            }
-        }
-        catch (IOException exception) {
-            throw new AssertionError(exception);
-        }
-    }
-
     /**
      * Prints the content of the JenkinsFile to StdOut.
      *
@@ -887,7 +874,6 @@ public abstract class IntegrationTest extends ResourceTest {
         }
     }
 
-    @SuppressWarnings("PMD.SystemPrintln")
     private static class IntegrationTestJavaScriptErrorListener implements JavaScriptErrorListener {
         /**
          * Informs about a javascript exceptions.
@@ -898,6 +884,7 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the occurred script exception
          */
         @Override
+        @SuppressWarnings("PMD.SystemPrintln")
         public void scriptException(final HtmlPage page, final ScriptException scriptException) {
             System.out.println("A JavaScript exception occured at: " + page.toString());
             scriptException.printStackTrace();
@@ -914,6 +901,7 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the already consumed time
          */
         @Override
+        @SuppressWarnings("PMD.SystemPrintln")
         public void timeoutError(final HtmlPage page, final long allowedTime, final long executionTime) {
             System.out.println("A JavaScript timeout occured at: " + page.toString() + ". Allowed: "
                     + allowedTime + " timed out after: " + executionTime);
@@ -930,6 +918,7 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the occurred exception
          */
         @Override
+        @SuppressWarnings("PMD.SystemPrintln")
         public void malformedScriptURL(final HtmlPage page, final String url,
                 final MalformedURLException malformedURLException) {
             System.out.println("A JavaScript exception occured at: " + page.toString()
@@ -948,6 +937,7 @@ public abstract class IntegrationTest extends ResourceTest {
          *         the occurred exception
          */
         @Override
+        @SuppressWarnings("PMD.SystemPrintln")
         public void loadScriptError(final HtmlPage page, final URL scriptUrl, final Exception exception) {
             System.out.println("A JavaScript exception occured at: " + page.toString()
                     + ", while loading the file from the URL: " + scriptUrl.toString());

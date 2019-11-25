@@ -14,7 +14,7 @@ import io.jenkins.plugins.echarts.api.charts.PieData;
  *
  * @author Ullrich Hafner
  */
-public class SizePieChart {
+class SizePieChart {
     /**
      * Creates the chart for the specified result.
      *
@@ -41,7 +41,7 @@ public class SizePieChart {
         return model;
     }
 
-    private int determineBreakpoint(final int size, final int[] breakpoints) {
+    private int determineBreakpoint(final int size, final int... breakpoints) {
         for (int breakpoint : breakpoints) {
             if (size < breakpoint) {
                 return breakpoint;

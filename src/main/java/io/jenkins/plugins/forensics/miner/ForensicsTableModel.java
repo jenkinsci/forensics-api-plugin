@@ -24,10 +24,12 @@ import io.jenkins.plugins.datatables.api.TableModel;
  *
  * @author Ullrich Hafner
  */
-public class ForensicsTableModel extends TableModel {
+class ForensicsTableModel extends TableModel {
     private final RepositoryStatistics statistics;
 
     ForensicsTableModel(final RepositoryStatistics statistics) {
+        super();
+
         this.statistics = statistics;
     }
 

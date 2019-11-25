@@ -10,11 +10,12 @@ import hudson.model.Run;
 import io.jenkins.plugins.forensics.util.IntegrationTestWithJenkinsPerSuite;
 
 /**
- * FIXME: comment class.
+ * Integration tests for the {@link RepositoryMinerStep}.
  *
  * @author Ullrich Hafner
  */
-public class MinerITest extends IntegrationTestWithJenkinsPerSuite {
+public class RepositoryMinerStepITest extends IntegrationTestWithJenkinsPerSuite {
+    /** Loads the web page with enabled JS. */
     @Test
     public void shouldLoadJS() {
         FreeStyleProject job = createFreeStyleProject();

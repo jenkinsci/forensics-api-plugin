@@ -14,7 +14,7 @@ import io.jenkins.plugins.echarts.api.charts.JacksonFacade;
  *
  * @author Ullrich Hafner
  */
-public class ForensicsViewModel extends DefaultAsyncTableContentProvider implements ModelObject {
+class ForensicsViewModel extends DefaultAsyncTableContentProvider implements ModelObject {
     private final Run<?, ?> owner;
     private final RepositoryStatistics repositoryStatistics;
 
@@ -26,7 +26,9 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
      * @param repositoryStatistics
      *         the statistics to show in the view
      */
-    public ForensicsViewModel(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
+    ForensicsViewModel(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
+        super();
+
         this.owner = owner;
         this.repositoryStatistics = repositoryStatistics;
     }
