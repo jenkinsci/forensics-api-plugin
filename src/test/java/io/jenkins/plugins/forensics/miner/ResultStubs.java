@@ -1,5 +1,7 @@
 package io.jenkins.plugins.forensics.miner;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import io.jenkins.plugins.echarts.api.charts.Build;
 import io.jenkins.plugins.echarts.api.charts.BuildResult;
 
@@ -22,19 +24,15 @@ public final class ResultStubs {
      * @return the {@link BuildResult} stub, that contains a {@link RepositoryStatistics} instance with the specified
      *         behavior
      */
-    @SuppressWarnings("unchecked")
+    @VisibleForTesting
     public static BuildResult<RepositoryStatistics> createResult(final int buildNumber,
             final int numberOfFiles) {
         RepositoryStatistics statistics = mock(RepositoryStatistics.class);
         when(statistics.size()).thenReturn(numberOfFiles);
 
-        Build build = new Build(buildNumber, "#" + buildNumber, 0);
+        Build build = new Build(buildNumber);
 
-        BuildResult<RepositoryStatistics> buildResult = mock(BuildResult.class);
-        when(buildResult.getBuild()).thenReturn(build);
-        when(buildResult.getResult()).thenReturn(statistics);
-
-        return buildResult;
+        return new BuildResult<>(build, statistics);
     }
 
     private ResultStubs() {

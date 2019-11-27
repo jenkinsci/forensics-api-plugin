@@ -13,9 +13,9 @@
   <st:adjunct includes="io.jenkins.plugins.echarts"/>
 
   <script>
-    var proxy =<st:bind value="${from}"/>;
+    var proxy = <st:bind value="${from}"/>;
     proxy.getBuildTrend(function (trendModel) {
-    renderTrendChart('files-trend-chart', trendModel.responseJSON, null);
+    renderTrendChart('files-trend-chart', trendModel.responseJSON, "forensics");
     });
   </script>
 

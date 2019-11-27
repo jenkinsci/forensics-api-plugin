@@ -29,7 +29,7 @@ class FilesCountSeriesBuilderTest {
 
         LinesDataSet model = builder.createDataSet(createConfiguration(), Lists.newArrayList());
 
-        assertThat(model.getXAxisSize()).isEqualTo(0);
+        assertThat(model.getDomainAxisSize()).isEqualTo(0);
         assertThat(model.getDataSetIds()).isEmpty();
     }
 
@@ -51,8 +51,8 @@ class FilesCountSeriesBuilderTest {
 
         LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Arrays.asList(singleResult));
 
-        assertThat(dataSet.getXAxisSize()).isEqualTo(1);
-        assertThat(dataSet.getXAxisLabels()).containsExactly("#1");
+        assertThat(dataSet.getDomainAxisSize()).isEqualTo(1);
+        assertThat(dataSet.getDomainAxisLabels()).containsExactly("#1");
 
         assertThat(dataSet.getDataSetIds()).containsExactlyInAnyOrder(TOTALS_KEY);
 
@@ -77,8 +77,8 @@ class FilesCountSeriesBuilderTest {
                 createResult(1, 1)
         ));
 
-        assertThat(dataSet.getXAxisSize()).isEqualTo(3);
-        assertThat(dataSet.getXAxisLabels()).containsExactly("#2", "#3", "#4");
+        assertThat(dataSet.getDomainAxisSize()).isEqualTo(3);
+        assertThat(dataSet.getDomainAxisLabels()).containsExactly("#2", "#3", "#4");
 
         assertThat(dataSet.getDataSetIds()).containsExactlyInAnyOrder(TOTALS_KEY);
 

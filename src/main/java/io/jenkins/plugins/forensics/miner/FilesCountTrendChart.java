@@ -37,7 +37,7 @@ public class FilesCountTrendChart {
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel(); // TODO: should the setters be mandatory in constructor?
-        model.setXAxisLabels(dataSet.getXAxisLabels());
+        model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
         model.setBuildNumbers(dataSet.getBuildNumbers());
 
         LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),

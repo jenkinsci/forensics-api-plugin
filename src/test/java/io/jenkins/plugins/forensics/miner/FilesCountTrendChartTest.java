@@ -32,7 +32,7 @@ class FilesCountTrendChartTest {
 
         verifySeries(model.getSeries().get(0), Palette.BLUE, Messages.TrendChart_Files_Legend_Label(), 10, 20);
 
-        assertThatJson(model).node("xAxisLabels")
+        assertThatJson(model).node("domainAxisLabels")
                 .isArray().hasSize(2)
                 .contains("#1")
                 .contains("#2");
