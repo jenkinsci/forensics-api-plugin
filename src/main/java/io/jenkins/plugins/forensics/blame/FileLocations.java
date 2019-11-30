@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import io.jenkins.plugins.forensics.util.FilteredLog;
+import edu.hm.hafner.util.FilteredLog;
 
 /**
  * Defines a set of file locations. A file location is identified by an absolute file name and line number. File

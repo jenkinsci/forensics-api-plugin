@@ -35,7 +35,7 @@ public class ForensicsTableModel extends TableModel {
 
     @Override
     public String getId() {
-        return JobAction.FORENSICS_ID;
+        return ForensicsJobAction.FORENSICS_ID;
     }
 
     @Override

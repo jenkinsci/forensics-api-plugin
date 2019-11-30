@@ -2,7 +2,7 @@ package io.jenkins.plugins.forensics.miner;
 
 import hudson.util.XStream2;
 
-import io.jenkins.plugins.forensics.util.AbstractXmlStream;
+import io.jenkins.plugins.util.AbstractXmlStream;
 
 /**
  * Reads {@link RepositoryStatistics} from an XML file.

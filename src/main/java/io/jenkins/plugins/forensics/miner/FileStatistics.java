@@ -98,7 +98,7 @@ public class FileStatistics implements Serializable {
      * Returns the creation time of this file.
      *
      * @return the time of the creation (given as number of seconds since the standard base time known as "the epoch",
-     *         namely January 1, 1970, 00:00:00 GMT.).
+     *         namely January 1, 1970, 00:00:00 GMT).
      */
     public int getCreationTime() {
         return creationTime;
@@ -108,7 +108,7 @@ public class FileStatistics implements Serializable {
      * Returns the time of the last modification of this file (i.e. last commit to the file).
      *
      * @return the time of the last modification (given as number of seconds since the standard base time known as "the
-     *         epoch", namely January 1, 1970, 00:00:00 GMT.).
+     *         epoch", namely January 1, 1970, 00:00:00 GMT).
      */
     public int getLastModificationTime() {
         return lastModificationTime;

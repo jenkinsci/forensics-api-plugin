@@ -140,7 +140,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         the line number
      * @param time
      *         the time of the commit (given as number of seconds since the standard base time known as "the epoch",
-     *         namely January 1, 1970, 00:00:00 GMT.).
+     *         namely January 1, 1970, 00:00:00 GMT).
      */
     public void setTime(final int lineNumber, final int time) {
         setIntegerValue(timeByLine, lineNumber, time);

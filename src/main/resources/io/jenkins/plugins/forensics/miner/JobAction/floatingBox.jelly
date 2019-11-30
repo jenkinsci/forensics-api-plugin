@@ -10,7 +10,7 @@
          style="width: 500px; min-height: 200px; min-width: 500px; height: 200px;"/>
   </div>
 
-  <st:adjunct includes="io.jenkins.plugins.echarts"/>
+  <st:adjunct includes="io.jenkins.plugins.echarts.echarts"/>
 
   <script>
     var proxy = <st:bind value="${from}"/>;

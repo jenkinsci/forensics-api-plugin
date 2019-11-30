@@ -2,6 +2,7 @@ package io.jenkins.plugins.forensics.miner;
 
 import java.util.Collections;
 
+import edu.hm.hafner.util.FilteredLog;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -18,8 +19,6 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
-import io.jenkins.plugins.forensics.util.FilteredLog;
-
 /**
  * A pipeline {@link Step} or Freestyle or Maven {@link Recorder} that obtains statistics for all repository files. The
  * following statistics are computed:
@@ -30,7 +29,7 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  *     <li>last modification time</li>
  * </ul>
  * Stores the created statistics in a {@link RepositoryStatistics} instance. The result is attached to
- * a {@link Run} by registering a {@link BuildAction}.
+ * a {@link Run} by registering a {@link ForensicsBuildAction}.
  *
  * @author Ullrich Hafner
  */
@@ -57,7 +56,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
         // TODO: repository mining should be an incremental process
         RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList());
-        run.addAction(new BuildAction(run, repositoryStatistics));
+        run.addAction(new ForensicsBuildAction(run, repositoryStatistics));
 
         repositoryStatistics.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
         repositoryStatistics.getErrorMessages()

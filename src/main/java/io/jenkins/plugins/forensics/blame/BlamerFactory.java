@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.model.Run;
@@ -14,7 +16,6 @@ import hudson.scm.SCM;
 import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
-import io.jenkins.plugins.forensics.util.FilteredLog;
 import io.jenkins.plugins.forensics.util.ScmResolver;
 
 /**

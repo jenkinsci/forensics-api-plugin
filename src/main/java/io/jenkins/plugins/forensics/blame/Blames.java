@@ -10,9 +10,8 @@ import java.util.Set;
 
 import com.google.errorprone.annotations.FormatMethod;
 
+import edu.hm.hafner.util.FilteredLog;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import io.jenkins.plugins.forensics.util.FilteredLog;
 
 /**
  * Provides access to the blame information for a collection of workspace files. File names must use absolute paths.

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import com.google.errorprone.annotations.FormatMethod;
 
-import io.jenkins.plugins.forensics.util.FilteredLog;
+import edu.hm.hafner.util.FilteredLog;
 
 /**
  * Provides access to the SCM statistics of all repository files. Additionally,

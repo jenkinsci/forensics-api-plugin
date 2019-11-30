@@ -25,7 +25,7 @@
     <jenkins-test-harness.version>2.49</jenkins-test-harness.version>
     <spotbugs.failOnError>false</spotbugs.failOnError>
     <slf4j.version>1.7.29</slf4j.version>
-    <codingstyle.version>0.2.7</codingstyle.version>
+    <codingstyle.version>0.2.8-SNAPSHOT</codingstyle.version>
 
     <module.name>${project.groupId}.forensics.api</module.name>
     <url>https://github.com/jenkinsci/forensics-api-plugin</url>
@@ -41,7 +41,7 @@
     <popper-api.version>1.15.0-1-beta2-rc50.5cd401532679</popper-api.version>
     <bootstrap4-api.version>4.1.3-1-beta3-rc53.60aeeb03da2a</bootstrap4-api.version>
     <data-tables-api.version>1.10.20-1-beta4-rc72.fab652dc6fb9</data-tables-api.version>
-    <echarts-api.version>4.4.0-1-beta2-rc58.15401a03cb88</echarts-api.version>
+    <echarts-api.version>4.4.0-1-beta2-SNAPSHOT</echarts-api.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <workflow-api.version>2.34</workflow-api.version>
@@ -97,6 +97,13 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-2.138.x</artifactId>
+        <version>3</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
         <version>2.2</version>
@@ -107,21 +114,6 @@
         <version>5.0.4</version>
       </dependency>
       <dependency>
-        <groupId>org.jenkins-ci</groupId>
-        <artifactId>annotation-indexer</artifactId>
-        <version>1.12</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>junit</artifactId>
-        <version>1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jenkins-ci.plugins.workflow</groupId>
-        <artifactId>workflow-step-api</artifactId>
-        <version>2.19</version>
-      </dependency>
-      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
@@ -130,6 +122,12 @@
   </dependencyManagement>
 
   <dependencies>
+
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>plugin-util-api</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+    </dependency>
 
     <!-- Project Dependencies -->
     <dependency>
@@ -196,12 +194,6 @@
     </dependency>
 
     <!-- Test Dependencies -->
-    <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections-api</artifactId>
-      <version>${eclipse-collections.version}</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.eclipse.collections</groupId>
       <artifactId>eclipse-collections</artifactId>
@@ -279,6 +271,7 @@
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-test-harness</artifactId>
       <version>${jenkins-test-harness.version}</version>
+      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>org.jenkins-ci.main</groupId>
@@ -290,6 +283,21 @@
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>jenkins-test-harness-htmlunit</artifactId>
       <version>2.36.0-1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>plugin-util-api</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>edu.hm.hafner</groupId>
+      <artifactId>codingstyle</artifactId>
+      <version>${codingstyle.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
     </dependency>
 
   </dependencies>

@@ -9,13 +9,14 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
-import io.jenkins.plugins.forensics.util.FilteredLog;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static io.jenkins.plugins.forensics.util.PathStubs.*;

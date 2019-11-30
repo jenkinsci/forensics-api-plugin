@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.Lists;
 
 import io.jenkins.plugins.echarts.api.charts.BuildResult;
 import io.jenkins.plugins.echarts.api.charts.ChartModelConfiguration;
@@ -27,7 +27,7 @@ class FilesCountSeriesBuilderTest {
     void shouldHaveEmptyDataSetForEmptyIterator() {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
 
-        LinesDataSet model = builder.createDataSet(createConfiguration(), Lists.newArrayList());
+        LinesDataSet model = builder.createDataSet(createConfiguration(), new ArrayList<>());
 
         assertThat(model.getDomainAxisSize()).isEqualTo(0);
         assertThat(model.getDataSetIds()).isEmpty();
@@ -49,7 +49,7 @@ class FilesCountSeriesBuilderTest {
 
         BuildResult<RepositoryStatistics> singleResult = createResult(1, 1);
 
-        LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Arrays.asList(singleResult));
+        LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Collections.singletonList(singleResult));
 
         assertThat(dataSet.getDomainAxisSize()).isEqualTo(1);
         assertThat(dataSet.getDomainAxisLabels()).containsExactly("#1");
