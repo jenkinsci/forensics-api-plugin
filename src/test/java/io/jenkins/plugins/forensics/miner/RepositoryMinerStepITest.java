@@ -5,7 +5,7 @@ import org.junit.Test;
 import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 
-import io.jenkins.plugins.forensics.util.IntegrationTestWithJenkinsPerSuite;
+import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
 
 /**
  * Integration tests for the {@link RepositoryMinerStep}.

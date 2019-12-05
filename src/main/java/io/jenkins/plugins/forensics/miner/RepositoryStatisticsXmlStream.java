@@ -20,11 +20,8 @@ class RepositoryStatisticsXmlStream extends AbstractXmlStream<RepositoryStatisti
     }
 
     @Override
-    protected XStream2 createStream() {
-        XStream2 xStream2 = new XStream2();
-        xStream2.alias("repo", RepositoryStatistics.class);
-        xStream2.alias("file", FileStatistics.class);
-        return xStream2;
+    protected void configureXStream(final XStream2 xStream) {
+        xStream.alias("repo", RepositoryStatistics.class);
+        xStream.alias("file", FileStatistics.class);
     }
-
 }

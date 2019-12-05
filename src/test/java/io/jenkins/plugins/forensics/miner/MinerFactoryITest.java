@@ -19,7 +19,7 @@ import hudson.scm.SCM;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static io.jenkins.plugins.forensics.util.PathStubs.*;
+import static io.jenkins.plugins.util.PathStubs.*;
 import static org.mockito.Mockito.*;
 
 /**
