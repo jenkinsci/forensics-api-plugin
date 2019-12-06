@@ -13,10 +13,10 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
 import io.jenkins.plugins.forensics.util.ScmResolver;
+import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Jenkins extension point that allows plugins to create {@link Blamer} instances based on a supported {@link SCM}.
@@ -80,6 +80,6 @@ public abstract class BlamerFactory implements ExtensionPoint {
     }
 
     private static List<BlamerFactory> findAllExtensions() {
-        return Jenkins.get().getExtensionList(BlamerFactory.class);
+        return new JenkinsFacade().getExtensionsFor(BlamerFactory.class);
     }
 }

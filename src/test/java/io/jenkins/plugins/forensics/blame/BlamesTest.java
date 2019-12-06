@@ -29,8 +29,6 @@ class BlamesTest {
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
-        assertThat(empty).hasNoErrorMessages();
-        assertThat(empty).hasNoInfoMessages();
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> empty.getBlame(FILE_NAME));
@@ -103,24 +101,6 @@ class BlamesTest {
         blames.addAll(otherBlames);
 
         verifyBlamesOfTwoFiles(blames, fileBlame, other);
-    }
-
-    @Test
-    void shouldLogMessagesAndErrors() {
-        Blames blames = new Blames();
-
-        blames.logInfo("Hello %s", "Info");
-        blames.logError("Hello %s", "Error");
-        blames.logException(new IllegalArgumentException("Error"), "Hello %s", "Exception");
-
-        assertThat(blames).hasInfoMessages("Hello Info");
-        assertThat(blames).hasErrorMessages("Hello Error", "Hello Exception");
-
-        for (int i = 0; i < 19; i++) {
-            blames.logError("Hello %s %d", "Error", i);
-        }
-        blames.logSummary();
-        assertThat(blames).hasErrorMessages("  ... skipped logging of 1 additional errors ...");
     }
 
     private void verifyBlamesOfTwoFiles(final Blames blames, final FileBlame fileBlame, final FileBlame other) {

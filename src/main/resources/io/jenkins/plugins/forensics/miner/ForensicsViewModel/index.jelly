@@ -10,10 +10,10 @@
 
     <l:main-panel>
 
-      <st:adjunct includes="io.jenkins.plugins.bootstrap4.bootstrap4"/>
-      <st:adjunct includes="io.jenkins.plugins.datatables.data-tables"/>
-      <st:adjunct includes="io.jenkins.plugins.fontawesome.font-awesome"/>
-      <st:adjunct includes="io.jenkins.plugins.echarts.echarts"/>
+      <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+      <st:adjunct includes="io.jenkins.plugins.font-awesome"/>
+      <st:adjunct includes="io.jenkins.plugins.echarts"/>
 
       <div class="fluid-container">
 

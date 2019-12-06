@@ -3,15 +3,9 @@ package io.jenkins.plugins.forensics.blame;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import com.google.errorprone.annotations.FormatMethod;
-
-import edu.hm.hafner.util.FilteredLog;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Provides access to the blame information for a collection of workspace files. File names must use absolute paths.
@@ -23,7 +17,6 @@ public class Blames implements Serializable {
     private static final long serialVersionUID = -1192940891942480612L;
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
-    private FilteredLog log = createLog();
 
     /**
      * Adds the specified blame to this collection of blames.
@@ -111,85 +104,5 @@ public class Blames implements Serializable {
             return blamesPerFile.get(fileName);
         }
         throw new NoSuchElementException(String.format("No blame information for file '%s' stored", fileName));
-    }
-
-    /**
-     * Logs the specified information message. Use this method to log any useful information when composing this log.
-     *
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logInfo(final String format, final Object... args) {
-        log.logInfo(format, args);
-    }
-
-    /**
-     * Logs the specified error message. Use this method to log any error when composing this log.
-     *
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logError(final String format, final Object... args) {
-        log.logError(format, args);
-    }
-
-    /**
-     * Logs the specified exception. Use this method to log any exception when composing this log.
-     *
-     * @param exception
-     *         the exception to log
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logException(final Exception exception, final String format, final Object... args) {
-        log.logException(exception, format, args);
-    }
-
-    /**
-     * Writes a summary message to the reports' error log that denotes the total number of errors that have been
-     * reported.
-     */
-    public void logSummary() {
-        log.logSummary();
-    }
-
-    public List<String> getErrorMessages() {
-        return log.getErrorMessages();
-    }
-
-    public List<String> getInfoMessages() {
-        return log.getInfoMessages();
-    }
-
-    /**
-     * Called after de-serialization to retain backward compatibility.
-     *
-     * @return this
-     */
-    @SuppressFBWarnings("RCN")
-    protected Object readResolve() {
-        if (log == null) {
-            log = createLog();
-        }
-        return this;
-    }
-
-    private FilteredLog createLog() {
-        return new FilteredLog("Errors while extracting author and commit information from Git:");
     }
 }

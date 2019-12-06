@@ -2,6 +2,8 @@ package io.jenkins.plugins.forensics.blame;
 
 import java.io.Serializable;
 
+import edu.hm.hafner.util.FilteredLog;
+
 /**
  * Obtains SCM blame information for several file locations.
  *
@@ -16,9 +18,10 @@ public abstract class Blamer implements Serializable {
      * @param fileLocations
      *         the file locations to get the blames for
      *
+     * @param filteredLog
      * @return the blames
      */
-    public abstract Blames blame(FileLocations fileLocations);
+    public abstract Blames blame(FileLocations fileLocations, final FilteredLog filteredLog);
 
     /**
      * A blamer that does nothing.
@@ -27,7 +30,7 @@ public abstract class Blamer implements Serializable {
         private static final long serialVersionUID = 6235885974889709821L;
 
         @Override
-        public Blames blame(final FileLocations fileLocations) {
+        public Blames blame(final FileLocations fileLocations, final FilteredLog filteredLog) {
             return new Blames();
         }
     }
