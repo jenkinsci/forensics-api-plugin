@@ -7,25 +7,16 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import edu.hm.hafner.util.FilteredLog;
-
 /**
  * Defines a set of file locations. A file location is identified by an absolute file name and line number. File
  * locations are grouped by file name, i.e. you can obtain a mapping of a file to all affected lines in that file.
  *
  * @author Ullrich Hafner
  */
-public class FileLocations extends FilteredLog {
+public class FileLocations {
     private static final long serialVersionUID = 8063580789984061223L;
 
     private final Map<String, Set<Integer>> linesPerFile = new HashMap<>();
-
-    /**
-     * Creates a new empty instance of {@link FileLocations}.
-     */
-    public FileLocations() {
-        super("Errors while marking lines in affected lines:");
-    }
 
     /**
      * Adds the specified affected file and line number.
@@ -65,7 +56,6 @@ public class FileLocations extends FilteredLog {
      *
      * @return number of affected files with blames
      */
-    @Override
     public int size() {
         return linesPerFile.keySet().size();
     }

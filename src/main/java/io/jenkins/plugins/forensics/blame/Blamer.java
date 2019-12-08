@@ -17,11 +17,12 @@ public abstract class Blamer implements Serializable {
      *
      * @param fileLocations
      *         the file locations to get the blames for
+     * @param logger
+     *         the logger to use
      *
-     * @param filteredLog
      * @return the blames
      */
-    public abstract Blames blame(FileLocations fileLocations, final FilteredLog filteredLog);
+    public abstract Blames blame(FileLocations fileLocations, FilteredLog logger);
 
     /**
      * A blamer that does nothing.
@@ -30,7 +31,7 @@ public abstract class Blamer implements Serializable {
         private static final long serialVersionUID = 6235885974889709821L;
 
         @Override
-        public Blames blame(final FileLocations fileLocations, final FilteredLog filteredLog) {
+        public Blames blame(final FileLocations fileLocations, final FilteredLog logger) {
             return new Blames();
         }
     }

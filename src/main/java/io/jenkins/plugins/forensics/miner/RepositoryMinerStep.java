@@ -49,18 +49,16 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
         FilteredLog log = new FilteredLog("Errors while mining source control repository:");
 
+        // FIXME: LogHandler should work on Filtered Log!
         log.logInfo("Creating SCM miner to obtain statistics for affected repository files");
         RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, log);
+
+        // TODO: repository mining should be an incremental process
+        RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList(), log);
         log.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
         log.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
 
-        // TODO: repository mining should be an incremental process
-        RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList());
         run.addAction(new ForensicsBuildAction(run, repositoryStatistics));
-
-        repositoryStatistics.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
-        repositoryStatistics.getErrorMessages()
-                .forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
     }
 
     /**

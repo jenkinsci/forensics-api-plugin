@@ -24,29 +24,9 @@ class RepositoryStatisticsTest {
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
         assertThat(empty).hasNoFileStatistics();
-        assertThat(empty).hasNoErrorMessages();
-        assertThat(empty).hasNoInfoMessages();
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> empty.get(NOTHING));
-    }
-
-    @Test
-    void shouldLogMessagesAndErrors() {
-        RepositoryStatistics logger = new RepositoryStatistics();
-
-        logger.logInfo("Hello %s", "Info");
-        logger.logError("Hello %s", "Error");
-        logger.logException(new IllegalArgumentException("Error"), "Hello %s", "Exception");
-
-        assertThat(logger).hasInfoMessages("Hello Info");
-        assertThat(logger).hasErrorMessages("Hello Error", "Hello Exception");
-
-        for (int i = 0; i < 19; i++) {
-            logger.logError("Hello %s %d", "Error", i);
-        }
-        logger.logSummary();
-        assertThat(logger).hasErrorMessages("  ... skipped logging of 1 additional errors ...");
     }
 
     @Test

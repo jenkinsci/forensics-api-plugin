@@ -15,9 +15,6 @@ class FileLocationsTest {
     private static final String RELATIVE_PATH = "with/file.txt";
     private static final String WORKSPACE = "/absolute/path/to/workspace/";
     private static final String ABSOLUTE_PATH = WORKSPACE + RELATIVE_PATH;
-    private static final String WINDOWS_WORKSPACE = "C:\\absolute\\path\\to\\workspace\\";
-    private static final String WINDOWS_RELATIVE_PATH = "with/file.txt";
-    private static final String WINDOWS_ABSOLUTE_PATH = "C:/absolute/path/to/workspace/" + WINDOWS_RELATIVE_PATH;
     private static final String ANOTHER_FILE = "another-file.txt";
 
     @Test
@@ -27,8 +24,6 @@ class FileLocationsTest {
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
-        assertThat(empty).hasNoErrorMessages();
-        assertThat(empty).hasNoInfoMessages();
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> empty.getLines(RELATIVE_PATH));

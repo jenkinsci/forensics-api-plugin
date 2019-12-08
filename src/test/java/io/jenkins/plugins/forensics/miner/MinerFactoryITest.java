@@ -45,11 +45,11 @@ public class MinerFactoryITest {
         RepositoryMiner nullMiner = createMiner("/");
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
-        assertThat(nullMiner.mine(Collections.emptyList())).isEmpty();
+        assertThat(nullMiner.mine(Collections.emptyList(), LOG)).isEmpty();
 
         RepositoryMiner repositoryMiner = createMiner("/test");
         assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
-        assertThat(repositoryMiner.mine(Collections.emptyList())).isNotEmpty();
+        assertThat(repositoryMiner.mine(Collections.emptyList(), LOG)).isNotEmpty();
     }
 
     private RepositoryMiner createMiner(final String path) {
@@ -90,7 +90,8 @@ public class MinerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public RepositoryStatistics mine(final Collection<String> absoluteFileNames) {
+        public RepositoryStatistics mine(final Collection<String> absoluteFileNames,
+                final FilteredLog logger) {
             RepositoryStatistics statistics = new RepositoryStatistics();
             statistics.add(new FileStatistics("/file.txt"));
             return statistics;

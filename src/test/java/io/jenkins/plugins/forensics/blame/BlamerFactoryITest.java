@@ -92,7 +92,7 @@ public class BlamerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public Blames blame(final FileLocations fileLocations, final FilteredLog log) {
+        public Blames blame(final FileLocations fileLocations, final FilteredLog logger) {
             Blames blames = new Blames();
             blames.add(new FileBlame(FILE_NAME));
             return blames;
