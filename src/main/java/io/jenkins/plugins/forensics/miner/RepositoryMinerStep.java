@@ -19,6 +19,8 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
+import io.jenkins.plugins.util.LogHandler;
+
 /**
  * A pipeline {@link Step} or Freestyle or Maven {@link Recorder} that obtains statistics for all repository files. The
  * following statistics are computed:
@@ -47,16 +49,16 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     @Override
     public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace,
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
-        FilteredLog log = new FilteredLog("Errors while mining source control repository:");
+        LogHandler logHandler = new LogHandler(listener, "Forensics");
 
-        // FIXME: LogHandler should work on Filtered Log!
-        log.logInfo("Creating SCM miner to obtain statistics for affected repository files");
-        RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, log);
+        FilteredLog logger = new FilteredLog("Errors while mining source control repository:");
+        logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
+        RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, logger);
+        logHandler.log(logger);
 
         // TODO: repository mining should be an incremental process
-        RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList(), log);
-        log.getInfoMessages().forEach(line -> listener.getLogger().println("[Forensics] " + line));
-        log.getErrorMessages().forEach(line -> listener.getLogger().println("[Forensics Error] " + line));
+        RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList(), logger);
+        logHandler.log(logger);
 
         run.addAction(new ForensicsBuildAction(run, repositoryStatistics));
     }

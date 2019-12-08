@@ -42,7 +42,7 @@
     <bootstrap4-api.version>4.1.3-1-beta3-rc53.60aeeb03da2a</bootstrap4-api.version>
     <data-tables-api.version>1.10.20-1-beta4-rc72.fab652dc6fb9</data-tables-api.version>
     <echarts-api.version>4.4.0-1-beta2-rc66.f8ab2f9fb58a</echarts-api.version>
-    <plugin-util-api.version>0.1.0-beta1-rc10.5177988a84e6</plugin-util-api.version>
+    <plugin-util-api.version>0.1.0-beta1-SNAPSHOT</plugin-util-api.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <workflow-api.version>2.34</workflow-api.version>
