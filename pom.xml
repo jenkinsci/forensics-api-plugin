@@ -36,12 +36,12 @@
     <commons.lang.version>3.9</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
-    <font-awesome-api.version>5.11.2-1-beta1-rc47.a93da8514fdd</font-awesome-api.version>
-    <jquery3-api.version>3.4.1-1-beta2-rc53.c40ba34317aa</jquery3-api.version>
-    <popper-api.version>1.15.0-1-beta2-rc50.5cd401532679</popper-api.version>
-    <bootstrap4-api.version>4.1.3-1-beta3-rc53.60aeeb03da2a</bootstrap4-api.version>
-    <data-tables-api.version>1.10.20-1-beta4-rc72.fab652dc6fb9</data-tables-api.version>
-    <echarts-api.version>4.4.0-1-beta2-rc66.f8ab2f9fb58a</echarts-api.version>
+    <font-awesome-api.version>5.11.2-1-beta1-SNAPSHOT</font-awesome-api.version>
+    <jquery3-api.version>3.4.1-1-beta2-SNAPSHOT</jquery3-api.version>
+    <popper-api.version>1.15.0-1-beta2-SNAPSHOT</popper-api.version>
+    <bootstrap4-api.version>4.1.3-1-beta3-SNAPSHOT</bootstrap4-api.version>
+    <data-tables-api.version>1.10.20-1-beta4-SNAPSHOT</data-tables-api.version>
+    <echarts-api.version>4.4.0-1-beta2-SNAPSHOT</echarts-api.version>
     <plugin-util-api.version>0.1.0-beta1-SNAPSHOT</plugin-util-api.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
