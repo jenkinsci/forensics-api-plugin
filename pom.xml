@@ -43,11 +43,6 @@
     <echarts-api.version>4.4.0-2-beta1</echarts-api.version>
     <plugin-util-api.version>0.1.0-beta1</plugin-util-api.version>
 
-    <!-- Jenkins Plugin Dependencies Versions -->
-    <workflow-api.version>2.34</workflow-api.version>
-    <workflow-cps.version>2.67</workflow-cps.version>
-    <workflow-job.version>2.32</workflow-job.version>
-
     <!-- Test Library Dependencies Versions -->
     <junit.version>5.5.2</junit.version>
     <junit-platform-launcher.version>1.5.2</junit-platform-launcher.version>
@@ -180,17 +175,14 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-api</artifactId>
-      <version>${workflow-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-cps</artifactId>
-      <version>${workflow-cps.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
-      <version>${workflow-job.version}</version>
     </dependency>
 
     <!-- Test Dependencies -->
