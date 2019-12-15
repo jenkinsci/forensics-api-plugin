@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import io.jenkins.plugins.echarts.api.charts.BuildResult;
-import io.jenkins.plugins.echarts.api.charts.ChartModelConfiguration;
-import io.jenkins.plugins.echarts.api.charts.LineSeries;
-import io.jenkins.plugins.echarts.api.charts.LinesChartModel;
-import io.jenkins.plugins.echarts.api.charts.Palette;
+import io.jenkins.plugins.echarts.BuildResult;
+import io.jenkins.plugins.echarts.ChartModelConfiguration;
+import io.jenkins.plugins.echarts.LineSeries;
+import io.jenkins.plugins.echarts.LinesChartModel;
+import io.jenkins.plugins.echarts.Palette;
 
 import static io.jenkins.plugins.forensics.miner.ResultStubs.*;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;

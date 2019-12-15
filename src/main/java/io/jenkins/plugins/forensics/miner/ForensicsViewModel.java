@@ -4,9 +4,9 @@ import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 
-import io.jenkins.plugins.datatables.api.DefaultAsyncTableContentProvider;
-import io.jenkins.plugins.datatables.api.TableModel;
-import io.jenkins.plugins.echarts.api.charts.JacksonFacade;
+import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
+import io.jenkins.plugins.datatables.TableModel;
+import io.jenkins.plugins.echarts.JacksonFacade;
 
 /**
  * Server side model that provides the data for the details view of the repository statistics. The layout of the

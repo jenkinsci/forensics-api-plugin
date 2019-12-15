@@ -2,8 +2,8 @@ package io.jenkins.plugins.forensics.miner;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import io.jenkins.plugins.echarts.api.charts.Build;
-import io.jenkins.plugins.echarts.api.charts.BuildResult;
+import io.jenkins.plugins.echarts.Build;
+import io.jenkins.plugins.echarts.BuildResult;
 
 import static org.mockito.Mockito.*;
 

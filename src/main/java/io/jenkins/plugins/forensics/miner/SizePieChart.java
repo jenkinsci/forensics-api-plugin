@@ -5,9 +5,9 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import io.jenkins.plugins.echarts.api.charts.Palette;
-import io.jenkins.plugins.echarts.api.charts.PieChartModel;
-import io.jenkins.plugins.echarts.api.charts.PieData;
+import io.jenkins.plugins.echarts.Palette;
+import io.jenkins.plugins.echarts.PieChartModel;
+import io.jenkins.plugins.echarts.PieData;
 
 /**
  * Builds the model for a pie chart showing the distribution of issues by severity.

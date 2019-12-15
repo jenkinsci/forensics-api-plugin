@@ -1,14 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import io.jenkins.plugins.echarts.api.charts.BuildResult;
-import io.jenkins.plugins.echarts.api.charts.ChartModelConfiguration;
-import io.jenkins.plugins.echarts.api.charts.JacksonFacade;
-import io.jenkins.plugins.echarts.api.charts.LineSeries;
-import io.jenkins.plugins.echarts.api.charts.LineSeries.FilledMode;
-import io.jenkins.plugins.echarts.api.charts.LineSeries.StackedMode;
-import io.jenkins.plugins.echarts.api.charts.LinesChartModel;
-import io.jenkins.plugins.echarts.api.charts.LinesDataSet;
-import io.jenkins.plugins.echarts.api.charts.Palette;
+import io.jenkins.plugins.echarts.BuildResult;
+import io.jenkins.plugins.echarts.ChartModelConfiguration;
+import io.jenkins.plugins.echarts.JacksonFacade;
+import io.jenkins.plugins.echarts.LineSeries;
+import io.jenkins.plugins.echarts.LineSeries.FilledMode;
+import io.jenkins.plugins.echarts.LineSeries.StackedMode;
+import io.jenkins.plugins.echarts.LinesChartModel;
+import io.jenkins.plugins.echarts.LinesDataSet;
+import io.jenkins.plugins.echarts.Palette;
 
 /**
  * Builds the Java side model for a trend chart showing the number of files in the repository. The trend chart contains

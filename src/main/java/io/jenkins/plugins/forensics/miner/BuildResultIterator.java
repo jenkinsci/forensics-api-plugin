@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import hudson.model.Run;
 
-import io.jenkins.plugins.echarts.api.charts.Build;
-import io.jenkins.plugins.echarts.api.charts.BuildResult;
+import io.jenkins.plugins.echarts.Build;
+import io.jenkins.plugins.echarts.BuildResult;
 import io.jenkins.plugins.util.BuildAction;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

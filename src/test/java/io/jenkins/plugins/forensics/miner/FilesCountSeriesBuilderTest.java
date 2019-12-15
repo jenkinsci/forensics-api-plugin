@@ -6,10 +6,10 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import io.jenkins.plugins.echarts.api.charts.BuildResult;
-import io.jenkins.plugins.echarts.api.charts.ChartModelConfiguration;
-import io.jenkins.plugins.echarts.api.charts.ChartModelConfiguration.AxisType;
-import io.jenkins.plugins.echarts.api.charts.LinesDataSet;
+import io.jenkins.plugins.echarts.BuildResult;
+import io.jenkins.plugins.echarts.ChartModelConfiguration;
+import io.jenkins.plugins.echarts.ChartModelConfiguration.AxisType;
+import io.jenkins.plugins.echarts.LinesDataSet;
 
 import static io.jenkins.plugins.forensics.miner.FilesCountSeriesBuilder.*;
 import static io.jenkins.plugins.forensics.miner.ResultStubs.*;
