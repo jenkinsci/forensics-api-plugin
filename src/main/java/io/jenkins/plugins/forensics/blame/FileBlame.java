@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  * @author Ullrich Hafner
  */
 public class FileBlame implements Iterable<Integer>, Serializable {
-    private static final long serialVersionUID = -7491390234189584964L;
+    private static final long serialVersionUID = 7L; // release 0.7
 
     private static final String UNIX_SLASH = "/";
     private static final String WINDOWS_BACK_SLASH = "\\";
@@ -28,13 +29,24 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     static final int EMPTY_INTEGER = 0;
 
     private final String fileName;
-    private final Set<Integer> lines = new HashSet<>();
-
-    private final Map<Integer, String> commitByLine = new HashMap<>();
-    private final Map<Integer, String> nameByLine = new HashMap<>();
-    private final Map<Integer, String> emailByLine = new HashMap<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Set<Integer> lines = new HashSet<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Map<Integer, String> commitByLine = new HashMap<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Map<Integer, String> nameByLine = new HashMap<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Map<Integer, String> emailByLine = new HashMap<>();
     @Nullable
-    private Map<Integer, Integer> timeByLine = new HashMap<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private transient Map<Integer, Integer> timeByLine = new HashMap<>();
+    @Nullable
+    private Map<Integer, LineBlame> blamesByLine = new HashMap<>();
 
     /**
      * Creates a new instance of {@link FileBlame}.
@@ -43,7 +55,31 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         the name of the file that should be blamed
      */
     public FileBlame(final String fileName) {
+        // FIXME: scan for SLASH and BACKSLASH
         this.fileName = StringUtils.replace(fileName, WINDOWS_BACK_SLASH, UNIX_SLASH);
+    }
+
+    /**
+     * Called after de-serialization to retain backward compatibility.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        if (timeByLine == null) {
+            timeByLine = new HashMap<>();
+        }
+        if (blamesByLine == null) {
+            blamesByLine = new HashMap<>();
+            for (Integer line : lines) {
+                LineBlame lineBlame = new LineBlame();
+                lineBlame.setName(nameByLine.get(line));
+                lineBlame.setEmail(emailByLine.get(line));
+                lineBlame.setCommit(commitByLine.get(line));
+                lineBlame.setAddedAt(timeByLine.getOrDefault(line, EMPTY_INTEGER));
+                blamesByLine.put(line, lineBlame);
+            }
+        }
+        return this;
     }
 
     public String getFileName() {
@@ -51,13 +87,21 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     }
 
     public Set<Integer> getLines() {
-        return lines;
+        return getBlamesByLine().keySet();
+    }
+
+    private Map<Integer, LineBlame> getBlamesByLine() {
+        return Objects.requireNonNull(blamesByLine);
     }
 
     @Override
     @NonNull
     public Iterator<Integer> iterator() {
-        return lines.iterator();
+        return getLines().iterator();
+    }
+
+    private LineBlame getBlamesFor(final int lineNumber) {
+        return getBlamesByLine().computeIfAbsent(lineNumber, k -> new LineBlame());
     }
 
     /**
@@ -69,7 +113,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         the commit ID
      */
     public void setCommit(final int lineNumber, final String id) {
-        setInternedStringValue(commitByLine, lineNumber, id);
+        getBlamesFor(lineNumber).setCommit(id);
     }
 
     /**
@@ -81,7 +125,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @return the commit ID
      */
     public String getCommit(final int line) {
-        return getStringValue(commitByLine, line);
+        return getBlamesFor(line).getCommit();
     }
 
     /**
@@ -93,7 +137,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         the author name
      */
     public void setName(final int lineNumber, final String name) {
-        setInternedStringValue(nameByLine, lineNumber, name);
+        getBlamesFor(lineNumber).setName(name);
     }
 
     /**
@@ -105,7 +149,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @return the author name
      */
     public String getName(final int line) {
-        return getStringValue(nameByLine, line);
+        return getBlamesFor(line).getName();
     }
 
     /**
@@ -117,7 +161,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         the email address of the author
      */
     public void setEmail(final int lineNumber, final String emailAddress) {
-        setInternedStringValue(emailByLine, lineNumber, emailAddress);
+        getBlamesFor(lineNumber).setEmail(emailAddress);
     }
 
     /**
@@ -129,7 +173,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @return the author email
      */
     public String getEmail(final int line) {
-        return getStringValue(emailByLine, line);
+        return getBlamesFor(line).getEmail();
     }
 
     /**
@@ -143,7 +187,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         namely January 1, 1970, 00:00:00 GMT).
      */
     public void setTime(final int lineNumber, final int time) {
-        setIntegerValue(timeByLine, lineNumber, time);
+        getBlamesFor(lineNumber).setAddedAt(time);
     }
 
     /**
@@ -157,43 +201,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *         namely January 1, 1970, 00:00:00 GMT.).
      */
     public int getTime(final int line) {
-        return getIntegerValue(timeByLine, line);
-    }
-
-    private String getStringValue(final Map<Integer, String> map, final int line) {
-        if (map.containsKey(line)) {
-            return map.get(line);
-        }
-        return EMPTY;
-    }
-
-    private void setInternedStringValue(final Map<Integer, String> map, final int lineNumber, final String value) {
-        map.put(lineNumber, value.intern());
-        lines.add(lineNumber);
-    }
-
-    private int getIntegerValue(final Map<Integer, Integer> map, final int line) {
-        return map.getOrDefault(line, EMPTY_INTEGER);
-    }
-
-    private void setIntegerValue(final Map<Integer, Integer> map, final int lineNumber, final Integer value) {
-        map.put(lineNumber, value);
-        lines.add(lineNumber);
-    }
-
-    /**
-     * Called after de-serialization to retain backward compatibility.
-     *
-     * @return this
-     */
-    protected Object readResolve() {
-        // Create an empty map for timeByLine in case it is null.
-        // This could be the case if deserializing blames generated before version 0.6.0.
-        if (timeByLine == null) {
-            timeByLine = new HashMap<>();
-        }
-
-        return this;
+        return getBlamesFor(line).getAddedAt();
     }
 
     /**
@@ -208,12 +216,8 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     public void merge(final FileBlame other) {
         if (other.getFileName().equals(getFileName())) {
             for (Integer otherLine : other) {
-                if (!lines.contains(otherLine)) {
-                    lines.add(otherLine);
-                    setInternedStringValue(commitByLine, otherLine, other.getCommit(otherLine));
-                    setInternedStringValue(nameByLine, otherLine, other.getName(otherLine));
-                    setInternedStringValue(emailByLine, otherLine, other.getEmail(otherLine));
-                    setIntegerValue(timeByLine, otherLine, other.getTime(otherLine));
+                if (!getBlamesByLine().containsKey(otherLine)) {
+                    getBlamesByLine().put(otherLine, other.getBlamesFor(otherLine));
                 }
             }
         }
@@ -237,35 +241,72 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        FileBlame request = (FileBlame) o;
-
-        if (!fileName.equals(request.fileName)) {
-            return false;
-        }
-        if (!lines.equals(request.lines)) {
-            return false;
-        }
-        if (!commitByLine.equals(request.commitByLine)) {
-            return false;
-        }
-        if (!nameByLine.equals(request.nameByLine)) {
-            return false;
-        }
-        if (!timeByLine.equals(request.timeByLine)) {
-            return false;
-        }
-        return emailByLine.equals(request.emailByLine);
+        FileBlame integers = (FileBlame) o;
+        return fileName.equals(integers.fileName) && Objects.equals(blamesByLine, integers.blamesByLine);
     }
 
     @Override
     public int hashCode() {
-        int result = fileName.hashCode();
-        result = 31 * result + lines.hashCode();
-        result = 31 * result + commitByLine.hashCode();
-        result = 31 * result + nameByLine.hashCode();
-        result = 31 * result + emailByLine.hashCode();
-        result = 31 * result + timeByLine.hashCode();
-        return result;
+        return Objects.hash(fileName, blamesByLine);
+    }
+
+    private static class LineBlame implements Serializable {
+        private static final long serialVersionUID = 7L; // release 0.7
+        private String name = EMPTY;
+        private String email = EMPTY;
+        private String commit = EMPTY;
+        private int addedAt = EMPTY_INTEGER;
+
+        public String getName() {
+            return name;
+        }
+
+        void setName(final String name) {
+            this.name = name.intern();
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        void setEmail(final String email) {
+            this.email = email.intern();
+        }
+
+        public String getCommit() {
+            return commit;
+        }
+
+        void setCommit(final String commit) {
+            this.commit = commit.intern();
+        }
+
+        public int getAddedAt() {
+            return addedAt;
+        }
+
+        void setAddedAt(final int addedAt) {
+            this.addedAt = addedAt;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            LineBlame lineBlame = (LineBlame) o;
+            return addedAt == lineBlame.addedAt
+                    && name.equals(lineBlame.name)
+                    && email.equals(lineBlame.email)
+                    && commit.equals(lineBlame.commit);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, email, commit, addedAt);
+        }
     }
 }

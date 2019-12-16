@@ -1,6 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+
+import edu.hm.hafner.util.SerializableTest;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -9,7 +13,9 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class FileBlameTest {
+class FileBlameTest extends SerializableTest<FileBlame> {
+    private static final String SERIALIZATION_NAME = "fileBlame.ser";
+
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
@@ -48,9 +54,7 @@ class FileBlameTest {
 
     @Test
     void shouldMergeRequest() {
-        FileBlame request = new FileBlame("file");
-        addDetails(request, 1);
-        assertThat(request).hasLines(1);
+        FileBlame request = createSerializable();
 
         FileBlame sameLine = new FileBlame("file");
         request.merge(sameLine);
@@ -63,14 +67,6 @@ class FileBlameTest {
         request.merge(otherLine);
         assertThat(request.iterator()).toIterable().containsExactly(1, 2);
         assertThat(request).hasLines(1, 2);
-        verifyDetails(request, 1);
-        verifyDetails(request, 2);
-
-        otherLine.setCommit(2, FileBlame.EMPTY);
-        otherLine.setName(2, FileBlame.EMPTY);
-        otherLine.setEmail(2, FileBlame.EMPTY);
-        otherLine.setTime(2, FileBlame.EMPTY_INTEGER);
-        request.merge(otherLine);
         verifyDetails(request, 1);
         verifyDetails(request, 2);
 
@@ -95,5 +91,45 @@ class FileBlameTest {
 
         assertThat(request).hasNoLines();
         assertThat(request.getFileName()).isEqualTo("C:/path/to/file");
+    }
+
+    @Override
+    protected FileBlame createSerializable() {
+        FileBlame request = new FileBlame("file");
+
+        addDetails(request, 1);
+        assertThat(request).hasLines(1);
+
+        return request;
+    }
+
+    /**
+     * Verifies that saved serialized format (from a previous release) still can be resolved with the current
+     * implementation of {@link FileBlame}.
+     */
+    @Test
+    void shouldReadOldSerialization() {
+        byte[] restored = readAllBytes(SERIALIZATION_NAME);
+
+        assertThatSerializableCanBeRestoredFrom(restored);
+    }
+
+    /**
+     * Serializes an issues to a file. Use this method in case the issue properties have been changed and the
+     * readResolve method has been adapted accordingly so that the old serialization still can be read.
+     *
+     * @param args
+     *         not used
+     *
+     * @throws IOException
+     *         if the file could not be written
+     */
+    public static void main(final String... args) throws IOException {
+        new FileBlameTest().createSerializationFile();
+    }
+
+    @Override
+    protected Class<?> getTestResourceClass() {
+        return FileBlameTest.class;
     }
 }

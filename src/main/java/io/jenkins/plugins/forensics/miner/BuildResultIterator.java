@@ -22,6 +22,7 @@ import io.jenkins.plugins.util.BuildAction;
  *
  * @author Ullrich Hafner
  */
+// FIXME: This class should be part of echarts API
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class BuildResultIterator<A extends BuildAction<R>, R> implements Iterator<BuildResult<R>> {
     private final Class<A> actionType;

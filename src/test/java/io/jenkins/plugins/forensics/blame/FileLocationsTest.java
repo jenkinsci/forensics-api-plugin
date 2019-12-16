@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.SerializableTest;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -11,7 +13,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class FileLocationsTest {
+class FileLocationsTest extends SerializableTest<FileLocations> {
     private static final String RELATIVE_PATH = "with/file.txt";
     private static final String WORKSPACE = "/absolute/path/to/workspace/";
     private static final String ABSOLUTE_PATH = WORKSPACE + RELATIVE_PATH;
@@ -57,10 +59,7 @@ class FileLocationsTest {
 
     @Test
     void shouldCreateTwoDifferentBlamerInput() {
-        FileLocations locations = new FileLocations();
-
-        locations.addLine(ABSOLUTE_PATH, 1);
-        locations.addLine(ANOTHER_FILE, 2);
+        FileLocations locations = createSerializable();
 
         assertThat(locations.size()).isEqualTo(2);
         assertThat(locations).hasFiles(ABSOLUTE_PATH, ANOTHER_FILE);
@@ -72,5 +71,15 @@ class FileLocationsTest {
         assertThatThrownBy(() -> locations.getLines(wrongFile))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessageContaining(wrongFile);
+    }
+
+    @Override
+    protected FileLocations createSerializable() {
+        FileLocations locations = new FileLocations();
+
+        locations.addLine(ABSOLUTE_PATH, 1);
+        locations.addLine(ANOTHER_FILE, 2);
+
+        return locations;
     }
 }
