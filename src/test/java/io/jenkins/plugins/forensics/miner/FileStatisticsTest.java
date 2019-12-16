@@ -2,6 +2,8 @@ package io.jenkins.plugins.forensics.miner;
 
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.SerializableTest;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -9,7 +11,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class FileStatisticsTest {
+class FileStatisticsTest extends SerializableTest<FileStatistics> {
     private static final String FILE = "file";
     private static final int ONE_DAY = 60 * 60 * 24;
 
@@ -53,5 +55,14 @@ class FileStatisticsTest {
         assertThat(new FileStatistics("C:\\path\\to\\file.txt")).hasFileName("C:/path/to/file.txt");
         assertThat(new FileStatistics("C:\\path\\to/file.txt")).hasFileName("C:/path/to/file.txt");
         assertThat(new FileStatistics("/path/to/file.txt")).hasFileName("/path/to/file.txt");
+    }
+
+    @Override
+    protected FileStatistics createSerializable() {
+        FileStatistics statistics = new FileStatistics(FILE);
+
+        statistics.inspectCommit(ONE_DAY * 9, "one");
+
+        return statistics;
     }
 }

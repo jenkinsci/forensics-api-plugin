@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -115,5 +116,22 @@ public class RepositoryStatistics implements Serializable {
      */
     public void add(final FileStatistics additionalStatistics) {
         statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RepositoryStatistics that = (RepositoryStatistics) o;
+        return statisticsPerFile.equals(that.statisticsPerFile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(statisticsPerFile);
     }
 }

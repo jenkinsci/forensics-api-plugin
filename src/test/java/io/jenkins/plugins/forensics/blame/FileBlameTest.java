@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
@@ -14,8 +12,6 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  * @author Ullrich Hafner
  */
 class FileBlameTest extends SerializableTest<FileBlame> {
-    private static final String SERIALIZATION_NAME = "fileBlame.ser";
-
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
@@ -101,35 +97,5 @@ class FileBlameTest extends SerializableTest<FileBlame> {
         assertThat(request).hasLines(1);
 
         return request;
-    }
-
-    /**
-     * Verifies that saved serialized format (from a previous release) still can be resolved with the current
-     * implementation of {@link FileBlame}.
-     */
-    @Test
-    void shouldReadOldSerialization() {
-        byte[] restored = readAllBytes(SERIALIZATION_NAME);
-
-        assertThatSerializableCanBeRestoredFrom(restored);
-    }
-
-    /**
-     * Serializes an issues to a file. Use this method in case the issue properties have been changed and the
-     * readResolve method has been adapted accordingly so that the old serialization still can be read.
-     *
-     * @param args
-     *         not used
-     *
-     * @throws IOException
-     *         if the file could not be written
-     */
-    public static void main(final String... args) throws IOException {
-        new FileBlameTest().createSerializationFile();
-    }
-
-    @Override
-    protected Class<?> getTestResourceClass() {
-        return FileBlameTest.class;
     }
 }

@@ -9,8 +9,11 @@ import io.jenkins.plugins.util.AbstractXmlStream;
  *
  * @author Ullrich Hafner
  */
-class RepositoryStatisticsXmlStream extends AbstractXmlStream<RepositoryStatistics> {
-    RepositoryStatisticsXmlStream() {
+public class RepositoryStatisticsXmlStream extends AbstractXmlStream<RepositoryStatistics> {
+    /**
+     * Creates a new {@link RepositoryStatisticsXmlStream}.
+     */
+    public RepositoryStatisticsXmlStream() {
         super(RepositoryStatistics.class);
     }
 

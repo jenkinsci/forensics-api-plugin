@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Set;
  * @author Ullrich Hafner
  */
 public class Blames implements Serializable {
-    private static final long serialVersionUID = -1192940891942480612L;
+    private static final long serialVersionUID = 7L; // release 0.7
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
 
@@ -104,5 +105,22 @@ public class Blames implements Serializable {
             return blamesPerFile.get(fileName);
         }
         throw new NoSuchElementException(String.format("No blame information for file '%s' stored", fileName));
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Blames blames = (Blames) o;
+        return blamesPerFile.equals(blames.blamesPerFile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(blamesPerFile);
     }
 }

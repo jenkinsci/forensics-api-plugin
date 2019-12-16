@@ -10,7 +10,10 @@ import io.jenkins.plugins.util.AbstractXmlStream;
  * @author Ullrich Hafner
  */
 public class BlamesXmlStream extends AbstractXmlStream<Blames> {
-    BlamesXmlStream() {
+    /**
+     * Creates a new {@link BlamesXmlStream}.
+     */
+    public BlamesXmlStream() {
         super(Blames.class);
     }
 

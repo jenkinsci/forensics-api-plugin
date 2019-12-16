@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.SerializableTest;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -11,7 +13,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class BlamesTest {
+class BlamesTest extends SerializableTest<Blames> {
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
@@ -132,5 +134,15 @@ class BlamesTest {
         fileBlame.setEmail(lineNumber, email);
         fileBlame.setTime(lineNumber, time);
         return fileBlame;
+    }
+
+    @Override
+    protected Blames createSerializable() {
+        Blames blames = new Blames();
+
+        FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
+        blames.add(fileBlame);
+
+        return blames;
     }
 }

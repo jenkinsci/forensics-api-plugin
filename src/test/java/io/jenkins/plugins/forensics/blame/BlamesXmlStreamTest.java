@@ -3,11 +3,10 @@ package io.jenkins.plugins.forensics.blame;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
-import edu.hm.hafner.util.ResourceTest;
+import edu.hm.hafner.util.SerializableTest;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -16,7 +15,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class BlamesXmlStreamTest extends ResourceTest {
+class BlamesXmlStreamTest extends SerializableTest<Blames> {
     private static final String WORKSPACE = "/var/data/workspace/pipeline-analysis-model/";
     private static final String REPORT_SRC = "src/main/java/edu/hm/hafner/analysis/Report.java";
     private static final String REPORT = WORKSPACE + REPORT_SRC;
@@ -25,27 +24,17 @@ class BlamesXmlStreamTest extends ResourceTest {
 
     @Test
     void shouldReadBlamesOfWarnings520() {
-        BlamesXmlStream blamesReader = new BlamesXmlStream();
-
-        Blames restored520 = blamesReader.read(getResourceAsFile("fileBlame-5.2.0.xml"));
-        assertThatBlamesAreCorrect(restored520);
-        blamesReader.write(Paths.get("/tmp/serialized.xml"), restored520);
+        assertThatBlamesAreCorrect(read("fileBlame-5.2.0.xml"));
     }
 
     @Test
     void shouldReadBlamesOfForensics070() {
-        BlamesXmlStream blamesReader = new BlamesXmlStream();
-
-        Blames restored070 = blamesReader.read(getResourceAsFile("fileBlame-0.7.0.xml"));
-        assertThatBlamesAreCorrect(restored070);
+        assertThatBlamesAreCorrect(read("fileBlame-0.7.0.xml"));
     }
 
     @Test
     void shouldReadBlamesOfForensics062() {
-        BlamesXmlStream blamesReader = new BlamesXmlStream();
-
-        Blames restored062 = blamesReader.read(getResourceAsFile("fileBlame-0.6.2.xml"));
-        assertThatBlamesAreCorrect(restored062);
+        assertThatBlamesAreCorrect(read("fileBlame-0.6.2.xml"));
     }
 
     @Test
@@ -58,8 +47,12 @@ class BlamesXmlStreamTest extends ResourceTest {
 
         Blames newFormat = blamesReader.read(saved);
         assertThatBlamesAreCorrect(newFormat);
+    }
 
-        // blamesReader.write(Paths.get("/tmp/serialized.xml"), newFormat);
+    private Blames read(final String fileName) {
+        BlamesXmlStream blamesReader = new BlamesXmlStream();
+
+        return blamesReader.read(getResourceAsFile(fileName));
     }
 
     private void assertThatBlamesAreCorrect(final Blames blames) {
@@ -86,5 +79,10 @@ class BlamesXmlStreamTest extends ResourceTest {
         catch (IOException exception) {
             throw new AssertionError(exception);
         }
+    }
+
+    @Override
+    protected Blames createSerializable() {
+        return read("fileBlame-0.7.0.xml");
     }
 }

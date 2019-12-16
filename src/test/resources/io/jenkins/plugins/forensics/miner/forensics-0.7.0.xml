@@ -1,0 +1,35 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<repo>
+  <statisticsPerFile>
+    <entry>
+      <string>/analysis/IssueBuilder.java</string>
+      <file>
+        <fileName>/analysis/IssueBuilder.java</fileName>
+        <numberOfAuthors>1</numberOfAuthors>
+        <numberOfCommits>32</numberOfCommits>
+        <creationTime>1506775701</creationTime>
+        <lastModificationTime>1546429687</lastModificationTime>
+      </file>
+    </entry>
+    <entry>
+      <string>/analysis/Report.java</string>
+      <file>
+        <fileName>/analysis/Report.java</fileName>
+        <numberOfAuthors>2</numberOfAuthors>
+        <numberOfCommits>33</numberOfCommits>
+        <creationTime>1525640152</creationTime>
+        <lastModificationTime>1555884124</lastModificationTime>
+      </file>
+    </entry>
+    <entry>
+      <string>/analysis/FilteredLog.java</string>
+      <file>
+        <fileName>/analysis/FilteredLog.java</fileName>
+        <numberOfAuthors>1</numberOfAuthors>
+        <numberOfCommits>5</numberOfCommits>
+        <creationTime>1538517965</creationTime>
+        <lastModificationTime>1546122484</lastModificationTime>
+      </file>
+    </entry>
+  </statisticsPerFile>
+</repo>
