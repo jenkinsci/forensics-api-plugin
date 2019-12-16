@@ -250,6 +250,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         return Objects.hash(fileName, blamesByLine);
     }
 
+    @SuppressWarnings("PMD.DataClass")
     private static class LineBlame implements Serializable {
         private static final long serialVersionUID = 7L; // release 0.7
         private String name = EMPTY;

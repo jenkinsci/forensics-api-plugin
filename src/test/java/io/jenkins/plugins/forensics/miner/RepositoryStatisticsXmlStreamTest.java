@@ -42,8 +42,8 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
 
         FileStatistics fileStatistics = statistics.get(ISSUE_BUILDER);
         assertThat(fileStatistics).hasFileName(ISSUE_BUILDER)
-                .hasCreationTime(1506775701)
-                .hasLastModificationTime(1546429687)
+                .hasCreationTime(1_506_775_701)
+                .hasLastModificationTime(1_546_429_687)
                 .hasNumberOfAuthors(1)
                 .hasNumberOfCommits(32);
     }
