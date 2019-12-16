@@ -3,6 +3,7 @@ package io.jenkins.plugins.forensics.blame;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,7 @@ class BlamesXmlStreamTest extends ResourceTest {
 
         Blames restored520 = blamesReader.read(getResourceAsFile("fileBlame-5.2.0.xml"));
         assertThatBlamesAreCorrect(restored520);
+        blamesReader.write(Paths.get("/tmp/serialized.xml"), restored520);
     }
 
     @Test
@@ -36,6 +38,14 @@ class BlamesXmlStreamTest extends ResourceTest {
 
         Blames restored070 = blamesReader.read(getResourceAsFile("fileBlame-0.7.0.xml"));
         assertThatBlamesAreCorrect(restored070);
+    }
+
+    @Test
+    void shouldReadBlamesOfForensics062() {
+        BlamesXmlStream blamesReader = new BlamesXmlStream();
+
+        Blames restored062 = blamesReader.read(getResourceAsFile("fileBlame-0.6.2.xml"));
+        assertThatBlamesAreCorrect(restored062);
     }
 
     @Test
