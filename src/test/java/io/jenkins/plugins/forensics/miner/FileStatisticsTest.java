@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
 
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -17,7 +19,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
     @Test
     void shouldCreateFileStatistics() {
-        FileStatistics statistics = new FileStatistics(FILE);
+        FileStatistics statistics = new FileStatisticsBuilder().build(FILE);
 
         assertThat(statistics).hasFileName(FILE);
         assertThat(statistics).hasNumberOfCommits(0);
@@ -52,17 +54,21 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
     @Test
     void shouldConvertWindowsName() {
-        assertThat(new FileStatistics("C:\\path\\to\\file.txt")).hasFileName("C:/path/to/file.txt");
-        assertThat(new FileStatistics("C:\\path\\to/file.txt")).hasFileName("C:/path/to/file.txt");
-        assertThat(new FileStatistics("/path/to/file.txt")).hasFileName("/path/to/file.txt");
+        assertThat(createStatistics("C:\\path\\to\\file.txt")).hasFileName("C:/path/to/file.txt");
+        assertThat(createStatistics("C:\\path\\to/file.txt")).hasFileName("C:/path/to/file.txt");
+        assertThat(createStatistics("/path/to/file.txt")).hasFileName("/path/to/file.txt");
     }
 
     @Override
     protected FileStatistics createSerializable() {
-        FileStatistics statistics = new FileStatistics(FILE);
+        FileStatistics statistics = createStatistics(FILE);
 
         statistics.inspectCommit(ONE_DAY * 9, "one");
 
         return statistics;
+    }
+
+    private FileStatistics createStatistics(final String fileName) {
+        return new FileStatisticsBuilder().build(fileName);
     }
 }

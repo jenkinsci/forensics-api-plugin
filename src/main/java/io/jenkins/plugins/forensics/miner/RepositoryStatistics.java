@@ -16,9 +16,8 @@ import java.util.stream.Collectors;
  *
  * @author Ullrich Hafner
  */
-// FIXME: use TreeString for files
 public class RepositoryStatistics implements Serializable {
-    private static final long serialVersionUID = 3650720039292455024L;
+    private static final long serialVersionUID = 7L; // release 0.7
 
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 

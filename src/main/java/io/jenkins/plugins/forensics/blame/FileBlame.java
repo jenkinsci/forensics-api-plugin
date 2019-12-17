@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
+import edu.hm.hafner.util.PathUtil;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
@@ -22,30 +23,11 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 public class FileBlame implements Iterable<Integer>, Serializable {
     private static final long serialVersionUID = 7L; // release 0.7
 
-    private static final String UNIX_SLASH = "/";
-    private static final String WINDOWS_BACK_SLASH = "\\";
-
     static final String EMPTY = "-";
     static final int EMPTY_INTEGER = 0;
 
-    private final String fileName;
-    @Deprecated
-    @SuppressWarnings({"checkstyle:InnerTypeLast", "MismatchedQueryAndUpdateOfCollection"})
-    private final transient Set<Integer> lines = new HashSet<>();
-    @Deprecated
-    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
-    private final transient Map<Integer, String> commitByLine = new HashMap<>();
-    @Deprecated
-    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
-    private final transient Map<Integer, String> nameByLine = new HashMap<>();
-    @Deprecated
-    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
-    private final transient Map<Integer, String> emailByLine = new HashMap<>();
-    @Nullable
-    @Deprecated
-    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
-    private transient Map<Integer, Integer> timeByLine = new HashMap<>();
-    @Nullable
+    private final TreeString fileName;
+    @Nullable // Deserialization of old format
     private Map<Integer, LineBlame> blamesByLine = new HashMap<>();
 
     /**
@@ -54,9 +36,8 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      * @param fileName
      *         the name of the file that should be blamed
      */
-    public FileBlame(final String fileName) {
-        // FIXME: scan for SLASH and BACKSLASH
-        this.fileName = StringUtils.replace(fileName, WINDOWS_BACK_SLASH, UNIX_SLASH);
+    private FileBlame(final TreeString fileName) {
+        this.fileName = fileName;
     }
 
     /**
@@ -83,7 +64,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     }
 
     public String getFileName() {
-        return fileName;
+        return fileName.toString();
     }
 
     public Set<Integer> getLines() {
@@ -310,4 +291,42 @@ public class FileBlame implements Iterable<Integer>, Serializable {
             return Objects.hash(name, email, commit, addedAt);
         }
     }
+
+    /**
+     * Creates {@link FileBlame} instances that optimize the memory footprint for file names by using a {@link
+     * TreeStringBuilder}.
+     */
+    public static class FileBlameBuilder {
+        private final TreeStringBuilder builder = new TreeStringBuilder();
+        private final PathUtil pathUtil = new PathUtil();
+
+        /**
+         * Creates a new {@link FileBlame} instance for the specified file name. The file name will be normalized and
+         * compressed using a {@link TreeStringBuilder}.
+         *
+         * @param fileName
+         *         the file name
+         * @return the created {@link FileBlame} instance
+         */
+        public FileBlame build(final String fileName) {
+            return new FileBlame(builder.intern(pathUtil.getAbsolutePath(fileName)));
+        }
+    }
+
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Set<Integer> lines = new HashSet<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Map<Integer, String> commitByLine = new HashMap<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Map<Integer, String> nameByLine = new HashMap<>();
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private final transient Map<Integer, String> emailByLine = new HashMap<>();
+    @Nullable
+    @Deprecated
+    @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
+    private transient Map<Integer, Integer> timeByLine = new HashMap<>();
 }

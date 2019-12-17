@@ -16,6 +16,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -93,7 +94,7 @@ public class MinerFactoryITest {
         public RepositoryStatistics mine(final Collection<String> absoluteFileNames,
                 final FilteredLog logger) {
             RepositoryStatistics statistics = new RepositoryStatistics();
-            statistics.add(new FileStatistics("/file.txt"));
+            statistics.add(new FileStatisticsBuilder().build("/file.txt"));
             return statistics;
         }
     }

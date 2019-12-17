@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
 
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -51,7 +53,7 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     @Test
     void shouldWriteReport() {
         RepositoryStatistics statistics = new RepositoryStatistics();
-        FileStatistics fileStatistics = new FileStatistics(FILE);
+        FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
         fileStatistics.inspectCommit(ONE_DAY * 4, "name");
         fileStatistics.inspectCommit(ONE_DAY * 3, "another");
         fileStatistics.inspectCommit(ONE_DAY * 2, "another");

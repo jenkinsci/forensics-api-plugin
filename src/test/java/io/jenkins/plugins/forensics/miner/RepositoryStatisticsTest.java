@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -33,7 +35,7 @@ class RepositoryStatisticsTest {
     void shouldAddStatisticsFor1File() {
         RepositoryStatistics statistics = new RepositoryStatistics();
 
-        FileStatistics fileStatistics = new FileStatistics(FILE);
+        FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
 
         statistics.addAll(Collections.singleton(fileStatistics));
 

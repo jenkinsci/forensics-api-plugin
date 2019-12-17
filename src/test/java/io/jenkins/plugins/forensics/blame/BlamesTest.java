@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
 
+import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -128,7 +130,7 @@ class BlamesTest extends SerializableTest<Blames> {
 
     private FileBlame createBlame(final String fileName, final int lineNumber, final String name, final String email,
             final String commit, final int time) {
-        FileBlame fileBlame = new FileBlame(fileName);
+        FileBlame fileBlame = new FileBlameBuilder().build(fileName);
         fileBlame.setName(lineNumber, name);
         fileBlame.setCommit(lineNumber, commit);
         fileBlame.setEmail(lineNumber, email);

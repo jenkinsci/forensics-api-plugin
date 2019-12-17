@@ -5,8 +5,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import edu.hm.hafner.util.PathUtil;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
+
+import io.jenkins.plugins.forensics.blame.FileBlame;
 
 /**
  * Aggregates commit statistics for a given file. The following statistics are summed up:
@@ -20,12 +25,9 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
  * @author Ullrich Hafner
  */
 public class FileStatistics implements Serializable {
-    private static final long serialVersionUID = -5776167206905031327L;
+    private static final long serialVersionUID = 7L; // release 0.7
 
-    private static final String UNIX_SLASH = "/";
-    private static final String WINDOWS_BACK_SLASH = "\\";
-
-    private final String fileName;
+    private final TreeString fileName;
 
     private int numberOfAuthors;
     private int numberOfCommits;
@@ -40,12 +42,12 @@ public class FileStatistics implements Serializable {
      * @param fileName
      *         the name of the file for which statistics will be generated
      */
-    public FileStatistics(final String fileName) {
-        this.fileName = StringUtils.replace(fileName, WINDOWS_BACK_SLASH, UNIX_SLASH);
+    private FileStatistics(final TreeString fileName) {
+        this.fileName = fileName;
     }
 
     public String getFileName() {
-        return fileName;
+        return fileName.toString();
     }
 
     /**
@@ -130,5 +132,26 @@ public class FileStatistics implements Serializable {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
+    }
+
+    /**
+     * Creates {@link FileBlame} instances that optimize the memory footprint for file names by using a {@link
+     * TreeStringBuilder}.
+     */
+    public static class FileStatisticsBuilder {
+        private final TreeStringBuilder builder = new TreeStringBuilder();
+        private final PathUtil pathUtil = new PathUtil();
+
+        /**
+         * Creates a new {@link FileStatistics} instance for the specified file name. The file name will be normalized
+         * and compressed using a {@link TreeStringBuilder}.
+         *
+         * @param fileName
+         *         the file name
+         * @return the created {@link FileStatistics} instance
+         */
+        public FileStatistics build(final String fileName) {
+            return new FileStatistics(builder.intern(pathUtil.getAbsolutePath(fileName)));
+        }
     }
 }

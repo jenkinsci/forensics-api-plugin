@@ -16,6 +16,7 @@ import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
+import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static io.jenkins.plugins.util.PathStubs.*;
@@ -94,7 +95,7 @@ public class BlamerFactoryITest {
         @Override
         public Blames blame(final FileLocations fileLocations, final FilteredLog logger) {
             Blames blames = new Blames();
-            blames.add(new FileBlame(FILE_NAME));
+            blames.add(new FileBlameBuilder().build(FILE_NAME));
             return blames;
         }
     }

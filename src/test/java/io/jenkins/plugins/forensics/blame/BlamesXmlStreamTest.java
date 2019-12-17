@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
 
+import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -58,7 +60,7 @@ class BlamesXmlStreamTest extends SerializableTest<Blames> {
     private void assertThatBlamesAreCorrect(final Blames blames) {
         assertThat(blames.getFiles()).contains(REPORT, FILTERED_LOG);
 
-        FileBlame report = new FileBlame(REPORT_SRC);
+        FileBlame report = new FileBlameBuilder().build(REPORT_SRC);
         report.setCommit(768, "11d9cdf38bd029d970705b1151aef910cd873044");
         report.setName(768, "Ulli Hafner");
         report.setEmail(768, "ullrich.hafner@gmail.com");
