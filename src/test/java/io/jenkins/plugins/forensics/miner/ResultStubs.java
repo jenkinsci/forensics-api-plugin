@@ -1,9 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
-import com.google.common.annotations.VisibleForTesting;
-
-import io.jenkins.plugins.echarts.Build;
-import io.jenkins.plugins.echarts.BuildResult;
+import edu.hm.hafner.echarts.Build;
+import edu.hm.hafner.echarts.BuildResult;
+import edu.hm.hafner.util.VisibleForTesting;
 
 import static org.mockito.Mockito.*;
 

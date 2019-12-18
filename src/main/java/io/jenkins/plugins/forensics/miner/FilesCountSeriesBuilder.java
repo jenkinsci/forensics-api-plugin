@@ -3,7 +3,7 @@ package io.jenkins.plugins.forensics.miner;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.jenkins.plugins.echarts.SeriesBuilder;
+import edu.hm.hafner.echarts.SeriesBuilder;
 
 /**
  * Builds one x-axis point for the series of a line chart showing the number of files in the repository.

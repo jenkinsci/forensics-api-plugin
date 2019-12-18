@@ -1,14 +1,15 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.echarts.BuildResult;
+import edu.hm.hafner.echarts.ChartModelConfiguration;
+import edu.hm.hafner.echarts.JacksonFacade;
+import edu.hm.hafner.echarts.LinesChartModel;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.Job;
 
-import io.jenkins.plugins.echarts.BuildResult;
-import io.jenkins.plugins.echarts.ChartModelConfiguration;
-import io.jenkins.plugins.echarts.JacksonFacade;
-import io.jenkins.plugins.echarts.LinesChartModel;
+import io.jenkins.plugins.echarts.BuildResultIterator;
 import io.jenkins.plugins.util.JobAction;
 
 /**
