@@ -4,7 +4,7 @@
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
 
-  <l:layout title="${it.displayName}" norefresh="true">
+  <bs:layout title="${it.displayName}" norefresh="true">
 
     <st:include it="${it.owner}" page="sidepanel.jelly"/>
 
@@ -53,6 +53,6 @@
 
     </l:main-panel>
 
-  </l:layout>
+  </bs:layout>
 
 </j:jelly>
