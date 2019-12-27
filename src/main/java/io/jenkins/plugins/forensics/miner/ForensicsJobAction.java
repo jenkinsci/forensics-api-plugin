@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.Job;
 
-import io.jenkins.plugins.echarts.BuildResultIterator;
+import io.jenkins.plugins.echarts.BuildActionIterator;
 import io.jenkins.plugins.util.JobAction;
 
 /**
@@ -19,6 +19,7 @@ import io.jenkins.plugins.util.JobAction;
  *
  * @author Ullrich Hafner
  */
+// FIXME: we need one level of delegation (or should the action be used as charts object model?)
 public class ForensicsJobAction extends JobAction<ForensicsBuildAction> {
     static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
     static final String FORENSICS_ID = "forensics";
@@ -70,7 +71,7 @@ public class ForensicsJobAction extends JobAction<ForensicsBuildAction> {
         return new FilesCountTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
     }
 
-    private Iterable<? extends BuildResult<RepositoryStatistics>> createBuildHistory() {
-        return () -> new BuildResultIterator<>(getBuildActionClass(), getLatestAction());
+    private Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
+        return () -> new BuildActionIterator<>(getBuildActionClass(), getLatestAction());
     }
 }

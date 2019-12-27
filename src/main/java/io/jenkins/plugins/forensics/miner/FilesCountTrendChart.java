@@ -31,7 +31,7 @@ public class FilesCountTrendChart {
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    public LinesChartModel create(final Iterable<? extends BuildResult<RepositoryStatistics>> results,
+    public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);

@@ -47,7 +47,7 @@ class FilesCountSeriesBuilderTest {
     void shouldHaveThreeValuesForSingleBuild() {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
 
-        BuildResult<RepositoryStatistics> singleResult = createResult(1, 1);
+        BuildResult<ForensicsBuildAction> singleResult = createResult(1, 1);
 
         LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Collections.singletonList(singleResult));
 

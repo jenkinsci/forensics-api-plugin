@@ -24,14 +24,14 @@ public final class ResultStubs {
      *         behavior
      */
     @VisibleForTesting
-    public static BuildResult<RepositoryStatistics> createResult(final int buildNumber,
+    public static BuildResult<ForensicsBuildAction> createResult(final int buildNumber,
             final int numberOfFiles) {
-        RepositoryStatistics statistics = mock(RepositoryStatistics.class);
-        when(statistics.size()).thenReturn(numberOfFiles);
+        ForensicsBuildAction action = mock(ForensicsBuildAction.class);
+        when(action.getNumberOfFiles()).thenReturn(numberOfFiles);
 
         Build build = new Build(buildNumber);
 
-        return new BuildResult<>(build, statistics);
+        return new BuildResult<>(build, action);
     }
 
     private ResultStubs() {

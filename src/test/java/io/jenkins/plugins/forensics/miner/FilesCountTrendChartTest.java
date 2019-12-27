@@ -24,7 +24,7 @@ class FilesCountTrendChartTest {
     void shouldCreateLinesChartModel() {
         FilesCountTrendChart chart = new FilesCountTrendChart();
 
-        List<BuildResult<RepositoryStatistics>> results = new ArrayList<>();
+        List<BuildResult<ForensicsBuildAction>> results = new ArrayList<>();
         results.add(createResult(2, 20));
         results.add(createResult(1, 10));
 

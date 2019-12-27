@@ -17,6 +17,8 @@ import io.jenkins.plugins.util.BuildAction;
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
     private static final long serialVersionUID = -263122257268060032L;
 
+    private final int numberOfFiles;
+
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
      *
@@ -26,7 +28,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      */
     public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
-        super(owner, repositoryStatistics);
+        this(owner, repositoryStatistics, true);
     }
 
     /**
@@ -42,6 +44,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     @VisibleForTesting
     ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics, final boolean canSerialize) {
         super(owner, repositoryStatistics, canSerialize);
+
+        numberOfFiles = repositoryStatistics.size();
     }
 
     @Override
@@ -82,5 +86,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     @Override
     public String getUrlName() {
         return ForensicsJobAction.FORENSICS_ID;
+    }
+
+    public int getNumberOfFiles() {
+        return numberOfFiles;
     }
 }
