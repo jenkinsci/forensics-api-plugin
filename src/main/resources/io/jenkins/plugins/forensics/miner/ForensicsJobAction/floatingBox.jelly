@@ -1,22 +1,6 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+<j:jelly xmlns:j="jelly:core" xmlns:c="/charts">
 
-  <div class="test-trend-caption">
-    ${%SCM Files Count Trend}
-  </div>
-
-  <div align="right">
-    <div id="files-trend-chart" class="graph-cursor-pointer"
-         style="width: 500px; min-height: 200px; min-width: 500px; height: 200px;"/>
-  </div>
-
-  <st:adjunct includes="io.jenkins.plugins.echarts"/>
-
-  <script>
-    var proxy = <st:bind value="${from}"/>;
-    proxy.getBuildTrend(function (trendModel) {
-    renderTrendChart('files-trend-chart', trendModel.responseJSON, "forensics");
-    });
-  </script>
+  <c:trend-chart it="${from}" title="${%SCM Files Count Trend}" enableLinks="true"/>
 
 </j:jelly>

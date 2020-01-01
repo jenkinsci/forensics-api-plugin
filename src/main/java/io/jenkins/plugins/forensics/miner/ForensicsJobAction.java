@@ -1,16 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
-import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
-import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.Job;
 
-import io.jenkins.plugins.echarts.BuildActionIterator;
-import io.jenkins.plugins.util.JobAction;
+import io.jenkins.plugins.echarts.AsyncTrendJobAction;
 
 /**
  * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
@@ -19,8 +15,7 @@ import io.jenkins.plugins.util.JobAction;
  *
  * @author Ullrich Hafner
  */
-// FIXME: we need one level of delegation (or should the action be used as charts object model?)
-public class ForensicsJobAction extends JobAction<ForensicsBuildAction> {
+public class ForensicsJobAction extends AsyncTrendJobAction<ForensicsBuildAction> {
     static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
     static final String FORENSICS_ID = "forensics";
 
@@ -56,22 +51,8 @@ public class ForensicsJobAction extends JobAction<ForensicsBuildAction> {
         return FORENSICS_ID;
     }
 
-    /**
-     * Returns the UI model for an ECharts line chart that shows the issues stacked by severity.
-     *
-     * @return the UI model as JSON
-     */
-    @JavaScriptMethod
-    @SuppressWarnings("unused") // Called by jelly view
-    public String getBuildTrend() {
-        return new JacksonFacade().toJson(createChartModel());
-    }
-
-    private LinesChartModel createChartModel() {
+    @Override
+    protected LinesChartModel createChartModel() {
         return new FilesCountTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
-    }
-
-    private Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
-        return () -> new BuildActionIterator<>(getBuildActionClass(), getLatestAction());
     }
 }

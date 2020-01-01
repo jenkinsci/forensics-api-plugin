@@ -629,12 +629,18 @@ A plugin reporter typically also reports some kind of trend from build to build.
 quite limited concept of rendering such trends as trend charts. The
 http://www.jfree.org/jfreechart/[JFreeChart framework] offered by Jenkins core is a server
 side rendering engine that creates charts as static PNG images that will be included on the job and details pages.
-Nowadays, several powerful JS based charting libraries
-are available, that do the same job (well actually an even better job) on the client side. That has the advantage that
-these charts can be customized on each client without affecting the server performance. Moreover, you get a lot of additional
-features (like zooming, animation, etc.) for free. One of those
-charting libraries is https://echarts.apache.org/en/index.html[ECharts]. You can embed charts that use this library
-by importing the corresponding JS files and by defining the chart in the corresponding jelly file. While that works it
+Nowadays, several powerful JS based charting libraries are available, that do the same job
+(well actually an even better job) on the client side. That has the advantage that these charts can be customized
+on each client without affecting the server performance. Moreover, you get a lot of additional
+features (like zooming, animation, etc.) for free. Additionally, these charting libraries not only support the typical
+build trend charts but also a lot of additional charts types that can be used to improve the user experience of
+a plugin.
+One of those charting libraries is https://echarts.apache.org/en/index.html[ECharts]: this library has a powerful API
+and supports literally every chart type one can image of. You can get some impressions of the features on the
+https://echarts.apache.org/examples/en/[examples page] of the library.
+
+In order to use these charts one can embed charts that use this library by importing the corresponding JS files and by
+defining the chart in the corresponding Jelly file. While that already works quite well it
 will be still somewhat cumbersome to provide the corresponding model for these charts from Jenkins build results. So I
 I added a powerful Java API that helps to create the model for these charts on the Java side. This API provides the
 following features:
@@ -648,6 +654,10 @@ at the same day).
 
 Those charts can be used as trend chart in the project page (see <<img-job>>) or as information chart in the details
 view of a plugin (see <<reporter-detail>>).
+
+[#pie-charts]
+==== Simple pie charts
+
 
 [#trend-charts]
 ==== Trend charts on the job level view
