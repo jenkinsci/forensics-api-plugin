@@ -358,6 +358,7 @@ This helps to improve the layout for larger screens. In the warnings plugin you 
 an example: on small devices, there is one card visible that shows one pie chart (in an carousel). If you are
 opening the same page on a larger device, then two of the pie charts are shown side by side.
 
+[#cards]
 === Cards
 
 When presenting information of a plugin as a block, typically plain text elements are shown. This will normally result
@@ -647,8 +648,8 @@ following features:
 
 - Create trend charts based on a collection of build results.
 - Separate the chart type from the aggregation in order to simplify unit testing of the chart model.
-- Toggle the x-Axis between build number or build date (with automatic aggregation of results that have been recorded
-at the same day).
+- Toggle the type of the X-Axis between build number or build date (with automatic aggregation of results that
+have been recorded at the same day).
 - Automatic conversion of the Java model to the required JSON model for the JS side.
 - Support for pie and line charts (more to come soon).
 
@@ -656,36 +657,77 @@ Those charts can be used as trend chart in the project page (see <<img-job>>) or
 view of a plugin (see <<reporter-detail>>).
 
 [#pie-charts]
-==== Simple pie charts
+==== Pie charts
 
+A simple but still informative chart is a pie chart that illustrates numerical proportions of plugin data. In the Forensics
+plugin I am using this chart to show the numerical proportions of the number of authors or commits for the
+source code files in the Git repository (see <<img-card>>). In the warnings plugin I use this chart to show the
+numerical proportions of the new, outstanding, or fixed warnings, see <<img-pie>>.
+
+.Pie chart in the Warnings plugin
+[#img-pie]
+image::pie.png[Pie chart example]
+
+In order to include such a chart in your details view, you can use the provided `pie-chart` tag.
+In the following snippet you see this tag in action (embedded in a Bootstrap card, see <<cards>>):
+[source,xml,linenums]
+.index.jelly
+----
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core"  xmlns:c="/charts" xmlns:bs="/bootstrap">
+
+    [...]
+    <bs:card title="${%Number of authors}" fontAwesomeIcon="fa-users">
+      <c:pie-chart id="authors" model="${it.authorsModel}" height="256" />
+    </bs:card>
+    [...]
+
+</j:jelly>
+----
+
+You need to provide a unique ID for this chart and the corresponding model value. The model must be the JSON
+representation of a corresponding `PieChartModel` instance. Such a model can be created with a couple of lines:
+
+[source,java,linenums]
+.ViewModel.java
+----
+    [...]
+    PieChartModel model = new PieChartModel("Title");
+
+    model.add(new PieData("Segment 1 name", 10), Palette.RED);
+    model.add(new PieData("Segment 2 name", 15), Palette.GREEN);
+    model.add(new PieData("Segment 3 name", 20), Palette.YELLOW);
+
+    String json = new JacksonFacade().toJson(model);
+    [...]
+----
 
 [#trend-charts]
 ==== Trend charts on the job level view
 
-In order to show a trend chart on the job page you need to provide a so called floating box that renders
-the chart (stored in the file `floatingBox.jelly`). A snippet of such a floating box view is shown below:
+In order to show a trend that renders a line chart on the job page (see <<img-job>>) you need to provide a so called
+floating box (stored in the file `floatingBox.jelly` of your job action (see <<reporter-structure>>)).
+The content of this file is quite simple and contains just a `trend-chart` tag:
 
 [source,xml,linenums]
 .floatingBox.jelly
 ----
-  <div id="files-trend-chart" class="graph-cursor-pointer"
-         style="width: 500px; min-height: 200px; min-width: 500px; height: 200px;"/> <1>
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:c="/charts">
 
-  <st:adjunct includes="io.jenkins.plugins.echarts"/>
+  <c:trend-chart it="${from}" title="${%SCM Files Count Trend}" enableLinks="true"/>
 
-  <script>
-    var proxy = <st:bind value="${from}"/>;
-    proxy.getBuildTrend(function (trendModel) {
-        renderTrendChart('files-trend-chart', trendModel.responseJSON, "forensics"); <2>
-    });
-  </script>
+</j:jelly>
 ----
 
-<1> A `div` element will be used as place holder for the actual chart from the charting engine.
-<2> The chart will be rendered using the JS function `renderTrendChart`. Make sure to use a unique ID for the chart.
-
 On the Java side the model for the chart needs to be provided in the corresponding sub class of `JobAction` (which is
-the owner of the floating box).
+the owner of the floating box). Since the computation of trend charts is quite expensive on the server side as well
+(several builds need to be read from disk and the interesting data points need to be computed) this process has been
+put into a separate background job. Once the computation is done the result is shown via an Ajax call. In order to
+hide these details for plugin authors you should simply derive your `JobAction` class from the corresponding
+`AsyncTrendJobAction` class, that already contains the boilerplate code. So your static plugin object model will actually
+become a little bit more complex:
+
 
 [#jenkins-chart-model]
 [plantuml]
@@ -707,8 +749,12 @@ abstract class Job {
 abstract class JobAction #lightBlue {
 }
 
-class ForensicsJobAction #lightGreen {
-    String getBuildTrend()
+abstract class AsyncTrendJobAction #lightBlue {
+    {abstract} LinesChartModel createChartModel()
+}
+
+class ForensicsJobAction<ForensicsBuildAction> #lightGreen {
+    LinesChartModel createChartModel()
 }
 
 abstract class Run {
@@ -739,11 +785,61 @@ Run "1" --- "*" BuildAction
 BuildAction "1" - "1" BuildResult : \t
 JobAction <. BuildAction : projectAction
 
-JobAction <|-- ForensicsJobAction
-BuildAction <|-- ForensicsBuildAction
+JobAction <|-- AsyncTrendJobAction
+AsyncTrendJobAction <|-- ForensicsJobAction
+BuildAction <|--- ForensicsBuildAction
 
 @enduml
 ----
+
+Basically, you need to implement the method `LinesChartModel createChartModel()` to create the line
+chart. This method is quite simple to implement, since most of the hard work is provided by the library: you will
+invoked with an iterator of your build actions, starting with the latest build. The iterator advances from build to build
+until no more results are available (or the maximum number of builds to consider has been reached). The most important
+thing to implement in your plugin is the way how data points are computed for a given `BuildAction`. Here is an example of
+such a `SeriesBuilder` implementation in the Forensics Plugin:
+
+[source,java,linenums]
+.FilesCountSeriesBuilder.java
+----
+package io.jenkins.plugins.forensics.miner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.hm.hafner.echarts.SeriesBuilder;
+
+/**
+* Builds one x-axis point for the series of a line chart showing the number of files in the repository.
+*
+* @author Ullrich Hafner
+*/
+public class FilesCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+    static final String TOTALS_KEY = "total";
+
+    @Override
+    protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
+        Map<String, Integer> series = new HashMap<>();
+        series.put(TOTALS_KEY, current.getNumberOfFiles());
+        return series;
+    }
+}
+----
+
+You are not limited to a single line chart. You can show several lines in a single chart, you can show stacked values,
+or even the delta between some values. You can also have a look at the
+https://github.com/jenkinsci/warnings-ng-plugin/tree/master/src/main/java/io/jenkins/plugins/analysis/core/charts[charts of the warnings plugin]
+to see some of these features in detail.
+
+.Trend chart with several lines in the Warnings plugin
+[#img-trend]
+image::trend-lines.png[Trend with several lines example]
+
+.Trend chart with stacked lines in the Warnings plugin
+[#img-stacked]
+image::trend-stacked.png[Trend chart with stacked lines example]
+
+
 
 [#build-summary]
 == Summary boxes on the build level view
