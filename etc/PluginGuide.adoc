@@ -10,23 +10,29 @@ ifndef::plantUMLDir[:plantUMLDir: .plantuml/]
 For Jenkins a large number of plugins are available that visualize the results of a wide variety of build steps. There
 are plugins available to render the test results, the code coverage, the static analysis and so on. All of these plugins
 typically pick up the build results of a given build step and show them in the user interface. In order to render these
-details most of the plugins use static HTML pages, since this type of user interface is the standard visualization in Jenkins since
-2007.
+details most of the plugins use static HTML pages, since this type of user interface is the standard visualization in
+Jenkins since its inception in 2007.
 
 In order to improve the look and feel and the user experience of these plugins it makes sense to move forward and
-incorporate some modern Java Script libraries and components. Since development of Blue Ocean has been stopped
-https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/jenkinsci-users/xngZrSsXIjc/btasuPpYCgAJ[(see Jenkins mailing list post)]
+incorporate some modern Java Script libraries and components. Since development of Blue Ocean has been stopped (see
+https://groups.google.com/forum/?utm_medium=email&utm_source=footer#!msg/jenkinsci-users/xngZrSsXIjc/btasuPpYCgAJ[Jenkins mailing list post])
 plugin authors need to decide on their own, which UI technologies are helpful for that task. However, the universe of
 modern UI components is so overwhelming that it makes sense to pick up only a small set of components that are proven
-to be useful and compatible with Jenkins underlying web technologies. This guide introduces a few UI components
-that make sense to be used by plugin authors in the future to provide a rich user interface for reports in Jenkins.
+to be useful and compatible with Jenkins underlying web technologies. Moreover, the initial setup of
+incorporating such a new component is quite large so it would be helpful if that work needs to be done only once.
+
+This guide introduces a few UI components
+that make sense to be used by all plugin authors in the future to provide a rich user interface for reports in Jenkins.
 In order to simplify the usage of these libraries in the context of Jenkins as a Java based web application, these
 Java Script libraries and components have been packaged as ordinary Jenkins plugins.
 
 In the following sections, these new components will be introduced step by step. In order to see how these components
-can be used a plugin, I demonstrate the new features while enhancing an existing Jenkins plugin with a new user
-interface. Examples of the new interface are also shown in the https://github.com/jenkinsci/warnings-ng-plugin/blob/master/doc/Documentation.md[documentation]
-of the Warnings Next Generation Plugin or in our public https://ci.jenkins.io/job/Plugins/job/warnings-ng-plugin/job/master/pmd/[Jenkins CI instance].
+can be used a plugin, I demonstrate the new features while enhancing the existing
+https://github.com/jenkinsci/forensics-api-plugin[Forensics Plugin] with a new user
+interface. Since the Warnings Next Generation Plugin also uses these new components, you can see additional examples
+in the https://github.com/jenkinsci/warnings-ng-plugin/blob/master/doc/Documentation.md[documentation of the warnings plugin]
+or in our public https://ci.jenkins.io/job/Plugins/job/warnings-ng-plugin/job/master/pmd/[Jenkins CI instance], that
+already is using these components in the detail views of the warnings plugin.
 
 == New user interface plugins
 
@@ -82,6 +88,7 @@ In order to use these plugins you need to add them as dependencies in your plugi
 to add them all:
 
 [source,xml]
+.pom.xml
 -----
   <properties>
     <plugin-util-api.version>0.1.0-beta3</plugin-util-api.version>
@@ -89,7 +96,7 @@ to add them all:
     <bootstrap4-api.version>4.4.1-3-beta1</bootstrap4-api.version>
     <echarts-api.version>4.4.0-5-beta1</echarts-api.version>
     <data-tables-api.version>1.10.20-4-beta1</data-tables-api.version>
-    ...
+    [...]
   </properties>
 
   <dependencies>
@@ -119,7 +126,8 @@ to add them all:
       <artifactId>data-tables-api</artifactId>
       <version>${data-tables-api.version}</version>
     </dependency>
-    ...
+    [...]
+
   </dependencies>
 -----
 
@@ -134,7 +142,7 @@ plugins.
 In this section I will explain some fundamentals of the design of Jenkins, i.e. the Java model and the associated
 user interface elements. If you are already familiar on how to implement the corresponding extension points of a
 reporter plugin (see section https://jenkins.io/doc/developer/extensibility/[Extensibility] in Jenkins'
-developer guide), then you can skip this section.
+developer guide), then you can skip this section and head directly to <<extending-jenkins-model>>.
 
 Jenkins organizes projects using the static object model structure shown in <<jenkins-model>>.
 
@@ -151,15 +159,15 @@ skinparam ArrowThickness 3
 
 hide circle
 
-abstract class Job {
+abstract class Job #Ivory {
     -displayName: String
 }
 
-abstract class Run {
+abstract class Run #Ivory {
     -number: Integer
 }
 
-interface Action {
+interface Action #Ivory {
     -url: String
 }
 
@@ -207,11 +215,16 @@ there are views to show the test results, the analysis results, and so on. It is
 elements should be shown there. In the next few sections I will introduce some new UI components that can be used
 to show the corresponding results in a pleasant way.
 
+[#extending-jenkins-model]
+=== Extending Jenkins object model
+
 Since reporters typically are composed in a similar way, I extended Jenkins' original object model
-(see <<jenkins-model>>) with some additional elements, so it will be much simpler to create or implement a new reporter plugin.
-This new model is shown in <<jenkins-reporter-model>>. The central element is a build action that
+(see <<jenkins-model>>) with some additional elements, so it will be much simpler to create or implement
+a new reporter plugin. This new model is shown in <<jenkins-reporter-model>>. The central element is a build action that
 will store the results of a plugin reporter. This action will be attached to each build and will hold (and persist) the
-results for a reporter. This action is also used to simplify the creation of trend charts, see <<trend-charts>>.
+results for a reporter. The detail data of each action will be automatically stored in an additional file, so the
+memory footprint of Jenkins can be kept small if the details are never requested by users. Additionally, this
+action is also used to simplify the creation of project actions and trend charts, see <<trend-charts>>.
 
 [#jenkins-reporter-model]
 [plantuml]
@@ -226,26 +239,26 @@ skinparam ArrowThickness 3
 
 hide circle
 
-abstract class Job {
+abstract class Job #Ivory {
     -displayName: String
 }
 
-abstract class JobAction #lightBlue {
+abstract class JobAction #AliceBlue {
 }
 
-abstract class Run {
+abstract class Run #Ivory {
     -number: Integer
 }
 
-interface Action {
+interface Action #Ivory {
     -url: String
 }
 
-abstract class BuildAction #lightBlue {
+abstract class BuildAction #AliceBlue {
     -url: String
 }
 
-abstract class BuildResult #lightBlue {
+abstract class BuildResult #AliceBlue {
     -data
 }
 
@@ -257,6 +270,14 @@ Job "1" --- "*" .JobAction
 Run "1" --- "*" BuildAction
 BuildAction "1" - "1" BuildResult : \t
 JobAction <. BuildAction : projectAction
+
+skinparam legendBackgroundColor #efefef
+
+legend
+|= |= Class Owner |
+|<back:Ivory>   </back>| Jenkins Core |
+|<back:AliceBlue>   </back>| UI Plugins |
+endlegend
 
 @enduml
 ----
@@ -287,28 +308,43 @@ here you can navigate to the details view that shows the scanned files in a tabl
 simply sorted and filtered. You also will get some pie charts that show important aspects of the
 commit history.
 
+Please note that this functionality of the plugin still is a proof of concept: the performance of this step heavily
+depends on the size and the number of commits of your Git repository. Currently it scans the whole repository in each
+build. I hope to find some students this year to replace this dumb algorithm with an incremental scanner.
+
 [#reporter-detail]
-== Detail views for each plugin
+== Introducing the new  UI components
 
 As already mentioned in <<reporter-structure>>, a details view is plugin specific. I.e., what is shown and how these
-elements are presented is up to the individual plugin author. So in the next sections I just provide some examples
-and concepts that plugins can use as building blocks for their own content.
+elements are presented is up to the individual plugin author. So in the next sections I provide some examples
+and new concepts that plugins can use as building blocks for their own content.
 
 === Grid layout
 
-TODO: check if we can remove that part and reuse Jenkins BS 3 grid
-
 The first thing to decide is, which elements should be shown on a plugin page and how much space each element
 should occupy. Typically, all visible components are mapped on the available space using a simple grid.
-In a Jenkins view we have a fixed header and footer and a navigation bar on the left (20 percent of the horizontal space). The rest of a screen can be used by
-a details view. In order to simplify the distribution of elements we use
-https://getbootstrap.com/docs/4.4/layout/grid/[Bootstrap's grid system]. That means, the view is split into columns and
-rows. This grid system is simple to use (but complex enough to also support fancy screen layouts). I won't go into
-details here, for our tutorial we use a simple grid of two rows and two columns. In order to create such a view in our
+In a Jenkins view we have a fixed header and footer and a navigation bar on the left
+(20 percent of the horizontal space). The rest of a screen can be used by
+a details view. In order to simplify the distribution of elements in that remaining space we use
+https://getbootstrap.com/docs/4.4/layout/grid/[Bootstrap's grid system].
+
+.Jenkins layout with a details view that contains a grid system
+[#img-grid]
+image::grid.png[Grid layout in Jenkins]
+
+That means, a view is split into 12 columns and and arbitrary number of rows. This grid system is simple to use
+(but complex enough to also support fancy screen layouts) - I won't go into
+details here, please refer to the https://getbootstrap.com/docs/4.4/layout/grid/[Bootstrap documentation]
+for details.
+
+For the forensics detail view we use a simple grid of two rows and two columns. Since the number of columns always is 12
+we need to create two "fat" columns that fill 6 of the standard columns.
+In order to create such a view in our
 plugin we need to create a view given as a jelly file and a corresponding Java view model object. A view with this layout
 is shown in the following snippet:
 
 [source,xml,linenums]
+.index.jelly
 ----
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:bs="/bootstrap">
@@ -320,10 +356,10 @@ is shown in the following snippet:
       <div class="fluid-container"> <3>
 
         <div class="row py-3"> <4>
-          <div class="col-3"> <5>
+          <div class="col-6"> <5>
             Content of column 1 in row 1
           </div>
-          <div class="col-9"> <6>
+          <div class="col-6"> <6>
             Content of column 2 in row 1
           </div>
         </div>
@@ -347,16 +383,16 @@ which is the preferred way of referencing static resources within Jenkins' Stapl
 <4> A new row of the view is specified with class `row`. The additional class `py-3` defines the padding to use for
 this row, see https://getbootstrap.com/docs/4.0/utilities/spacing/[Bootstrap Spacing] for more details.
 <5> Since Bootstrap automatically splits up a row into 12 equal sized columns we define here
-that the first column should occupy 3 of these 12 columns. You can also leave off the detailed numbers, then Bootstrap will
+that the first column should occupy 6 of these 12 columns. You can also leave off the detailed numbers, then Bootstrap will
 automatically distribute the content in the available space. Just be aware that this not what you want in most of the times.
-<6> The second row uses the remaining space, i.e. 9 of the 12 columns.
+<6> The second column uses the remaining space, i.e. 6 of the 12 columns.
 <7> The second row uses the same layout as row 1.
 <8> There is only one column for row 1, it will fill the whole available space.
 
 You can also specify different column layouts for one row, based on the actual visible size of the screen.
 This helps to improve the layout for larger screens. In the warnings plugin you will find
-an example: on small devices, there is one card visible that shows one pie chart (in an carousel). If you are
-opening the same page on a larger device, then two of the pie charts are shown side by side.
+an example: on small devices, there is one card visible that shows one pie chart in a carousel. If you are
+opening the same page on a larger device, then two of the pie charts are shown side by side and the carousel is hidden.
 
 [#cards]
 === Cards
@@ -464,24 +500,24 @@ skinparam ArrowThickness 3
 
 hide circle
 
-abstract class TableModel #lightBlue {
+abstract class TableModel #AliceBlue {
     {abstract} String getId()
     {abstract} List<TableColumn> getColumns()
     {abstract} List<TableRow> getRows()
 }
 
-class TableColumn #lightBlue {
+class TableColumn #AliceBlue {
 }
 
 TableModel .> TableColumn : \t
 
-class ForensicsTableModel #lightGreen {
+class ForensicsTableModel #Khaki {
     String getId() : return "forensics";
     List<TableColumn> getColumns()
     List<ForensicsTableRow> getRows()
 }
 
-class ForensicsTableRow #lightGreen {
+class ForensicsTableRow #Khaki {
     -fileName: String
     -authorsSize: Integer
     -commitsSize: Integer
@@ -492,6 +528,16 @@ class ForensicsTableRow #lightGreen {
 TableModel <|-- ForensicsTableModel
 ForensicsTableModel .up.> TableColumn : \t
 ForensicsTableModel .> ForensicsTableRow : \t
+
+skinparam legendBackgroundColor #efefef
+
+legend
+|= |= Class Owner |
+|<back:Ivory>   </back>| Jenkins Core |
+|<back:AliceBlue>   </back>| UI Plugins |
+|<back:Khaki>   </back>| Forensic Plugin |
+endlegend
+
 @enduml
 ----
 
@@ -554,26 +600,26 @@ skinparam ArrowThickness 3
 
 hide circle
 
-interface Action {
+interface Action #Ivory {
     -url: String
 }
 
-abstract class BuildAction #lightBlue {
+abstract class BuildAction #AliceBlue {
     -url: String
 }
 
-abstract class BuildResult #lightBlue {
+abstract class BuildResult #AliceBlue {
     -data
 }
 
-abstract class DefaultAsyncTableContentProvider #lightBlue {
+abstract class DefaultAsyncTableContentProvider #AliceBlue {
     {abstract} TableModel getTableModel(final String id)
 }
 
-class ForensicsBuildAction<RepositoryStatistics> #lightGreen {
+class ForensicsBuildAction<RepositoryStatistics> #Khaki {
 }
 
-class ForensicsViewModel #lightGreen {
+class ForensicsViewModel #Khaki {
     TableModel getTableModel(final String id)
 }
 
@@ -585,7 +631,7 @@ BuildResult "1" - "1" BuildAction : \t
 DefaultAsyncTableContentProvider  <|-- ForensicsViewModel
 ForensicsBuildAction .> ForensicsViewModel : \t
 
-class ForensicsTableModel #lightGreen {
+class ForensicsTableModel #Khaki {
     String getId() : return "forensics";
     List<TableColumn> getColumns()
     List<ForensicsTableRow> getRows()
@@ -593,7 +639,7 @@ class ForensicsTableModel #lightGreen {
 
 ForensicsViewModel ..> ForensicsTableModel : \t
 
-class ForensicsTableRow #lightGreen {
+class ForensicsTableRow #Khaki {
     -fileName: String
     -authorsSize: Integer
     -commitsSize: Integer
@@ -602,6 +648,16 @@ class ForensicsTableRow #lightGreen {
 }
 
 ForensicsTableRow <. ForensicsTableModel : \t
+
+skinparam legendBackgroundColor #efefef
+
+legend
+|= |= Class Owner |
+|<back:Ivory>   </back>| Jenkins Core |
+|<back:AliceBlue>   </back>| UI Plugins |
+|<back:Khaki>   </back>| Forensic Plugin |
+endlegend
+
 @enduml
 ----
 
@@ -742,37 +798,37 @@ skinparam ArrowThickness 3
 
 hide circle
 
-abstract class Job {
+abstract class Job #Ivory {
     -displayName: String
 }
 
-abstract class JobAction #lightBlue {
+abstract class JobAction #AliceBlue {
 }
 
-abstract class AsyncTrendJobAction #lightBlue {
+abstract class AsyncTrendJobAction #AliceBlue {
     {abstract} LinesChartModel createChartModel()
 }
 
-class ForensicsJobAction<ForensicsBuildAction> #lightGreen {
+class ForensicsJobAction<ForensicsBuildAction> #Khaki {
     LinesChartModel createChartModel()
 }
 
-abstract class Run {
+abstract class Run #Ivory {
     -number: Integer
 }
 
-interface Action {
+interface Action #Ivory {
     -url: String
 }
 
-abstract class BuildAction #lightBlue {
+abstract class BuildAction #AliceBlue {
     -url: String
 }
 
-class ForensicsBuildAction<RepositoryStatistics> #lightGreen {
+class ForensicsBuildAction<RepositoryStatistics> #Khaki {
 }
 
-abstract class BuildResult #lightBlue {
+abstract class BuildResult #AliceBlue {
     -data
 }
 
@@ -789,7 +845,17 @@ JobAction <|-- AsyncTrendJobAction
 AsyncTrendJobAction <|-- ForensicsJobAction
 BuildAction <|--- ForensicsBuildAction
 
+skinparam legendBackgroundColor #efefef
+
+legend
+|= |= Class Owner |
+|<back:Ivory>   </back>| Jenkins Core |
+|<back:AliceBlue>   </back>| UI Plugins |
+|<back:Khaki>   </back>| Forensic Plugin |
+endlegend
+
 @enduml
+
 ----
 
 Basically, you need to implement the method `LinesChartModel createChartModel()` to create the line
@@ -840,9 +906,6 @@ image::trend-lines.png[Trend with several lines example]
 image::trend-stacked.png[Trend chart with stacked lines example]
 
 
-
-[#build-summary]
-== Summary boxes on the build level view
 
 
 
