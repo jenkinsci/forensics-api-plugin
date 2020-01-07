@@ -36,7 +36,7 @@ already is using these components in the detail views of the warnings plugin.
 
 == New user interface plugins
 
-The following new UI components are available as Jenkins plugins:
+The following UI components are provided as new Jenkins plugins:
 
 - https://github.com/jenkinsci/jquery3-api-plugin[jquery3-api-plugin]:
 Provides https://jquery.com[jQuery 3] for Jenkins Plugins.
@@ -192,11 +192,11 @@ sections. The top-level view that shows all available Jobs is shown in <<img-job
 [#img-jobs]
 image::jobs.png[Jobs]
 
-Plugins can also contribute UI elements in these views, but this is out of scope of this tutorial.
+Plugins can also contribute UI elements in these views, but this is out of scope of this guide.
 
 Each job has a detail view, where plugins can extend corresponding extension points and provide summary boxes and
 trend charts. Typically, summary boxes for reporters are not required on the job level, so I describe only trend charts
-in more detail in this tutorial, see section <<trend-charts>>.
+in more detail, see section <<trend-charts>>.
 
 .Jenkins view showing details about a job
 [#img-job]
@@ -276,7 +276,7 @@ skinparam legendBackgroundColor #efefef
 legend
 |= |= Class Owner |
 |<back:Ivory>   </back>| Jenkins Core |
-|<back:AliceBlue>   </back>| UI Plugins |
+|<back:AliceBlue>   </back>| New UI Plugins |
 endlegend
 
 @enduml
@@ -310,7 +310,7 @@ commit history.
 
 Please note that this functionality of the plugin still is a proof of concept: the performance of this step heavily
 depends on the size and the number of commits of your Git repository. Currently it scans the whole repository in each
-build. I hope to find some students this year to replace this dumb algorithm with an incremental scanner.
+build. In the near future I hope to find a volunteer who is interested in replacing this dumb algorithm with an incremental scanner.
 
 [#reporter-detail]
 == Introducing the new  UI components
@@ -319,6 +319,7 @@ As already mentioned in <<reporter-structure>>, a details view is plugin specifi
 elements are presented is up to the individual plugin author. So in the next sections I provide some examples
 and new concepts that plugins can use as building blocks for their own content.
 
+[#boostrap-grid]
 === Grid layout
 
 The first thing to decide is, which elements should be shown on a plugin page and how much space each element
@@ -421,6 +422,8 @@ to get a consistent look and feel in Jenkins' plugin ecosystem.
 .Bootstraps cards in Jenkins plugins
 [#img-card]
 image::card.png[Card examples]
+
+Note that the size of the cards is determined by the grid configuration, see <<boostrap-grid>>.
 
 === Tables
 
@@ -533,8 +536,7 @@ skinparam legendBackgroundColor #efefef
 
 legend
 |= |= Class Owner |
-|<back:Ivory>   </back>| Jenkins Core |
-|<back:AliceBlue>   </back>| UI Plugins |
+|<back:AliceBlue>   </back>| New UI Plugins |
 |<back:Khaki>   </back>| Forensic Plugin |
 endlegend
 
@@ -654,7 +656,7 @@ skinparam legendBackgroundColor #efefef
 legend
 |= |= Class Owner |
 |<back:Ivory>   </back>| Jenkins Core |
-|<back:AliceBlue>   </back>| UI Plugins |
+|<back:AliceBlue>   </back>| New UI Plugins |
 |<back:Khaki>   </back>| Forensic Plugin |
 endlegend
 
@@ -850,7 +852,7 @@ skinparam legendBackgroundColor #efefef
 legend
 |= |= Class Owner |
 |<back:Ivory>   </back>| Jenkins Core |
-|<back:AliceBlue>   </back>| UI Plugins |
+|<back:AliceBlue>   </back>| New UI Plugins |
 |<back:Khaki>   </back>| Forensic Plugin |
 endlegend
 
