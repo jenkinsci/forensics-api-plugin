@@ -91,7 +91,7 @@ to add them all:
 .pom.xml
 -----
   <properties>
-    <plugin-util-api.version>0.1.0-beta4</plugin-util-api.version>
+    <plugin-util-api.version>0.1.0-beta5</plugin-util-api.version>
     <font-awesome-api.version>5.12.0-1-beta1</font-awesome-api.version>
     <bootstrap4-api.version>4.4.1-4-beta1</bootstrap4-api.version>
     <echarts-api.version>4.4.0-7-beta1</echarts-api.version>
