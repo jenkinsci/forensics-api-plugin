@@ -8,16 +8,18 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
-import io.jenkins.plugins.forensics.util.FilteredLog;
+import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static io.jenkins.plugins.forensics.util.PathStubs.*;
+import static io.jenkins.plugins.util.PathStubs.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,18 +41,18 @@ public class BlamerFactoryITest {
         Blamer nullBlamer = createBlamer("/");
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
-        assertThat(nullBlamer.blame(new FileLocations())).isEmpty();
+        assertThat(nullBlamer.blame(new FileLocations(), LOG)).isEmpty();
 
         Blamer testBlamer = createBlamer("/test");
         assertThat(testBlamer).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamer.blame(new FileLocations())).isNotEmpty();
-        assertThat(testBlamer.blame(new FileLocations())).hasFiles(FILE_NAME);
+        assertThat(testBlamer.blame(new FileLocations(), LOG)).isNotEmpty();
+        assertThat(testBlamer.blame(new FileLocations(), LOG)).hasFiles(FILE_NAME);
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
         Blamer testBlamerSecondMatch = BlamerFactory.findBlamer(mock(Run.class), directories, TaskListener.NULL, LOG);
         assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamerSecondMatch.blame(new FileLocations())).isNotEmpty();
-        assertThat(testBlamerSecondMatch.blame(new FileLocations())).hasFiles(FILE_NAME);
+        assertThat(testBlamerSecondMatch.blame(new FileLocations(), LOG)).isNotEmpty();
+        assertThat(testBlamerSecondMatch.blame(new FileLocations(), LOG)).hasFiles(FILE_NAME);
     }
 
     private Blamer createBlamer(final String path) {
@@ -91,9 +93,9 @@ public class BlamerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public Blames blame(final FileLocations fileLocations) {
+        public Blames blame(final FileLocations fileLocations, final FilteredLog logger) {
             Blames blames = new Blames();
-            blames.add(new FileBlame(FILE_NAME));
+            blames.add(new FileBlameBuilder().build(FILE_NAME));
             return blames;
         }
     }

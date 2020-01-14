@@ -1,18 +1,17 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.google.common.annotations.VisibleForTesting;
+import edu.hm.hafner.util.PathUtil;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
+
+import io.jenkins.plugins.forensics.blame.FileBlame;
 
 /**
  * Aggregates commit statistics for a given file. The following statistics are summed up:
@@ -26,20 +25,16 @@ import com.google.common.annotations.VisibleForTesting;
  * @author Ullrich Hafner
  */
 public class FileStatistics implements Serializable {
-    private static final long serialVersionUID = -5776167206905031327L;
+    private static final long serialVersionUID = 7L; // release 0.7
 
-    private static final String UNIX_SLASH = "/";
-    private static final String WINDOWS_BACK_SLASH = "\\";
-
-    private final String fileName;
+    private final TreeString fileName;
 
     private int numberOfAuthors;
     private int numberOfCommits;
     private int creationTime;
     private int lastModificationTime;
 
-    private transient Set<String> authors = new HashSet<>();
-    private final int today;
+    private transient Set<String> authors = new HashSet<>(); // see readResolve
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -47,31 +42,12 @@ public class FileStatistics implements Serializable {
      * @param fileName
      *         the name of the file for which statistics will be generated
      */
-    public FileStatistics(final String fileName) {
-        this(fileName, nowInSecondsSinceEpoch());
-    }
-
-    /**
-     * Creates a new instance of {@link FileStatistics}.
-     *
-     * @param fileName
-     *         the name of the file for which statistics will be generated
-     * @param today
-     *         today (given as number of seconds since the standard base time known as "the epoch", namely January 1,
-     *         1970, 00:00:00 GMT.).
-     */
-    @VisibleForTesting
-    public FileStatistics(final String fileName, final int today) {
-        this.fileName = StringUtils.replace(fileName, WINDOWS_BACK_SLASH, UNIX_SLASH);
-        this.today = today;
-    }
-
-    private static int nowInSecondsSinceEpoch() {
-        return (int) (new Date().getTime() / 1000L);
+    private FileStatistics(final TreeString fileName) {
+        this.fileName = fileName;
     }
 
     public String getFileName() {
-        return fileName;
+        return fileName.toString();
     }
 
     /**
@@ -97,7 +73,7 @@ public class FileStatistics implements Serializable {
      * Returns the creation time of this file.
      *
      * @return the time of the creation (given as number of seconds since the standard base time known as "the epoch",
-     *         namely January 1, 1970, 00:00:00 GMT.).
+     *         namely January 1, 1970, 00:00:00 GMT).
      */
     public int getCreationTime() {
         return creationTime;
@@ -107,38 +83,10 @@ public class FileStatistics implements Serializable {
      * Returns the time of the last modification of this file (i.e. last commit to the file).
      *
      * @return the time of the last modification (given as number of seconds since the standard base time known as "the
-     *         epoch", namely January 1, 1970, 00:00:00 GMT.).
+     *         epoch", namely January 1, 1970, 00:00:00 GMT).
      */
     public int getLastModificationTime() {
         return lastModificationTime;
-    }
-
-    /**
-     * Returns the age of this file. It is given as the number of days starting from today. If the file has been created
-     * today, then 0 is returned.
-     *
-     * @return the age in days (from now)
-     */
-    public int getAgeInDays() {
-        if (numberOfCommits == 0) {
-            return 0;
-        }
-
-        return computeDaysSince(creationTime);
-    }
-
-    /**
-     * Returns the last modification time of this file. It is given as the number of days starting from today. If the
-     * file has been modified today, then 0 is returned.
-     *
-     * @return the age in days (from now)
-     */
-    public int getLastModifiedInDays() {
-        if (numberOfCommits == 0) {
-            return 0;
-        }
-
-        return computeDaysSince(lastModificationTime);
     }
 
     /**
@@ -159,21 +107,6 @@ public class FileStatistics implements Serializable {
         numberOfCommits++;
         authors.add(author);
         numberOfAuthors = authors.size();
-    }
-
-    private int computeDaysSince(final int timeInSecondsSinceEpoch) {
-        long days = Math.abs(ChronoUnit.DAYS.between(toLocalDate(today), toLocalDate(timeInSecondsSinceEpoch)));
-        if (days > Integer.MAX_VALUE) {
-            return Integer.MAX_VALUE;
-        }
-        return (int) days;
-    }
-
-    private static LocalDate toLocalDate(final int timeInSecondsSinceEpoch) {
-        return new Date(timeInSecondsSinceEpoch * 1000L)
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
     }
 
     @Override
@@ -199,5 +132,26 @@ public class FileStatistics implements Serializable {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
+    }
+
+    /**
+     * Creates {@link FileBlame} instances that optimize the memory footprint for file names by using a {@link
+     * TreeStringBuilder}.
+     */
+    public static class FileStatisticsBuilder {
+        private final TreeStringBuilder builder = new TreeStringBuilder();
+        private final PathUtil pathUtil = new PathUtil();
+
+        /**
+         * Creates a new {@link FileStatistics} instance for the specified file name. The file name will be normalized
+         * and compressed using a {@link TreeStringBuilder}.
+         *
+         * @param fileName
+         *         the file name
+         * @return the created {@link FileStatistics} instance
+         */
+        public FileStatistics build(final String fileName) {
+            return new FileStatistics(builder.intern(pathUtil.getAbsolutePath(fileName)));
+        }
     }
 }

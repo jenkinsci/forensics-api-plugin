@@ -30,7 +30,7 @@ public class ScmResolver {
     public SCM getScm(final Run<?, ?> run) {
         Job<?, ?> job = run.getParent();
         if (run instanceof AbstractBuild) {
-            return extractFromProject((AbstractBuild) run);
+            return extractFromProject((AbstractBuild<?, ?>) run);
         }
         else if (job instanceof SCMTriggerItem) {
             return extractFromPipeline(job);
@@ -54,7 +54,7 @@ public class ScmResolver {
         return new NullSCM();
     }
 
-    private SCM extractFromProject(final AbstractBuild run) {
+    private SCM extractFromProject(final AbstractBuild<?, ?> run) {
         AbstractProject<?, ?> project = run.getProject();
         if (project.getScm() != null) {
             return project.getScm();

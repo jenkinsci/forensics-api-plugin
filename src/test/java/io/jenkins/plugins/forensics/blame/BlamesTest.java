@@ -4,6 +4,10 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.SerializableTest;
+
+import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -11,7 +15,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class BlamesTest {
+class BlamesTest extends SerializableTest<Blames> {
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
@@ -29,8 +33,6 @@ class BlamesTest {
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
-        assertThat(empty).hasNoErrorMessages();
-        assertThat(empty).hasNoInfoMessages();
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> empty.getBlame(FILE_NAME));
@@ -105,24 +107,6 @@ class BlamesTest {
         verifyBlamesOfTwoFiles(blames, fileBlame, other);
     }
 
-    @Test
-    void shouldLogMessagesAndErrors() {
-        Blames blames = new Blames();
-
-        blames.logInfo("Hello %s", "Info");
-        blames.logError("Hello %s", "Error");
-        blames.logException(new IllegalArgumentException("Error"), "Hello %s", "Exception");
-
-        assertThat(blames).hasInfoMessages("Hello Info");
-        assertThat(blames).hasErrorMessages("Hello Error", "Hello Exception");
-
-        for (int i = 0; i < 19; i++) {
-            blames.logError("Hello %s %d", "Error", i);
-        }
-        blames.logSummary();
-        assertThat(blames).hasErrorMessages("  ... skipped logging of 1 additional errors ...");
-    }
-
     private void verifyBlamesOfTwoFiles(final Blames blames, final FileBlame fileBlame, final FileBlame other) {
         assertThat(blames.size()).isEqualTo(2);
         assertThat(blames).hasFiles(FILE_NAME, ANOTHER_FILE);
@@ -146,11 +130,21 @@ class BlamesTest {
 
     private FileBlame createBlame(final String fileName, final int lineNumber, final String name, final String email,
             final String commit, final int time) {
-        FileBlame fileBlame = new FileBlame(fileName);
+        FileBlame fileBlame = new FileBlameBuilder().build(fileName);
         fileBlame.setName(lineNumber, name);
         fileBlame.setCommit(lineNumber, commit);
         fileBlame.setEmail(lineNumber, email);
         fileBlame.setTime(lineNumber, time);
         return fileBlame;
+    }
+
+    @Override
+    protected Blames createSerializable() {
+        Blames blames = new Blames();
+
+        FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
+        blames.add(fileBlame);
+
+        return blames;
     }
 }

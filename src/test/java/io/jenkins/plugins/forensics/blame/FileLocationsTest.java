@@ -4,6 +4,8 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.SerializableTest;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -11,13 +13,10 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class FileLocationsTest {
+class FileLocationsTest extends SerializableTest<FileLocations> {
     private static final String RELATIVE_PATH = "with/file.txt";
     private static final String WORKSPACE = "/absolute/path/to/workspace/";
     private static final String ABSOLUTE_PATH = WORKSPACE + RELATIVE_PATH;
-    private static final String WINDOWS_WORKSPACE = "C:\\absolute\\path\\to\\workspace\\";
-    private static final String WINDOWS_RELATIVE_PATH = "with/file.txt";
-    private static final String WINDOWS_ABSOLUTE_PATH = "C:/absolute/path/to/workspace/" + WINDOWS_RELATIVE_PATH;
     private static final String ANOTHER_FILE = "another-file.txt";
 
     @Test
@@ -27,8 +26,6 @@ class FileLocationsTest {
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
-        assertThat(empty).hasNoErrorMessages();
-        assertThat(empty).hasNoInfoMessages();
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> empty.getLines(RELATIVE_PATH));
@@ -62,10 +59,7 @@ class FileLocationsTest {
 
     @Test
     void shouldCreateTwoDifferentBlamerInput() {
-        FileLocations locations = new FileLocations();
-
-        locations.addLine(ABSOLUTE_PATH, 1);
-        locations.addLine(ANOTHER_FILE, 2);
+        FileLocations locations = createSerializable();
 
         assertThat(locations.size()).isEqualTo(2);
         assertThat(locations).hasFiles(ABSOLUTE_PATH, ANOTHER_FILE);
@@ -77,5 +71,15 @@ class FileLocationsTest {
         assertThatThrownBy(() -> locations.getLines(wrongFile))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessageContaining(wrongFile);
+    }
+
+    @Override
+    protected FileLocations createSerializable() {
+        FileLocations locations = new FileLocations();
+
+        locations.addLine(ABSOLUTE_PATH, 1);
+        locations.addLine(ANOTHER_FILE, 2);
+
+        return locations;
     }
 }

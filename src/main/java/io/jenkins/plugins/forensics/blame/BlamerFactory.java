@@ -6,16 +6,17 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
-import io.jenkins.plugins.forensics.util.FilteredLog;
 import io.jenkins.plugins.forensics.util.ScmResolver;
+import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Jenkins extension point that allows plugins to create {@link Blamer} instances based on a supported {@link SCM}.
@@ -79,6 +80,6 @@ public abstract class BlamerFactory implements ExtensionPoint {
     }
 
     private static List<BlamerFactory> findAllExtensions() {
-        return Jenkins.get().getExtensionList(BlamerFactory.class);
+        return new JenkinsFacade().getExtensionsFor(BlamerFactory.class);
     }
 }

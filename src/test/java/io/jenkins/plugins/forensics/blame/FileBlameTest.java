@@ -2,6 +2,10 @@ package io.jenkins.plugins.forensics.blame;
 
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.SerializableTest;
+
+import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
+
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
@@ -9,7 +13,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class FileBlameTest {
+class FileBlameTest extends SerializableTest<FileBlame> {
     private static final String COMMIT = "commit";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
@@ -17,16 +21,16 @@ class FileBlameTest {
 
     @Test
     void shouldCreateInstance() {
-        FileBlame request = new FileBlame("file");
+        FileBlame request = createFileBlame("file");
 
         assertThat(request).hasNoLines();
         assertThat(request.getFileName()).isEqualTo("file");
-        assertThat(request).isEqualTo(new FileBlame("file"));
+        assertThat(request).isEqualTo(createFileBlame("file"));
 
         addDetails(request, 15);
         verifyDetails(request, 15);
 
-        FileBlame other = new FileBlame("file");
+        FileBlame other = createFileBlame("file");
         addDetails(other, 15);
 
         assertThat(request).isEqualTo(other);
@@ -48,16 +52,14 @@ class FileBlameTest {
 
     @Test
     void shouldMergeRequest() {
-        FileBlame request = new FileBlame("file");
-        addDetails(request, 1);
-        assertThat(request).hasLines(1);
+        FileBlame request = createSerializable();
 
-        FileBlame sameLine = new FileBlame("file");
+        FileBlame sameLine = createFileBlame("file");
         request.merge(sameLine);
         assertThat(request).hasLines(1);
         verifyDetails(request, 1);
 
-        FileBlame otherLine = new FileBlame("file");
+        FileBlame otherLine = createFileBlame("file");
         addDetails(otherLine, 2);
 
         request.merge(otherLine);
@@ -66,22 +68,14 @@ class FileBlameTest {
         verifyDetails(request, 1);
         verifyDetails(request, 2);
 
-        otherLine.setCommit(2, FileBlame.EMPTY);
-        otherLine.setName(2, FileBlame.EMPTY);
-        otherLine.setEmail(2, FileBlame.EMPTY);
-        otherLine.setTime(2, FileBlame.EMPTY_INTEGER);
-        request.merge(otherLine);
-        verifyDetails(request, 1);
-        verifyDetails(request, 2);
-
-        assertThatThrownBy(() -> request.merge(new FileBlame("wrong")))
+        assertThatThrownBy(() -> request.merge(createFileBlame("wrong")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("wrong").hasMessageContaining("file");
     }
 
     @Test
     void shouldReturnMeaningfulDefaults() {
-        FileBlame request = new FileBlame("file");
+        FileBlame request = createFileBlame("file");
 
         assertThat(request.getCommit(2)).isEqualTo(FileBlame.EMPTY);
         assertThat(request.getEmail(2)).isEqualTo(FileBlame.EMPTY);
@@ -91,9 +85,23 @@ class FileBlameTest {
 
     @Test
     void shouldNormalizeFileName() {
-        FileBlame request = new FileBlame("C:\\path\\to\\file");
+        FileBlame request = new FileBlameBuilder().build("C:\\path\\to\\file");
 
         assertThat(request).hasNoLines();
         assertThat(request.getFileName()).isEqualTo("C:/path/to/file");
+    }
+
+    @Override
+    protected FileBlame createSerializable() {
+        FileBlame request = createFileBlame("file");
+
+        addDetails(request, 1);
+        assertThat(request).hasLines(1);
+
+        return request;
+    }
+
+    private FileBlame createFileBlame(final String file) {
+        return new FileBlameBuilder().build(file);
     }
 }

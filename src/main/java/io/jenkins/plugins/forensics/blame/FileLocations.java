@@ -1,13 +1,13 @@
 package io.jenkins.plugins.forensics.blame;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
-
-import io.jenkins.plugins.forensics.util.FilteredLog;
 
 /**
  * Defines a set of file locations. A file location is identified by an absolute file name and line number. File
@@ -15,17 +15,10 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  *
  * @author Ullrich Hafner
  */
-public class FileLocations extends FilteredLog {
+public class FileLocations implements Serializable {
     private static final long serialVersionUID = 8063580789984061223L;
 
     private final Map<String, Set<Integer>> linesPerFile = new HashMap<>();
-
-    /**
-     * Creates a new empty instance of {@link FileLocations}.
-     */
-    public FileLocations() {
-        super("Errors while marking lines in affected lines:");
-    }
 
     /**
      * Adds the specified affected file and line number.
@@ -65,7 +58,6 @@ public class FileLocations extends FilteredLog {
      *
      * @return number of affected files with blames
      */
-    @Override
     public int size() {
         return linesPerFile.keySet().size();
     }
@@ -110,5 +102,22 @@ public class FileLocations extends FilteredLog {
             return Collections.unmodifiableSet(linesPerFile.get(fileName));
         }
         throw new NoSuchElementException(String.format("No information for file '%s' stored", fileName));
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FileLocations that = (FileLocations) o;
+        return linesPerFile.equals(that.linesPerFile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(linesPerFile);
     }
 }
