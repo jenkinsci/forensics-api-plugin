@@ -90,6 +90,10 @@ to add them all:
 [source,xml]
 .pom.xml
 -----
+<project>
+
+ [...]
+
   <properties>
     <plugin-util-api.version>0.1.0-beta5</plugin-util-api.version>
     <font-awesome-api.version>5.12.0-1-beta1</font-awesome-api.version>
@@ -100,7 +104,6 @@ to add them all:
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
@@ -127,8 +130,11 @@ to add them all:
       <version>${data-tables-api.version}</version>
     </dependency>
     [...]
-
   </dependencies>
+
+  [...]
+
+</project>
 -----
 
 Alternatively, you have a look at the POM files of the
@@ -319,6 +325,38 @@ As already mentioned in <<reporter-structure>>, a details view is plugin specifi
 elements are presented is up to the individual plugin author. So in the next sections I provide some examples
 and new concepts that plugins can use as building blocks for their own content.
 
+[#font-awesome]
+=== Modern icons
+
+Jenkins plugins typically do not use icons very frequently. Most plugins provide an icon for the actions and that's it.
+If you intend to use icons in other places, plugin authors are left on their own: the recommended Tango icon set is more
+than 10 years old and too limited nowadays. There are several options available, but the most popular is the
+https://fontawesome.com[Font Awesome Icon Set]. It provides more than 1500 free icons that follow the same
+design guidelines:
+
+.Font Awesome icons in Jenkins plugins
+[#img-font-awesome]
+image::font-awesome.png[Font Awesome icons]
+
+In order to use Font Awesome icons in a plugin you simply need a dependency to the corresponding
+https://github.com/jenkinsci/font-awesome-api-plugin[font-awesome-api-plugin]. Then you can use any of the solid icons
+by using the new tag `svg-icon` in your jelly view:
+
+[source,xml,linenums]
+.index.jelly
+----
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:fa="/font-awesome">
+
+  [...]
+  <fa:svg-icon name="check-double" class="no-issues-banner"/>
+  [...]
+
+</j:jelly>
+----
+
+If you are generating views using Java code, then you also can use the class `SvgTag` to generate the
+HTML markup for such an icon.
+
 [#boostrap-grid]
 === Grid layout
 
@@ -407,7 +445,7 @@ Such a card can be easily created in a jelly view in the following way:
 
 [source,xml,linenums]
 ----
-<bs:card title="${%Card Title}" fontAwesomeIcon="[icon-name]">
+<bs:card title="${%Card Title}" fontAwesomeIcon="icon-name">
   Content of the card
 </bs:card>
 ----
@@ -452,12 +490,16 @@ with the following piece of code:
 
 [source,xml]
 ----
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" >
+
   <st:adjunct includes="io.jenkins.plugins.jquery3"/>
   <st:adjunct includes="io.jenkins.plugins.data-tables"/>
 
   <script>
      $('#id').DataTable(); <1>
   </script>
+
+</j:jelly>
 ----
 <1> replace `id` with the ID of your HTML table element
 
@@ -568,7 +610,6 @@ Jelly file using the new `table` tag:
 [source,xml]
 .index.jelly
 ----
-<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:dt="/data-tables" >
     [...]
     <st:adjunct includes="io.jenkins.plugins.data-tables"/>
