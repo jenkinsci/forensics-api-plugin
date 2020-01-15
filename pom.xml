@@ -31,7 +31,7 @@
 
     <asciidoctor.maven.plugin.version>2.0.0-RC.1</asciidoctor.maven.plugin.version>
     <asciidoctorj.version>2.2.0</asciidoctorj.version>
-    <asciidoctorj.diagram.version>1.5.18</asciidoctorj.diagram.version>
+    <asciidoctorj.diagram.version>2.0.0</asciidoctorj.diagram.version>
     <jruby.version>9.2.7.0</jruby.version>
 
     <!-- Library Dependencies Versions -->
