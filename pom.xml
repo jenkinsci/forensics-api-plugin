@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>analysis-pom</artifactId>
-    <version>2.0.0-beta-1</version>
+    <version>2.0.0-beta-2-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -20,7 +20,6 @@
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
-    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
     <asciidoctor.maven.plugin.version>2.0.0-RC.1</asciidoctor.maven.plugin.version>
     <asciidoctorj.version>2.2.0</asciidoctorj.version>
@@ -31,6 +30,7 @@
     <commons.lang.version>3.9</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
+    <!-- Jenkins Plugin Dependencies Versions -->
     <font-awesome-api.version>5.12.0-1-beta1</font-awesome-api.version>
     <jquery3-api.version>3.4.1-3-beta1</jquery3-api.version>
     <popper-api.version>1.15.0-2-beta1</popper-api.version>
@@ -38,11 +38,6 @@
     <data-tables-api.version>1.10.20-6-beta1</data-tables-api.version>
     <echarts-api.version>4.4.0-8-beta1</echarts-api.version>
     <plugin-util-api.version>0.1.0-beta5</plugin-util-api.version>
-
-    <!-- Maven plug-in versions -->
-    <revapi-maven-plugin.version>0.11.2</revapi-maven-plugin.version>
-    <revapi-java.version>0.20.0</revapi-java.version>
-    <assertj-assertions-generator-maven-plugin.version>2.2.0</assertj-assertions-generator-maven-plugin.version>
 
   </properties>
 
@@ -61,28 +56,6 @@
     </developer>
   </developers>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.138.x</artifactId>
-        <version>4</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>5.0.4</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
 
     <dependency>
@@ -98,6 +71,7 @@
       <version>${commons.lang.version}</version>
     </dependency>
 
+    <!-- Jenkins Plugin Dependencies -->
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>font-awesome-api</artifactId>
@@ -138,7 +112,6 @@
     </dependency>
 
     <!-- Test Dependencies -->
-
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
@@ -202,149 +175,25 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>${maven-jar-plugin.version}</version>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Built-By>Ullrich Hafner</Built-By>
-              <Url>${project.scm.url}</Url>
-              <Jenkins-ClassFilter-Whitelisted>true</Jenkins-ClassFilter-Whitelisted>
-              <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
-            </manifestEntries>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>**/*Assert*</include>
-                <include>**/*PathStubs*</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
-        <version>${revapi-maven-plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.revapi</groupId>
-            <artifactId>revapi-java</artifactId>
-            <version>${revapi-java.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>io.jenkins.tools</groupId>
-            <artifactId>revapi-hpi-extractor</artifactId>
-            <version>1.0.1</version>
-          </dependency>
-        </dependencies>
         <configuration>
           <skip>true</skip>
-          <analysisConfiguration>
-            <revapi.semver.ignore>
-              <enabled>true</enabled>
-            </revapi.semver.ignore>
-            <revapi.ignore>
-              <item>
-                <regex>true</regex>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>org.jvnet.hudson.*</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <regex>true</regex>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>net.sf.json.*</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <regex>true</regex>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>hudson.*</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <regex>true</regex>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>org.kohsuke.*</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-            </revapi.ignore>
-          </analysisConfiguration>
         </configuration>
-        <executions>
-          <execution>
-            <id>run-revapi</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-        <version>${assertj-assertions-generator-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate-assertions</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
-          <packages>
+          <packages combine.children="append">
             <package>io.jenkins.plugins.forensics</package>
           </packages>
-          <excludes>
-            <exclude>.*ITest</exclude>
-            <exclude>.*Action</exclude>
+          <excludes combine.children="append">
           </excludes>
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
-          <cleanTargetDir>true</cleanTargetDir>
-          <hierarchical>false</hierarchical>
-          <generateBddAssertions>false</generateBddAssertions>
-          <generateJUnitSoftAssertions>false</generateJUnitSoftAssertions>
-          <templates>
-            <templatesDirectory>${project.basedir}/etc/templates/</templatesDirectory>
-            <assertionsEntryPointClass>assertions_entry_point_class_template.txt</assertionsEntryPointClass>
-            <softEntryPointAssertionClass>soft_assertions_entry_point_class_template.txt</softEntryPointAssertionClass>
-          </templates>
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>display-info</id>
-              <configuration>
-                <rules>
-                  <enforceBytecodeVersion>
-                    <ignoreClasses>
-                      <!-- asm dependency from PMD contains a java9 module-info.class -->
-                      <ignoreClass>module-info</ignoreClass>
-                      <!-- Junit >= 5.3 contains some java9 classes -->
-                      <ignoreClass>**/ModuleUtils*</ignoreClass>
-                    </ignoreClasses>
-                  </enforceBytecodeVersion>
-                </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <scm>
