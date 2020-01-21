@@ -13,7 +13,9 @@
   <packaging>hpi</packaging>
   <name>Forensics API Plugin</name>
   <version>${revision}${changelist}</version>
+
   <description>Jenkins plug-that defines an API to mine and analyze data from a repository.</description>
+  <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
     <revision>0.7.0-beta6</revision>
