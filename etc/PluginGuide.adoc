@@ -96,10 +96,10 @@ to add them all:
 
   <properties>
     <plugin-util-api.version>0.1.0-beta5</plugin-util-api.version>
-    <font-awesome-api.version>5.12.0-1-beta1</font-awesome-api.version>
-    <bootstrap4-api.version>4.4.1-4-beta1</bootstrap4-api.version>
-    <echarts-api.version>4.4.0-7-beta1</echarts-api.version>
-    <data-tables-api.version>1.10.20-6-beta1</data-tables-api.version>
+    <font-awesome-api.version>5.12.0-2-beta1-rc95.517f66d79aa0</font-awesome-api.version>
+    <bootstrap4-api.version>4.4.1-5-beta1-rc139.685fb1720361</bootstrap4-api.version>
+    <echarts-api.version>4.6.0-1-beta1-rc142.e39c8262bc82</echarts-api.version>
+    <data-tables-api.version>1.10.20-7-beta1-rc171.6ef0cd8d08cd</data-tables-api.version>
     [...]
   </properties>
 
