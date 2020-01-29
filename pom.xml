@@ -37,7 +37,7 @@
     <jquery3-api.version>3.4.1-4-beta1-rc84.f9d39e6a0845</jquery3-api.version>
     <bootstrap4-api.version>4.4.1-5-beta1-rc125.856c9c1edf77</bootstrap4-api.version>
     <data-tables-api.version>1.10.20-7-beta1-rc171.6ef0cd8d08cd</data-tables-api.version>
-    <echarts-api.version>4.6.0-1-beta1-rc136.2dec645adcf4</echarts-api.version>
+    <echarts-api.version>4.6.0-1-beta1-rc142.e39c8262bc82</echarts-api.version>
     <plugin-util-api.version>0.1.0-beta6-rc74.807b71f3775a</plugin-util-api.version>
 
   </properties>
