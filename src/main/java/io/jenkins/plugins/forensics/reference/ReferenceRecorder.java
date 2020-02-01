@@ -27,12 +27,12 @@ public abstract class ReferenceRecorder extends Recorder {
     /**
      * The name of the build. Will be used to find the reference job in Jenkins.
      */
-    private String referenceJobName;
+    private String referenceJobName = "";
 
     /**
      * Indicates the maximal amount of commits which will be compared to find the intersection point.
      */
-    private int maxCommits;
+    private int maxCommits = 100;
 
     private String id;
     private String name;
