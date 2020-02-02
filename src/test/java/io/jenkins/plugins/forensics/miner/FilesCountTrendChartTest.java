@@ -45,7 +45,7 @@ class FilesCountTrendChartTest {
 
     private void verifySeries(final LineSeries series, final Palette normalColor, final String newVersusFixedSeriesBuilderName, final int... values) {
         assertThatJson(series).node("itemStyle").node("color").isEqualTo(normalColor.getNormal());
-        assertThatJson(series).node("name").isString().isEqualTo(newVersusFixedSeriesBuilderName);
+        assertThatJson(series).node("name").isEqualTo(newVersusFixedSeriesBuilderName);
         for (int value : values) {
             assertThatJson(series).node("data").isArray().hasSize(values.length).contains(value);
         }
