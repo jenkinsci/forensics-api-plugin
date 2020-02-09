@@ -31,13 +31,14 @@
     <!-- Library Dependencies Versions -->
     <commons.lang.version>3.9</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
+    <codingstyle.library.version>0.4.4</codingstyle.library.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <font-awesome-api.version>5.12.0-3-beta1</font-awesome-api.version>
     <jquery3-api.version>3.4.1-5-beta1</jquery3-api.version>
     <bootstrap4-api.version>4.4.1-6-beta1</bootstrap4-api.version>
     <data-tables-api.version>1.10.20-8-beta1</data-tables-api.version>
-    <echarts-api.version>4.6.0-1-beta2</echarts-api.version>
+    <echarts-api.version>4.6.0-3-beta1</echarts-api.version>
     <plugin-util-api.version>0.1.0-beta7</plugin-util-api.version>
 
   </properties>
@@ -123,7 +124,7 @@
     <dependency>
       <groupId>edu.hm.hafner</groupId>
       <artifactId>codingstyle</artifactId>
-      <version>${codingstyle.version}</version>
+      <version>${codingstyle.library.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
