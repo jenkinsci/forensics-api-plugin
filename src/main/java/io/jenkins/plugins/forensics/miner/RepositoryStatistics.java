@@ -3,16 +3,12 @@ package io.jenkins.plugins.forensics.miner;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.google.errorprone.annotations.FormatMethod;
-
-import io.jenkins.plugins.forensics.util.FilteredLog;
 
 /**
  * Provides access to the SCM statistics of all repository files. Additionally,
@@ -21,11 +17,9 @@ import io.jenkins.plugins.forensics.util.FilteredLog;
  * @author Ullrich Hafner
  */
 public class RepositoryStatistics implements Serializable {
-    private static final long serialVersionUID = 3650720039292455024L;
+    private static final long serialVersionUID = 7L; // release 0.7
 
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
-
-    private final FilteredLog log = new FilteredLog("Errors while mining source control repository:");
 
     /**
      * Returns whether the repository is empty.
@@ -123,66 +117,20 @@ public class RepositoryStatistics implements Serializable {
         statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
     }
 
-    /**
-     * Logs the specified information message. Use this method to log any useful information when composing this log.
-     *
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logInfo(final String format, final Object... args) {
-        log.logInfo(format, args);
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RepositoryStatistics that = (RepositoryStatistics) o;
+        return statisticsPerFile.equals(that.statisticsPerFile);
     }
 
-    /**
-     * Logs the specified error message. Use this method to log any error when composing this log.
-     *
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logError(final String format, final Object... args) {
-        log.logError(format, args);
-    }
-
-    /**
-     * Logs the specified exception. Use this method to log any exception when composing this log.
-     *
-     * @param exception
-     *         the exception to log
-     * @param format
-     *         A <a href="../util/Formatter.html#syntax">format string</a>
-     * @param args
-     *         Arguments referenced by the format specifiers in the format string.  If there are more arguments than
-     *         format specifiers, the extra arguments are ignored.  The number of arguments is variable and may be
-     *         zero.
-     */
-    @FormatMethod
-    public void logException(final Exception exception, final String format, final Object... args) {
-        log.logException(exception, format, args);
-    }
-
-    /**
-     * Writes a summary message to the reports' error log that denotes the total number of errors that have been
-     * reported.
-     */
-    public void logSummary() {
-        log.logSummary();
-    }
-
-    public List<String> getErrorMessages() {
-        return log.getErrorMessages();
-    }
-
-    public List<String> getInfoMessages() {
-        return log.getInfoMessages();
+    @Override
+    public int hashCode() {
+        return Objects.hash(statisticsPerFile);
     }
 }

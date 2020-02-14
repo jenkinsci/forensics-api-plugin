@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>3.49</version>
+    <groupId>org.jvnet.hudson.plugins</groupId>
+    <artifactId>analysis-pom</artifactId>
+    <version>2.1.4</version>
     <relativePath />
   </parent>
 
@@ -12,57 +12,34 @@
   <groupId>io.jenkins.plugins</groupId>
   <packaging>hpi</packaging>
   <name>Forensics API Plugin</name>
-  <version>0.20.3-alpha-SNAPSHOT</version>
+  <version>${revision}${changelist}</version>
+
   <description>Jenkins plug-that defines an API to mine and analyze data from a repository.</description>
+  <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jenkins.version>2.138.4</jenkins.version>
-    <java.level>8</java.level>
-    <jenkins-test-harness.version>2.49</jenkins-test-harness.version>
-    <spotbugs.failOnError>false</spotbugs.failOnError>
-    <slf4j.version>1.7.28</slf4j.version>
+    <revision>0.7.0-beta7</revision>
+    <changelist>-SNAPSHOT</changelist>
+
     <module.name>${project.groupId}.forensics.api</module.name>
 
+    <asciidoctor.maven.plugin.version>2.0.0-RC.1</asciidoctor.maven.plugin.version>
+    <asciidoctorj.version>2.2.0</asciidoctorj.version>
+    <asciidoctorj.diagram.version>2.0.1</asciidoctorj.diagram.version>
+    <jruby.version>9.2.7.0</jruby.version>
+
     <!-- Library Dependencies Versions -->
-    <error-prone.version>2.3.3</error-prone.version>
-    <spotbugs.annotations>3.1.12</spotbugs.annotations>
     <commons.lang.version>3.9</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
+    <codingstyle.library.version>0.4.4</codingstyle.library.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <workflow-api.version>2.34</workflow-api.version>
-    <workflow-cps.version>2.67</workflow-cps.version>
-    <workflow-job.version>2.32</workflow-job.version>
-
-    <!-- Test Library Dependencies Versions -->
-    <junit.version>5.5.2</junit.version>
-    <junit-platform-launcher.version>1.5.2</junit-platform-launcher.version>
-    <mockito.version>3.0.0</mockito.version>
-    <assertj.version>3.13.2</assertj.version>
-
-    <!-- Maven plug-in versions -->
-    <maven-pmd-plugin.version>3.12.0</maven-pmd-plugin.version>
-    <pmd.version>6.17.0</pmd.version>
-    <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
-    <checkstyle.version>8.24</checkstyle.version>
-    <spotbugs-maven-plugin.version>3.1.12.2</spotbugs-maven-plugin.version>
-    <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
-    <maven-surefire.plugin>3.0.0-M3</maven-surefire.plugin>
-    <maven-failsafe.plugin>3.0.0-M3</maven-failsafe.plugin>
-    <jar.maven.plugin>3.0.2</jar.maven.plugin>
-    <versions-maven-plugin.version>2.7</versions-maven-plugin.version>
-    <depgraph-maven-plugin.version>3.3.0</depgraph-maven-plugin.version>
-    <animal-sniffer-maven-plugin.version>1.18</animal-sniffer-maven-plugin.version>
-    <maven-hpi-plugin.version>2.5</maven-hpi-plugin.version>
-    <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
-    <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
-    <pitest-maven.plugin>1.4.10</pitest-maven.plugin>
-    <pitest-maven.junit5.plugin>0.9</pitest-maven.junit5.plugin>
-    <revapi-maven-plugin.version>0.11.1</revapi-maven-plugin.version>
-    <revapi-java.version>0.19.1</revapi-java.version>
-    <archunit.version>0.11.0</archunit.version>
-    <assertj-assertions-generator-maven-plugin.version>2.2.0</assertj-assertions-generator-maven-plugin.version>
+    <font-awesome-api.version>5.12.0-3-beta1</font-awesome-api.version>
+    <jquery3-api.version>3.4.1-5-beta1</jquery3-api.version>
+    <bootstrap4-api.version>4.4.1-6-beta1</bootstrap4-api.version>
+    <data-tables-api.version>1.10.20-8-beta1</data-tables-api.version>
+    <echarts-api.version>4.6.0-3-beta1</echarts-api.version>
+    <plugin-util-api.version>0.1.0-beta7</plugin-util-api.version>
 
   </properties>
 
@@ -81,129 +58,75 @@
     </developer>
   </developers>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.jenkins-ci</groupId>
-        <artifactId>annotation-indexer</artifactId>
-        <version>1.12</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>junit</artifactId>
-        <version>1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jenkins-ci.plugins.workflow</groupId>
-        <artifactId>workflow-step-api</artifactId>
-        <version>2.19</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
 
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>plugin-util-api</artifactId>
+      <version>${plugin-util-api.version}</version>
+    </dependency>
+
     <!-- Project Dependencies -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-nop</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.spotbugs</groupId>
-      <artifactId>spotbugs-annotations</artifactId>
-      <version>${spotbugs.annotations}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.errorprone</groupId>
-      <artifactId>error_prone_annotations</artifactId>
-      <version>${error-prone.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${commons.lang.version}</version>
     </dependency>
+
+    <!-- Jenkins Plugin Dependencies -->
     <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections-api</artifactId>
-      <version>${eclipse-collections.version}</version>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>font-awesome-api</artifactId>
+      <version>${font-awesome-api.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.collections</groupId>
-      <artifactId>eclipse-collections</artifactId>
-      <version>${eclipse-collections.version}</version>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>bootstrap4-api</artifactId>
+      <version>${bootstrap4-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>jquery3-api</artifactId>
+      <version>${jquery3-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>echarts-api</artifactId>
+      <version>${echarts-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>data-tables-api</artifactId>
+      <version>${data-tables-api.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-api</artifactId>
-      <version>${workflow-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-cps</artifactId>
-      <version>${workflow-cps.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
-      <version>${workflow-job.version}</version>
     </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.version}</version>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>plugin-util-api</artifactId>
+      <version>${plugin-util-api.version}</version>
       <scope>test</scope>
+      <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
+      <groupId>edu.hm.hafner</groupId>
+      <artifactId>codingstyle</artifactId>
+      <version>${codingstyle.library.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-launcher</artifactId>
-      <version>${junit-platform-launcher.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj.version}</version>
-      <scope>test</scope>
+      <type>test-jar</type>
     </dependency>
 
   </dependencies>
@@ -211,394 +134,85 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>${maven-jar-plugin.version}</version>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctor-maven-plugin</artifactId>
+        <version>${asciidoctor.maven.plugin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>${asciidoctorj.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj-diagram</artifactId>
+            <version>${asciidoctorj.diagram.version}</version>
+          </dependency>
+        </dependencies>
         <configuration>
-          <archive>
-            <manifestEntries>
-              <Built-By>Ullrich Hafner</Built-By>
-              <Url>${project.scm.url}</Url>
-              <Jenkins-ClassFilter-Whitelisted>true</Jenkins-ClassFilter-Whitelisted>
-              <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
-            </manifestEntries>
-          </archive>
+          <requires>
+            <require>asciidoctor-diagram</require>
+          </requires>
+          <sourceDirectory>${basedir}/etc</sourceDirectory>
         </configuration>
         <executions>
           <execution>
+            <id>generate-html-doc</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>test-jar</goal>
+              <goal>process-asciidoc</goal>
             </goals>
             <configuration>
-              <includes>
-                <include>**/*Assert*</include>
-              </includes>
+              <backend>html5</backend>
+              <attributes>
+                <imagesdir>./images</imagesdir>
+                <toc>left</toc>
+                <icons>font</icons>
+                <sectanchors>true</sectanchors>
+                <idprefix />
+                <idseparator>-</idseparator>
+              </attributes>
             </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire.plugin}</version>
-        <configuration>
-          <excludes>
-            <exclude>**/*ITest.*</exclude>
-            <exclude>**/InjectedTest.*</exclude>
-          </excludes>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit-junit5-engine</artifactId>
-            <version>${archunit.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${maven-failsafe.plugin}</version>
-        <configuration>
-          <includes>
-            <include>**/*ITest.*</include>
-            <include>**/*InjectedTest.*</include>
-          </includes>
-          <reuseForks>false</reuseForks>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${maven-javadoc-plugin.version}</version>
-        <configuration>
-          <additionalOptions>-Xdoclint:all</additionalOptions>
-          <failOnWarnings>false</failOnWarnings>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>javadoc</goal>
-            </goals>
-            <!-- As soon as possible but after required generate-sources phase -->
-            <phase>process-sources</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.pitest</groupId>
-        <artifactId>pitest-maven</artifactId>
-        <version>${pitest-maven.plugin}</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-junit5-plugin</artifactId>
-            <version>${pitest-maven.junit5.plugin}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <outputFormats>XML,HTML</outputFormats>
-          <verbose>true</verbose>
-          <targetClasses>
-            <param>io.jenkins.plugins.*</param>
-          </targetClasses>
-          <targetTests>
-            <param>io.jenkins.plugins.*</param>
-          </targetTests>
-          <excludedTestClasses>
-            <param>*ITest</param>
-            <param>*ToolsLister</param>
-          </excludedTestClasses>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${maven-checkstyle-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>run-checkstyle</id>
-            <goals>
-              <goal>checkstyle</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <failOnViolation>false</failOnViolation>
-          <configLocation>etc/checkstyle-configuration.xml</configLocation>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-          <excludes>**/*Assert*.java,**/InjectedTest.java,**/Messages.java</excludes>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${checkstyle.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>${maven-pmd-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>run-pmd</id>
-            <goals>
-              <goal>pmd</goal>
-              <goal>cpd</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <rulesets>
-            <ruleset>etc/pmd-configuration.xml</ruleset>
-          </rulesets>
-          <excludeRoots>
-            <excludeRoot>target/generated-sources/localizer</excludeRoot>
-            <excludeRoot>target/generated-test-sources/assertj-assertions</excludeRoot>
-          </excludeRoots>
-          <excludes>
-            <exclude>**/InjectedTest.java</exclude>
-          </excludes>
-          <includeTests>true</includeTests>
-          <minimumTokens>50</minimumTokens>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>net.sourceforge.pmd</groupId>
-            <artifactId>pmd-core</artifactId>
-            <version>${pmd.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>net.sourceforge.pmd</groupId>
-            <artifactId>pmd-java</artifactId>
-            <version>${pmd.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>${spotbugs-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>run-spotbugs</id>
-            <goals>
-              <goal>spotbugs</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <failOnError>false</failOnError>
-          <xmlOutput>true</xmlOutput>
-          <threshold>Low</threshold>
-          <effort>Max</effort>
-          <relaxed>false</relaxed>
-          <fork>true</fork>
-          <excludeFilterFile>etc/spotbugs-exclusion-filter.xml</excludeFilterFile>
-          <includeTests>true</includeTests>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
-        <version>${revapi-maven-plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.revapi</groupId>
-            <artifactId>revapi-java</artifactId>
-            <version>${revapi-java.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>io.jenkins.tools</groupId>
-            <artifactId>revapi-hpi-extractor</artifactId>
-            <version>1.0.1</version>
-          </dependency>
-        </dependencies>
         <configuration>
-          <skip>true</skip> <!-- FIXME: enable after 1.0.0 -->
-          <analysisConfiguration>
-            <revapi.semver.ignore>
-              <enabled>true</enabled>
-            </revapi.semver.ignore>
-            <revapi.ignore>
-              <item>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>org.jvnet.hudson.reactor.Reactor.Node</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>hudson.remoting.Command</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>hudson.remoting.CommandTransport.CommandReceiver</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>hudson.model.FingerprintMap.FingerprintParams</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-              <item>
-                <code>java.class.nonPublicPartOfAPI</code>
-                <classQualifiedName>org.kohsuke.stapler.AncestorImpl</classQualifiedName>
-                <justification>Not relevant</justification>
-              </item>
-            </revapi.ignore>
-          </analysisConfiguration>
+          <skip>true</skip>
         </configuration>
-        <executions>
-          <execution>
-            <id>run-revapi</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-        <version>${assertj-assertions-generator-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate-assertions</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
-          <packages>
+          <packages combine.children="append">
             <package>io.jenkins.plugins.forensics</package>
           </packages>
-          <excludes>
-            <exclude>.*ITest</exclude>
+          <excludes combine.children="append">
           </excludes>
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
-          <cleanTargetDir>true</cleanTargetDir>
-          <hierarchical>false</hierarchical>
-          <generateBddAssertions>false</generateBddAssertions>
-          <generateJUnitSoftAssertions>false</generateJUnitSoftAssertions>
-          <templates>
-            <templatesDirectory>${project.basedir}/etc/templates/</templatesDirectory>
-            <assertionsEntryPointClass>assertions_entry_point_class_template.txt</assertionsEntryPointClass>
-          </templates>
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven-jar-plugin.version}</version>
-          <configuration>
-            <archive>
-              <manifestEntries>
-                <Built-By>Ullrich Hafner</Built-By>
-                <Url>${project.scm.url}</Url>
-                <Jenkins-ClassFilter-Whitelisted>true</Jenkins-ClassFilter-Whitelisted>
-              </manifestEntries>
-            </archive>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>${animal-sniffer-maven-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>versions-maven-plugin</artifactId>
-          <version>${versions-maven-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>display-info</id>
-              <configuration>
-                <rules>
-                  <enforceBytecodeVersion>
-                    <ignoreClasses>
-                      <!-- asm dependency from PMD contains a java9 module-info.class -->
-                      <ignoreClass>module-info</ignoreClass>
-                      <!-- Junit >= 5.3 contains some java9 classes -->
-                      <ignoreClass>**/ModuleUtils*</ignoreClass>
-                    </ignoreClasses>
-                  </enforceBytecodeVersion>
-                </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>com.github.ferstl</groupId>
-          <artifactId>depgraph-maven-plugin</artifactId>
-          <version>${depgraph-maven-plugin.version}</version>
-          <configuration>
-            <graphFormat>puml</graphFormat>
-            <scope>runtime</scope>
-            <excludes>
-            </excludes>
-            <showVersions>true</showVersions>
-            <transitiveExcludes>
-              <exclude>*</exclude>
-            </transitiveExcludes>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco-maven-plugin.version}</version>
-          <configuration>
-            <includes>
-              <include>io/jenkins/plugins/**/*</include>
-            </includes>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>prepare-agent</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>report</id>
-              <phase>prepare-package</phase>
-              <goals>
-                <goal>report</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
   <scm>
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <tag>HEAD</tag>
+    <tag>${scmTag}</tag>
   </scm>
 
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
       <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+    <repository>
+      <id>incrementals.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/incrementals/</url>
     </repository>
   </repositories>
 

@@ -1,0 +1,8 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
+
+  <t:summary icon="/plugin/forensics-api/icons/forensics-48x48.png">
+    ${%title}: <a href="forensics">${%summary(size(it.result))}</a>
+  </t:summary>
+
+</j:jelly>

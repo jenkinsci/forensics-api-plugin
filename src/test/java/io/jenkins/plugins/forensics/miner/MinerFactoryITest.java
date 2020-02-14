@@ -1,6 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -10,15 +9,18 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
-import io.jenkins.plugins.forensics.util.FilteredLog;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.util.PathStubs.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -44,21 +46,15 @@ public class MinerFactoryITest {
         RepositoryMiner nullMiner = createMiner("/");
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
-        assertThat(nullMiner.mine(Collections.emptyList())).isEmpty();
+        assertThat(nullMiner.mine(Collections.emptyList(), LOG)).isEmpty();
 
         RepositoryMiner repositoryMiner = createMiner("/test");
         assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
-        assertThat(repositoryMiner.mine(Collections.emptyList())).isNotEmpty();
+        assertThat(repositoryMiner.mine(Collections.emptyList(), LOG)).isNotEmpty();
     }
 
     private RepositoryMiner createMiner(final String path) {
-        return MinerFactory.findMinerFor(mock(Run.class), createWorkspace(path), TaskListener.NULL, LOG);
-    }
-
-    private FilePath createWorkspace(final String path) {
-        File file = mock(File.class);
-        when(file.getPath()).thenReturn(path);
-        return new FilePath(file);
+        return MinerFactory.findMiner(mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, LOG);
     }
 
     /**
@@ -95,9 +91,10 @@ public class MinerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public RepositoryStatistics mine(final Collection<String> relativeFileNames) {
+        public RepositoryStatistics mine(final Collection<String> absoluteFileNames,
+                final FilteredLog logger) {
             RepositoryStatistics statistics = new RepositoryStatistics();
-            statistics.add(new FileStatistics("/file.txt"));
+            statistics.add(new FileStatisticsBuilder().build("/file.txt"));
             return statistics;
         }
     }
