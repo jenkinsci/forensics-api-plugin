@@ -31,7 +31,7 @@
     <!-- Library Dependencies Versions -->
     <commons.lang.version>3.9</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
-    <codingstyle.library.version>0.4.4</codingstyle.library.version>
+    <codingstyle.library.version>1.0.0</codingstyle.library.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <font-awesome-api.version>5.12.0-4-beta1</font-awesome-api.version>
