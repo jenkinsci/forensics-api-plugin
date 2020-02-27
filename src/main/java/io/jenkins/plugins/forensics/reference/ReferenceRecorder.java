@@ -3,7 +3,6 @@ package io.jenkins.plugins.forensics.reference;
 import hudson.model.Run;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Recorder;
-import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
@@ -51,7 +50,7 @@ public abstract class ReferenceRecorder extends Recorder {
     @DataBoundSetter
     public void setReferenceJobName(final String referenceJobName) {
         if (NO_REFERENCE_JOB.equals(referenceJobName)) {
-            this.referenceJobName = StringUtils.EMPTY;
+            this.referenceJobName = "";
         }
         this.referenceJobName = referenceJobName;
     }
@@ -63,7 +62,7 @@ public abstract class ReferenceRecorder extends Recorder {
      * @return the name of reference job, or {@link #NO_REFERENCE_JOB} if undefined
      */
     public String getReferenceJobName() {
-        if (StringUtils.isBlank(referenceJobName)) {
+        if ("".equals(referenceJobName)) {
             return NO_REFERENCE_JOB;
         }
         return referenceJobName;

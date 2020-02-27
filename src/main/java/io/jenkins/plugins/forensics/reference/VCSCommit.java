@@ -1,8 +1,7 @@
 package io.jenkins.plugins.forensics.reference;
 
-import com.google.common.annotations.VisibleForTesting;
 import hudson.model.Run;
-import io.jenkins.plugins.forensics.util.JenkinsFacade;
+import io.jenkins.plugins.util.JenkinsFacade;
 import jenkins.model.RunAction2;
 
 import java.io.Serializable;
@@ -19,8 +18,7 @@ public abstract class VCSCommit implements RunAction2, Serializable {
     private static final long serialVersionUID = -5610787867605008348L;
 
     private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
-
-    @VisibleForTesting
+    
     static void setJenkinsFacade(final JenkinsFacade facade) {
         jenkinsFacade = facade;
     }
