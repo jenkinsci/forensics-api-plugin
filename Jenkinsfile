@@ -1,5 +1,4 @@
-
-    Map params = [:]
+    Map params = [useAci: true]
 
     // Faster build and reduces IO needs
     properties([
@@ -88,6 +87,7 @@
                                     mavenOptions += "-DskipTests"
                                 }
                                 mavenOptions += "clean install"
+                                mavenOptions += "jacoco:prepare-agent test jacoco:report"
                                 infra.runMaven(mavenOptions, jdk, null, null, addToolEnv)
                             } else {
                                 echo "WARNING: Gradle mode for buildPlugin() is deprecated, please use buildPluginWithGradle()"
@@ -121,10 +121,8 @@
 
                             if (first) {
                                 recordIssues enabledForFailure: true, tool: mavenConsole()
-                                recordIssues enabledForFailure: true, tools: [java(), javaDoc()], sourceCodeEncoding: 'UTF-8', filters:[excludeFile('.*Assert.java')]
-                                recordIssues tools: [spotBugs(pattern: 'target/spotbugsXml.xml'),
-                                        checkStyle(pattern: 'target/checkstyle-result.xml'),
-                                        pmdParser(pattern: 'target/pmd.xml')], sourceCodeEncoding: 'UTF-8'
+                                recordIssues enabledForFailure: true, tools: [java(), javaDoc()], sourceCodeEncoding: 'UTF-8'
+                                recordIssues tools: [spotBugs(), checkStyle(), pmdParser(), cpd()], sourceCodeEncoding: 'UTF-8'
                                 recordIssues enabledForFailure: true, tool: taskScanner(
                                         includePattern:'**/*.java',
                                         excludePattern:'target/**',
