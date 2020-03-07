@@ -1,10 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.google.common.annotations.VisibleForTesting;
+import edu.hm.hafner.util.FilteredLog;
 
 import hudson.ExtensionPoint;
 import hudson.FilePath;
@@ -13,9 +15,8 @@ import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
-import io.jenkins.plugins.forensics.util.FilteredLog;
-import io.jenkins.plugins.forensics.util.JenkinsFacade;
 import io.jenkins.plugins.forensics.util.ScmResolver;
+import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Jenkins extension point that allows plugins to create {@link RepositoryMiner} instances based on a supported {@link
@@ -24,12 +25,8 @@ import io.jenkins.plugins.forensics.util.ScmResolver;
  * @author Ullrich Hafner
  */
 public abstract class MinerFactory implements ExtensionPoint {
-    private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
-
-    @VisibleForTesting
-    static void setJenkinsFacade(final JenkinsFacade facade) {
-        jenkinsFacade = facade;
-    }
+    private static final Function<Optional<RepositoryMiner>, Stream<? extends RepositoryMiner>> OPTIONAL_MAPPER
+            = o -> o.map(Stream::of).orElseGet(Stream::empty);
 
     /**
      * Returns a repository miner for the specified {@link SCM}.
@@ -55,8 +52,8 @@ public abstract class MinerFactory implements ExtensionPoint {
      *
      * @param run
      *         the current build
-     * @param workspace
-     *         the workspace of the current build
+     * @param scmDirectories
+     *         paths to search for the SCM repository
      * @param listener
      *         a task listener
      * @param logger
@@ -64,18 +61,26 @@ public abstract class MinerFactory implements ExtensionPoint {
      *
      * @return a miner for the SCM of the specified build or a {@link NullMiner} if the SCM is not supported
      */
-    public static RepositoryMiner findMinerFor(final Run<?, ?> run, final FilePath workspace,
-            final TaskListener listener, final FilteredLog logger) {
-        SCM scm = new ScmResolver().getScm(run);
-
-        return findAllExtensions().stream()
-                .map(minerFactory -> minerFactory.createMiner(scm, run, workspace, listener, logger))
-                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+    public static RepositoryMiner findMiner(final Run<?, ?> run,
+            final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
+        return scmDirectories.stream()
+                .map(directory -> findMiner(run, directory, listener, logger))
+                .flatMap(OPTIONAL_MAPPER)
                 .findFirst()
                 .orElse(new NullMiner());
     }
 
+    private static Optional<RepositoryMiner> findMiner(final Run<?, ?> run, final FilePath workTree,
+            final TaskListener listener, final FilteredLog logger) {
+        SCM scm = new ScmResolver().getScm(run);
+
+        return findAllExtensions().stream()
+                .map(minerFactory -> minerFactory.createMiner(scm, run, workTree, listener, logger))
+                .flatMap(OPTIONAL_MAPPER)
+                .findFirst();
+    }
+
     private static List<MinerFactory> findAllExtensions() {
-        return jenkinsFacade.getExtensionsFor(MinerFactory.class);
+        return new JenkinsFacade().getExtensionsFor(MinerFactory.class);
     }
 }

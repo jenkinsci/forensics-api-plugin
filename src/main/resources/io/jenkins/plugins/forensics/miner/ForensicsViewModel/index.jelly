@@ -1,0 +1,57 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dt="/data-tables" xmlns:c="/charts"
+         xmlns:bs="/bootstrap">
+
+  <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
+
+  <bs:layout title="${it.displayName}" norefresh="true">
+
+    <st:include it="${it.owner}" page="sidepanel.jelly"/>
+
+    <l:main-panel>
+
+      <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+
+      <div class="fluid-container">
+
+        <h3>${it.displayName}</h3>
+
+        <div class="row py-3">
+          <div class="col-6">
+
+            <bs:card title="${%Number of authors}" fontAwesomeIcon="users">
+              <c:pie-chart id="authors" model="${it.authorsModel}" height="256" />
+            </bs:card>
+
+          </div>
+
+          <div class="col-6">
+
+            <bs:card title="${%Number of commits}" fontAwesomeIcon="code-branch">
+              <c:pie-chart id="commits" model="${it.commitsModel}" height="256" />
+            </bs:card>
+
+          </div>
+
+        </div>
+
+        <div class="row py-3">
+
+          <div class="col">
+            <div id="statistics">
+              <bs:card title="${%Details}" fontAwesomeIcon="chart-bar">
+                <dt:table model="${it.getTableModel('forensics')}"/>
+              </bs:card>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </l:main-panel>
+
+  </bs:layout>
+
+</j:jelly>
