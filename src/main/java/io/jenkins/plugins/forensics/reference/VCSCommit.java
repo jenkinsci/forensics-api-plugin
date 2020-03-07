@@ -1,13 +1,15 @@
 package io.jenkins.plugins.forensics.reference;
 
-import com.google.common.annotations.VisibleForTesting;
-import hudson.model.Run;
-import io.jenkins.plugins.forensics.util.JenkinsFacade;
-import jenkins.model.RunAction2;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+
+import edu.hm.hafner.util.VisibleForTesting;
+
+import hudson.model.Run;
+import jenkins.model.RunAction2;
+
+import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Represents an Item in the List of Commits which will be used to find an Intersection with another job.
