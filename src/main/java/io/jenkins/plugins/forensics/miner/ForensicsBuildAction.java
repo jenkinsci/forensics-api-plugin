@@ -74,9 +74,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     }
 
     /**
-     * Returns the detail view for issues for all Stapler requests.
+     * Returns the detail view for the forensics data for all Stapler requests.
      *
-     * @return the detail view for issues
+     * @return the detail view for the forensics data
      */
     @Override
     public Object getTarget() {
