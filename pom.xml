@@ -29,7 +29,7 @@
     <jruby.version>9.2.7.0</jruby.version>
 
     <!-- Library Dependencies Versions -->
-    <commons.lang.version>3.9</commons.lang.version>
+    <commons.lang.version>3.10</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
