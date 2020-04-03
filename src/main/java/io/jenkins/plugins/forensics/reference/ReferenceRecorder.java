@@ -33,6 +33,16 @@ public abstract class ReferenceRecorder extends Recorder {
      */
     private int maxCommits = 100;
 
+    /**
+     * If enabled, if a build of the reference job has more than one commit the build will be skipped if one of the commits is unknown to the current branch.
+     */
+    private boolean skipUnknownCommits = false;
+
+    /**
+     * If enabled, the newest build of the reference job will be taken if no intersection was found.
+     */
+    private boolean newestBuildIfNotFound = false;
+
     private String id;
     private String name;
 
@@ -75,6 +85,24 @@ public abstract class ReferenceRecorder extends Recorder {
     @DataBoundSetter
     public void setMaxCommits(final int maxCommits) {
         this.maxCommits = maxCommits;
+    }
+
+    public boolean isSkipUnknownCommits() {
+        return skipUnknownCommits;
+    }
+
+    @DataBoundSetter
+    public void setSkipUnknownCommits(boolean skipUnknownCommits) {
+        this.skipUnknownCommits = skipUnknownCommits;
+    }
+
+    public boolean isNewestBuildIfNotFound() {
+        return newestBuildIfNotFound;
+    }
+
+    @DataBoundSetter
+    public void setNewestBuildIfNotFound(boolean newestBuildIfNotFound) {
+        this.newestBuildIfNotFound = newestBuildIfNotFound;
     }
 
     public String getId() {

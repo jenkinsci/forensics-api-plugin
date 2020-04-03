@@ -41,7 +41,7 @@ public abstract class VCSCommit implements RunAction2, Serializable {
      * @param maxLogs maximal amount of commits looked at.
      * @return the build Id of the reference build or Optional.empty() if none found.
      */
-    public abstract Optional<String> getReferencePoint(VCSCommit reference, int maxLogs);
+    public abstract Optional<String> getReferencePoint(VCSCommit reference, int maxLogs, boolean skipUnknownCommits);
 
     public static VCSCommit findVCSCommitFor(final Run<?, ?> run) {
         return run.getAction(VCSCommit.class);
