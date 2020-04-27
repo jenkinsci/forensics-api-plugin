@@ -18,6 +18,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private static final long serialVersionUID = -263122257268060032L;
 
     private final int numberOfFiles;
+    private RepositoryStatistics repositoryStatistics;
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -46,6 +47,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         super(owner, repositoryStatistics, canSerialize);
 
         numberOfFiles = repositoryStatistics.size();
+        this.repositoryStatistics = repositoryStatistics;
     }
 
     @Override
@@ -91,4 +93,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     public int getNumberOfFiles() {
         return numberOfFiles;
     }
+
+    public long getTotalRuntime(){
+        return repositoryStatistics.getTotalRuntime();
+    }
+
 }
