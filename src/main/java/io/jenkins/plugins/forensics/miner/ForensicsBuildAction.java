@@ -18,7 +18,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private static final long serialVersionUID = -263122257268060032L;
 
     private final int numberOfFiles;
-    private RepositoryStatistics repositoryStatistics;
+    private final long totalRuntime;
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -28,8 +28,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      * @param repositoryStatistics
      *         the statistics to persist with this action
      */
-    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
-        this(owner, repositoryStatistics, true);
+    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
+            final long runtime) {
+        this(owner, repositoryStatistics, true, runtime);
     }
 
     /**
@@ -43,11 +44,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         determines whether the result should be persisted in the build folder
      */
     @VisibleForTesting
-    ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics, final boolean canSerialize) {
+    ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
+            final boolean canSerialize, final long runtime) {
         super(owner, repositoryStatistics, canSerialize);
 
         numberOfFiles = repositoryStatistics.size();
-        this.repositoryStatistics = repositoryStatistics;
+        totalRuntime = runtime;
     }
 
     @Override
@@ -94,8 +96,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         return numberOfFiles;
     }
 
-    public long getTotalRuntime(){
-        return repositoryStatistics.getTotalRuntime();
+    public long getTotalRuntime() {
+        return totalRuntime;
     }
 
 }

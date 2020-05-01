@@ -20,16 +20,7 @@ public class RepositoryStatistics implements Serializable {
     private static final long serialVersionUID = 7L; // release 0.7
 
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
-    private final long currentTimestamp;
-    private long totalRuntime;
 
-    private void updateTotalRuntime(){
-        totalRuntime = 1 + (System.nanoTime() - currentTimestamp) / 1_000_000_000L ;
-    }
-
-    RepositoryStatistics(){
-        currentTimestamp = System.nanoTime();
-    }
 
     /**
      * Returns whether the repository is empty.
@@ -105,7 +96,6 @@ public class RepositoryStatistics implements Serializable {
     public void addAll(final Collection<FileStatistics> additionalStatistics) {
         statisticsPerFile.putAll(
                 additionalStatistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
-        updateTotalRuntime();
     }
 
     /**
@@ -126,7 +116,6 @@ public class RepositoryStatistics implements Serializable {
      */
     public void add(final FileStatistics additionalStatistics) {
         statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
-        updateTotalRuntime();
     }
 
     @Override
@@ -144,10 +133,6 @@ public class RepositoryStatistics implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(statisticsPerFile);
-    }
-
-    public long getTotalRuntime(){
-        return totalRuntime;
     }
 
 }
