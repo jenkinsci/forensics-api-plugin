@@ -2,8 +2,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
   <t:summary icon="/plugin/forensics-api/icons/forensics-48x48.png">
-    ${%title}: <a href="forensics">${%summary(size(it.result))}</a><br></br>
-    ${%runtime(it.totalRuntime)}
+    ${%title}: <a href="forensics">${%summary(size(it.result))}</a><br/>
+    ${%runtime(it.miningDurationNanos)}
   </t:summary>
 
 </j:jelly>

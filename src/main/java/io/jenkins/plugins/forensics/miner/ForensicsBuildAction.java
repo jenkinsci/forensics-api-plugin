@@ -18,7 +18,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private static final long serialVersionUID = -263122257268060032L;
 
     private final int numberOfFiles;
-    private final long totalRuntime;
+    private final long miningDurationNanos;
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -27,10 +27,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the associated build that created the statistics
      * @param repositoryStatistics
      *         the statistics to persist with this action
+     * @param miningDurationNanos
+     *         the duration of the mining operation in [ns]
      */
     public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final long runtime) {
-        this(owner, repositoryStatistics, true, runtime);
+            final long miningDurationNanos) {
+        this(owner, repositoryStatistics, true, miningDurationNanos);
     }
 
     /**
@@ -42,14 +44,16 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      * @param canSerialize
      *         determines whether the result should be persisted in the build folder
+     * @param miningDurationNanos
+     *         the duration of the mining operation in [ns]
      */
     @VisibleForTesting
     ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final boolean canSerialize, final long runtime) {
+            final boolean canSerialize, final long miningDurationNanos) {
         super(owner, repositoryStatistics, canSerialize);
 
         numberOfFiles = repositoryStatistics.size();
-        totalRuntime = runtime;
+        this.miningDurationNanos = miningDurationNanos;
     }
 
     @Override
@@ -96,8 +100,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         return numberOfFiles;
     }
 
-    public long getTotalRuntime() {
-        return totalRuntime;
+    public long getMiningDurationNanos() {
+        return miningDurationNanos;
     }
 
 }
