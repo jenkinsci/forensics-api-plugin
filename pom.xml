@@ -24,7 +24,7 @@
     <module.name>${project.groupId}.forensics.api</module.name>
 
     <asciidoctor.maven.plugin.version>2.0.0-RC.1</asciidoctor.maven.plugin.version>
-    <asciidoctorj.version>2.2.0</asciidoctorj.version>
+    <asciidoctorj.version>2.3.0</asciidoctorj.version>
     <asciidoctorj.diagram.version>2.0.2</asciidoctorj.diagram.version>
     <jruby.version>9.2.7.0</jruby.version>
 
@@ -36,8 +36,8 @@
     <font-awesome-api.version>5.13.0-1</font-awesome-api.version>
     <jquery3-api.version>3.4.1-10</jquery3-api.version>
     <bootstrap4-api.version>4.4.1-13</bootstrap4-api.version>
-    <data-tables-api.version>1.10.20-14</data-tables-api.version>
-    <echarts-api.version>4.6.0-9</echarts-api.version>
+    <data-tables-api.version>1.10.20-15</data-tables-api.version>
+    <echarts-api.version>4.6.0-10</echarts-api.version>
     <plugin-util-api.version>1.2.0</plugin-util-api.version>
 
   </properties>
