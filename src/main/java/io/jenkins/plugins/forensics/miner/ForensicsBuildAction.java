@@ -18,7 +18,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private static final long serialVersionUID = -263122257268060032L;
 
     private final int numberOfFiles;
-    private final long miningDurationNanos;
+    private final int miningDurationSeconds;
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -27,12 +27,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the associated build that created the statistics
      * @param repositoryStatistics
      *         the statistics to persist with this action
-     * @param miningDurationNanos
-     *         the duration of the mining operation in [ns]
+     * @param miningDurationSeconds
+     *         the duration of the mining operation in [s]
      */
     public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final long miningDurationNanos) {
-        this(owner, repositoryStatistics, true, miningDurationNanos);
+            final int miningDurationSeconds) {
+        this(owner, repositoryStatistics, true, miningDurationSeconds);
     }
 
     /**
@@ -44,16 +44,16 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      * @param canSerialize
      *         determines whether the result should be persisted in the build folder
-     * @param miningDurationNanos
-     *         the duration of the mining operation in [ns]
+     * @param miningDurationSeconds
+     *         the duration of the mining operation in [s]
      */
     @VisibleForTesting
     ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final boolean canSerialize, final long miningDurationNanos) {
+            final boolean canSerialize, final int miningDurationSeconds) {
         super(owner, repositoryStatistics, canSerialize);
 
         numberOfFiles = repositoryStatistics.size();
-        this.miningDurationNanos = miningDurationNanos;
+        this.miningDurationSeconds = miningDurationSeconds;
     }
 
     @Override
@@ -100,8 +100,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         return numberOfFiles;
     }
 
-    public long getMiningDurationNanos() {
-        return miningDurationNanos;
+    public int miningDurationSeconds() {
+        return miningDurationSeconds;
     }
 
 }
