@@ -3,7 +3,7 @@
 
   <t:summary icon="/plugin/forensics-api/icons/forensics-48x48.png">
     ${%title}: <a href="forensics">${%summary(size(it.result))}</a><br/>
-    ${%runtime(it.miningDurationNanos)}
+    ${%runtime(it.miningDurationSeconds)}
   </t:summary>
 
 </j:jelly>
