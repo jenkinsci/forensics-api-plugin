@@ -49,6 +49,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     @Override
     public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace,
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
+        long startOfMining = System.nanoTime();
         LogHandler logHandler = new LogHandler(listener, "Forensics");
 
         FilteredLog logger = new FilteredLog("Errors while mining source control repository:");
@@ -59,8 +60,8 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         // TODO: repository mining should be an incremental process
         RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList(), logger);
         logHandler.log(logger);
-
-        run.addAction(new ForensicsBuildAction(run, repositoryStatistics));
+        int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
+        run.addAction(new ForensicsBuildAction(run, repositoryStatistics, miningDurationSeconds));
     }
 
     /**
