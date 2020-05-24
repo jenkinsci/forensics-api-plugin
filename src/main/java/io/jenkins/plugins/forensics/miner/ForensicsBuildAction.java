@@ -100,8 +100,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         return numberOfFiles;
     }
 
-    public int miningDurationSeconds() {
+    public int getMiningDurationSeconds() {
         return miningDurationSeconds;
     }
-
 }
