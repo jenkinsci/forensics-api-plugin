@@ -15,6 +15,8 @@ public abstract class BranchMasterIntersectionFinder implements RunAction2, Seri
 
     private static final long serialVersionUID = -4549516129641755356L;
 
+    public static final String NO_INTERSECTION_FOUND = "No intersection was found in master commits";
+
     /**
      * Method to determine the Revision of the last Commit which is shared with the master branch.
      *
