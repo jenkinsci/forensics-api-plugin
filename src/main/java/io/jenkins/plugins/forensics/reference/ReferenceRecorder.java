@@ -3,7 +3,6 @@ package io.jenkins.plugins.forensics.reference;
 import hudson.model.Run;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Recorder;
-import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
 
 /**
@@ -27,12 +26,22 @@ public abstract class ReferenceRecorder extends Recorder {
     /**
      * The name of the build. Will be used to find the reference job in Jenkins.
      */
-    private String referenceJobName;
+    private String referenceJobName = "";
 
     /**
      * Indicates the maximal amount of commits which will be compared to find the intersection point.
      */
-    private int maxCommits;
+    private int maxCommits = 100;
+
+    /**
+     * If enabled, if a build of the reference job has more than one commit the build will be skipped if one of the commits is unknown to the current branch.
+     */
+    private boolean skipUnknownCommits = false;
+
+    /**
+     * If enabled, the newest build of the reference job will be taken if no intersection was found.
+     */
+    private boolean newestBuildIfNotFound = false;
 
     private String id;
     private String name;
@@ -51,7 +60,7 @@ public abstract class ReferenceRecorder extends Recorder {
     @DataBoundSetter
     public void setReferenceJobName(final String referenceJobName) {
         if (NO_REFERENCE_JOB.equals(referenceJobName)) {
-            this.referenceJobName = StringUtils.EMPTY;
+            this.referenceJobName = "";
         }
         this.referenceJobName = referenceJobName;
     }
@@ -63,7 +72,7 @@ public abstract class ReferenceRecorder extends Recorder {
      * @return the name of reference job, or {@link #NO_REFERENCE_JOB} if undefined
      */
     public String getReferenceJobName() {
-        if (StringUtils.isBlank(referenceJobName)) {
+        if ("".equals(referenceJobName)) {
             return NO_REFERENCE_JOB;
         }
         return referenceJobName;
@@ -76,6 +85,24 @@ public abstract class ReferenceRecorder extends Recorder {
     @DataBoundSetter
     public void setMaxCommits(final int maxCommits) {
         this.maxCommits = maxCommits;
+    }
+
+    public boolean isSkipUnknownCommits() {
+        return skipUnknownCommits;
+    }
+
+    @DataBoundSetter
+    public void setSkipUnknownCommits(boolean skipUnknownCommits) {
+        this.skipUnknownCommits = skipUnknownCommits;
+    }
+
+    public boolean isNewestBuildIfNotFound() {
+        return newestBuildIfNotFound;
+    }
+
+    @DataBoundSetter
+    public void setNewestBuildIfNotFound(boolean newestBuildIfNotFound) {
+        this.newestBuildIfNotFound = newestBuildIfNotFound;
     }
 
     public String getId() {

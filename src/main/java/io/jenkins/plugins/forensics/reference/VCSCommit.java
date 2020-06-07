@@ -1,15 +1,12 @@
 package io.jenkins.plugins.forensics.reference;
 
+import hudson.model.Run;
+import io.jenkins.plugins.util.JenkinsFacade;
+import jenkins.model.RunAction2;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-
-import edu.hm.hafner.util.VisibleForTesting;
-
-import hudson.model.Run;
-import jenkins.model.RunAction2;
-
-import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Represents an Item in the List of Commits which will be used to find an Intersection with another job.
@@ -22,7 +19,6 @@ public abstract class VCSCommit implements RunAction2, Serializable {
 
     private static JenkinsFacade jenkinsFacade = new JenkinsFacade();
 
-    @VisibleForTesting
     static void setJenkinsFacade(final JenkinsFacade facade) {
         jenkinsFacade = facade;
     }
@@ -45,7 +41,7 @@ public abstract class VCSCommit implements RunAction2, Serializable {
      * @param maxLogs maximal amount of commits looked at.
      * @return the build Id of the reference build or Optional.empty() if none found.
      */
-    public abstract Optional<String> getReferencePoint(VCSCommit reference, int maxLogs);
+    public abstract Optional<String> getReferencePoint(VCSCommit reference, int maxLogs, boolean skipUnknownCommits);
 
     public static VCSCommit findVCSCommitFor(final Run<?, ?> run) {
         return run.getAction(VCSCommit.class);

@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.reference;
 
+import hudson.model.Run;
 import jenkins.model.RunAction2;
 
 import java.io.Serializable;
@@ -14,6 +15,8 @@ public abstract class BranchMasterIntersectionFinder implements RunAction2, Seri
 
     private static final long serialVersionUID = -4549516129641755356L;
 
+    public static final String NO_INTERSECTION_FOUND = "No intersection was found in master commits";
+
     /**
      * Method to determine the Revision of the last Commit which is shared with the master branch.
      *
@@ -25,5 +28,11 @@ public abstract class BranchMasterIntersectionFinder implements RunAction2, Seri
     public abstract String getSummary();
 
     public abstract String getBuildId();
+
+    public abstract Run<?, ?> getRun();
+
+    public abstract Run<?, ?> getReference();
+
+    public abstract Optional<Run<?, ?>> getReferenceBuild();
 
 }
