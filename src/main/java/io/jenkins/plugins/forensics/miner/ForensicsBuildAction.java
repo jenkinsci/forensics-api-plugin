@@ -18,6 +18,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private static final long serialVersionUID = -263122257268060032L;
 
     private final int numberOfFiles;
+    private final int miningDurationSeconds;
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -26,9 +27,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the associated build that created the statistics
      * @param repositoryStatistics
      *         the statistics to persist with this action
+     * @param miningDurationSeconds
+     *         the duration of the mining operation in [s]
      */
-    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
-        this(owner, repositoryStatistics, true);
+    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
+            final int miningDurationSeconds) {
+        this(owner, repositoryStatistics, true, miningDurationSeconds);
     }
 
     /**
@@ -40,12 +44,16 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      * @param canSerialize
      *         determines whether the result should be persisted in the build folder
+     * @param miningDurationSeconds
+     *         the duration of the mining operation in [s]
      */
     @VisibleForTesting
-    ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics, final boolean canSerialize) {
+    ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
+            final boolean canSerialize, final int miningDurationSeconds) {
         super(owner, repositoryStatistics, canSerialize);
 
         numberOfFiles = repositoryStatistics.size();
+        this.miningDurationSeconds = miningDurationSeconds;
     }
 
     @Override
@@ -90,5 +98,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     public int getNumberOfFiles() {
         return numberOfFiles;
+    }
+
+    public int getMiningDurationSeconds() {
+        return miningDurationSeconds;
     }
 }
