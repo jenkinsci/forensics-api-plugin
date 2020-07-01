@@ -67,8 +67,20 @@ public abstract class MinerFactory implements ExtensionPoint {
                 .map(directory -> findMiner(run, directory, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst()
-                .orElse(new NullMiner());
+                .orElseGet(() -> createNullMiner(logger));
     }
+
+    private static RepositoryMiner createNullMiner(final FilteredLog logger) {
+        if (findAllExtensions().isEmpty()) {
+            logger.logError("-> No miner installed yet. You need to install the `git-forensics` plugin to enable mining of Git repositories.");
+        }
+        else {
+            logger.logError("-> No suitable miner found.");
+        }
+        return new NullMiner();
+    }
+
+
 
     private static Optional<RepositoryMiner> findMiner(final Run<?, ?> run, final FilePath workTree,
             final TaskListener listener, final FilteredLog logger) {

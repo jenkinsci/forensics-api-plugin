@@ -33,30 +33,59 @@ public class BlamerFactoryITest {
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
 
     private static final String FILE_NAME = "file";
-    private static final FilteredLog LOG = new FilteredLog("Foo");
+    private static final String NO_SUITABLE_BLAMER_FOUND = "-> No suitable blamer found.";
+    private static final String ACTUAL_FACTORY_NULL_BLAMER = "ActualFactory returned NullBlamer";
+    private static final String EMPTY_FACTORY_NULL_BLAMER = "EmptyFactory returned NullBlamer";
+    private static final String ACTUAL_FACTORY_CREATED_A_BLAMER = "ActualFactory created a blamer";
 
-    /** Verifies that different {@link Blamer} instances are created based on the stubbed workspace name. */
+    /** Verifies that a {@link NullBlamer} will be returned if no suitable blamer has been found. */
     @Test
-    public void shouldSelectBlamerBasedOnWorkspaceName() {
-        Blamer nullBlamer = createBlamer("/");
+    public void shouldSelectNullBlamer() {
+        FilteredLog log = new FilteredLog("Foo");
+        Blamer nullBlamer = createBlamer("/", log);
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
-        assertThat(nullBlamer.blame(new FileLocations(), LOG)).isEmpty();
-
-        Blamer testBlamer = createBlamer("/test");
-        assertThat(testBlamer).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamer.blame(new FileLocations(), LOG)).isNotEmpty();
-        assertThat(testBlamer.blame(new FileLocations(), LOG)).hasFiles(FILE_NAME);
-
-        Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
-        Blamer testBlamerSecondMatch = BlamerFactory.findBlamer(mock(Run.class), directories, TaskListener.NULL, LOG);
-        assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
-        assertThat(testBlamerSecondMatch.blame(new FileLocations(), LOG)).isNotEmpty();
-        assertThat(testBlamerSecondMatch.blame(new FileLocations(), LOG)).hasFiles(FILE_NAME);
+        assertThat(nullBlamer.blame(new FileLocations(), log)).isEmpty();
+        assertThat(log.getErrorMessages()).contains(NO_SUITABLE_BLAMER_FOUND);
+        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_NULL_BLAMER, EMPTY_FACTORY_NULL_BLAMER);
     }
 
-    private Blamer createBlamer(final String path) {
-        return BlamerFactory.findBlamer(mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, LOG);
+    /** Verifies that the correct {@link Blamer} instance is created for the first repository. */
+    @Test
+    public void shouldSelectBlamerForFirstDirectory() {
+        FilteredLog log = new FilteredLog("Foo");
+        Blamer testBlamer = createBlamer("/test", log);
+
+        assertThat(log.getErrorMessages()).isEmpty();
+        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_CREATED_A_BLAMER);
+
+        assertThat(testBlamer).isInstanceOf(TestBlamer.class);
+        assertThat(testBlamer.blame(new FileLocations(), log)).isNotEmpty();
+        assertThat(testBlamer.blame(new FileLocations(), log)).hasFiles(FILE_NAME);
+    }
+
+    /**
+     * Verifies that correct {@link Blamer} instance is created for the second repository. (The first repository does
+     * return a {@link NullBlamer}.
+     */
+    @Test
+    public void shouldSelectBlamerForSecondDirectory() {
+        FilteredLog log = new FilteredLog("Foo");
+
+        Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
+        Blamer testBlamerSecondMatch = BlamerFactory.findBlamer(mock(Run.class), directories, TaskListener.NULL, log);
+        assertThat(log.getErrorMessages()).isEmpty();
+        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_BLAMER, ACTUAL_FACTORY_NULL_BLAMER,
+                ACTUAL_FACTORY_CREATED_A_BLAMER);
+
+        assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
+        assertThat(testBlamerSecondMatch.blame(new FileLocations(), log)).isNotEmpty();
+        assertThat(testBlamerSecondMatch.blame(new FileLocations(), log)).hasFiles(FILE_NAME);
+    }
+
+    private Blamer createBlamer(final String path, final FilteredLog log) {
+        return BlamerFactory.findBlamer(mock(Run.class), asSourceDirectories(createWorkspace(path)),
+                TaskListener.NULL, log);
     }
 
     /**
@@ -68,6 +97,7 @@ public class BlamerFactoryITest {
         @Override
         public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run, final FilePath workspace,
                 final TaskListener listener, final FilteredLog logger) {
+            logger.logInfo("EmptyFactory returned NullBlamer");
             return Optional.empty();
         }
     }
@@ -82,8 +112,10 @@ public class BlamerFactoryITest {
         public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run,
                 final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
+                logger.logInfo("ActualFactory created a blamer");
                 return Optional.of(new TestBlamer());
             }
+            logger.logInfo("ActualFactory returned NullBlamer");
             return Optional.empty();
         }
     }
