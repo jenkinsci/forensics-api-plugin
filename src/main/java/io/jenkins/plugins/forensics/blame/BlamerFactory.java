@@ -66,7 +66,17 @@ public abstract class BlamerFactory implements ExtensionPoint {
                 .map(directory -> findBlamer(run, directory, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst()
-                .orElse(new NullBlamer());
+                .orElseGet(() -> createNullBlamer(logger));
+    }
+
+    private static Blamer createNullBlamer(final FilteredLog logger) {
+        if (findAllExtensions().isEmpty()) {
+            logger.logError("-> No blamer installed yet. You need to install the `git-forensics` plugin to enable blaming for Git.");
+        }
+        else {
+            logger.logError("-> No suitable blamer found.");
+        }
+        return new NullBlamer();
     }
 
     private static Optional<Blamer> findBlamer(final Run<?, ?> run, final FilePath workTree,

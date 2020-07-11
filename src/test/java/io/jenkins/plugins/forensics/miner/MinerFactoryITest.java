@@ -33,28 +33,70 @@ public class MinerFactoryITest {
     @ClassRule
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
 
-    private static final FilteredLog LOG = new FilteredLog("Foo");
+    private static final String NO_SUITABLE_MINER_FOUND = "-> No suitable miner found.";
+    private static final String EMPTY_FACTORY_NULL_MINER = "EmptyFactory returned NullMiner";
+    private static final String ACTUAL_FACTORY_NULL_MINER = "ActualFactory returned NullMiner";
+    private static final String ACTUAL_FACTORY_CREATED_A_MINER = "ActualFactory created a miner";
 
     /**
-     * Verifies that different {@link RepositoryMiner} instances are created based on the stubbed workspace name.
+     * Verifies that a {@link NullMiner} is selected if the workspace is not a supported SCM.
      *
      * @throws InterruptedException
      *         never thrown
      */
     @Test
-    public void shouldSelectMinerBasedOnWorkspaceName() throws InterruptedException {
-        RepositoryMiner nullMiner = createMiner("/");
+    public void shouldSelectNullMiner() throws InterruptedException {
+        FilteredLog log = new FilteredLog("Foo");
+        RepositoryMiner nullMiner = createMiner("/", log);
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
-        assertThat(nullMiner.mine(Collections.emptyList(), LOG)).isEmpty();
-
-        RepositoryMiner repositoryMiner = createMiner("/test");
-        assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
-        assertThat(repositoryMiner.mine(Collections.emptyList(), LOG)).isNotEmpty();
+        assertThat(nullMiner.mine(Collections.emptyList(), log)).isEmpty();
+        assertThat(log.getErrorMessages()).contains(NO_SUITABLE_MINER_FOUND);
+        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_NULL_MINER, EMPTY_FACTORY_NULL_MINER);
     }
 
-    private RepositoryMiner createMiner(final String path) {
-        return MinerFactory.findMiner(mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, LOG);
+    /**
+     * Verifies that the correct {@link RepositoryMiner} instance is created for the first repository.
+     *
+     * @throws InterruptedException
+     *         never thrown
+     */
+    @Test
+    public void shouldSelectMinerForFirstDirectory() throws InterruptedException {
+        FilteredLog log = new FilteredLog("Foo");
+        RepositoryMiner repositoryMiner = createMiner("/test", log);
+
+        assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
+        assertThat(repositoryMiner.mine(Collections.emptyList(), log)).isNotEmpty();
+
+        assertThat(log.getErrorMessages()).isEmpty();
+        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_CREATED_A_MINER);
+    }
+
+    /**
+     * Verifies that correct {@link RepositoryMiner} instance is created for the second repository. (The first
+     * repository does return a {@link NullMiner}.
+     *
+     * @throws InterruptedException
+     *         never thrown
+     */
+    @Test
+    public void shouldSelectMinerBasedOnEmptyFactory() {
+        FilteredLog log = new FilteredLog("Foo");
+
+        Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
+        RepositoryMiner testMinerSecondMatch = MinerFactory.findMiner(mock(Run.class), directories, TaskListener.NULL,
+                log);
+        assertThat(log.getErrorMessages()).isEmpty();
+        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_MINER, ACTUAL_FACTORY_NULL_MINER,
+                ACTUAL_FACTORY_CREATED_A_MINER);
+
+        assertThat(testMinerSecondMatch).isInstanceOf(TestMiner.class);
+    }
+
+    private RepositoryMiner createMiner(final String path, final FilteredLog log) {
+        return MinerFactory.findMiner(mock(Run.class), asSourceDirectories(createWorkspace(path)),
+                TaskListener.NULL, log);
     }
 
     /**
@@ -66,6 +108,7 @@ public class MinerFactoryITest {
         @Override
         public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run, final FilePath workspace,
                 final TaskListener listener, final FilteredLog logger) {
+            logger.logInfo("EmptyFactory returned NullMiner");
             return Optional.empty();
         }
     }
@@ -80,8 +123,10 @@ public class MinerFactoryITest {
         public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run,
                 final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
+                logger.logInfo("ActualFactory created a miner");
                 return Optional.of(new TestMiner());
             }
+            logger.logInfo("ActualFactory returned NullMiner");
             return Optional.empty();
         }
     }
