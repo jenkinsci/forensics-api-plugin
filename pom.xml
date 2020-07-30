@@ -24,18 +24,18 @@
     <module.name>${project.groupId}.forensics.api</module.name>
 
     <asciidoctor.maven.plugin.version>2.0.0</asciidoctor.maven.plugin.version>
-    <asciidoctorj.version>2.3.1</asciidoctorj.version>
+    <asciidoctorj.version>2.4.0</asciidoctorj.version>
     <asciidoctorj.diagram.version>2.0.2</asciidoctorj.diagram.version>
     <jruby.version>9.2.7.0</jruby.version>
 
     <!-- Library Dependencies Versions -->
-    <commons.lang.version>3.10</commons.lang.version>
+    <commons.lang.version>3.11</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <font-awesome-api.version>5.13.0-1</font-awesome-api.version>
     <jquery3-api.version>3.5.1-1</jquery3-api.version>
-    <bootstrap4-api.version>4.5.0-1</bootstrap4-api.version>
+    <bootstrap4-api.version>4.5.0-2</bootstrap4-api.version>
     <data-tables-api.version>1.10.21-2</data-tables-api.version>
     <echarts-api.version>4.8.0-2</echarts-api.version>
     <plugin-util-api.version>1.2.2</plugin-util-api.version>
