@@ -11,15 +11,26 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Provides access to the SCM statistics of all repository files. Additionally,
- * info and error messages during the SCM processing will be stored.
+ * Provides access to the SCM statistics of all repository files. Additionally, info and error messages during the SCM
+ * processing will be stored.
  *
  * @author Ullrich Hafner
  */
 public class RepositoryStatistics implements Serializable {
     private static final long serialVersionUID = 7L; // release 0.7
 
-    private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
+    private final Map<String, FileStatistics> statisticsPerFile;
+
+    private final String latestCommitId;
+
+    public RepositoryStatistics() {
+        this(null);
+    }
+
+    public RepositoryStatistics(final String latestCommitId) {
+        this.latestCommitId = latestCommitId;
+        this.statisticsPerFile = new HashMap<>();
+    }
 
     /**
      * Returns whether the repository is empty.
@@ -28,6 +39,15 @@ public class RepositoryStatistics implements Serializable {
      */
     public boolean isEmpty() {
         return statisticsPerFile.isEmpty();
+    }
+
+    /**
+     * Returns the id of the latest commit mined.
+     *
+     * @return id of the latest commit.
+     */
+    public String getLatestCommitId() {
+        return latestCommitId;
     }
 
     /**
@@ -94,7 +114,8 @@ public class RepositoryStatistics implements Serializable {
      */
     public void addAll(final Collection<FileStatistics> additionalStatistics) {
         statisticsPerFile.putAll(
-                additionalStatistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
+                additionalStatistics.stream()
+                        .collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
     }
 
     /**
