@@ -56,9 +56,9 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
         RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, logger);
         logHandler.log(logger);
-
-        // TODO: repository mining should be an incremental process
+        RepositoryStatistics prev = BuildExtractor.previousBuildStatistics(run);
         RepositoryStatistics repositoryStatistics = miner.mine(Collections.emptyList(), logger);
+        repositoryStatistics.addAll(prev);
         logHandler.log(logger);
         int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
         run.addAction(new ForensicsBuildAction(run, repositoryStatistics, miningDurationSeconds));
