@@ -29,6 +29,9 @@ public abstract class RepositoryMiner implements Serializable {
     public abstract RepositoryStatistics mine(Collection<String> absoluteFileNames, FilteredLog logger)
             throws InterruptedException;
 
+    public abstract RepositoryStatistics mine(RepositoryStatistics repositoryStatistics, FilteredLog logger)
+            throws InterruptedException;
+
     /**
      * A repository miner that does nothing.
      */
@@ -38,7 +41,14 @@ public abstract class RepositoryMiner implements Serializable {
         @Override
         public RepositoryStatistics mine(final Collection<String> absoluteFileNames,
                 final FilteredLog logger) {
-            return new RepositoryStatistics();
+            return mine(new RepositoryStatistics(), logger);
+
+        }
+
+        @Override
+        public RepositoryStatistics mine(final RepositoryStatistics repositoryStatistics, final FilteredLog logger
+                ) {
+            return repositoryStatistics;
         }
     }
 }

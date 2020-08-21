@@ -142,5 +142,10 @@ public class MinerFactoryITest {
             statistics.add(new FileStatisticsBuilder().build("/file.txt"));
             return statistics;
         }
+
+        @Override
+        public RepositoryStatistics mine(final RepositoryStatistics repositoryStatistics, final FilteredLog logger) {
+            return repositoryStatistics;
+        }
     }
 }
