@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Provides access to the SCM commit statistics of all repository files up to a specific commit.
  *
@@ -46,6 +48,7 @@ public class RepositoryStatistics implements Serializable {
      *
      * @return this
      */
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (latestCommitId == null) {
             latestCommitId = StringUtils.EMPTY;
