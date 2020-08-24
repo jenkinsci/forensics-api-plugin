@@ -144,8 +144,8 @@ public class MinerFactoryITest {
         }
 
         @Override
-        public RepositoryStatistics mine(final RepositoryStatistics repositoryStatistics, final FilteredLog logger) {
-            return repositoryStatistics;
+        public RepositoryStatistics mine(final RepositoryStatistics previousStatistics, final FilteredLog logger) {
+            return previousStatistics;
         }
     }
 }

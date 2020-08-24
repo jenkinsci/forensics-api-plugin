@@ -6,7 +6,9 @@ import java.util.Collection;
 import edu.hm.hafner.util.FilteredLog;
 
 /**
- * Obtains commit statistics for a given collection of files.
+ * Obtains commit statistics for a source code repository. Computation of the commit statistics should be done
+ * incrementally, if supported by the underlying SCM  (i.e., only commits new in the current build should be
+ * inspected).
  *
  * @author Ullrich Hafner
  */
@@ -25,11 +27,26 @@ public abstract class RepositoryMiner implements Serializable {
      * @return the statistics
      * @throws InterruptedException
      *         if the user canceled the processing
+     * @deprecated replaced by {@link #mine(RepositoryStatistics, FilteredLog)}
      */
+    @Deprecated
     public abstract RepositoryStatistics mine(Collection<String> absoluteFileNames, FilteredLog logger)
             throws InterruptedException;
 
-    public abstract RepositoryStatistics mine(RepositoryStatistics repositoryStatistics, FilteredLog logger)
+    /**
+     * Obtains commit statistics for a source code repository.
+     *
+     * @param previousStatistics
+     *         the repository statistics of the previous build - if there is no such build then an empty instance will
+     *         be provided
+     * @param logger
+     *         the logger to use
+     *
+     * @return the aggregated statistics containing the commit statistics for the current build and the previous builds
+     * @throws InterruptedException
+     *         if the user canceled the processing
+     */
+    public abstract RepositoryStatistics mine(RepositoryStatistics previousStatistics, FilteredLog logger)
             throws InterruptedException;
 
     /**
@@ -39,16 +56,13 @@ public abstract class RepositoryMiner implements Serializable {
         private static final long serialVersionUID = 6235885974889709821L;
 
         @Override
-        public RepositoryStatistics mine(final Collection<String> absoluteFileNames,
-                final FilteredLog logger) {
+        public RepositoryStatistics mine(final Collection<String> absoluteFileNames, final FilteredLog logger) {
             return mine(new RepositoryStatistics(), logger);
-
         }
 
         @Override
-        public RepositoryStatistics mine(final RepositoryStatistics repositoryStatistics, final FilteredLog logger
-                ) {
-            return repositoryStatistics;
+        public RepositoryStatistics mine(final RepositoryStatistics previousStatistics, final FilteredLog logger) {
+            return previousStatistics;
         }
     }
 }
