@@ -30,8 +30,10 @@ public abstract class RepositoryMiner implements Serializable {
      * @deprecated replaced by {@link #mine(RepositoryStatistics, FilteredLog)}
      */
     @Deprecated
-    public abstract RepositoryStatistics mine(Collection<String> absoluteFileNames, FilteredLog logger)
-            throws InterruptedException;
+    public RepositoryStatistics mine(Collection<String> absoluteFileNames, FilteredLog logger)
+            throws InterruptedException {
+        return mine(new RepositoryStatistics(), logger);
+    }
 
     /**
      * Obtains commit statistics for a source code repository.
@@ -54,11 +56,6 @@ public abstract class RepositoryMiner implements Serializable {
      */
     public static class NullMiner extends RepositoryMiner {
         private static final long serialVersionUID = 6235885974889709821L;
-
-        @Override
-        public RepositoryStatistics mine(final Collection<String> absoluteFileNames, final FilteredLog logger) {
-            return mine(new RepositoryStatistics(), logger);
-        }
 
         @Override
         public RepositoryStatistics mine(final RepositoryStatistics previousStatistics, final FilteredLog logger) {
