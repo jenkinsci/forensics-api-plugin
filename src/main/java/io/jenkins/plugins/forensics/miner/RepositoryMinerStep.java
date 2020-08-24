@@ -84,17 +84,22 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
         return new RepositoryStatistics();
     }
+
+    @Override
+    public Descriptor getDescriptor() {
+        return (Descriptor) super.getDescriptor();
+    }
+
     /**
      * Descriptor for this step: defines the context and the UI elements.
      */
     @Extension
     @Symbol("mineRepository")
-    @SuppressWarnings("unused") // most methods are used by the corresponding jelly view
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
         @NonNull
         @Override
         public String getDisplayName() {
-            return "Mine SCM repository";
+            return Messages.Step_Name();
         }
 
         @Override
