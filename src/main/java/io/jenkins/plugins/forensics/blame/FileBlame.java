@@ -11,8 +11,8 @@ import java.util.Set;
 import edu.hm.hafner.util.PathUtil;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * Stores the repository blames for several lines of a single file. File names are stored using the absolute path of the
@@ -27,7 +27,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     static final int EMPTY_INTEGER = 0;
 
     private final TreeString fileName;
-    @Nullable // Deserialization of old format
+    @CheckForNull // Deserialization of old format
     private Map<Integer, LineBlame> blamesByLine = new HashMap<>();
 
     /**
@@ -325,7 +325,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
     @Deprecated
     @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
     private final transient Map<Integer, String> emailByLine = new HashMap<>();
-    @Nullable
+    @CheckForNull
     @Deprecated
     @SuppressWarnings({"checkstyle:InnerTypeLast", "DeprecatedIsStillUsed", "MismatchedQueryAndUpdateOfCollection"})
     private transient Map<Integer, Integer> timeByLine = new HashMap<>();
