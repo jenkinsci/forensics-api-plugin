@@ -10,25 +10,47 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Provides access to the SCM statistics of all repository files. Additionally,
- * info and error messages during the SCM processing will be stored.
+ * Provides access to the SCM commit statistics of all repository files up to a specific commit.
  *
  * @author Ullrich Hafner
  */
 public class RepositoryStatistics implements Serializable {
-    private static final long serialVersionUID = 7L; // release 0.7
+    private static final long serialVersionUID = 8L; // release 0.8
 
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 
-    private final String latestCommitId;
+    private String latestCommitId;
 
+    /**
+     * Creates an empty instance of {@link RepositoryStatistics} with no latest commit ID set.
+     */
     public RepositoryStatistics() {
-        this(null);
+        this(StringUtils.EMPTY);
     }
 
+    /**
+     * Creates an empty instance of {@link RepositoryStatistics}.
+     *
+     * @param latestCommitId
+     *         the ID of the latest commit that
+     */
     public RepositoryStatistics(final String latestCommitId) {
         this.latestCommitId = latestCommitId;
+    }
+
+    /**
+     * Called after de-serialization to retain backward compatibility.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        if (latestCommitId == null) {
+            latestCommitId = StringUtils.EMPTY;
+        }
+        return this;
     }
 
     /**
@@ -41,9 +63,9 @@ public class RepositoryStatistics implements Serializable {
     }
 
     /**
-     * Returns the id of the latest commit mined.
+     * Returns the ID of the latest commit mined.
      *
-     * @return id of the latest commit.
+     * @return ID of the latest commit.
      */
     public String getLatestCommitId() {
         return latestCommitId;
@@ -82,7 +104,7 @@ public class RepositoryStatistics implements Serializable {
     /**
      * Returns the statistics for all repository files.
      *
-     * @return the requests
+     * @return the statistics
      */
     public Collection<FileStatistics> getFileStatistics() {
         return statisticsPerFile.values();
@@ -146,11 +168,11 @@ public class RepositoryStatistics implements Serializable {
             return false;
         }
         RepositoryStatistics that = (RepositoryStatistics) o;
-        return statisticsPerFile.equals(that.statisticsPerFile);
+        return statisticsPerFile.equals(that.statisticsPerFile) && latestCommitId.equals(that.latestCommitId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(statisticsPerFile);
+        return Objects.hash(statisticsPerFile, latestCommitId);
     }
 }
