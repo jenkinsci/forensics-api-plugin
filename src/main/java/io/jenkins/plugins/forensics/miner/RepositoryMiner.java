@@ -30,7 +30,7 @@ public abstract class RepositoryMiner implements Serializable {
      * @deprecated replaced by {@link #mine(RepositoryStatistics, FilteredLog)}
      */
     @Deprecated
-    public RepositoryStatistics mine(Collection<String> absoluteFileNames, FilteredLog logger)
+    public RepositoryStatistics mine(final Collection<String> absoluteFileNames, final FilteredLog logger)
             throws InterruptedException {
         return mine(new RepositoryStatistics(), logger);
     }
