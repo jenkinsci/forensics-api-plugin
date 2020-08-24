@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.ClassRule;
@@ -50,7 +49,7 @@ public class MinerFactoryITest {
         RepositoryMiner nullMiner = createMiner("/", log);
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
-        assertThat(nullMiner.mine(Collections.emptyList(), log)).isEmpty();
+        assertThat(nullMiner.mine(new RepositoryStatistics(), log)).isEmpty();
         assertThat(log.getErrorMessages()).contains(NO_SUITABLE_MINER_FOUND);
         assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_NULL_MINER, EMPTY_FACTORY_NULL_MINER);
     }
@@ -67,7 +66,7 @@ public class MinerFactoryITest {
         RepositoryMiner repositoryMiner = createMiner("/test", log);
 
         assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
-        assertThat(repositoryMiner.mine(Collections.emptyList(), log)).isNotEmpty();
+        assertThat(repositoryMiner.mine(new RepositoryStatistics(), log)).isNotEmpty();
 
         assertThat(log.getErrorMessages()).isEmpty();
         assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_CREATED_A_MINER);
@@ -76,9 +75,6 @@ public class MinerFactoryITest {
     /**
      * Verifies that correct {@link RepositoryMiner} instance is created for the second repository. (The first
      * repository does return a {@link NullMiner}.
-     *
-     * @throws InterruptedException
-     *         never thrown
      */
     @Test
     public void shouldSelectMinerBasedOnEmptyFactory() {
@@ -136,16 +132,11 @@ public class MinerFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public RepositoryStatistics mine(final Collection<String> absoluteFileNames,
-                final FilteredLog logger) {
+        public RepositoryStatistics mine(final RepositoryStatistics previousStatistics, final FilteredLog logger) {
             RepositoryStatistics statistics = new RepositoryStatistics();
             statistics.add(new FileStatisticsBuilder().build("/file.txt"));
+            statistics.addAll(previousStatistics);
             return statistics;
-        }
-
-        @Override
-        public RepositoryStatistics mine(final RepositoryStatistics repositoryStatistics, final FilteredLog logger) {
-            return repositoryStatistics;
         }
     }
 }

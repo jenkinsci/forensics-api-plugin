@@ -56,31 +56,14 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
         RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, logger);
         logHandler.log(logger);
+
         RepositoryStatistics previousBuildStatistics = previousBuildStatistics(run);
         RepositoryStatistics repositoryStatistics = miner.mine(previousBuildStatistics, logger);
         repositoryStatistics.addAll(previousBuildStatistics);
+
         logHandler.log(logger);
         int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
         run.addAction(new ForensicsBuildAction(run, repositoryStatistics, miningDurationSeconds));
-    }
-
-    /**
-     * Descriptor for this step: defines the context and the UI elements.
-     */
-    @Extension
-    @Symbol("mineRepository")
-    @SuppressWarnings("unused") // most methods are used by the corresponding jelly view
-    public static class Descriptor extends BuildStepDescriptor<Publisher> {
-        @NonNull
-        @Override
-        public String getDisplayName() {
-            return "Mine SCM repository";
-        }
-
-        @Override
-        public boolean isApplicable(final Class<? extends AbstractProject> jobType) {
-            return true;
-        }
     }
 
     /**
@@ -91,7 +74,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
      *
      * @return The RepositoryStatistics of the previous build.
      */
-    static RepositoryStatistics previousBuildStatistics(final Run<?, ?> run) {
+    private RepositoryStatistics previousBuildStatistics(final Run<?, ?> run) {
         for (Run<?, ?> build = run.getPreviousBuild(); build != null; build = build.getPreviousBuild()) {
             ForensicsBuildAction action = build.getAction(ForensicsBuildAction.class);
             if (action != null) {
@@ -100,5 +83,28 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         }
 
         return new RepositoryStatistics();
+    }
+
+    @Override
+    public Descriptor getDescriptor() {
+        return (Descriptor) super.getDescriptor();
+    }
+
+    /**
+     * Descriptor for this step: defines the context and the UI elements.
+     */
+    @Extension
+    @Symbol("mineRepository")
+    public static class Descriptor extends BuildStepDescriptor<Publisher> {
+        @NonNull
+        @Override
+        public String getDisplayName() {
+            return Messages.Step_Name();
+        }
+
+        @Override
+        public boolean isApplicable(final Class<? extends AbstractProject> jobType) {
+            return true;
+        }
     }
 }

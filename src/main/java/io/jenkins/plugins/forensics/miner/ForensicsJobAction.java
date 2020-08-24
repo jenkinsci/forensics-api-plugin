@@ -2,7 +2,7 @@ package io.jenkins.plugins.forensics.miner;
 
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import hudson.model.Job;
 
@@ -41,7 +41,7 @@ public class ForensicsJobAction extends AsyncTrendJobAction<ForensicsBuildAction
      * @return the icon URL for the side-panel in the job screen
      */
     @Override
-    @Nullable
+    @CheckForNull
     public String getIconFileName() {
         return SMALL_ICON;
     }
