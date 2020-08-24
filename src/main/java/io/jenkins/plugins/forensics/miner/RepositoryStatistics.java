@@ -21,6 +21,16 @@ public class RepositoryStatistics implements Serializable {
 
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 
+    private final String latestCommitId;
+
+    public RepositoryStatistics() {
+        this(null);
+    }
+
+    public RepositoryStatistics(final String latestCommitId) {
+        this.latestCommitId = latestCommitId;
+    }
+
     /**
      * Returns whether the repository is empty.
      *
@@ -28,6 +38,15 @@ public class RepositoryStatistics implements Serializable {
      */
     public boolean isEmpty() {
         return statisticsPerFile.isEmpty();
+    }
+
+    /**
+     * Returns the id of the latest commit mined.
+     *
+     * @return id of the latest commit.
+     */
+    public String getLatestCommitId() {
+        return latestCommitId;
     }
 
     /**
@@ -94,7 +113,8 @@ public class RepositoryStatistics implements Serializable {
      */
     public void addAll(final Collection<FileStatistics> additionalStatistics) {
         statisticsPerFile.putAll(
-                additionalStatistics.stream().collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
+                additionalStatistics.stream()
+                        .collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
     }
 
     /**
