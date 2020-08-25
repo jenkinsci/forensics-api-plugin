@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import edu.hm.hafner.util.VisibleForTesting;
+
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 
@@ -26,21 +28,41 @@ public class ReferenceBuild implements RunAction2, Serializable {
     public static final String NO_REFERENCE_BUILD = "-";
 
     private final String referenceBuildId;
-    private final JenkinsFacade jenkinsFacade = new JenkinsFacade();
+    private final JenkinsFacade jenkinsFacade;
 
     private transient Run<?, ?> owner;
 
     /**
-     * Creates a new instance of {@link ReferenceBuild}.
+     * Creates  a new instance of {@link ReferenceBuild} that indicates that no reference build has been found.
+     *
+     * @param owner
+     *         the current run as owner of this action
+     */
+    public ReferenceBuild(final Run<?, ?> owner) {
+        this(owner, NO_REFERENCE_BUILD);
+    }
+
+    /**
+     * Creates a new instance of {@link ReferenceBuild} that points to the specified reference build.
      *
      * @param owner
      *         the current build as owner of this action
-     * @param referenceBuildId
-     *         the ID of the reference build
+     * @param referenceBuild
+     *         the found reference build
      */
-    protected ReferenceBuild(final Run<?, ?> owner, final String referenceBuildId) {
-        this.referenceBuildId = referenceBuildId;
+    public ReferenceBuild(final Run<?, ?> owner, final Run<?, ?> referenceBuild) {
+        this(owner, referenceBuild.getExternalizableId());
+    }
+
+    private ReferenceBuild(final Run<?, ?> owner, final String referenceBuildId) {
+        this(owner, referenceBuildId, new JenkinsFacade());
+    }
+
+    @VisibleForTesting
+    ReferenceBuild(final Run<?, ?> owner, final String referenceBuildId, final JenkinsFacade jenkinsFacade) {
         this.owner = owner;
+        this.referenceBuildId = referenceBuildId;
+        this.jenkinsFacade = jenkinsFacade;
     }
 
     @Override

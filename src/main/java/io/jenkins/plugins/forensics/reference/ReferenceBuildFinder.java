@@ -9,6 +9,7 @@ import hudson.model.Run;
  *
  * @author Ullrich Hafner
  */
+// TODO: for MultiBranch jobs there should be no need to call the recorder
 public class ReferenceBuildFinder {
     /**
      * Tries to find a reference build.
