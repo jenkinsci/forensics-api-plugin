@@ -230,20 +230,20 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
          *
          * @return the model with the possible reference jobs
          */
-        public ComboBoxModel doFillReferenceJobNameItems() {
+        public ComboBoxModel doFillReferenceJobItems() {
             return model.getAllJobs();
         }
 
         /**
          * Performs on-the-fly validation of the reference job.
          *
-         * @param referenceJobName
+         * @param referenceJob
          *         the reference job
          *
          * @return the validation result
          */
-        public FormValidation doCheckReferenceJobName(@QueryParameter final String referenceJobName) {
-            return model.validateJob(referenceJobName);
+        public FormValidation doCheckReferenceJob(@QueryParameter final String referenceJob) {
+            return model.validateJob(referenceJob);
         }
     }
 }
