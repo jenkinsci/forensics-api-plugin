@@ -17,6 +17,9 @@ The API of the following services is defined by this plugin:
   - total number of different authors
   - creation time
   - last modification time
+- **Commit tracking**: Tracks all new commits that are part of a build.
+- **Reference build**: Obtains a reference build for a specific build of a job. Such a reference build is the best matching
+build in a possibly different job that can be used to compute delta reports (for static analysis, code coverage, etc.).
 
 ## Implementations
 
