@@ -40,13 +40,19 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
 
     private static final String DEFAULT_BRANCH = "master";
 
-    protected final JenkinsFacade jenkins;
+    private final JenkinsFacade jenkins;
 
     private String referenceJob = StringUtils.EMPTY;
     private boolean latestBuildIfNotFound = false;
     private String defaultBranch = DEFAULT_BRANCH;
 
-    public ReferenceRecorder(final JenkinsFacade jenkins) {
+    /**
+     * Creates a new instance of {@link ReferenceRecorder}.
+     *
+     * @param jenkins
+     *         facade to Jenkins
+     */
+    protected ReferenceRecorder(final JenkinsFacade jenkins) {
         super();
 
         this.jenkins = jenkins;
@@ -73,7 +79,6 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
      *
      * @return the name of reference job, or {@link #NO_REFERENCE_JOB} if undefined
      */
-    @SuppressWarnings("unused") // Required by Stapler
     public String getReferenceJob() {
         if (StringUtils.isBlank(referenceJob)) {
             return NO_REFERENCE_JOB;
@@ -95,6 +100,27 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
 
     public boolean isLatestBuildIfNotFound() {
         return latestBuildIfNotFound;
+    }
+
+    /**
+     * Sets the default branch for {@link MultiBranchProject multi-branch projects}: the default branch is considered
+     * the base branch in your repository. The builds of all other branches and pull requests will use this default
+     * branch as baseline to search for a matching reference build.
+     *
+     * @param defaultBranch
+     *         the name of the default branch
+     */
+    @DataBoundSetter
+    public void setDefaultBranch(final String defaultBranch) {
+        this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
+    }
+
+    public String getDefaultBranch() {
+        return defaultBranch;
+    }
+
+    private String getReferenceBranch() {
+        return StringUtils.defaultIfBlank(StringUtils.strip(defaultBranch), DEFAULT_BRANCH);
     }
 
     @Override
@@ -143,35 +169,14 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
         return new ReferenceBuild(run);
     }
 
-    /**
-     * Sets the default branch for {@link MultiBranchProject multi-branch projects}: the default branch is considered
-     * the base branch in your repository. The builds of all other branches and pull requests will use this default
-     * branch as baseline to search for a matching reference build.
-     *
-     * @param defaultBranch
-     *         the name of the default branch
-     */
-    @DataBoundSetter
-    public void setDefaultBranch(final String defaultBranch) {
-        this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
-    }
-
-    public String getDefaultBranch() {
-        return defaultBranch;
-    }
-
-    private String getReferenceBranch() {
-        return StringUtils.defaultIfBlank(StringUtils.strip(defaultBranch), DEFAULT_BRANCH);
-    }
-
     protected abstract Optional<Run<?, ?>> find(Run<?, ?> run, Run<?, ?> lastCompletedBuildOfReferenceJob);
 
     private Optional<Job<?, ?>> getReferenceJob(final Run<?, ?> run, final FilteredLog log) {
-        String referenceJob = getReferenceJob();
-        if (isValidJobName(referenceJob)) {
-            log.logInfo("Using configured reference job name" + referenceJob);
-            log.logInfo("-> " + referenceJob);
-            return jenkins.getJob(referenceJob);
+        String jobName = getReferenceJob();
+        if (isValidJobName(jobName)) {
+            log.logInfo("Using configured reference job '%s'" + jobName);
+            log.logInfo("-> " + jobName);
+            return jenkins.getJob(jobName);
         }
         else {
             Job<?, ?> job = run.getParent();
@@ -179,7 +184,8 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
             if (topLevel instanceof MultiBranchProject) {
                 // TODO: we should make use of the branch API
                 if (getReferenceBranch().equals(job.getName())) {
-                    log.logInfo("No reference job obtained since we are already on the default branch '%s'", job.getName());
+                    log.logInfo("No reference job obtained since we are already on the default branch '%s'",
+                            job.getName());
                 }
                 else {
                     log.logInfo("Obtaining reference job name from toplevel item `%s`", topLevel.getDisplayName());

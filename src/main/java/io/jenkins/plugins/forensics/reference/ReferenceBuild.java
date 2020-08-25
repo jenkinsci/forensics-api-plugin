@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.VisibleForTesting;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import hudson.model.Run;
 import jenkins.model.RunAction2;
@@ -18,6 +19,7 @@ import io.jenkins.plugins.util.JenkinsFacade;
  *
  * @author Ullrich Hafner
  */
+@SuppressWarnings("PMD.DataClass")
 public class ReferenceBuild implements RunAction2, Serializable {
     private static final long serialVersionUID = -4549516129641755356L;
 
@@ -30,6 +32,7 @@ public class ReferenceBuild implements RunAction2, Serializable {
     private final String referenceBuildId;
     private final JenkinsFacade jenkinsFacade;
 
+    @SuppressFBWarnings(value = "SE", justification = "transient field owner ist restored using a Jenkins callback")
     private transient Run<?, ?> owner;
 
     /**

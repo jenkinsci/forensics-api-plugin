@@ -18,7 +18,7 @@ class ReferenceJobModelValidation {
     private final JenkinsFacade jenkins;
 
     /** Creates a new descriptor. */
-    public ReferenceJobModelValidation() {
+    ReferenceJobModelValidation() {
         this(new JenkinsFacade());
     }
 
