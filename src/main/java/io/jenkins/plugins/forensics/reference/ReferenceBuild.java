@@ -19,7 +19,6 @@ import io.jenkins.plugins.util.JenkinsFacade;
  *
  * @author Ullrich Hafner
  */
-@SuppressWarnings("PMD.DataClass")
 public class ReferenceBuild implements RunAction2, Serializable {
     private static final long serialVersionUID = -4549516129641755356L;
 

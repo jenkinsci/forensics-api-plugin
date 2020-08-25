@@ -35,6 +35,7 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Arne Schöntag
  * @author Ullrich Hafner
  */
+@SuppressWarnings("PMD.DataClass")
 public abstract class ReferenceRecorder extends Recorder implements SimpleBuildStep {
     static final String NO_REFERENCE_JOB = "-";
 
@@ -126,6 +127,11 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
+    }
+
+    @Override
+    public ReferenceRecorderDescriptor getDescriptor() {
+        return (ReferenceRecorderDescriptor)super.getDescriptor();
     }
 
     @Override
