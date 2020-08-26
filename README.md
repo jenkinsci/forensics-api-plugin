@@ -10,14 +10,17 @@
 This Forensics API Jenkins plug-in defines an API to mine and analyze data from a source control repository. Currently, this plugin is only used
 by the [Jenkins Warning Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin).
  
-The API of the following services is defined by this plugin:
-- **Blames**: Shows what revision and author last modified a specified set of lines of a file.
-- **File statistics**: Collects commit statistics for repository files:
+This API plugin provides the following services:
+- **Blames**: Shows what revision and author last modified a specified set of lines of a file. This information can be 
+used to track the original commit that introduced a piece of code. 
+- **File statistics**: Collects commit statistics for all repository files in the style of 
+  [Code as a Crime Scene](https://www.adamtornhill.com/articles/crimescene/codeascrimescene.htm) 
+  \[Adam Tornhill, November 2013\]:
   - total number of commits
   - total number of different authors
   - creation time
   - last modification time
-- **Commit tracking**: Tracks all new commits that are part of a build.
+- **Commit tracking**: Tracks all new commits that are part of a build. 
 - **Reference build**: Obtains a reference build for a specific build of a job. Such a reference build is the best matching
 build in a possibly different job that can be used to compute delta reports (for static analysis, code coverage, etc.).
 
