@@ -20,9 +20,16 @@ used to track the original commit that introduced a piece of code.
   - total number of different authors
   - creation time
   - last modification time
-- **Commit tracking**: Tracks all new commits that are part of a build. 
-- **Reference build**: Obtains a reference build for a specific build of a job. Such a reference build is the best matching
-build in a possibly different job that can be used to compute delta reports (for static analysis, code coverage, etc.).
+- **Commit tracking**: Tracks all new commits that are part of a build. With this information plugins can select the 
+first build that contains a specific commit. 
+- **Reference build**: Plugins that want to show information (delta reports) relative to another build 
+need a way to select this so called reference build. A reference build can be a previous build for the same 
+repository branch or if the project is working with several branches a specific build from the job that builds 
+the target branch (i.e., the branch the current changes will be merged into). 
+Examples for consumers of this reference build are:
+   - The warnings plugin computes new or fixed static analysis warnings based on a comparison with the reference build.
+   - The code coverage plugin calculates the coverage difference of the actual changes compared to the results 
+   of the reference build.
 
 ## Implementations
 
