@@ -18,10 +18,11 @@ import io.jenkins.plugins.util.JenkinsFacade;
 import static j2html.TagCreator.*;
 
 /**
- * Stores the reference build for the current build. The reference build is a build in a possibly different Jenkins job
+ * Stores the reference build for a given build. The reference build is a build in a different Jenkins job
  * that can be used to compute delta reports.
  *
  * @author Ullrich Hafner
+ * @see ReferenceRecorder
  */
 public class ReferenceBuild implements RunAction2, Serializable {
     private static final long serialVersionUID = -4549516129641755356L;

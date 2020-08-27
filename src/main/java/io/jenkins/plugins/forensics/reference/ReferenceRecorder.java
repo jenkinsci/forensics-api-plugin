@@ -29,8 +29,26 @@ import io.jenkins.plugins.util.JenkinsFacade;
 import io.jenkins.plugins.util.LogHandler;
 
 /**
- * Base class for recorders that find a build in a reference job that matches best with the current build of a given
- * job.
+ * Base class for recorders that find reference builds.
+ * <p>
+ * Several plugins that report build statistics (test results, code coverage, metrics, static analysis warnings)
+ * typically show their reports in two different ways: either as absolute report (e.g., total number of tests or
+ * warnings, overall code coverage) or as relative delta report (e.g., additional tests, increased or decreased
+ * coverage, new or fixed warnings). In order to compute a relative delta report a plugin needs to carefully select the
+ * other build to compare the current results to (a so called reference build). For simple Jenkins jobs that build the
+ * main branch of an SCM the reference build will be selected from one of the previous builds of the same job. For more
+ * complex branch source projects (i.e., projects that build several branches and pull requests in a connected job
+ * hierarchy) it makes more sense to select a reference build from a job that builds the actual target branch (i.e., the
+ * branch the current changes will be merged into). Here one typically is interested what changed in a branch or pull
+ * request with respect to the main branch (or any other target branch): e.g., how will the code coverage change if the
+ * team merges the changes. Selecting the correct reference build is not that easy, since the main branch of a project
+ * will evolve more frequently than a specific feature or bugfix branch.
+ * </p>
+ *
+ * <p>
+ * This recorder unifies the computation of the reference build so consuming plugins can simply use the resulting {@link
+ * ReferenceBuild} in order to get a reference for their delta reports.
+ * </p>
  *
  * @author Arne Schöntag
  * @author Ullrich Hafner
@@ -60,7 +78,7 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
     }
 
     /**
-     * Sets the reference job: this job will be used as base line to search for the best matching reference build. If
+     * Sets the reference job: this job will be used as baseline to search for the best matching reference build. If
      * the reference job should be computed automatically (supported by {@link MultiBranchProject multi-branch projects}
      * only), then let this field empty.
      *
@@ -131,7 +149,7 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
 
     @Override
     public ReferenceRecorderDescriptor getDescriptor() {
-        return (ReferenceRecorderDescriptor)super.getDescriptor();
+        return (ReferenceRecorderDescriptor) super.getDescriptor();
     }
 
     @Override
@@ -163,7 +181,8 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
                 }
                 log.logInfo("No reference build found that contains matching commits");
                 if (isLatestBuildIfNotFound()) {
-                    log.logInfo("Falling back to latest build of reference job: '%s'", lastCompletedBuild.getDisplayName());
+                    log.logInfo("Falling back to latest build of reference job: '%s'",
+                            lastCompletedBuild.getDisplayName());
 
                     return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
                 }
@@ -219,7 +238,7 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
     }
 
     /**
-     * Descriptor for this step: defines the context and the UI elements.
+     * Descriptor for this step: defines the context and the UI data binding and validation.
      */
     protected static class ReferenceRecorderDescriptor extends BuildStepDescriptor<Publisher> {
         @NonNull
