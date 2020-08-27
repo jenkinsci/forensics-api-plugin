@@ -146,43 +146,40 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
     }
 
     private ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
-        Optional<Job<?, ?>> actualReferenceJob = getReferenceJob(run, log);
+        Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, log);
         if (actualReferenceJob.isPresent()) {
             Job<?, ?> reference = actualReferenceJob.get();
-            log.logInfo("Finding reference build for `%s`", reference.getFullDisplayName());
             Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
             if (lastCompletedBuild == null) {
-                log.logInfo("-> no completed build found");
+                log.logInfo("No completed build found");
             }
             else {
                 Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild);
                 if (referenceBuild.isPresent()) {
                     Run<?, ?> result = referenceBuild.get();
-                    log.logInfo("-> found `%s`", result.getDisplayName());
-                    return new ReferenceBuild(run, result);
-                }
-                log.logInfo("-> no reference build found that contains matching commits");
-                if (isLatestBuildIfNotFound()) {
-                    log.logInfo("-> using latest build of reference job `%s`", lastCompletedBuild.getDisplayName());
+                    log.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
 
-                    return new ReferenceBuild(run, lastCompletedBuild);
+                    return new ReferenceBuild(run, log.getInfoMessages(), result);
+                }
+                log.logInfo("No reference build found that contains matching commits");
+                if (isLatestBuildIfNotFound()) {
+                    log.logInfo("Falling back to latest build of reference job: '%s'", lastCompletedBuild.getDisplayName());
+
+                    return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
                 }
             }
         }
-        else {
-            log.logInfo("Reference job '%s' not found", getReferenceJob());
-        }
-        return new ReferenceBuild(run);
+        return new ReferenceBuild(run, log.getInfoMessages());
     }
 
     protected abstract Optional<Run<?, ?>> find(Run<?, ?> run, Run<?, ?> lastCompletedBuildOfReferenceJob);
 
-    private Optional<Job<?, ?>> getReferenceJob(final Run<?, ?> run, final FilteredLog log) {
+    private Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
         String jobName = getReferenceJob();
         if (isValidJobName(jobName)) {
-            log.logInfo("Using configured reference job '%s'" + jobName);
-            log.logInfo("-> " + jobName);
-            return jenkins.getJob(jobName);
+            log.logInfo("Configured reference job: '%s'", jobName);
+
+            return findJob(jobName, log);
         }
         else {
             Job<?, ?> job = run.getParent();
@@ -190,18 +187,31 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
             if (topLevel instanceof MultiBranchProject) {
                 // TODO: we should make use of the branch API
                 if (getReferenceBranch().equals(job.getName())) {
-                    log.logInfo("No reference job obtained since we are already on the default branch '%s'",
+                    log.logInfo("No reference job required - we are already on the default branch for '%s'",
                             job.getName());
                 }
                 else {
-                    log.logInfo("Obtaining reference job name from toplevel item `%s`", topLevel.getDisplayName());
+                    log.logInfo("Reference job inferred from toplevel project '%s'", topLevel.getDisplayName());
                     String referenceFromDefaultBranch = job.getParent().getFullName() + "/" + getReferenceBranch();
-                    log.logInfo("-> job name: " + referenceFromDefaultBranch);
-                    return jenkins.getJob(referenceFromDefaultBranch);
+                    log.logInfo("Target branch: '%s'", getReferenceBranch());
+                    log.logInfo("Inferred job name: '%s'", referenceFromDefaultBranch);
+
+                    return findJob(referenceFromDefaultBranch, log);
                 }
+            }
+            else {
+                log.logInfo("Consider configuring a reference job using the 'referenceJob' property");
             }
             return Optional.empty();
         }
+    }
+
+    private Optional<Job<?, ?>> findJob(final String jobName, final FilteredLog log) {
+        Optional<Job<?, ?>> job = jenkins.getJob(jobName);
+        if (!job.isPresent()) {
+            log.logInfo("There is no such job - maybe the job has been renamed or deleted?");
+        }
+        return job;
     }
 
     private boolean isValidJobName(final String name) {
@@ -242,6 +252,7 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
          *
          * @return the validation result
          */
+        @SuppressWarnings("unused") // Used in jelly validation
         public FormValidation doCheckReferenceJob(@QueryParameter final String referenceJob) {
             return model.validateJob(referenceJob);
         }

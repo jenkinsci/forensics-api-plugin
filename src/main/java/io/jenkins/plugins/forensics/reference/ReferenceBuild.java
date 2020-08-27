@@ -1,6 +1,8 @@
 package io.jenkins.plugins.forensics.reference;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +14,8 @@ import hudson.model.Run;
 import jenkins.model.RunAction2;
 
 import io.jenkins.plugins.util.JenkinsFacade;
+
+import static j2html.TagCreator.*;
 
 /**
  * Stores the reference build for the current build. The reference build is a build in a possibly different Jenkins job
@@ -30,6 +34,7 @@ public class ReferenceBuild implements RunAction2, Serializable {
 
     private final String referenceBuildId;
     private final JenkinsFacade jenkinsFacade;
+    private final List<String> messages;
 
     @SuppressFBWarnings(value = "SE", justification = "transient field owner ist restored using a Jenkins callback")
     private transient Run<?, ?> owner;
@@ -39,9 +44,11 @@ public class ReferenceBuild implements RunAction2, Serializable {
      *
      * @param owner
      *         the current run as owner of this action
+     * @param messages
+     *         messages that show the steps the resolution process
      */
-    public ReferenceBuild(final Run<?, ?> owner) {
-        this(owner, NO_REFERENCE_BUILD);
+    public ReferenceBuild(final Run<?, ?> owner, final List<String> messages) {
+        this(owner, messages, NO_REFERENCE_BUILD);
     }
 
     /**
@@ -49,20 +56,24 @@ public class ReferenceBuild implements RunAction2, Serializable {
      *
      * @param owner
      *         the current build as owner of this action
+     * @param messages
+     *         messages that show the steps of the resolution process
      * @param referenceBuild
      *         the found reference build
      */
-    public ReferenceBuild(final Run<?, ?> owner, final Run<?, ?> referenceBuild) {
-        this(owner, referenceBuild.getExternalizableId());
+    public ReferenceBuild(final Run<?, ?> owner, final List<String> messages, final Run<?, ?> referenceBuild) {
+        this(owner, messages, referenceBuild.getExternalizableId());
     }
 
-    private ReferenceBuild(final Run<?, ?> owner, final String referenceBuildId) {
-        this(owner, referenceBuildId, new JenkinsFacade());
+    private ReferenceBuild(final Run<?, ?> owner, final List<String> messages, final String referenceBuildId) {
+        this(owner, messages, referenceBuildId, new JenkinsFacade());
     }
 
     @VisibleForTesting
-    ReferenceBuild(final Run<?, ?> owner, final String referenceBuildId, final JenkinsFacade jenkinsFacade) {
+    ReferenceBuild(final Run<?, ?> owner, final List<String> messages, final String referenceBuildId,
+            final JenkinsFacade jenkinsFacade) {
         this.owner = owner;
+        this.messages = new ArrayList<>(messages);
         this.referenceBuildId = referenceBuildId;
         this.jenkinsFacade = jenkinsFacade;
     }
@@ -81,17 +92,25 @@ public class ReferenceBuild implements RunAction2, Serializable {
         return owner;
     }
 
+    public List<String> getMessages() {
+        return messages;
+    }
+
     /**
-     * Returns the reference build ID as a value to be displayed in the UI. If no reference build is available, then a
-     * message will be returned.
+     * Returns a link that can be used in Jelly views to navigate to the reference build.
      *
-     * @return the summary message
+     * @return the link
      */
-    public String getSummary() {
-        if (!hasReferenceBuild()) {
-            return Messages.No_Reference_Build();
-        }
-        return referenceBuildId;
+    public String getReferenceLink() {
+        return getReferenceBuild().map(this::createLink)
+                .orElse(String.format("Reference build '%s' not found anymore "
+                                + "- maybe the build has been renamed or deleted?", getReferenceBuildId()));
+    }
+
+    private String createLink(final Run<?, ?> run) {
+        return a().withText(run.getFullDisplayName())
+                .withHref(jenkinsFacade.getAbsoluteUrl(run.getUrl()))
+                .withClasses("model-link", "inside").render();
     }
 
     /**
@@ -128,7 +147,7 @@ public class ReferenceBuild implements RunAction2, Serializable {
 
     @Override
     public String getDisplayName() {
-        return Messages.Action_DisplayName();
+        return null;
     }
 
     @Override

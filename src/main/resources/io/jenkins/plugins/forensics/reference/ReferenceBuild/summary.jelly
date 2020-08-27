@@ -1,8 +1,28 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
-    <t:summary icon="/plugin/forensics-api/icons/crosshair-48x48.png">
-        Reference Build: ${it.summary}
-    </t:summary>
+  <t:summary icon="/plugin/forensics-api/icons/crosshair-48x48.png">
+
+      <j:choose>
+        <j:when test="${it.hasReferenceBuild()}">
+          ${%Reference.Build.Found}
+          <ul>
+            <li><j:out value="${it.referenceLink}"/></li>
+            <j:forEach var="message" items="${it.messages}">
+              <li>${message}</li>
+            </j:forEach>
+          </ul>
+        </j:when>
+        <j:otherwise>
+          ${%No.Reference.Build}
+          <ul>
+            <j:forEach var="message" items="${it.messages}">
+                <li>${message}</li>
+            </j:forEach>
+          </ul>
+        </j:otherwise>
+
+      </j:choose>
+  </t:summary>
 
 </j:jelly>
