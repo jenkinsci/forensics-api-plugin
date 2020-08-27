@@ -36,18 +36,27 @@ class ReferenceJobModelValidationTest {
     }
 
     @Test
+    void shouldValidateToOkIfEmpty() {
+        ReferenceJobModelValidation model = new ReferenceJobModelValidation();
+
+        assertSoftly(softly -> {
+            softly.assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.OK);
+            softly.assertThat(model.validateJob("").kind).isEqualTo(Kind.OK);
+            softly.assertThat(model.validateJob(null).kind).isEqualTo(Kind.OK);
+        });
+    }
+
+    @Test
     void doCheckReferenceJobShouldBeOkWithValidValues() {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
+
         Job<?, ?> job = mock(Job.class);
         String jobName = "referenceJob";
         when(jenkins.getJob(jobName)).thenReturn(Optional.of(job));
+
         ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
 
-        assertSoftly(softly -> {
-            softly.assertThat(model.validateJob(jobName).kind).isEqualTo(Kind.OK);
-            softly.assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.OK);
-            softly.assertThat(model.validateJob("").kind).isEqualTo(Kind.OK);
-        });
+        assertThat(model.validateJob(jobName).kind).isEqualTo(Kind.OK);
     }
 
     @Test
