@@ -50,8 +50,8 @@ public class MinerFactoryITest {
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
         assertThat(nullMiner.mine(new RepositoryStatistics(), log)).isEmpty();
-        assertThat(log.getErrorMessages()).contains(NO_SUITABLE_MINER_FOUND);
-        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_NULL_MINER, EMPTY_FACTORY_NULL_MINER);
+        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_MINER_FOUND, ACTUAL_FACTORY_NULL_MINER, EMPTY_FACTORY_NULL_MINER);
+        assertThat(log.getErrorMessages()).isEmpty();
     }
 
     /**

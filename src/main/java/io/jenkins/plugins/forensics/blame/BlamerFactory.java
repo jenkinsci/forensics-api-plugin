@@ -71,10 +71,10 @@ public abstract class BlamerFactory implements ExtensionPoint {
 
     private static Blamer createNullBlamer(final FilteredLog logger) {
         if (findAllExtensions().isEmpty()) {
-            logger.logError("-> No blamer installed yet. You need to install the `git-forensics` plugin to enable blaming for Git.");
+            logger.logInfo("-> No blamer installed yet. You need to install the 'git-forensics' plugin to enable blaming for Git.");
         }
         else {
-            logger.logError("-> No suitable blamer found.");
+            logger.logInfo("-> No suitable blamer found.");
         }
         return new NullBlamer();
     }
