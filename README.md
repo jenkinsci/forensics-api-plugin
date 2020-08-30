@@ -10,13 +10,31 @@
 This Forensics API Jenkins plug-in defines an API to mine and analyze data from a source control repository. Currently, this plugin is only used
 by the [Jenkins Warning Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin).
  
-The API of the following services is defined by this plugin:
-- **Blames**: Shows what revision and author last modified a specified set of lines of a file.
-- **File statistics**: Collects commit statistics for repository files:
+This API plugin provides the following services:
+- **Blames**: Shows what revision and author last modified a specified set of lines of a file. This information can be 
+used to track the original commit that introduced a piece of code. 
+- **File statistics**: Collects commit statistics for all repository files in the style of 
+  [Code as a Crime Scene](https://www.adamtornhill.com/articles/crimescene/codeascrimescene.htm) 
+  \[Adam Tornhill, November 2013\]:
   - total number of commits
   - total number of different authors
   - creation time
   - last modification time
+- **Commit tracking**: Tracks all new commits that are part of a build. Using this information plugins can search for 
+ builds that contain a specific commit. 
+- **Reference build**: Several plugins that report build statistics (test results, code coverage, metrics, static 
+analysis warnings) typically show their reports in two different ways: either as absolute report 
+(e.g., total number of tests or warnings, overall code coverage) or as relative delta report (e.g., additional tests,
+increased or decreased coverage, new or fixed warnings). In order to compute a relative delta report a plugin needs 
+to carefully select the other build to compare the current results to (a so called *reference build*). 
+For simple Jenkins jobs that build the main branch of an SCM the reference build will be selected from one of the 
+previous builds of the same job. For more complex branch source projects (i.e., projects that build several branches 
+and pull requests in a connected job hierarchy) it makes more sense to select a reference build from a job 
+that builds the actual target branch (i.e., the branch the current changes will be merged into). Here one typically is
+interested what changed in a branch or pull request with respect to the main branch (or any other 
+target branch): e.g., how will the code coverage change if the team merges the changes. Selecting the correct reference
+build is not that easy, since the main branch of a project will evolve more frequently than a specific feature or bugfix
+branch.    
 
 ## Implementations
 

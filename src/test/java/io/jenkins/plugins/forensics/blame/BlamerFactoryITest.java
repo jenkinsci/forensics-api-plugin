@@ -46,8 +46,8 @@ public class BlamerFactoryITest {
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
         assertThat(nullBlamer.blame(new FileLocations(), log)).isEmpty();
-        assertThat(log.getErrorMessages()).contains(NO_SUITABLE_BLAMER_FOUND);
-        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_NULL_BLAMER, EMPTY_FACTORY_NULL_BLAMER);
+        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_BLAMER_FOUND, ACTUAL_FACTORY_NULL_BLAMER, EMPTY_FACTORY_NULL_BLAMER);
+        assertThat(log.getErrorMessages()).isEmpty();
     }
 
     /** Verifies that the correct {@link Blamer} instance is created for the first repository. */
