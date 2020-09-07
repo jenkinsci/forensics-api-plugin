@@ -25,6 +25,7 @@ public class RepositoryStatistics implements Serializable {
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 
     private String latestCommitId;
+    private int totalLinesOfCode;
 
     /**
      * Creates an empty instance of {@link RepositoryStatistics} with no latest commit ID set.
@@ -140,6 +141,7 @@ public class RepositoryStatistics implements Serializable {
         statisticsPerFile.putAll(
                 additionalStatistics.stream()
                         .collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
+        calculateTotalLinesOfCode();
     }
 
     /**
@@ -152,6 +154,10 @@ public class RepositoryStatistics implements Serializable {
         addAll(additionalStatistics.getFileStatistics());
     }
 
+    private void calculateTotalLinesOfCode() {
+        statisticsPerFile.forEach((k, v) -> totalLinesOfCode += v.getLinesOfCode());
+    }
+
     /**
      * Adds the additional file statistics instance.
      *
@@ -160,6 +166,10 @@ public class RepositoryStatistics implements Serializable {
      */
     public void add(final FileStatistics additionalStatistics) {
         statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
+    }
+
+    public int getTotalLinesOfCode() {
+        return totalLinesOfCode;
     }
 
     @Override
