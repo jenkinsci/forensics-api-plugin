@@ -1,15 +1,19 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import edu.hm.hafner.util.VisibleForTesting;
 
 import org.kohsuke.stapler.StaplerProxy;
+import hudson.model.Action;
 import hudson.model.Run;
 
 import io.jenkins.plugins.util.BuildAction;
 
 /**
  * Controls the live cycle of the forensics results in a job. This action persists the results of a build and displays a
- * summary on the build page. The actual visualization of the results is defined in the matching {@code summary.jelly}
+ * summary on the build page. The actual visualization of the results is defined in the matching {@code floatingBox.jelly}
  * file. This action also provides access to the forensics details: these are rendered using a new view instance.
  *
  * @author Ullrich Hafner
@@ -54,6 +58,11 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
         numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
+    }
+
+    @Override
+    public Collection<? extends Action> getProjectActions() {
+        return Arrays.asList(new ForensicsJobAction(getOwner().getParent()), new ForensicsLocAction(getOwner().getParent()));
     }
 
     @Override

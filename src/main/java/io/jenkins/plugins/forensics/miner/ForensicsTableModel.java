@@ -51,6 +51,8 @@ public class ForensicsTableModel extends TableModel {
         columns.add(new TableColumn(Messages.Table_Column_AddedAt(), "addedAt")
                 .setWidth(2)
                 .setHeaderClass(ColumnCss.DATE));
+        columns.add(new TableColumn(Messages.Table_Column_LOC(), "linesOfCode"));
+
 
         return columns;
     }
@@ -89,6 +91,10 @@ public class ForensicsTableModel extends TableModel {
 
         public int getAddedAt() {
             return fileStatistics.getCreationTime();
+        }
+
+        public int getLinesOfCode() {
+            return fileStatistics.getLinesOfCode();
         }
     }
 }

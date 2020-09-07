@@ -1,7 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,6 +35,11 @@ public class FileStatistics implements Serializable {
     private int numberOfCommits;
     private int creationTime;
     private int lastModificationTime;
+
+    private int linesOfCode;
+    //TODO: Getter für ganze Map oder nur Eintrag zu einem Commit, oder beides?
+    private Map<String, Integer> numberOfAddedLines = new HashMap<>();
+    private Map<String, Integer> numberOfDeletedLines = new HashMap<>();
 
     private transient Set<String> authors = new HashSet<>(); // see readResolve
 
@@ -89,6 +96,10 @@ public class FileStatistics implements Serializable {
         return lastModificationTime;
     }
 
+    public int getLinesOfCode() {
+        return linesOfCode;
+    }
+
     /**
      * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
      * newest commit until the first commit has been reached.
@@ -107,6 +118,18 @@ public class FileStatistics implements Serializable {
         numberOfCommits++;
         authors.add(author);
         numberOfAuthors = authors.size();
+    }
+
+    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode, final String commitId, final int addedLines, final int removedLines) {
+        inspectCommit(commitTime, author);
+        linesOfCode = totalLinesOfCode;
+        numberOfAddedLines.put(commitId, addedLines);
+        numberOfDeletedLines.put(commitId, removedLines);
+    }
+
+    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode) {
+        inspectCommit(commitTime, author);
+        linesOfCode += totalLinesOfCode;
     }
 
     @Override
@@ -148,6 +171,7 @@ public class FileStatistics implements Serializable {
          *
          * @param fileName
          *         the file name
+         *
          * @return the created {@link FileStatistics} instance
          */
         public FileStatistics build(final String fileName) {
