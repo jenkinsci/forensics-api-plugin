@@ -142,6 +142,7 @@ public class RepositoryStatistics implements Serializable {
                 additionalStatistics.stream()
                         .collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
         calculateTotalLinesOfCode();
+        statisticsPerFile.entrySet().removeIf(o -> !additionalStatistics.contains(o.getValue()));
     }
 
     /**

@@ -57,13 +57,13 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         RepositoryMiner miner = MinerFactory.findMiner(run, Collections.singleton(workspace), listener, logger);
         logHandler.log(logger);
 
-        RepositoryStatistics previousBuildStatistics = previousBuildStatistics(run);
-        RepositoryStatistics repositoryStatistics = miner.mine(previousBuildStatistics, logger);
-        repositoryStatistics.addAll(previousBuildStatistics);
+        RepositoryStatistics repositoryStatistics = previousBuildStatistics(run);
+        RepositoryStatistics addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
+        repositoryStatistics.addAll(addedRepositoryStatistics);
 
         logHandler.log(logger);
         int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
-        run.addAction(new ForensicsBuildAction(run, repositoryStatistics, miningDurationSeconds));
+        run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds));
     }
 
     /**
