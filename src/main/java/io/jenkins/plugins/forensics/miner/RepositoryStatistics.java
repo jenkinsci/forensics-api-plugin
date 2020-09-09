@@ -2,6 +2,7 @@ package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -101,7 +102,7 @@ public class RepositoryStatistics implements Serializable {
      * @return the file names
      */
     public Set<String> getFiles() {
-        return statisticsPerFile.keySet();
+        return Collections.unmodifiableSet(statisticsPerFile.keySet());
     }
 
     /**
@@ -110,7 +111,16 @@ public class RepositoryStatistics implements Serializable {
      * @return the statistics
      */
     public Collection<FileStatistics> getFileStatistics() {
-        return statisticsPerFile.values();
+        return Collections.unmodifiableCollection(statisticsPerFile.values());
+    }
+
+    /**
+     * Returns the mapping of file names to statistics.
+     *
+     * @return the mapping of file names to statistics
+     */
+    public Map<String, FileStatistics> getMapping() {
+        return Collections.unmodifiableMap(statisticsPerFile);
     }
 
     /**

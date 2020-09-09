@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import edu.hm.hafner.util.Generated;
 import edu.hm.hafner.util.PathUtil;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
@@ -25,7 +27,7 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
  * @author Ullrich Hafner
  */
 public class FileStatistics implements Serializable {
-    private static final long serialVersionUID = 7L; // release 0.7
+    private static final long serialVersionUID = 8L; // release 0.8.x
 
     private final TreeString fileName;
 
@@ -34,7 +36,7 @@ public class FileStatistics implements Serializable {
     private int creationTime;
     private int lastModificationTime;
 
-    private transient Set<String> authors = new HashSet<>(); // see readResolve
+    private Set<String> authors = new HashSet<>(); // see readResolve
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -56,8 +58,12 @@ public class FileStatistics implements Serializable {
      * @return this
      */
     protected Object readResolve() {
-        authors = new HashSet<>(); // restore an empty set since the authors set is used only during aggregation
-
+        if (authors == null) {
+            authors = new HashSet<>(); // restore an empty set for release < 0.8.x
+        }
+        else {
+            authors = authors.stream().map(String::intern).collect(Collectors.toSet()); // try to minimize memory
+        }
         return this;
     }
 
@@ -109,7 +115,7 @@ public class FileStatistics implements Serializable {
         numberOfAuthors = authors.size();
     }
 
-    @Override
+    @Override @Generated
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -121,15 +127,17 @@ public class FileStatistics implements Serializable {
         return numberOfAuthors == that.numberOfAuthors
                 && numberOfCommits == that.numberOfCommits
                 && creationTime == that.creationTime
-                && lastModificationTime == that.lastModificationTime;
+                && lastModificationTime == that.lastModificationTime
+                && fileName.equals(that.fileName)
+                && Objects.equals(authors, that.authors);
     }
 
-    @Override
+    @Override @Generated
     public int hashCode() {
-        return Objects.hash(numberOfAuthors, numberOfCommits, creationTime, lastModificationTime);
+        return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, authors);
     }
 
-    @Override
+    @Override @Generated
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }
@@ -148,6 +156,7 @@ public class FileStatistics implements Serializable {
          *
          * @param fileName
          *         the file name
+         *
          * @return the created {@link FileStatistics} instance
          */
         public FileStatistics build(final String fileName) {
