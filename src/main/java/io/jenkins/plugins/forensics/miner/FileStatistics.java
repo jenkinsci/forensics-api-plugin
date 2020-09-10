@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -27,7 +28,7 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
  * @author Ullrich Hafner
  */
 public class FileStatistics implements Serializable {
-    private static final long serialVersionUID = 7L; // release 0.7
+    private static final long serialVersionUID = 8L; // release 0.8.x
 
     private final TreeString fileName;
 
@@ -37,11 +38,12 @@ public class FileStatistics implements Serializable {
     private int lastModificationTime;
 
     private int linesOfCode;
+    private int churn;
     //TODO: Getter für ganze Map oder nur Eintrag zu einem Commit, oder beides?
     private Map<String, Integer> numberOfAddedLines = new HashMap<>();
     private Map<String, Integer> numberOfDeletedLines = new HashMap<>();
 
-    private transient Set<String> authors = new HashSet<>(); // see readResolve
+    private Set<String> authors = new HashSet<>(); // see readResolve
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -57,14 +59,21 @@ public class FileStatistics implements Serializable {
         return fileName.toString();
     }
 
+    public int getChurn() {
+        return churn;
+    }
     /**
      * Called after de-serialization to retain backward compatibility.
      *
      * @return this
      */
     protected Object readResolve() {
-        authors = new HashSet<>(); // restore an empty set since the authors set is used only during aggregation
-
+        if (authors == null) {
+            authors = new HashSet<>(); // restore an empty set for release < 0.8.x
+        }
+        else {
+            authors = authors.stream().map(String::intern).collect(Collectors.toSet()); // try to minimize memory
+        }
         return this;
     }
 
@@ -75,6 +84,7 @@ public class FileStatistics implements Serializable {
     public int getNumberOfCommits() {
         return numberOfCommits;
     }
+
 
     /**
      * Returns the creation time of this file.
@@ -122,15 +132,23 @@ public class FileStatistics implements Serializable {
 
     public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode, final String commitId, final int addedLines, final int removedLines) {
         inspectCommit(commitTime, author);
-        linesOfCode = totalLinesOfCode;
+        if(numberOfCommits == 0){
+            linesOfCode = totalLinesOfCode;
+        } else {
+            linesOfCode += totalLinesOfCode;
+        }
+        churn = addedLines + removedLines;
         numberOfAddedLines.put(commitId, addedLines);
         numberOfDeletedLines.put(commitId, removedLines);
     }
 
-    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode) {
-        inspectCommit(commitTime, author);
-        linesOfCode += totalLinesOfCode;
-    }
+//    public void resetChurn() {
+//        churn = 0;
+//    }
+//    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode) {
+//        inspectCommit(commitTime, author);
+//        linesOfCode += totalLinesOfCode;
+//    }
 
     @Override
     public boolean equals(final Object o) {
@@ -144,12 +162,14 @@ public class FileStatistics implements Serializable {
         return numberOfAuthors == that.numberOfAuthors
                 && numberOfCommits == that.numberOfCommits
                 && creationTime == that.creationTime
-                && lastModificationTime == that.lastModificationTime;
+                && lastModificationTime == that.lastModificationTime
+                && fileName.equals(that.fileName)
+                && Objects.equals(authors, that.authors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(numberOfAuthors, numberOfCommits, creationTime, lastModificationTime);
+        return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, authors);
     }
 
     @Override
