@@ -142,9 +142,9 @@ public class FileStatistics implements Serializable {
         numberOfDeletedLines.put(commitId, removedLines);
     }
 
-//    public void resetChurn() {
-//        churn = 0;
-//    }
+    public void resetChurn() {
+        churn = 0;
+    }
 //    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode) {
 //        inspectCommit(commitTime, author);
 //        linesOfCode += totalLinesOfCode;
