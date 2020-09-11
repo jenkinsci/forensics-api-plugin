@@ -2,15 +2,17 @@ package io.jenkins.plugins.forensics.miner;
 
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import hudson.model.Job;
 
 import io.jenkins.plugins.echarts.AsyncTrendJobAction;
 
 public class ForensicsLocAction extends AsyncTrendJobAction<ForensicsBuildAction> {
+    static final String FORENSICS_ID = "forensics";
+    static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
 
-    protected ForensicsLocAction(final Job<?, ?> owner) {
+    public ForensicsLocAction(final Job<?, ?> owner) {
         super(owner, ForensicsBuildAction.class);
     }
 
@@ -19,21 +21,19 @@ public class ForensicsLocAction extends AsyncTrendJobAction<ForensicsBuildAction
         return new LinesOfCodeTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
     }
 
-    @Nullable
     @Override
+    @CheckForNull
     public String getIconFileName() {
-        return null;
+        return SMALL_ICON;
     }
 
-    @Nullable
     @Override
     public String getDisplayName() {
-        return null;
+        return Messages.ForensicsView_Title();
     }
 
-    @Nullable
     @Override
     public String getUrlName() {
-        return null;
+        return FORENSICS_ID;
     }
 }

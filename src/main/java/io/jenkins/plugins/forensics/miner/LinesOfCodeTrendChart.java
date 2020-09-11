@@ -20,8 +20,8 @@ public class LinesOfCodeTrendChart {
         model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
         model.setBuildNumbers(dataSet.getBuildNumbers());
 
-        LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),
-                StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+        LineSeries series = new LineSeries(Messages.TrendChart_Loc_Legend_Label(), Palette.BLUE.getNormal(),
+                StackedMode.SEPARATE_LINES, FilledMode.LINES);
         series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
         model.addSeries(series);
 

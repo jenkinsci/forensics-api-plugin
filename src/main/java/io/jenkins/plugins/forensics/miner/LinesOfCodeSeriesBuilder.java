@@ -12,6 +12,7 @@ public class LinesOfCodeSeriesBuilder extends SeriesBuilder<ForensicsBuildAction
     protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
         Map<String, Integer> series = new HashMap<>();
         series.put(TOTALS_KEY, current.getResult().getTotalLinesOfCode());
+
         return series;
     }
 }
