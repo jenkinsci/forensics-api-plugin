@@ -13,7 +13,7 @@ import io.jenkins.plugins.util.BuildAction;
 
 /**
  * Controls the live cycle of the forensics results in a job. This action persists the results of a build and displays a
- * summary on the build page. The actual visualization of the results is defined in the matching {@code floatingBox.jelly}
+ * summary on the build page. The actual visualization of the results is defined in the matching {@code summary.jelly}
  * file. This action also provides access to the forensics details: these are rendered using a new view instance.
  *
  * @author Ullrich Hafner
@@ -62,7 +62,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public Collection<? extends Action> getProjectActions() {
-        return Arrays.asList(new ForensicsJobAction(getOwner().getParent()), new ForensicsLocAction(getOwner().getParent()));
+        return Arrays.asList(new ForensicsJobAction(getOwner().getParent()),
+                new ForensicsLocAction(getOwner().getParent()),
+                new ForensicsChurnAction(getOwner().getParent()));
     }
 
     @Override
