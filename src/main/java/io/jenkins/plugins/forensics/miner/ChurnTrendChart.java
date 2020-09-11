@@ -24,7 +24,6 @@ public class ChurnTrendChart {
                 StackedMode.SEPARATE_LINES, FilledMode.LINES);
         churnSeries.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
         model.addSeries(churnSeries);
-        model.addSeries(churnSeries);
 
         return model;
     }
