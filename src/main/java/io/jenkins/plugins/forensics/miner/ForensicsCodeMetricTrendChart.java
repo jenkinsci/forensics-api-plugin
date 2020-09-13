@@ -20,21 +20,25 @@ import edu.hm.hafner.echarts.Palette;
  * @author Giulia Del Bravo
  * @see JacksonFacade
  */
-public class LinesOfCodeTrendChart {
+public class ForensicsCodeMetricTrendChart {
 
     public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
-        LinesOfCodeSeriesBuilder builder = new LinesOfCodeSeriesBuilder();
+        ForensicsCodeMetricSeriesBuilder builder = new ForensicsCodeMetricSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel(); // TODO: should the setters be mandatory in constructor?
+        Palette[] colors = {Palette.BLUE, Palette.ORANGE};
         model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
         model.setBuildNumbers(dataSet.getBuildNumbers());
-
-        LineSeries series = new LineSeries(Messages.TrendChart_Loc_Legend_Label(), Palette.BLUE.getNormal(),
-                StackedMode.SEPARATE_LINES, FilledMode.LINES);
-        series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
-        model.addSeries(series);
+        int index = 0;
+        for(String name : dataSet.getDataSetIds()) {
+            int colorIndex = (index++)%colors.length;
+            LineSeries series = new LineSeries(name, colors[colorIndex].getNormal(),
+                    StackedMode.SEPARATE_LINES, FilledMode.LINES);
+            series.addAll(dataSet.getSeries(name));
+            model.addSeries(series);
+        }
 
         return model;
     }

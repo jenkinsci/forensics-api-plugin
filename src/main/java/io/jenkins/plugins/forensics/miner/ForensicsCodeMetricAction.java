@@ -14,23 +14,23 @@ import io.jenkins.plugins.echarts.AsyncTrendJobAction;
  *
  * @author Giulia Del Bravo
  */
-public class ForensicsLocAction extends AsyncTrendJobAction<ForensicsBuildAction> {
+public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuildAction> {
     static final String FORENSICS_ID = "forensics";
     static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
 
     /**
-     * Creates a new instance of {@link ForensicsLocAction}.
+     * Creates a new instance of {@link ForensicsCodeMetricAction}.
      *
      * @param owner
      *         the job that owns this action
      */
-    public ForensicsLocAction(final Job<?, ?> owner) {
+    public ForensicsCodeMetricAction(final Job<?, ?> owner) {
         super(owner, ForensicsBuildAction.class);
     }
 
     @Override
     protected LinesChartModel createChartModel() {
-        return new LinesOfCodeTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
+        return new ForensicsCodeMetricTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
     }
 
     /**

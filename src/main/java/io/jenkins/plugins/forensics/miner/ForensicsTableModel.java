@@ -74,7 +74,7 @@ public class ForensicsTableModel extends TableModel {
         }
 
         public String getFileName() {
-            return fileStatistics.getFileName();
+            return "<a href=\"fileName." + fileStatistics.getFileName().hashCode() + "\">" + fileStatistics.getFileName() + "</a>";
         }
 
         public int getAuthorsSize() {

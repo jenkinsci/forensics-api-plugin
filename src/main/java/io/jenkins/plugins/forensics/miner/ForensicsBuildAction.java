@@ -63,8 +63,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     @Override
     public Collection<? extends Action> getProjectActions() {
         return Arrays.asList(new ForensicsJobAction(getOwner().getParent()),
-                new ForensicsLocAction(getOwner().getParent()),
-                new ForensicsChurnAction(getOwner().getParent()));
+                new ForensicsCodeMetricAction(getOwner().getParent()));
     }
 
     @Override
