@@ -1,8 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -39,9 +39,9 @@ public class FileStatistics implements Serializable {
 
     private int linesOfCode;
     private int churn;
-    //TODO: Getter für ganze Map oder nur Eintrag zu einem Commit, oder beides?
-    private Map<String, Integer> numberOfAddedLines = new HashMap<>();
-    private Map<String, Integer> numberOfDeletedLines = new HashMap<>();
+
+    private Map<String, Integer> numberOfAddedLines = new LinkedHashMap<>();
+    private Map<String, Integer> numberOfDeletedLines = new LinkedHashMap<>();
 
     private Set<String> authors = new HashSet<>(); // see readResolve
 
@@ -62,6 +62,7 @@ public class FileStatistics implements Serializable {
     public int getChurn() {
         return churn;
     }
+
     /**
      * Called after de-serialization to retain backward compatibility.
      *
@@ -85,7 +86,6 @@ public class FileStatistics implements Serializable {
         return numberOfCommits;
     }
 
-
     /**
      * Returns the creation time of this file.
      *
@@ -106,8 +106,31 @@ public class FileStatistics implements Serializable {
         return lastModificationTime;
     }
 
+    /**
+     * Returns the total lines of code for this file.
+     *
+     * @return the total lines of code.
+     */
     public int getLinesOfCode() {
         return linesOfCode;
+    }
+
+    /**
+     * Returns all added lines to each commit.
+     *
+     * @return all added lines to each commit.
+     */
+    public Map<String, Integer> getNumberOfAddedLines() {
+        return numberOfAddedLines;
+    }
+
+    /**
+     * Returns all deleted lines to each commit.
+     *
+     * @return all deleted lines to each commit.
+     */
+    public Map<String, Integer> getNumberOfDeletedLines() {
+        return numberOfDeletedLines;
     }
 
     /**
@@ -130,11 +153,13 @@ public class FileStatistics implements Serializable {
         numberOfAuthors = authors.size();
     }
 
-    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode, final String commitId, final int addedLines, final int removedLines) {
+    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode,
+            final String commitId, final int addedLines, final int removedLines) {
         inspectCommit(commitTime, author);
-        if(numberOfCommits == 0){
+        if (numberOfCommits == 0) {
             linesOfCode = totalLinesOfCode;
-        } else {
+        }
+        else {
             linesOfCode += totalLinesOfCode;
         }
         churn += addedLines + removedLines;
@@ -142,6 +167,9 @@ public class FileStatistics implements Serializable {
         numberOfDeletedLines.put(commitId, removedLines);
     }
 
+    /**
+     * Resets the churn of this file.
+     */
     public void resetChurn() {
         churn = 0;
     }

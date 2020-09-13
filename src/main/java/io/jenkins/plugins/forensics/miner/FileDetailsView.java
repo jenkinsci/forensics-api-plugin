@@ -102,7 +102,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     }
 
     /**
-     * A table row that shows the source control statistics.
+     * A table row that shows details about a specific file.
      */
     @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
     public static class ForensicsRow {
