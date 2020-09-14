@@ -161,7 +161,7 @@ public class RepositoryStatistics implements Serializable {
     }
 
     private void calculateTotalChurn() {
-        statisticsPerFile.forEach((k,v) -> totalChurn += v.getChurn());
+        statisticsPerFile.forEach((k, v) -> totalChurn += v.getChurn());
     }
 
     /**
