@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import edu.hm.hafner.util.Generated;
 import edu.hm.hafner.util.PathUtil;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import io.jenkins.plugins.forensics.blame.FileBlame;
 
@@ -42,7 +44,6 @@ public class FileStatistics implements Serializable {
 
     private Map<String, Integer> numberOfAddedLines = new LinkedHashMap<>();
     private Map<String, Integer> numberOfDeletedLines = new LinkedHashMap<>();
-
     private Set<String> authors = new HashSet<>(); // see readResolve
 
     /**
@@ -68,6 +69,7 @@ public class FileStatistics implements Serializable {
      *
      * @return this
      */
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (authors == null) {
             authors = new HashSet<>(); // restore an empty set for release < 0.8.x
@@ -192,7 +194,7 @@ public class FileStatistics implements Serializable {
         churn = 0;
     }
 
-    @Override
+    @Override @Generated
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -209,12 +211,12 @@ public class FileStatistics implements Serializable {
                 && Objects.equals(authors, that.authors);
     }
 
-    @Override
+    @Override @Generated
     public int hashCode() {
         return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, authors);
     }
 
-    @Override
+    @Override @Generated
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }
