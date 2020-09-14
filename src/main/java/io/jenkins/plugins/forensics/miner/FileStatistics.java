@@ -153,6 +153,24 @@ public class FileStatistics implements Serializable {
         numberOfAuthors = authors.size();
     }
 
+    /**
+     * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
+     * newest commit until the first commit has been reached.
+     *
+     * @param commitTime
+     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch", *
+     *         namely January 1, 1970, 00:00:00 GMT.).
+     * @param author
+     *         author (or comitter) name
+     * @param totalLinesOfCode
+     *         total lines of code of this file
+     * @param commitId
+     *         the id of the commit this file was checked in.
+     * @param addedLines
+     *         the number of added lines
+     * @param removedLines
+     *         the number of deleted lines
+     */
     public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode,
             final String commitId, final int addedLines, final int removedLines) {
         inspectCommit(commitTime, author);

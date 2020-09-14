@@ -21,7 +21,17 @@ import edu.hm.hafner.echarts.Palette;
  * @see JacksonFacade
  */
 public class ForensicsCodeMetricTrendChart {
-
+    /**
+     * Creates the chart for the specified results.
+     *
+     * @param results
+     *         the forensics results to render - these results must be provided in descending order, i.e. the current *
+     *         build is the head of the list, then the previous builds, and so on
+     * @param configuration
+     *         the chart configuration to be used
+     *
+     * @return the chart model, ready to be serialized to JSON
+     */
     public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
         ForensicsCodeMetricSeriesBuilder builder = new ForensicsCodeMetricSeriesBuilder();

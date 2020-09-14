@@ -34,6 +34,14 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     private final RepositoryStatistics repositoryStatistics;
     private final List<FileStatistics> fileStatistics;
 
+    /**
+     * Creates a new {@link FileDetailsView} instance.
+     *
+     * @param fileLink
+     *         the file the view should be created for
+     * @param repositoryStatistics
+     *         the RepositoryStatistic containing the file
+     */
     public FileDetailsView(final String fileLink, final RepositoryStatistics repositoryStatistics) {
         this.fileHash = fileLink.substring(FILE_NAME_PROPERTY.length());
         this.repositoryStatistics = repositoryStatistics;
@@ -46,6 +54,10 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
                 .filter(f -> String.valueOf(f.getFileName().hashCode()).equals(fileHash)).collect(Collectors.toList());
     }
 
+    /**
+     * Should return a LinesChartModel for this file detailing the added and deleted lines over all commits analyzed
+     * @return LinesChartModel for this file displaying deleted and added lines.
+     */
     public LinesChartModel createChartModel() {
         return new FileChurnTrendChart().create(fileStatistics.get(0));
     }
