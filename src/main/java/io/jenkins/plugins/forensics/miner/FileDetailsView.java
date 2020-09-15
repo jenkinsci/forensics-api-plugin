@@ -43,6 +43,8 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      *         the RepositoryStatistic containing the file
      */
     public FileDetailsView(final String fileLink, final RepositoryStatistics repositoryStatistics) {
+        super();
+
         this.fileHash = fileLink.substring(FILE_NAME_PROPERTY.length());
         this.repositoryStatistics = repositoryStatistics;
         fileStatistics = filterStatistics();
@@ -55,7 +57,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     }
 
     /**
-     * Should return a LinesChartModel for this file detailing the added and deleted lines over all commits analyzed
+     * Should return a LinesChartModel for this file detailing the added and deleted lines over all commits analyzed.
      * @return LinesChartModel for this file displaying deleted and added lines.
      */
     public LinesChartModel createChartModel() {

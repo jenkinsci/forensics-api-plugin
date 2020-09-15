@@ -1,9 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,6 +78,20 @@ public class FileStatistics implements Serializable {
         }
         else {
             authors = authors.stream().map(String::intern).collect(Collectors.toSet()); // try to minimize memory
+        }
+        if( numberOfAddedLines == null) {
+            numberOfAddedLines = new LinkedHashMap<>();
+        }
+        else {
+            numberOfAddedLines = numberOfAddedLines.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().intern(),
+                    Entry::getValue));
+        }
+        if( numberOfDeletedLines == null) {
+            numberOfDeletedLines = new LinkedHashMap<>();
+        }
+        else {
+            numberOfDeletedLines = numberOfDeletedLines.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().intern(),
+                    Entry::getValue));
         }
         return this;
     }
