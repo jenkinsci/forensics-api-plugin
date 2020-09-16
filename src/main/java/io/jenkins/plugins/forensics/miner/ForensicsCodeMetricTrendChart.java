@@ -37,7 +37,7 @@ public class ForensicsCodeMetricTrendChart {
         ForensicsCodeMetricSeriesBuilder builder = new ForensicsCodeMetricSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel(); // TODO: should the setters be mandatory in constructor?
+        LinesChartModel model = new LinesChartModel();
         Palette[] colors = {Palette.BLUE, Palette.ORANGE};
         model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
         model.setBuildNumbers(dataSet.getBuildNumbers());
