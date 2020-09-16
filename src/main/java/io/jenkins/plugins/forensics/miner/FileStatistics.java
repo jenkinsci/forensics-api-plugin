@@ -1,13 +1,10 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -46,7 +43,8 @@ public class FileStatistics implements Serializable {
 
     private Map<String, Integer> numberOfAddedLines = new LinkedHashMap<>();
     private Map<String, Integer> numberOfDeletedLines = new LinkedHashMap<>();
-    private Set<String> authors = new HashSet<>(); // see readResolve
+    private Map<String, String> authors = new LinkedHashMap<>();
+//    private Set<String> authors = new HashSet<>(); // see readResolve
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -74,26 +72,35 @@ public class FileStatistics implements Serializable {
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (authors == null) {
-            authors = new HashSet<>(); // restore an empty set for release < 0.8.x
+            authors = new LinkedHashMap<>(); // restore an empty set for release < 0.8.x
         }
         else {
-            authors = authors.stream().map(String::intern).collect(Collectors.toSet()); // try to minimize memory
+            authors = authors.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().intern(),
+                    entry -> entry.getValue().intern())); // try to minimize memory
         }
-        if( numberOfAddedLines == null) {
+        if (numberOfAddedLines == null) {
             numberOfAddedLines = new LinkedHashMap<>();
         }
         else {
-            numberOfAddedLines = numberOfAddedLines.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                    Entry::getValue));
+            numberOfAddedLines = numberOfAddedLines.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(entry -> entry.getKey().intern(),
+                            Entry::getValue));
         }
-        if( numberOfDeletedLines == null) {
+        if (numberOfDeletedLines == null) {
             numberOfDeletedLines = new LinkedHashMap<>();
         }
         else {
-            numberOfDeletedLines = numberOfDeletedLines.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                    Entry::getValue));
+            numberOfDeletedLines = numberOfDeletedLines.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(entry -> entry.getKey().intern(),
+                            Entry::getValue));
         }
         return this;
+    }
+
+    public Map<String, String> getAuthors() {
+        return authors;
     }
 
     public int getNumberOfAuthors() {
@@ -167,8 +174,6 @@ public class FileStatistics implements Serializable {
         }
         creationTime = commitTime;
         numberOfCommits++;
-        authors.add(author);
-        numberOfAuthors = authors.size();
     }
 
     /**
@@ -201,6 +206,8 @@ public class FileStatistics implements Serializable {
         churn += addedLines + removedLines;
         numberOfAddedLines.put(commitId, addedLines);
         numberOfDeletedLines.put(commitId, removedLines);
+        authors.put(commitId, author);
+        numberOfAuthors = (int)authors.values().stream().distinct().count();
     }
 
     /**
@@ -210,7 +217,8 @@ public class FileStatistics implements Serializable {
         churn = 0;
     }
 
-    @Override @Generated
+    @Override
+    @Generated
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -227,12 +235,14 @@ public class FileStatistics implements Serializable {
                 && Objects.equals(authors, that.authors);
     }
 
-    @Override @Generated
+    @Override
+    @Generated
     public int hashCode() {
         return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, authors);
     }
 
-    @Override @Generated
+    @Override
+    @Generated
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }

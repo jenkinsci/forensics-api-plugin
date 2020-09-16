@@ -98,6 +98,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             List<TableColumn> columns = new ArrayList<>();
 
             columns.add(new TableColumn(Messages.Table_Column_CommitId(), "commitId"));
+            columns.add(new TableColumn(Messages.Table_Column_Author(), "author"));
             columns.add(new TableColumn(Messages.Table_Column_AddedLines(), "addedLines"));
             columns.add(new TableColumn(Messages.Table_Column_DeletedLines(), "deletedLines"));
 
@@ -139,6 +140,10 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         public String getCommitId() {
             return commitId;
+        }
+
+        public String getAuthor() {
+            return fileStatistics.getAuthors().get(commitId);
         }
 
     }

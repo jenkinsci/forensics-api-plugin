@@ -21,7 +21,7 @@
         <div class="row py-3">
           <div class="col">
 
-            <bs:card title="${%Bla churn}" fontAwesomeIcon="chart-line">
+            <bs:card title="${%File churn}" fontAwesomeIcon="chart-line">
           <c:trend-chart it="${from}" title="${%Churn}"/>
             </bs:card>
 

@@ -27,25 +27,25 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
         assertThat(statistics).hasLastModificationTime(0);
         assertThat(statistics).hasCreationTime(0);
 
-        statistics.inspectCommit(ONE_DAY * 9, "one");
+        statistics.inspectCommit(ONE_DAY * 9, "one", 0, "1", 0, 0);
         assertThat(statistics).hasNumberOfCommits(1);
         assertThat(statistics).hasNumberOfAuthors(1);
         assertThat(statistics).hasLastModificationTime(ONE_DAY * 9);
         assertThat(statistics).hasCreationTime(ONE_DAY * 9);
 
-        statistics.inspectCommit(ONE_DAY * 8, "one");
+        statistics.inspectCommit(ONE_DAY * 8, "one", 0, "2", 0, 0);
         assertThat(statistics).hasNumberOfCommits(2);
         assertThat(statistics).hasNumberOfAuthors(1);
         assertThat(statistics).hasLastModificationTime(ONE_DAY * 9);
         assertThat(statistics).hasCreationTime(ONE_DAY * 8);
 
-        statistics.inspectCommit(ONE_DAY * 7, "two");
+        statistics.inspectCommit(ONE_DAY * 7, "two", 0, "3", 0, 0);
         assertThat(statistics).hasNumberOfCommits(3);
         assertThat(statistics).hasNumberOfAuthors(2);
         assertThat(statistics).hasLastModificationTime(ONE_DAY * 9);
         assertThat(statistics).hasCreationTime(ONE_DAY * 7);
 
-        statistics.inspectCommit(ONE_DAY * 7, "three");
+        statistics.inspectCommit(ONE_DAY * 7, "three", 0, "4", 0, 0);
         assertThat(statistics).hasNumberOfCommits(4);
         assertThat(statistics).hasNumberOfAuthors(3);
         assertThat(statistics).hasLastModificationTime(ONE_DAY * 9);
