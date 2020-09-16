@@ -227,18 +227,23 @@ public class FileStatistics implements Serializable {
             return false;
         }
         FileStatistics that = (FileStatistics) o;
-        return numberOfAuthors == that.numberOfAuthors
-                && numberOfCommits == that.numberOfCommits
-                && creationTime == that.creationTime
-                && lastModificationTime == that.lastModificationTime
-                && fileName.equals(that.fileName)
-                && Objects.equals(authors, that.authors);
+        return numberOfAuthors == that.numberOfAuthors &&
+                numberOfCommits == that.numberOfCommits &&
+                creationTime == that.creationTime &&
+                lastModificationTime == that.lastModificationTime &&
+                linesOfCode == that.linesOfCode &&
+                churn == that.churn &&
+                Objects.equals(fileName, that.fileName) &&
+                Objects.equals(numberOfAddedLines, that.numberOfAddedLines) &&
+                Objects.equals(numberOfDeletedLines, that.numberOfDeletedLines) &&
+                Objects.equals(authors, that.authors);
     }
 
     @Override
     @Generated
     public int hashCode() {
-        return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, authors);
+        return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, linesOfCode,
+                churn, numberOfAddedLines, numberOfDeletedLines, authors);
     }
 
     @Override
