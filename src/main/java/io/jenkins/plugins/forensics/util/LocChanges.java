@@ -5,6 +5,7 @@ package io.jenkins.plugins.forensics.util;
  *
  * @author Giulia Del Bravo
  */
+@SuppressWarnings("PMD.DataClass")
 public class LocChanges {
 
     private int totalLoc;
