@@ -47,7 +47,7 @@ public class FileStatistics implements Serializable {
     private Map<String, Integer> deletedLinesOfCommit = new LinkedHashMap<>();
     private Map<String, String> authorOfCommit = new LinkedHashMap<>();
 
-    private final List<String> commits = new LinkedList<>();
+    private List<String> commits = new LinkedList<>();
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -85,6 +85,13 @@ public class FileStatistics implements Serializable {
         }
         addedLinesOfCommit = readResolve(addedLinesOfCommit);
         deletedLinesOfCommit = readResolve(deletedLinesOfCommit);
+
+        if (commits == null) {
+            commits = new LinkedList<>();
+        }
+        else {
+            commits = commits.stream().map(String::intern).collect(Collectors.toCollection(LinkedList::new));
+        }
 
         return this;
     }
