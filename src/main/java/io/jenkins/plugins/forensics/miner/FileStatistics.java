@@ -101,22 +101,43 @@ public class FileStatistics implements Serializable {
         }
     }
 
+    /**
+     * Returns all authors of this file.
+     * @return all authors of this file
+     */
     public Map<String, String> getAuthorOfCommit() {
         return authorOfCommit;
     }
 
+    /**
+     * Returns the author for this file for a specific commit.
+     * @param commitId the id of the commit
+     * @return the author of this commit
+     */
     public String getAuthor(final String commitId) {
         return authorOfCommit.get(commitId);
     }
 
+    /**
+     * Returns the number of authors for this file.
+     * @return the number authors for this file.
+     */
     public int getNumberOfAuthors() {
         return numberOfAuthors;
     }
 
+    /**
+     * Returns the number of times this file was committed.
+     * @return the number of commits for this file
+     */
     public int getNumberOfCommits() {
         return numberOfCommits;
     }
 
+    /**
+     * Returns all commit ids for this file.
+     * @return all commit ids for this file
+     */
     public List<String> getCommits() {
         return commits;
     }
@@ -228,10 +249,6 @@ public class FileStatistics implements Serializable {
         deletedLinesOfCommit.put(commitId, removedLines);
         authorOfCommit.put(commitId, author);
         numberOfAuthors = (int) authorOfCommit.values().stream().distinct().count();
-
-    }
-
-    private void calcLoc() {
 
     }
 
