@@ -180,6 +180,11 @@ public class FileStatistics implements Serializable {
         return addedLinesOfCommit;
     }
 
+    /**
+     * Returns the number of added lines to a specific commit id.
+     * @param commitId the commit id
+     * @return the number of added lines
+     */
     public int getAddedLines(final String commitId) {
         return addedLinesOfCommit.get(commitId);
     }
@@ -193,6 +198,11 @@ public class FileStatistics implements Serializable {
         return deletedLinesOfCommit;
     }
 
+    /**
+     * Returns the number of deleted lines to a specific commit id.
+     * @param commitId the commit id
+     * @return the number of deleted lines
+     */
     public int getDeletedLines(final String commitId) {
         return deletedLinesOfCommit.get(commitId);
     }
