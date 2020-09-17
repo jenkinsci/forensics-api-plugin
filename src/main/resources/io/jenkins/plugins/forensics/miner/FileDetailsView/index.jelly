@@ -45,8 +45,8 @@
 
       <script>
         {
-        const trendProxy =<st:bind value="${it}"/>;
-        echartsJenkinsApi.renderTrendChart('churn-trend-chart', `false`, trendProxy);
+          const trendProxy = <st:bind value="${it}"/>;
+          echartsJenkinsApi.renderTrendChart('churn-trend-chart', `false`, trendProxy);
         }
       </script>
 
