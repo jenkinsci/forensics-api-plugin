@@ -2,6 +2,8 @@ package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -41,10 +43,11 @@ public class FileStatistics implements Serializable {
     private int linesOfCode;
     private int churn;
 
-    private Map<String, Integer> numberOfAddedLines = new LinkedHashMap<>();
-    private Map<String, Integer> numberOfDeletedLines = new LinkedHashMap<>();
-    private Map<String, String> authors = new LinkedHashMap<>();
-//    private Set<String> authors = new HashSet<>(); // see readResolve
+    private Map<String, Integer> addedLinesOfCommit = new LinkedHashMap<>();
+    private Map<String, Integer> deletedLinesOfCommit = new LinkedHashMap<>();
+    private Map<String, String> authorOfCommit = new LinkedHashMap<>();
+
+    private final List<String> commits = new LinkedList<>();
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -71,36 +74,39 @@ public class FileStatistics implements Serializable {
      */
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
-        if (authors == null) {
-            authors = new LinkedHashMap<>(); // restore an empty set for release < 0.8.x
+        if (authorOfCommit == null) {
+            authorOfCommit = new LinkedHashMap<>(); // restore an empty map for release < 0.8.x
         }
         else {
-            authors = authors.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                    entry -> entry.getValue().intern())); // try to minimize memory
-        }
-        if (numberOfAddedLines == null) {
-            numberOfAddedLines = new LinkedHashMap<>();
-        }
-        else {
-            numberOfAddedLines = numberOfAddedLines.entrySet()
+            authorOfCommit = authorOfCommit.entrySet()
                     .stream()
                     .collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                            Entry::getValue));
+                            entry -> entry.getValue().intern())); // try to minimize memory
         }
-        if (numberOfDeletedLines == null) {
-            numberOfDeletedLines = new LinkedHashMap<>();
-        }
-        else {
-            numberOfDeletedLines = numberOfDeletedLines.entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                            Entry::getValue));
-        }
+        addedLinesOfCommit = readResolve(addedLinesOfCommit);
+        deletedLinesOfCommit = readResolve(deletedLinesOfCommit);
+
         return this;
     }
 
-    public Map<String, String> getAuthors() {
-        return authors;
+    private Map<String, Integer> readResolve(final Map<String, Integer> mapToResolve) {
+        if (mapToResolve == null) {
+            return new LinkedHashMap<>();
+        }
+        else {
+            return mapToResolve.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(entry -> entry.getKey().intern(),
+                            Entry::getValue));
+        }
+    }
+
+    public Map<String, String> getAuthorOfCommit() {
+        return authorOfCommit;
+    }
+
+    public String getAuthor(final String commitId) {
+        return authorOfCommit.get(commitId);
     }
 
     public int getNumberOfAuthors() {
@@ -109,6 +115,10 @@ public class FileStatistics implements Serializable {
 
     public int getNumberOfCommits() {
         return numberOfCommits;
+    }
+
+    public List<String> getCommits() {
+        return commits;
     }
 
     /**
@@ -145,8 +155,12 @@ public class FileStatistics implements Serializable {
      *
      * @return all added lines to each commit.
      */
-    public Map<String, Integer> getNumberOfAddedLines() {
-        return numberOfAddedLines;
+    public Map<String, Integer> getAddedLinesOfCommit() {
+        return addedLinesOfCommit;
+    }
+
+    public int getAddedLines(final String commitId) {
+        return addedLinesOfCommit.get(commitId);
     }
 
     /**
@@ -154,8 +168,12 @@ public class FileStatistics implements Serializable {
      *
      * @return all deleted lines to each commit.
      */
-    public Map<String, Integer> getNumberOfDeletedLines() {
-        return numberOfDeletedLines;
+    public Map<String, Integer> getDeletedLinesOfCommit() {
+        return deletedLinesOfCommit;
+    }
+
+    public int getDeletedLines(final String commitId) {
+        return deletedLinesOfCommit.get(commitId);
     }
 
     /**
@@ -201,13 +219,20 @@ public class FileStatistics implements Serializable {
             linesOfCode = totalLinesOfCode;
         }
         else {
-            linesOfCode += totalLinesOfCode;
+            linesOfCode += addedLines;
+            linesOfCode -= removedLines;
         }
+        commits.add(commitId);
         churn += addedLines + removedLines;
-        numberOfAddedLines.put(commitId, addedLines);
-        numberOfDeletedLines.put(commitId, removedLines);
-        authors.put(commitId, author);
-        numberOfAuthors = (int)authors.values().stream().distinct().count();
+        addedLinesOfCommit.put(commitId, addedLines);
+        deletedLinesOfCommit.put(commitId, removedLines);
+        authorOfCommit.put(commitId, author);
+        numberOfAuthors = (int) authorOfCommit.values().stream().distinct().count();
+
+    }
+
+    private void calcLoc() {
+
     }
 
     /**
@@ -227,23 +252,23 @@ public class FileStatistics implements Serializable {
             return false;
         }
         FileStatistics that = (FileStatistics) o;
-        return numberOfAuthors == that.numberOfAuthors &&
-                numberOfCommits == that.numberOfCommits &&
-                creationTime == that.creationTime &&
-                lastModificationTime == that.lastModificationTime &&
-                linesOfCode == that.linesOfCode &&
-                churn == that.churn &&
-                Objects.equals(fileName, that.fileName) &&
-                Objects.equals(numberOfAddedLines, that.numberOfAddedLines) &&
-                Objects.equals(numberOfDeletedLines, that.numberOfDeletedLines) &&
-                Objects.equals(authors, that.authors);
+        return numberOfAuthors == that.numberOfAuthors
+                && numberOfCommits == that.numberOfCommits
+                && creationTime == that.creationTime
+                && lastModificationTime == that.lastModificationTime
+                && linesOfCode == that.linesOfCode
+                && churn == that.churn
+                && Objects.equals(fileName, that.fileName)
+                && Objects.equals(addedLinesOfCommit, that.addedLinesOfCommit)
+                && Objects.equals(deletedLinesOfCommit, that.deletedLinesOfCommit)
+                && Objects.equals(authorOfCommit, that.authorOfCommit);
     }
 
     @Override
     @Generated
     public int hashCode() {
         return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, linesOfCode,
-                churn, numberOfAddedLines, numberOfDeletedLines, authors);
+                churn, addedLinesOfCommit, deletedLinesOfCommit, authorOfCommit);
     }
 
     @Override

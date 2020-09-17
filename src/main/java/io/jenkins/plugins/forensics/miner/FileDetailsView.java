@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import edu.hm.hafner.echarts.JacksonFacade;
@@ -32,7 +33,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     private final String fileHash;
     private static final String FILE_NAME_PROPERTY = "fileName.";
     private final RepositoryStatistics repositoryStatistics;
-    private final List<FileStatistics> fileStatistics;
+    private final FileStatistics fileStatistics;
 
     /**
      * Creates a new {@link FileDetailsView} instance.
@@ -50,18 +51,20 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         fileStatistics = filterStatistics();
     }
 
-    private List<FileStatistics> filterStatistics() {
+    private FileStatistics filterStatistics() {
         return repositoryStatistics.getFileStatistics()
                 .stream()
-                .filter(f -> String.valueOf(f.getFileName().hashCode()).equals(fileHash)).collect(Collectors.toList());
+                .filter(f -> String.valueOf(f.getFileName().hashCode()).equals(fileHash)).findAny().orElseThrow(
+                        () -> new NoSuchElementException("No file found with hash code " + fileHash));
     }
 
     /**
      * Should return a LinesChartModel for this file detailing the added and deleted lines over all commits analyzed.
+     *
      * @return LinesChartModel for this file displaying deleted and added lines.
      */
     public LinesChartModel createChartModel() {
-        return new FileChurnTrendChart().create(fileStatistics.get(0));
+        return new FileChurnTrendChart().create(fileStatistics);
     }
 
     @JavaScriptMethod
@@ -78,7 +81,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
     @Override
     public String getDisplayName() {
-        return Messages.FileView_Title();
+        return Messages.FileView_Title(fileStatistics.getFileName());
     }
 
     @Override
@@ -90,7 +93,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         @Override
         public String getId() {
-            return null;
+            return "forensics-details";
         }
 
         @Override
@@ -107,11 +110,10 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         @Override
         public List<Object> getRows() {
-            return fileStatistics.get(0)
-                    .getNumberOfAddedLines()
-                    .keySet()
+            return fileStatistics
+                    .getCommits()
                     .stream()
-                    .map(commitId -> new ForensicsRow(fileStatistics.get(0), commitId))
+                    .map(commitId -> new ForensicsRow(fileStatistics, commitId))
                     .collect(Collectors.toList());
         }
     }
@@ -131,11 +133,11 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         }
 
         public int getAddedLines() {
-            return fileStatistics.getNumberOfAddedLines().get(commitId);
+            return fileStatistics.getAddedLines(commitId);
         }
 
         public int getDeletedLines() {
-            return fileStatistics.getNumberOfDeletedLines().get(commitId);
+            return fileStatistics.getDeletedLines(commitId);
         }
 
         public String getCommitId() {
@@ -143,9 +145,8 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         }
 
         public String getAuthor() {
-            return fileStatistics.getAuthors().get(commitId);
+            return fileStatistics.getAuthor(commitId);
         }
-
     }
 
     static class FileChurnTrendChart {
@@ -171,7 +172,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         private LinesDataSet createDataSetPerCommit(final FileStatistics current) {
             LinesDataSet model = new LinesDataSet();
-            for (String commitId : current.getNumberOfDeletedLines().keySet()) {
+            for (String commitId : current.getCommits()) {
                 model.add(commitId, computeSeries(current, commitId));
             }
             return model;
@@ -179,8 +180,8 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         private Map<String, Integer> computeSeries(final FileStatistics fileStatistics, final String commitId) {
             Map<String, Integer> commitChanges = new HashMap<>();
-            commitChanges.put(ADDED_KEY, fileStatistics.getNumberOfAddedLines().get(commitId));
-            commitChanges.put(DELETED_KEY, fileStatistics.getNumberOfDeletedLines().get(commitId));
+            commitChanges.put(ADDED_KEY, fileStatistics.getAddedLinesOfCommit().get(commitId));
+            commitChanges.put(DELETED_KEY, fileStatistics.getDeletedLinesOfCommit().get(commitId));
             return commitChanges;
         }
     }
