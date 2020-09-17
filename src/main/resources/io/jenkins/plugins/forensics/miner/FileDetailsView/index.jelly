@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dt="/data-tables" xmlns:c="/charts"
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dt="/data-tables"
          xmlns:bs="/bootstrap">
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
@@ -12,8 +12,10 @@
 
       <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
       <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+      <st:adjunct includes="io.jenkins.plugins.echarts"/>
 
-      <c:trend-chart it="${from}" title="${%Churn}"/>
+      <link rel="stylesheet" href="${resURL}/plugin/forensics-api/css/custom-style.css"/>
+
       <div class="fluid-container">
 
         <h3>${it.displayName}</h3>
@@ -22,7 +24,7 @@
           <div class="col">
 
             <bs:card title="${%File churn}" fontAwesomeIcon="chart-line">
-          <c:trend-chart it="${from}" title="${%Churn}"/>
+              <div id="churn-trend-chart" class="graph-cursor-pointer card-chart"/>
             </bs:card>
 
           </div>
@@ -32,7 +34,7 @@
           <div class="col">
             <div id="statistics">
               <bs:card title="${%Details}" fontAwesomeIcon="chart-bar">
-                <dt:table  model="${it.getTableModel('forensics')}"/>
+                <dt:table model="${it.getTableModel('forensics')}"/>
               </bs:card>
             </div>
           </div>
@@ -41,8 +43,16 @@
 
       </div>
 
+      <script>
+        {
+        const trendProxy =<st:bind value="${it}"/>;
+        echartsJenkinsApi.renderTrendChart('churn-trend-chart', `false`, trendProxy);
+        }
+      </script>
+
     </l:main-panel>
 
   </bs:layout>
 
 </j:jelly>
+
