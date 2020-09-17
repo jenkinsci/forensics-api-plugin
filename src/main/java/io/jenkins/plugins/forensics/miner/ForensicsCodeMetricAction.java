@@ -15,8 +15,6 @@ import io.jenkins.plugins.echarts.AsyncTrendJobAction;
  * @author Giulia Del Bravo
  */
 public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuildAction> {
-    static final String FORENSICS_ID = "forensics";
-    static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
 
     /**
      * Creates a new instance of {@link ForensicsCodeMetricAction}.
@@ -42,16 +40,16 @@ public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuil
     @Override
     @CheckForNull
     public String getIconFileName() {
-        return SMALL_ICON;
+        return null;
     }
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title();
+        return null;
     }
 
     @Override
     public String getUrlName() {
-        return FORENSICS_ID;
+        return null;
     }
 }
