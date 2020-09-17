@@ -1,8 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import edu.hm.hafner.util.VisibleForTesting;
 
 import org.kohsuke.stapler.StaplerProxy;
+import hudson.model.Action;
 import hudson.model.Run;
 
 import io.jenkins.plugins.util.BuildAction;
@@ -54,6 +58,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
         numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
+    }
+
+    @Override
+    public Collection<? extends Action> getProjectActions() {
+        return Arrays.asList(new ForensicsJobAction(getOwner().getParent()),
+                new ForensicsCodeMetricAction(getOwner().getParent()));
     }
 
     @Override

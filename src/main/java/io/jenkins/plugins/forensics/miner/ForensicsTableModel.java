@@ -51,6 +51,8 @@ public class ForensicsTableModel extends TableModel {
         columns.add(new TableColumn(Messages.Table_Column_AddedAt(), "addedAt")
                 .setWidth(2)
                 .setHeaderClass(ColumnCss.DATE));
+        columns.add(new TableColumn(Messages.Table_Column_LOC(), "linesOfCode"));
+        columns.add(new TableColumn(Messages.Table_Column_Churn(), "churn"));
 
         return columns;
     }
@@ -64,7 +66,7 @@ public class ForensicsTableModel extends TableModel {
      * A table row that shows the source control statistics.
      */
     @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
-    public static class ForensicsRow  {
+    public static class ForensicsRow {
         private final FileStatistics fileStatistics;
 
         ForensicsRow(final FileStatistics fileStatistics) {
@@ -72,7 +74,7 @@ public class ForensicsTableModel extends TableModel {
         }
 
         public String getFileName() {
-            return fileStatistics.getFileName();
+            return "<a href=\"fileName." + fileStatistics.getFileName().hashCode() + "\">" + fileStatistics.getFileName() + "</a>";
         }
 
         public int getAuthorsSize() {
@@ -89,6 +91,14 @@ public class ForensicsTableModel extends TableModel {
 
         public int getAddedAt() {
             return fileStatistics.getCreationTime();
+        }
+
+        public int getLinesOfCode() {
+            return fileStatistics.getLinesOfCode();
+        }
+
+        public int getChurn() {
+            return fileStatistics.getChurn();
         }
     }
 }
