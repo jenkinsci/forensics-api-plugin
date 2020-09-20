@@ -140,9 +140,9 @@
   </build>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+    <connection>scm:git:git://github.com/jenkinsci/forensics-api-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/forensics-api-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
     <tag>${scmTag}</tag>
   </scm>
 
