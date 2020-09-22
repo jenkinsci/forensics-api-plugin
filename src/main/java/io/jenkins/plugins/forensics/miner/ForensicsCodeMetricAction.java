@@ -7,6 +7,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import hudson.model.Job;
 
 import io.jenkins.plugins.echarts.AsyncTrendJobAction;
+
 /**
  * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
  * (i.e. a {@link ForensicsBuildAction} with a {@link RepositoryStatistics} instance). This action also is responsible
