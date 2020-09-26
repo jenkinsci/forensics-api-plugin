@@ -232,6 +232,10 @@ public class FileStatistics implements Serializable {
         numberOfCommits++;
     }
 
+    public void resetLinesOfCode() {
+        this.linesOfCode = 0;
+    }
+
     /**
      * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
      * newest commit until the first commit has been reached.
