@@ -232,6 +232,9 @@ public class FileStatistics implements Serializable {
         numberOfCommits++;
     }
 
+    /**
+     * Sets the value of lines of code to 0. This is used if a file is moved.
+     */
     public void resetLinesOfCode() {
         this.linesOfCode = 0;
     }
