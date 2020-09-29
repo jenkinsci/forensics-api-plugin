@@ -63,10 +63,6 @@ public class FileStatistics implements Serializable {
         return fileName.toString();
     }
 
-    public int getChurn() {
-        return churn;
-    }
-
     /**
      * Called after de-serialization to retain backward compatibility.
      *
@@ -110,6 +106,7 @@ public class FileStatistics implements Serializable {
 
     /**
      * Returns all authors of this file.
+     *
      * @return all authors of this file
      */
     public Map<String, String> getAuthorOfCommit() {
@@ -118,7 +115,10 @@ public class FileStatistics implements Serializable {
 
     /**
      * Returns the author for this file for a specific commit.
-     * @param commitId the id of the commit
+     *
+     * @param commitId
+     *         the id of the commit
+     *
      * @return the author of this commit
      */
     public String getAuthor(final String commitId) {
@@ -127,6 +127,7 @@ public class FileStatistics implements Serializable {
 
     /**
      * Returns the number of authors for this file.
+     *
      * @return the number authors for this file.
      */
     public int getNumberOfAuthors() {
@@ -135,6 +136,7 @@ public class FileStatistics implements Serializable {
 
     /**
      * Returns the number of times this file was committed.
+     *
      * @return the number of commits for this file
      */
     public int getNumberOfCommits() {
@@ -143,6 +145,7 @@ public class FileStatistics implements Serializable {
 
     /**
      * Returns all commit ids for this file.
+     *
      * @return all commit ids for this file
      */
     public List<String> getCommits() {
@@ -178,6 +181,10 @@ public class FileStatistics implements Serializable {
         return linesOfCode;
     }
 
+    public int getChurn() {
+        return churn;
+    }
+
     /**
      * Returns all added lines to each commit.
      *
@@ -188,12 +195,15 @@ public class FileStatistics implements Serializable {
     }
 
     /**
-     * Returns the number of added lines to a specific commit id.
-     * @param commitId the commit id
-     * @return the number of added lines
+     * Returns the number of lines added in the specified commit.
+     *
+     * @param commitId
+     *         the commit ID
+     *
+     * @return the number of added lines, or 0 if the commit has not been recorded
      */
     public int getAddedLines(final String commitId) {
-        return addedLinesOfCommit.get(commitId);
+        return addedLinesOfCommit.getOrDefault(commitId, 0);
     }
 
     /**
@@ -206,12 +216,15 @@ public class FileStatistics implements Serializable {
     }
 
     /**
-     * Returns the number of deleted lines to a specific commit id.
-     * @param commitId the commit id
-     * @return the number of deleted lines
+     * Returns the number of lines deleted in the specified commit.
+     *
+     * @param commitId
+     *         the commit ID
+     *
+     * @return the number of deleted lines, or 0 if the commit has not been recorded
      */
     public int getDeletedLines(final String commitId) {
-        return deletedLinesOfCommit.get(commitId);
+        return deletedLinesOfCommit.getOrDefault(commitId, 0);
     }
 
     /**
@@ -233,13 +246,6 @@ public class FileStatistics implements Serializable {
     }
 
     /**
-     * Sets the value of lines of code to 0. This is used if a file is moved.
-     */
-    public void resetLinesOfCode() {
-        this.linesOfCode = 0;
-    }
-
-    /**
      * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
      * newest commit until the first commit has been reached.
      *
@@ -247,7 +253,7 @@ public class FileStatistics implements Serializable {
      *         the time of the commit (given as number of seconds since the standard base time known as "the epoch", *
      *         namely January 1, 1970, 00:00:00 GMT.).
      * @param author
-     *         author (or comitter) name
+     *         author (or committer) name
      * @param totalLinesOfCode
      *         total lines of code of this file
      * @param commitId
@@ -273,7 +279,13 @@ public class FileStatistics implements Serializable {
         deletedLinesOfCommit.put(commitId, removedLines);
         authorOfCommit.put(commitId, author);
         numberOfAuthors = (int) authorOfCommit.values().stream().distinct().count();
+    }
 
+    /**
+     * Sets the value of lines of code to 0. This is used if a file is moved.
+     */
+    public void resetLinesOfCode() {
+        this.linesOfCode = 0;
     }
 
     /**
