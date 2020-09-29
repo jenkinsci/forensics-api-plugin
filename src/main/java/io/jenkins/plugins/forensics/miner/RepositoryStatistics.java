@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -149,11 +147,7 @@ public class RepositoryStatistics implements Serializable {
      *         the additional statistics to add
      */
     public void addAll(final Collection<FileStatistics> additionalStatistics) {
-        statisticsPerFile.putAll(
-                additionalStatistics.stream()
-                        .collect(Collectors.toMap(FileStatistics::getFileName, Function.identity())));
-        calculateTotalLinesOfCode();
-        calculateTotalChurn();
+        additionalStatistics.forEach(this::add);
     }
 
     /**
@@ -166,14 +160,6 @@ public class RepositoryStatistics implements Serializable {
         addAll(additionalStatistics.getFileStatistics());
     }
 
-    private void calculateTotalLinesOfCode() {
-        statisticsPerFile.forEach((k, v) -> totalLinesOfCode += v.getLinesOfCode());
-    }
-
-    private void calculateTotalChurn() {
-        statisticsPerFile.forEach((k, v) -> totalChurn += v.getChurn());
-    }
-
     /**
      * Adds the additional file statistics instance.
      *
@@ -182,6 +168,8 @@ public class RepositoryStatistics implements Serializable {
      */
     public void add(final FileStatistics additionalStatistics) {
         statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
+        totalLinesOfCode += additionalStatistics.getLinesOfCode();
+        totalChurn += additionalStatistics.getChurn();
     }
 
     public int getTotalChurn() {
@@ -190,6 +178,14 @@ public class RepositoryStatistics implements Serializable {
 
     public int getTotalLinesOfCode() {
         return totalLinesOfCode;
+    }
+
+    public int getAddedLines() {
+        return 0;
+    }
+
+    public int getDeletedLines() {
+        return 0;
     }
 
     @Override
