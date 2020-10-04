@@ -54,9 +54,9 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     void shouldWriteReport() {
         RepositoryStatistics statistics = new RepositoryStatistics();
         FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        Commit first = new Commit("1", "name", ONE_DAY * 4).addLines(4);
-        Commit second = new Commit("2", "another", ONE_DAY * 3).addLines(4).deleteLines(3);
-        Commit third = new Commit("3", "another", ONE_DAY * 2).deleteLines(2);
+        Commit first = new Commit("1", "name", ONE_DAY * 2).addLines(4).setNewPath(FILE);
+        Commit second = new Commit("2", "another", ONE_DAY * 3).addLines(4).deleteLines(3).setNewPath(FILE);
+        Commit third = new Commit("3", "another", ONE_DAY * 4).deleteLines(2).setNewPath(FILE);
         fileStatistics.inspectCommit(first);
         fileStatistics.inspectCommit(second);
         fileStatistics.inspectCommit(third);

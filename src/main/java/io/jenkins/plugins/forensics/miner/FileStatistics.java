@@ -3,7 +3,6 @@ package io.jenkins.plugins.forensics.miner;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -31,7 +30,7 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
 public class FileStatistics implements Serializable {
     private static final long serialVersionUID = 8L; // release 0.8.x
 
-    private final TreeString fileName;
+    private TreeString fileName;
 
     private int numberOfAuthors;
     private int numberOfCommits;
@@ -177,13 +176,14 @@ public class FileStatistics implements Serializable {
     }
 
     private void updateProperties() {
-        Collections.sort(commits);
-        lastModificationTime = commits.get(0).getTime();
-        creationTime = commits.get(commits.size() - 1).getTime();
+        int lastCommit = commits.size() - 1;
+        lastModificationTime = commits.get(lastCommit).getTime();
+        creationTime = commits.get(0).getTime();
         numberOfCommits = commits.size();
-        addedLines = sum(Commit::getTotalAddedLines);
-        deletedLines = sum(Commit::getTotalDeletedLines);
-        numberOfAuthors = (int) commits.stream().map(Commit::getAuthor).distinct().count();
+        addedLines = Commit.countAddedLines(commits);
+        deletedLines = Commit.countDeletedLines(commits);
+        numberOfAuthors = Commit.countAuthors(commits);
+        fileName = TreeString.valueOf(commits.get(lastCommit).getNewPath());
     }
 
     private int sum(final ToIntFunction<Commit> property) {

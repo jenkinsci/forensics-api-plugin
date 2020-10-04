@@ -1,10 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.ToIntFunction;
 
-import org.apache.commons.lang3.StringUtils;
-
+import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.Generated;
 
 /**
@@ -16,14 +18,58 @@ import edu.hm.hafner.util.Generated;
  * @author Ullrich Hafner
  */
 public class Commit implements Comparable<Commit> {
+    /** Indicates that a file name has not been set or a file has been deleted. */
+    static final String NO_FILE_NAME = "/dev/null";
+
+    public static int countMoves(final Collection<? extends Commit> commits) {
+        return (int) commits.stream().filter(Commit::isMove).count();
+    }
+
+    public static int countDeletes(final Collection<? extends Commit> commits) {
+        return (int) commits.stream().filter(Commit::isDelete).count();
+    }
+
+    public static int countChanges(final Collection<? extends Commit> commits) {
+        return (int) commits.stream().filter(commit -> !commit.hasOldPath()).count();
+    }
+
+    public static int countAddedLines(final Collection<? extends Commit> commits) {
+        return count(commits, Commit::getTotalAddedLines);
+    }
+
+    public static int countDeletedLines(final Collection<? extends Commit> commits) {
+        return count(commits, Commit::getTotalDeletedLines);
+    }
+
+    public static int countAuthors(final Collection<? extends Commit> commits) {
+        return (int) commits.stream().map(Commit::getAuthor).distinct().count();
+    }
+
+    public static int countCommits(final Collection<? extends Commit> commits) {
+        return (int) commits.stream().map(Commit::getId).distinct().count();
+    }
+
+    private static int count(final Collection<? extends Commit> commits, final ToIntFunction<Commit> property) {
+        return commits.stream().mapToInt(property).sum();
+    }
+
+    public static void logCommits(final List<Commit> commits, final FilteredLog logger) {
+        logger.logInfo("-> %d files changed", Commit.countChanges(commits));
+        logger.logInfo("-> %d files moved", Commit.countMoves(commits));
+        logger.logInfo("-> %d files deleted", Commit.countDeletes(commits));
+        logger.logInfo("-> %d lines added", Commit.countAddedLines(commits));
+        logger.logInfo("-> %d lines added", Commit.countDeletedLines(commits));
+    }
+
     private final String id;
+
     private final String author;
     private final int time;
-
     private int totalAddedLines = 0;
     private int totalDeletedLines = 0;
-    private boolean deleted = false;
-    private String oldPath = StringUtils.EMPTY;
+
+    private String oldPath = NO_FILE_NAME;
+    private String newPath = NO_FILE_NAME;
 
     /**
      * Creates a new {@link Commit}.
@@ -78,13 +124,36 @@ public class Commit implements Comparable<Commit> {
         return oldPath;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public boolean isDelete() {
+        return hasOldPath() && !hasNewPath();
     }
 
-    @Override
-    public int compareTo(final Commit o) {
-        return o.time - time;
+    public boolean isMove() {
+        return hasOldPath() && hasNewPath();
+    }
+
+    /**
+     * Returns whether the {@code oldPath} for this commit has been set. This indicates that the commit contains a moved
+     * or removed file.
+     *
+     * @return {@code true} if the {@code oldPath} has been set, {@code false} otherwise
+     */
+    boolean hasOldPath() {
+        return !NO_FILE_NAME.equals(getOldPath());
+    }
+
+    public String getNewPath() {
+        return newPath;
+    }
+
+    /**
+     * Returns whether the {@code newPath} for this commit has been set. If this path is not set, then this commit
+     * contains a removed file.
+     *
+     * @return {@code true} if the {@code newPath} has been set, {@code false} otherwise
+     */
+    private boolean hasNewPath() {
+        return !NO_FILE_NAME.equals(getNewPath());
     }
 
     /**
@@ -116,19 +185,40 @@ public class Commit implements Comparable<Commit> {
     }
 
     /**
-     * Sets the old path of a renamed file.
+     * Sets the old path of a moved or deleted file. If a file has been moved then the {@code newPath} contains the new
+     * file name while the {@code oldPath} contains the old file name. It a file has been deleted, then the {@code
+     * newPath} should be set to {@link #NO_FILE_NAME} while the {@code oldPath} contains the name of the deleted file.
      *
-     * @param oldPath the old path
+     * @param oldPath
+     *         the path of the modified path
+     *
+     * @return this
      */
-    public void setOldPath(final String oldPath) {
+    public Commit setOldPath(final String oldPath) {
         this.oldPath = oldPath;
+
+        return this;
     }
 
     /**
-     * Mark the commit as DELETE, e.g. a file has been deleted.
+     * Sets the path of the modified file. If a file has been moved then the {@code newPath} contains the new file name
+     * while the {@code oldPath} contains the old file name. It a file has been deleted, then the {@code newPath} should
+     * be set to {@link #NO_FILE_NAME} while the {@code oldPath} contains the name of the deleted file.
+     *
+     * @param newPath
+     *         the path of the modified path
+     *
+     * @return this
      */
-    public void markAsDeleted() {
-        deleted = true;
+    public Commit setNewPath(final String newPath) {
+        this.newPath = newPath;
+
+        return this;
+    }
+
+    @Override
+    public int compareTo(final Commit o) {
+        return o.time - time;
     }
 
     @Override
@@ -141,14 +231,16 @@ public class Commit implements Comparable<Commit> {
             return false;
         }
         Commit commit = (Commit) o;
-        return time == commit.time && id.equals(commit.id) && author.equals(commit.author)
-                && totalAddedLines == commit.totalAddedLines && totalDeletedLines == commit.totalDeletedLines;
+        return time == commit.time
+                && totalAddedLines == commit.totalAddedLines && totalDeletedLines == commit.totalDeletedLines
+                && id.equals(commit.id) && author.equals(commit.author)
+                && oldPath.equals(commit.oldPath) && newPath.equals(commit.newPath);
     }
 
     @Override
     @Generated
     public int hashCode() {
-        return Objects.hash(id, author, time, totalAddedLines, totalDeletedLines);
+        return Objects.hash(id, author, time, totalAddedLines, totalDeletedLines, oldPath, newPath);
     }
 
     @Override
@@ -160,7 +252,8 @@ public class Commit implements Comparable<Commit> {
                 .add("time=" + time)
                 .add("totalAddedLines=" + totalAddedLines)
                 .add("totalDeletedLines=" + totalDeletedLines)
+                .add("oldPath='" + oldPath + "'")
+                .add("newPath='" + newPath + "'")
                 .toString();
     }
-
 }

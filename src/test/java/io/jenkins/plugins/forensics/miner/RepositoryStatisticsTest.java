@@ -60,7 +60,7 @@ class RepositoryStatisticsTest {
 
     private FileStatistics createFileStatistics() {
         FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        Commit commit = new Commit("1", "one", ONE_DAY * 9).addLines(2).deleteLines(1);
+        Commit commit = new Commit("1", "one", ONE_DAY * 9).addLines(2).deleteLines(1).setNewPath(FILE);
         fileStatistics.inspectCommit(commit);
         return fileStatistics;
     }

@@ -28,43 +28,43 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(0);
 
-        Commit first = new Commit("1", "one", ONE_DAY * 9).addLines(1);
+        Commit first = new Commit("1", "one", ONE_DAY * 2).addLines(1);
         statistics.inspectCommit(first);
         assertThat(statistics).hasNumberOfCommits(1)
                 .hasCommits(first)
                 .hasNumberOfAuthors(1)
-                .hasLastModificationTime(ONE_DAY * 9)
-                .hasCreationTime(ONE_DAY * 9)
+                .hasLastModificationTime(ONE_DAY * 2)
+                .hasCreationTime(ONE_DAY * 2)
                 .hasLinesOfCode(1)
                 .hasAbsoluteChurn(1);
 
-        Commit second = new Commit("2", "one", ONE_DAY * 8).addLines(2);
+        Commit second = new Commit("2", "one", ONE_DAY * 3).addLines(2);
         statistics.inspectCommit(second);
         assertThat(statistics).hasNumberOfCommits(2)
                 .hasCommits(first, second)
                 .hasNumberOfAuthors(1)
-                .hasLastModificationTime(ONE_DAY * 9)
-                .hasCreationTime(ONE_DAY * 8)
+                .hasLastModificationTime(ONE_DAY * 3)
+                .hasCreationTime(ONE_DAY * 2)
                 .hasLinesOfCode(3)
                 .hasAbsoluteChurn(3);
 
-        Commit third = new Commit("3", "two", ONE_DAY * 7).deleteLines(1);
+        Commit third = new Commit("3", "two", ONE_DAY * 4).deleteLines(1);
         statistics.inspectCommit(third);
         assertThat(statistics).hasNumberOfCommits(3)
                 .hasCommits(first, second, third)
                 .hasNumberOfAuthors(2)
-                .hasLastModificationTime(ONE_DAY * 9)
-                .hasCreationTime(ONE_DAY * 7)
+                .hasLastModificationTime(ONE_DAY * 4)
+                .hasCreationTime(ONE_DAY * 2)
                 .hasLinesOfCode(2)
                 .hasAbsoluteChurn(4);
 
-        Commit fourth = new Commit("4", "three", ONE_DAY * 6).deleteLines(2);
+        Commit fourth = new Commit("4", "three", ONE_DAY * 5).deleteLines(2);
         statistics.inspectCommit(fourth);
         assertThat(statistics).hasNumberOfCommits(4)
                 .hasCommits(first, second, third, fourth)
                 .hasNumberOfAuthors(3)
-                .hasLastModificationTime(ONE_DAY * 9)
-                .hasCreationTime(ONE_DAY * 6)
+                .hasLastModificationTime(ONE_DAY * 5)
+                .hasCreationTime(ONE_DAY * 2)
                 .hasLinesOfCode(0).hasAbsoluteChurn(6);
     }
 
