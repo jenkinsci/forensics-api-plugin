@@ -30,9 +30,7 @@ class RepositoryStatisticsTest {
                 .hasNoFileStatistics()
                 .hasLatestCommitId(StringUtils.EMPTY)
                 .hasTotalLinesOfCode(0)
-                .hasTotalChurn(0)
-                .hasAddedLines(0)
-                .hasDeletedLines(0);
+                .hasTotalChurn(0);
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> empty.get(NOTHING));
@@ -55,16 +53,15 @@ class RepositoryStatisticsTest {
         assertThat(statistics).isNotEmpty()
                 .hasFiles(FILE)
                 .hasFileStatistics(fileStatistics)
-                .hasTotalLinesOfCode(2)
-                .hasTotalChurn(4);
-//                .hasAddedLines(3)
-//                .hasDeletedLines(1)
+                .hasTotalLinesOfCode(1)
+                .hasTotalChurn(3);
         assertThat(statistics.get(FILE)).isEqualTo(fileStatistics);
     }
 
     private FileStatistics createFileStatistics() {
         FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        fileStatistics.inspectCommit(ONE_DAY * 9, "one", 0, "1", 3, 1);
+        Commit commit = new Commit("1", "one", ONE_DAY * 9).addLines(2).deleteLines(1);
+        fileStatistics.inspectCommit(commit);
         return fileStatistics;
     }
 }

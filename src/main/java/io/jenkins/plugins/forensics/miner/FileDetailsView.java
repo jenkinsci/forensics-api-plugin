@@ -29,9 +29,9 @@ import io.jenkins.plugins.echarts.AsyncTrendChart;
  * @author Giulia Del Bravo
  */
 public class FileDetailsView extends DefaultAsyncTableContentProvider implements ModelObject, AsyncTrendChart {
+    private static final String FILE_NAME_PROPERTY = "fileName.";
 
     private final String fileHash;
-    private static final String FILE_NAME_PROPERTY = "fileName.";
     private final RepositoryStatistics repositoryStatistics;
     private final FileStatistics fileStatistics;
 
@@ -90,7 +90,6 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     }
 
     private class FileTableModel extends TableModel {
-
         @Override
         public String getId() {
             return "forensics-details";
@@ -113,7 +112,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             return fileStatistics
                     .getCommits()
                     .stream()
-                    .map(commitId -> new ForensicsRow(fileStatistics, commitId))
+                    .map(ForensicsRow::new)
                     .collect(Collectors.toList());
         }
     }
@@ -123,29 +122,26 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      */
     @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
     public static class ForensicsRow {
-        private final FileStatistics fileStatistics;
-        private final String commitId;
+        private final Commit commit;
 
-        ForensicsRow(final FileStatistics fileStatistics, final String commitId) {
-
-            this.fileStatistics = fileStatistics;
-            this.commitId = commitId;
+        ForensicsRow(final Commit commit) {
+            this.commit = commit;
         }
 
         public int getAddedLines() {
-            return fileStatistics.getAddedLines(commitId);
+            return commit.getTotalAddedLines();
         }
 
         public int getDeletedLines() {
-            return fileStatistics.getDeletedLines(commitId);
+            return commit.getTotalDeletedLines();
         }
 
         public String getCommitId() {
-            return commitId;
+            return commit.getId();
         }
 
         public String getAuthor() {
-            return fileStatistics.getAuthor(commitId);
+            return commit.getAuthor();
         }
     }
 
@@ -172,16 +168,16 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         private LinesDataSet createDataSetPerCommit(final FileStatistics current) {
             LinesDataSet model = new LinesDataSet();
-            for (String commitId : current.getCommits()) {
-                model.add(commitId, computeSeries(current, commitId));
+            for (Commit commit : current.getCommits()) {
+                model.add(commit.getId(), computeSeries(commit));
             }
             return model;
         }
 
-        private Map<String, Integer> computeSeries(final FileStatistics fileStatistics, final String commitId) {
+        private Map<String, Integer> computeSeries(final Commit commit) {
             Map<String, Integer> commitChanges = new HashMap<>();
-            commitChanges.put(ADDED_KEY, fileStatistics.getAddedLinesOfCommit().get(commitId));
-            commitChanges.put(DELETED_KEY, fileStatistics.getDeletedLinesOfCommit().get(commitId));
+            commitChanges.put(ADDED_KEY, commit.getTotalAddedLines());
+            commitChanges.put(DELETED_KEY, commit.getTotalDeletedLines());
             return commitChanges;
         }
     }

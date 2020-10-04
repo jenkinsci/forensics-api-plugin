@@ -25,51 +25,47 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
                 .hasNumberOfAuthors(0)
                 .hasLastModificationTime(0)
                 .hasCreationTime(0)
-                .hasLinesOfCode(0);
+                .hasLinesOfCode(0)
+                .hasAbsoluteChurn(0);
 
-        statistics.inspectCommit(ONE_DAY * 9, "one", 0, "1", 1, 0);
+        Commit first = new Commit("1", "one", ONE_DAY * 9).addLines(1);
+        statistics.inspectCommit(first);
         assertThat(statistics).hasNumberOfCommits(1)
-                .hasCommits("1")
+                .hasCommits(first)
                 .hasNumberOfAuthors(1)
                 .hasLastModificationTime(ONE_DAY * 9)
                 .hasCreationTime(ONE_DAY * 9)
-                .hasLinesOfCode(1);
-        assertThat(statistics.getAddedLines("1")).isOne();
-        assertThat(statistics.getDeletedLines("1")).isZero();
-        assertThat(statistics.getAuthor("1")).isEqualTo("one");
+                .hasLinesOfCode(1)
+                .hasAbsoluteChurn(1);
 
-        statistics.inspectCommit(ONE_DAY * 8, "one", 0, "2", 2, 0);
+        Commit second = new Commit("2", "one", ONE_DAY * 8).addLines(2);
+        statistics.inspectCommit(second);
         assertThat(statistics).hasNumberOfCommits(2)
-                .hasCommits("1", "2")
+                .hasCommits(first, second)
                 .hasNumberOfAuthors(1)
                 .hasLastModificationTime(ONE_DAY * 9)
                 .hasCreationTime(ONE_DAY * 8)
-                .hasLinesOfCode(3);
-        assertThat(statistics.getAddedLines("2")).isEqualTo(2);
-        assertThat(statistics.getDeletedLines("2")).isZero();
-        assertThat(statistics.getAuthor("2")).isEqualTo("one");
+                .hasLinesOfCode(3)
+                .hasAbsoluteChurn(3);
 
-        statistics.inspectCommit(ONE_DAY * 7, "two", 0, "3", 0, 1);
+        Commit third = new Commit("3", "two", ONE_DAY * 7).deleteLines(1);
+        statistics.inspectCommit(third);
         assertThat(statistics).hasNumberOfCommits(3)
-                .hasCommits("1", "2", "3")
+                .hasCommits(first, second, third)
                 .hasNumberOfAuthors(2)
                 .hasLastModificationTime(ONE_DAY * 9)
                 .hasCreationTime(ONE_DAY * 7)
-                .hasLinesOfCode(2);
-        assertThat(statistics.getAddedLines("3")).isZero();
-        assertThat(statistics.getDeletedLines("3")).isOne();
-        assertThat(statistics.getAuthor("3")).isEqualTo("two");
+                .hasLinesOfCode(2)
+                .hasAbsoluteChurn(4);
 
-        statistics.inspectCommit(ONE_DAY * 7, "three", 0, "4", 0, 2);
+        Commit fourth = new Commit("4", "three", ONE_DAY * 6).deleteLines(2);
+        statistics.inspectCommit(fourth);
         assertThat(statistics).hasNumberOfCommits(4)
-                .hasCommits("1", "2", "3", "4")
+                .hasCommits(first, second, third, fourth)
                 .hasNumberOfAuthors(3)
                 .hasLastModificationTime(ONE_DAY * 9)
-                .hasCreationTime(ONE_DAY * 7)
-                .hasLinesOfCode(0);
-        assertThat(statistics.getAddedLines("4")).isZero();
-        assertThat(statistics.getDeletedLines("4")).isEqualTo(2);
-        assertThat(statistics.getAuthor("4")).isEqualTo("three");
+                .hasCreationTime(ONE_DAY * 6)
+                .hasLinesOfCode(0).hasAbsoluteChurn(6);
     }
 
     @Test
@@ -77,15 +73,6 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
         assertThat(createStatistics("C:\\path\\to\\file.txt")).hasFileName("C:/path/to/file.txt");
         assertThat(createStatistics("C:\\path\\to/file.txt")).hasFileName("C:/path/to/file.txt");
         assertThat(createStatistics("/path/to/file.txt")).hasFileName("/path/to/file.txt");
-    }
-
-    @Test
-    void shouldIgnoreMissingCommits() {
-        FileStatistics statistics = createStatistics(FILE);
-
-        assertThat(statistics.getAddedLines("does-not-exist")).isZero();
-        assertThat(statistics.getDeletedLines("does-not-exist")).isZero();
-        assertThat(statistics.getLinesOfCode()).isZero();
     }
 
     @Override

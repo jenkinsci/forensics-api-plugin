@@ -54,9 +54,12 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     void shouldWriteReport() {
         RepositoryStatistics statistics = new RepositoryStatistics();
         FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        fileStatistics.inspectCommit(ONE_DAY * 4, "name", 0, "1", 0, 0);
-        fileStatistics.inspectCommit(ONE_DAY * 3, "another", 0, "2", 0, 0);
-        fileStatistics.inspectCommit(ONE_DAY * 2, "another", 0, "3", 0, 0);
+        Commit first = new Commit("1", "name", ONE_DAY * 4).addLines(4);
+        Commit second = new Commit("2", "another", ONE_DAY * 3).addLines(4).deleteLines(3);
+        Commit third = new Commit("3", "another", ONE_DAY * 2).deleteLines(2);
+        fileStatistics.inspectCommit(first);
+        fileStatistics.inspectCommit(second);
+        fileStatistics.inspectCommit(third);
         statistics.add(fileStatistics);
 
         RepositoryStatisticsXmlStream stream = new RepositoryStatisticsXmlStream();
@@ -67,10 +70,13 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
 
         assertThat(restored).hasFiles(FILE);
         FileStatistics restoredFile = restored.get(FILE);
-        assertThat(restoredFile).hasNumberOfAuthors(2);
-        assertThat(restoredFile).hasNumberOfCommits(3);
-        assertThat(restoredFile).hasCreationTime(ONE_DAY * 2);
-        assertThat(restoredFile).hasLastModificationTime(ONE_DAY * 4);
+        assertThat(restoredFile)
+                .hasNumberOfAuthors(2)
+                .hasNumberOfCommits(3)
+                .hasLinesOfCode(8 - 5)
+                .hasAbsoluteChurn(8 + 5)
+                .hasCreationTime(ONE_DAY * 2)
+                .hasLastModificationTime(ONE_DAY * 4);
     }
 
     private Path createTempFile() {

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.ToIntFunction;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -73,6 +74,15 @@ public class RepositoryStatistics implements Serializable {
      */
     public String getLatestCommitId() {
         return latestCommitId;
+    }
+
+    /**
+     * Returns whether the latest commit ID has been set.
+     *
+     * @return {@code true} if the latest commit ID has been set, {@code false} otherwise
+     */
+    public boolean hasLatestCommitId() {
+        return StringUtils.isNotBlank(latestCommitId);
     }
 
     /**
@@ -167,9 +177,18 @@ public class RepositoryStatistics implements Serializable {
      *         the additional statistics to add
      */
     public void add(final FileStatistics additionalStatistics) {
-        statisticsPerFile.put(additionalStatistics.getFileName(), additionalStatistics);
-        totalLinesOfCode += additionalStatistics.getLinesOfCode();
-        totalChurn += additionalStatistics.getChurn();
+        statisticsPerFile.merge(additionalStatistics.getFileName(), additionalStatistics, this::merge);
+        totalLinesOfCode = sum(FileStatistics::getLinesOfCode);
+        totalChurn = sum(FileStatistics::getAbsoluteChurn);
+    }
+
+    private int sum(final ToIntFunction<FileStatistics> property) {
+        return statisticsPerFile.values().stream().mapToInt(property).sum();
+    }
+
+    private FileStatistics merge(final FileStatistics existing, final FileStatistics additional) {
+        existing.inspectCommits(additional.getCommits());
+        return existing;
     }
 
     public int getTotalChurn() {
@@ -178,14 +197,6 @@ public class RepositoryStatistics implements Serializable {
 
     public int getTotalLinesOfCode() {
         return totalLinesOfCode;
-    }
-
-    public int getAddedLines() {
-        return 0;
-    }
-
-    public int getDeletedLines() {
-        return 0;
     }
 
     @Override
