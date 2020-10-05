@@ -38,15 +38,16 @@ class RepositoryStatisticsTest {
 
     @Test
     void shouldAddStatisticsFor1File() {
-        FileStatistics fileStatistics = createFileStatistics();
+        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        repositoryStatistics.add(createFileStatistics());
+        verifyTotalsStatistics(repositoryStatistics, createFileStatistics());
+    }
 
-        RepositoryStatistics statisticsOfAddAll = new RepositoryStatistics();
-        statisticsOfAddAll.addAll(Collections.singleton(fileStatistics));
-        verifyTotalsStatistics(statisticsOfAddAll, fileStatistics);
-
-        RepositoryStatistics statisticsOfSingleAdd = new RepositoryStatistics();
-        statisticsOfSingleAdd.add(fileStatistics);
-        verifyTotalsStatistics(statisticsOfSingleAdd, fileStatistics);
+    @Test
+    void shouldAddAllStatisticsFor1File() {
+        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        repositoryStatistics.addAll(Collections.singleton(createFileStatistics()));
+        verifyTotalsStatistics(repositoryStatistics, createFileStatistics());
     }
 
     private void verifyTotalsStatistics(final RepositoryStatistics statistics, final FileStatistics fileStatistics) {
@@ -63,5 +64,19 @@ class RepositoryStatisticsTest {
         Commit commit = new Commit("1", "one", ONE_DAY * 9).addLines(2).deleteLines(1).setNewPath(FILE);
         fileStatistics.inspectCommit(commit);
         return fileStatistics;
+    }
+
+    @Test
+    void shouldAddStatisticsFor1Commit() {
+        RepositoryStatistics statistics = new RepositoryStatistics();
+        statistics.addAll(Collections.singletonList(createCommit()));
+        assertThat(statistics).isNotEmpty()
+                .hasFiles(FILE)
+                .hasTotalLinesOfCode(1)
+                .hasTotalChurn(5);
+    }
+
+    private Commit createCommit() {
+        return new Commit("SHA", "author", 1).deleteLines(2).addLines(3).setNewPath(FILE);
     }
 }

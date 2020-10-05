@@ -23,11 +23,12 @@ import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
  * @author Ullrich Hafner
  */
 public class RepositoryStatistics implements Serializable {
-    private static final long serialVersionUID = 8L; // release 0.8
+    private static final long serialVersionUID = 8L; // release 0.8.0
 
     private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
 
-    private String latestCommitId;
+    private String latestCommitId; // @since 0.8.0
+    private CommitStatistics statistics = new CommitStatistics();
     private int totalLinesOfCode;
     private int totalChurn;
 
@@ -159,7 +160,6 @@ public class RepositoryStatistics implements Serializable {
      * @param commits
      *         the additional commits
      */
-    // TODO add some tests
     public void addAll(final List<Commit> commits) {
         FileStatisticsBuilder builder = new FileStatisticsBuilder();
         for (Commit commit : commits) {
@@ -181,6 +181,8 @@ public class RepositoryStatistics implements Serializable {
                 statisticsPerFile.get(commit.getNewPath()).inspectCommit(commit);
             }
         }
+        statistics = new CommitStatistics(commits);
+        updateTotalLoc();
     }
 
     /**
@@ -211,6 +213,10 @@ public class RepositoryStatistics implements Serializable {
      */
     public void add(final FileStatistics additionalStatistics) {
         statisticsPerFile.merge(additionalStatistics.getFileName(), additionalStatistics, this::merge);
+        updateTotalLoc();
+    }
+
+    private void updateTotalLoc() {
         totalLinesOfCode = sum(FileStatistics::getLinesOfCode);
         totalChurn = sum(FileStatistics::getAbsoluteChurn);
     }
@@ -230,6 +236,10 @@ public class RepositoryStatistics implements Serializable {
 
     public int getTotalLinesOfCode() {
         return totalLinesOfCode;
+    }
+
+    public CommitStatistics getLatestStatistics() {
+        return statistics;
     }
 
     @Override

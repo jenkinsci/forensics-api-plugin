@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import edu.hm.hafner.util.Generated;
 import edu.hm.hafner.util.PathUtil;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
@@ -33,14 +32,14 @@ public class FileStatistics implements Serializable {
 
     private TreeString fileName;
 
-    private int numberOfAuthors;
-    private int numberOfCommits;
     private int creationTime;
     private int lastModificationTime;
-    private int addedLines = 0;
-    private int deletedLines = 0;
 
-    private List<Commit> commits = new ArrayList<>();
+    private transient int numberOfAuthors; // unused starting from 0.8.x
+    private transient int numberOfCommits; // unused starting from 0.8.x
+
+    private CommitStatistics statistics = new CommitStatistics(); // since 0.8.0
+    private List<Commit> commits = new ArrayList<>(); // since 0.8.0
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -61,10 +60,12 @@ public class FileStatistics implements Serializable {
      *
      * @return this
      */
+    @SuppressWarnings("deprecation")
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (commits == null) {
             commits = new ArrayList<>(); // restore an empty list for release < 0.8.x
+            statistics = new CommitStatistics(numberOfCommits, numberOfAuthors);
         }
 
         return this;
@@ -85,7 +86,7 @@ public class FileStatistics implements Serializable {
      * @return the number authors for this file.
      */
     public int getNumberOfAuthors() {
-        return numberOfAuthors;
+        return statistics.getAuthorCount();
     }
 
     /**
@@ -94,7 +95,7 @@ public class FileStatistics implements Serializable {
      * @return the number of commits for this file
      */
     public int getNumberOfCommits() {
-        return numberOfCommits;
+        return statistics.getCommitCount();
     }
 
     /**
@@ -123,7 +124,7 @@ public class FileStatistics implements Serializable {
      * @return the total lines of code.
      */
     public int getLinesOfCode() {
-        return addedLines - deletedLines;
+        return statistics.getLinesOfCode();
     }
 
     /**
@@ -132,7 +133,7 @@ public class FileStatistics implements Serializable {
      * @return absolute churn
      */
     public int getAbsoluteChurn() {
-        return addedLines + deletedLines;
+        return statistics.getAbsoluteChurn();
     }
 
     /**
@@ -182,15 +183,11 @@ public class FileStatistics implements Serializable {
         int lastCommit = commits.size() - 1;
         lastModificationTime = commits.get(lastCommit).getTime();
         creationTime = commits.get(0).getTime();
-        numberOfCommits = commits.size();
-        addedLines = Commit.countAddedLines(commits);
-        deletedLines = Commit.countDeletedLines(commits);
-        numberOfAuthors = Commit.countAuthors(commits);
+        statistics = new CommitStatistics(commits);
         fileName = TreeString.valueOf(commits.get(lastCommit).getNewPath());
     }
 
     @Override
-    @Generated
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -199,34 +196,23 @@ public class FileStatistics implements Serializable {
             return false;
         }
         FileStatistics that = (FileStatistics) o;
-        return numberOfAuthors == that.numberOfAuthors
-                && numberOfCommits == that.numberOfCommits
-                && creationTime == that.creationTime
-                && lastModificationTime == that.lastModificationTime
-                && addedLines == that.addedLines
-                && deletedLines == that.deletedLines
-                && Objects.equals(fileName, that.fileName)
+        return creationTime == that.creationTime && lastModificationTime == that.lastModificationTime
+                && Objects.equals(fileName, that.fileName) && Objects.equals(statistics, that.statistics)
                 && Objects.equals(commits, that.commits);
     }
 
     @Override
-    @Generated
     public int hashCode() {
-        return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, addedLines,
-                deletedLines, commits);
+        return Objects.hash(fileName, creationTime, lastModificationTime, statistics, commits);
     }
 
     @Override
-    @Generated
     public String toString() {
         return new StringJoiner(", ", FileStatistics.class.getSimpleName() + "[", "]")
                 .add("fileName=" + fileName)
-                .add("numberOfAuthors=" + numberOfAuthors)
-                .add("numberOfCommits=" + numberOfCommits)
                 .add("creationTime=" + creationTime)
                 .add("lastModificationTime=" + lastModificationTime)
-                .add("addedLines=" + addedLines)
-                .add("deletedLines=" + deletedLines)
+                .add("statistics=" + statistics)
                 .toString();
     }
 
