@@ -1,12 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.SerializableTest;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -15,7 +15,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-class CommitTest {
+class CommitTest extends SerializableTest<Commit> {
     private static final String ID = "ID";
     private static final String AUTHOR = "author";
     private static final int COMMITTED_AT = 1;
@@ -85,18 +85,6 @@ class CommitTest {
                 .hasOldPath("old")
                 .isNotMove()
                 .isDelete();
-    }
-
-    @Test
-    void shouldSortByCommitTimeDescending() {
-        Commit first = new Commit(ID, AUTHOR, 0);
-        Commit second = new Commit(ID, AUTHOR, 1);
-        Commit third = new Commit(ID, AUTHOR, 2);
-
-        Commit[] commits = {first, second, third};
-        Arrays.sort(commits);
-
-        assertThat(commits).containsExactly(third, second, first);
     }
 
     @Test
@@ -199,5 +187,10 @@ class CommitTest {
         FilteredLog log = new FilteredLog("Error");
         Commit.logCommits(commits, log);
         return log;
+    }
+
+    @Override
+    protected Commit createSerializable() {
+        return new Commit(ID, AUTHOR, COMMITTED_AT).addLines(5).deleteLines(8).setNewPath("file.txt");
     }
 }

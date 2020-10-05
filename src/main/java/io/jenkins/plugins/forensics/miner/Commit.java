@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +19,9 @@ import edu.hm.hafner.util.Generated;
  *
  * @author Ullrich Hafner
  */
-public class Commit implements Comparable<Commit> {
+public class Commit implements Serializable {
+    private static final long serialVersionUID = 1L; // since 0.8.0
+
     /** Indicates that a file name has not been set or a file has been deleted. */
     static final String NO_FILE_NAME = "/dev/null";
 
@@ -291,11 +294,6 @@ public class Commit implements Comparable<Commit> {
         this.newPath = newPath;
 
         return this;
-    }
-
-    @Override
-    public int compareTo(final Commit o) {
-        return o.time - time;
     }
 
     @Override
