@@ -153,6 +153,13 @@ public class RepositoryStatistics implements Serializable {
         throw new NoSuchElementException(String.format("No information for file %s stored", fileName));
     }
 
+    /**
+     * Adds and inspects the specified commits.
+     *
+     * @param commits
+     *         the additional commits
+     */
+    // TODO add some tests
     public void addAll(final List<Commit> commits) {
         FileStatisticsBuilder builder = new FileStatisticsBuilder();
         for (Commit commit : commits) {
@@ -161,8 +168,13 @@ public class RepositoryStatistics implements Serializable {
             }
             else if (commit.isMove()) {
                 FileStatistics existing = statisticsPerFile.remove(commit.getOldPath());
-                statisticsPerFile.put(commit.getNewPath(), existing);
-                existing.inspectCommit(commit);
+                if (existing == null) {
+                    statisticsPerFile.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
+                }
+                else {
+                    statisticsPerFile.put(commit.getNewPath(), existing);
+                }
+                statisticsPerFile.get(commit.getNewPath()).inspectCommit(commit);
             }
             else {
                 statisticsPerFile.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));

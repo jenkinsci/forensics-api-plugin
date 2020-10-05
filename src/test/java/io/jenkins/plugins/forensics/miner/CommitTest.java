@@ -1,8 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import edu.hm.hafner.util.FilteredLog;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -93,5 +97,107 @@ class CommitTest {
         Arrays.sort(commits);
 
         assertThat(commits).containsExactly(third, second, first);
+    }
+
+    @Test
+    @SuppressWarnings("checkstyle:JavaNCSS")
+    void shouldCountCorrectly() {
+        List<Commit> commits = new ArrayList<>();
+
+        assertThat(Commit.countAddedLines(commits)).isZero();
+        assertThat(Commit.countDeletedLines(commits)).isZero();
+        assertThat(Commit.countAuthors(commits)).isZero();
+        assertThat(Commit.countChanges(commits)).isZero();
+        assertThat(Commit.countDeletes(commits)).isZero();
+        assertThat(Commit.countMoves(commits)).isZero();
+        assertThat(Commit.countCommits(commits)).isZero();
+
+        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
+                "-> 0 commits analyzed",
+                "-> 0 lines added",
+                "-> 0 lines added");
+
+        Commit first = new Commit("1", AUTHOR, 0);
+        first.addLines(1).deleteLines(2);
+        commits.add(first);
+
+        assertThat(Commit.countAddedLines(commits)).isEqualTo(1);
+        assertThat(Commit.countDeletedLines(commits)).isEqualTo(2);
+        assertThat(Commit.countAuthors(commits)).isOne();
+        assertThat(Commit.countChanges(commits)).isOne();
+        assertThat(Commit.countDeletes(commits)).isZero();
+        assertThat(Commit.countMoves(commits)).isZero();
+        assertThat(Commit.countCommits(commits)).isOne();
+
+        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
+                "-> 1 commits analyzed",
+                "-> 1 MODIFY commits",
+                "-> 1 lines added",
+                "-> 2 lines added");
+
+        Commit second = new Commit("2", "anotherAuthor", 2);
+        second.addLines(3).deleteLines(4);
+        commits.add(second);
+
+        assertThat(Commit.countAddedLines(commits)).isEqualTo(1 + 3);
+        assertThat(Commit.countDeletedLines(commits)).isEqualTo(2 + 4);
+        assertThat(Commit.countAuthors(commits)).isEqualTo(2);
+        assertThat(Commit.countChanges(commits)).isEqualTo(2);
+        assertThat(Commit.countDeletes(commits)).isZero();
+        assertThat(Commit.countMoves(commits)).isZero();
+        assertThat(Commit.countCommits(commits)).isEqualTo(2);
+
+        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
+                "-> 2 commits analyzed",
+                "-> 2 MODIFY commits",
+                "-> 4 lines added",
+                "-> 6 lines added");
+
+        Commit third = new Commit("2", AUTHOR, 2);
+        third.setNewPath(Commit.NO_FILE_NAME);
+        third.setOldPath("old");
+        commits.add(third);
+
+        assertThat(Commit.countAddedLines(commits)).isEqualTo(1 + 3);
+        assertThat(Commit.countDeletedLines(commits)).isEqualTo(2 + 4);
+        assertThat(Commit.countAuthors(commits)).isEqualTo(2);
+        assertThat(Commit.countChanges(commits)).isEqualTo(2);
+        assertThat(Commit.countDeletes(commits)).isEqualTo(1);
+        assertThat(Commit.countMoves(commits)).isZero();
+        assertThat(Commit.countCommits(commits)).isEqualTo(2);
+
+        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
+                "-> 2 commits analyzed",
+                "-> 2 MODIFY commits",
+                "-> 1 DELETE commits",
+                "-> 4 lines added",
+                "-> 6 lines added");
+
+        Commit forth = new Commit("3", AUTHOR, 3);
+        forth.setNewPath("new");
+        forth.setOldPath("old");
+        commits.add(forth);
+
+        assertThat(Commit.countAddedLines(commits)).isEqualTo(1 + 3);
+        assertThat(Commit.countDeletedLines(commits)).isEqualTo(2 + 4);
+        assertThat(Commit.countAuthors(commits)).isEqualTo(2);
+        assertThat(Commit.countChanges(commits)).isEqualTo(2);
+        assertThat(Commit.countDeletes(commits)).isEqualTo(1);
+        assertThat(Commit.countMoves(commits)).isEqualTo(1);
+        assertThat(Commit.countCommits(commits)).isEqualTo(3);
+
+        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
+                "-> 3 commits analyzed",
+                "-> 2 MODIFY commits",
+                "-> 1 RENAME commits",
+                "-> 1 DELETE commits",
+                "-> 4 lines added",
+                "-> 6 lines added");
+    }
+
+    private FilteredLog logCommits(final List<Commit> commits) {
+        FilteredLog log = new FilteredLog("Error");
+        Commit.logCommits(commits, log);
+        return log;
     }
 }

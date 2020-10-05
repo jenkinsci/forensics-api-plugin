@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.function.ToIntFunction;
 
 import edu.hm.hafner.util.Generated;
 import edu.hm.hafner.util.PathUtil;
@@ -152,7 +151,8 @@ public class FileStatistics implements Serializable {
     }
 
     /**
-     * Inspects and stores the specified commit for this file.
+     * Inspects and stores the specified commit for this file. Updates all properties after the commit has been added,
+     * including an optional file name rename.
      *
      * @param additionalCommit
      *         the additional commit to inspect
@@ -164,7 +164,8 @@ public class FileStatistics implements Serializable {
     }
 
     /**
-     * Inspects and stores the specified commits for this file.
+     * Inspects and stores the specified commits for this file. Updates all properties after the commit has been added,
+     * including an optional file name rename.
      *
      * @param additionalCommits
      *         the additional commits to inspect
@@ -184,10 +185,6 @@ public class FileStatistics implements Serializable {
         deletedLines = Commit.countDeletedLines(commits);
         numberOfAuthors = Commit.countAuthors(commits);
         fileName = TreeString.valueOf(commits.get(lastCommit).getNewPath());
-    }
-
-    private int sum(final ToIntFunction<Commit> property) {
-        return commits.stream().mapToInt(property).sum();
     }
 
     @Override

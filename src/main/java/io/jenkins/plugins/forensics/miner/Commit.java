@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import edu.hm.hafner.util.FilteredLog;
@@ -21,44 +22,120 @@ public class Commit implements Comparable<Commit> {
     /** Indicates that a file name has not been set or a file has been deleted. */
     static final String NO_FILE_NAME = "/dev/null";
 
+    /**
+     * Counts the number of RENAME commits. A rename commit is a commit where an existing file has been moved to a new
+     * location.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return number of RENAME commits
+     */
     public static int countMoves(final Collection<? extends Commit> commits) {
         return (int) commits.stream().filter(Commit::isMove).count();
     }
 
+    /**
+     * Counts the number of DELETE commits. A delete commit is a commit where an existing file has been deleted.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return number of DELETE commits
+     */
     public static int countDeletes(final Collection<? extends Commit> commits) {
         return (int) commits.stream().filter(Commit::isDelete).count();
     }
 
+    /**
+     * Counts the number of CHANGE commits. A change commit is a commit where an existing file has been changed.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return number of RENAME commits
+     */
     public static int countChanges(final Collection<? extends Commit> commits) {
         return (int) commits.stream().filter(commit -> !commit.hasOldPath()).count();
     }
 
+    /**
+     * Counts the total number of added lines by all commits.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return total number of added lines
+     */
     public static int countAddedLines(final Collection<? extends Commit> commits) {
         return count(commits, Commit::getTotalAddedLines);
     }
 
+    /**
+     * Counts the total number of deleted lines by all commits.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return total number of deleted lines
+     */
     public static int countDeletedLines(final Collection<? extends Commit> commits) {
         return count(commits, Commit::getTotalDeletedLines);
     }
 
+    /**
+     * Counts the total number of distinct authors in all commits.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return total number of distinct authors
+     */
     public static int countAuthors(final Collection<? extends Commit> commits) {
-        return (int) commits.stream().map(Commit::getAuthor).distinct().count();
+        return getDistinctCount(commits, Commit::getAuthor);
     }
 
+    /**
+     * Counts the total number of distinct commit IDs in all commits.
+     *
+     * @param commits
+     *         the commits to analyze
+     *
+     * @return total number of distinct commit IDs
+     */
     public static int countCommits(final Collection<? extends Commit> commits) {
-        return (int) commits.stream().map(Commit::getId).distinct().count();
+        return getDistinctCount(commits, Commit::getId);
+    }
+
+    private static int getDistinctCount(final Collection<? extends Commit> commits,
+            final Function<Commit, String> property) {
+        return (int) commits.stream().map(property).distinct().count();
     }
 
     private static int count(final Collection<? extends Commit> commits, final ToIntFunction<Commit> property) {
         return commits.stream().mapToInt(property).sum();
     }
 
+    /**
+     * Prints a summary of the specified commits to the specified logger.
+     *
+     * @param commits
+     *         the commits to summarize
+     * @param logger
+     *         the logger     */
     public static void logCommits(final List<Commit> commits, final FilteredLog logger) {
-        logger.logInfo("-> %d files changed", Commit.countChanges(commits));
-        logger.logInfo("-> %d files moved", Commit.countMoves(commits));
-        logger.logInfo("-> %d files deleted", Commit.countDeletes(commits));
+        logger.logInfo("-> %d commits analyzed", Commit.countCommits(commits));
+        logIfPositive(Commit.countChanges(commits), "-> %d MODIFY commits", logger);
+        logIfPositive(Commit.countMoves(commits), "-> %d RENAME commits", logger);
+        logIfPositive(Commit.countDeletes(commits), "-> %d DELETE commits", logger);
         logger.logInfo("-> %d lines added", Commit.countAddedLines(commits));
         logger.logInfo("-> %d lines added", Commit.countDeletedLines(commits));
+    }
+
+    private static void logIfPositive(final int total, final String message, final FilteredLog logger) {
+        if (total > 0) {
+            logger.logInfo(message, total);
+        }
     }
 
     private final String id;
