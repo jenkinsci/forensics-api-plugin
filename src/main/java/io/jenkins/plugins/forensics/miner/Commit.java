@@ -12,8 +12,7 @@ import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.Generated;
 
 /**
- * Represents an SCM commit. Commits are sorted by the modification time, starting with the newest commit and walking
- * back into the history. For each commit the number of added and deleted lines will be recorded. Since a commit
+ * Represents an SCM commit. For each commit the number of added and deleted lines will be recorded. Since a commit
  * consists of a list of differences the number of added or deleted lines can be updated several times until the final
  * size has been reached.
  *

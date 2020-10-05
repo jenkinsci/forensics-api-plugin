@@ -22,6 +22,8 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
  *     <li>total number of different authors</li>
  *     <li>creation time</li>
  *     <li>last modification time</li>
+ *     <li>added lines</li>
+ *     <li>deleted lines</li>
  * </ul>
  *
  * @author Ullrich Hafner
