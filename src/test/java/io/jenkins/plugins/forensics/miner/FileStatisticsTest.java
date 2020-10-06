@@ -1,5 +1,7 @@
 package io.jenkins.plugins.forensics.miner;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
@@ -79,7 +81,8 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
     protected FileStatistics createSerializable() {
         FileStatistics statistics = createStatistics(FILE);
 
-        statistics.inspectCommit(ONE_DAY * 9, "one");
+        Commit commit = new Commit("SHA", "author", 1).addLines(5).deleteLines(8).setNewPath(FILE);
+        statistics.inspectCommits(Collections.singleton(commit));
 
         return statistics;
     }

@@ -52,7 +52,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
                 "-> 0 commits analyzed",
                 "-> 0 lines added",
-                "-> 0 lines added");
+                "-> 0 lines deleted");
 
         Commit first = new Commit("1", AUTHOR, 0);
         first.addLines(3).deleteLines(2);
@@ -73,7 +73,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 1 commits analyzed",
                 "-> 1 MODIFY commits",
                 "-> 3 lines added",
-                "-> 2 lines added");
+                "-> 2 lines deleted");
 
         Commit second = new Commit("2", "anotherAuthor", 2);
         second.addLines(3).deleteLines(4);
@@ -94,7 +94,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 2 commits analyzed",
                 "-> 2 MODIFY commits",
                 "-> 6 lines added",
-                "-> 6 lines added");
+                "-> 6 lines deleted");
 
         Commit third = new Commit("2", AUTHOR, 2);
         third.setNewPath(Commit.NO_FILE_NAME);
@@ -117,7 +117,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 2 MODIFY commits",
                 "-> 1 DELETE commits",
                 "-> 6 lines added",
-                "-> 6 lines added");
+                "-> 6 lines deleted");
 
         Commit forth = new Commit("3", AUTHOR, 3);
         forth.setNewPath("new");
@@ -141,7 +141,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 1 RENAME commits",
                 "-> 1 DELETE commits",
                 "-> 6 lines added",
-                "-> 6 lines added");
+                "-> 6 lines deleted");
     }
 
     private FilteredLog logCommits(final List<Commit> commits) {

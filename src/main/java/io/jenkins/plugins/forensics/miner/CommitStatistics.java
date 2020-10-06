@@ -206,7 +206,7 @@ public class CommitStatistics implements Serializable {
         logIfPositive(countMoves(commits), "-> %d RENAME commits", logger);
         logIfPositive(countDeletes(commits), "-> %d DELETE commits", logger);
         logger.logInfo("-> %d lines added", countAddedLines(commits));
-        logger.logInfo("-> %d lines added", countDeletedLines(commits));
+        logger.logInfo("-> %d lines deleted", countDeletedLines(commits));
     }
 
     private static void logIfPositive(final int total, final String message, final FilteredLog logger) {
