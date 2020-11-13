@@ -6,6 +6,9 @@ import java.util.NoSuchElementException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
+
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -18,6 +21,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 class RepositoryStatisticsTest {
     private static final String NOTHING = "nothing";
     private static final String FILE = "file";
+    private static final TreeString FILE_TREE_STRING = new TreeStringBuilder().intern(FILE);
     private static final int ONE_DAY = 60 * 60 * 24;
 
     @Test
@@ -61,7 +65,10 @@ class RepositoryStatisticsTest {
 
     private FileStatistics createFileStatistics() {
         FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        Commit commit = new Commit("1", "one", ONE_DAY * 9).addLines(2).deleteLines(1).setNewPath(FILE);
+        CommitDiffItem commit = new CommitDiffItem("1", "one", ONE_DAY * 9)
+                .addLines(2)
+                .deleteLines(1)
+                .setNewPath(FILE_TREE_STRING);
         fileStatistics.inspectCommit(commit);
         return fileStatistics;
     }
@@ -76,7 +83,10 @@ class RepositoryStatisticsTest {
                 .hasTotalChurn(5);
     }
 
-    private Commit createCommit() {
-        return new Commit("SHA", "author", 1).deleteLines(2).addLines(3).setNewPath(FILE);
+    private CommitDiffItem createCommit() {
+        return new CommitDiffItem("SHA", "author", 1)
+                .deleteLines(2)
+                .addLines(3)
+                .setNewPath(FILE_TREE_STRING);
     }
 }

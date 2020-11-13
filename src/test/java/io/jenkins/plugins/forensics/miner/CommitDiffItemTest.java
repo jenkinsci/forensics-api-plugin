@@ -3,45 +3,48 @@ package io.jenkins.plugins.forensics.miner;
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
- * Tests the class {@link Commit}.
+ * Tests the class {@link CommitDiffItem}.
  *
  * @author Ullrich Hafner
  */
-class CommitTest extends SerializableTest<Commit> {
+class CommitDiffItemTest extends SerializableTest<CommitDiffItem> {
+    private static final TreeStringBuilder BUILDER = new TreeStringBuilder();
     private static final String ID = "ID";
     private static final String AUTHOR = "author";
     private static final int COMMITTED_AT = 1;
 
     @Test
     void shouldCreateEmptyCommit() {
-        Commit commit = new Commit(ID, AUTHOR, COMMITTED_AT);
+        CommitDiffItem commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
 
         verifyEmptyCommit(commit);
 
-        Commit another = new Commit(commit);
+        CommitDiffItem another = new CommitDiffItem(commit);
 
         verifyEmptyCommit(another);
     }
 
-    private void verifyEmptyCommit(final Commit commit) {
+    private void verifyEmptyCommit(final CommitDiffItem commit) {
         assertThat(commit).hasId(ID)
                 .hasAuthor(AUTHOR)
                 .hasTime(COMMITTED_AT)
                 .hasTotalAddedLines(0)
                 .hasTotalDeletedLines(0)
-                .hasNewPath(Commit.NO_FILE_NAME)
-                .hasOldPath(Commit.NO_FILE_NAME)
+                .hasNewPath(CommitDiffItem.NO_FILE_NAME)
+                .hasOldPath(CommitDiffItem.NO_FILE_NAME)
                 .isNotDelete()
                 .isNotMove();
     }
 
     @Test
     void shouldChangeLines() {
-        Commit commit = new Commit(ID, AUTHOR, COMMITTED_AT);
+        CommitDiffItem commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
 
         commit.addLines(5);
         assertThat(commit).hasTotalAddedLines(5).hasTotalDeletedLines(0);
@@ -58,33 +61,40 @@ class CommitTest extends SerializableTest<Commit> {
 
     @Test
     void shouldAddPaths() {
-        Commit commit = new Commit(ID, AUTHOR, COMMITTED_AT);
+        CommitDiffItem commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
 
-        commit.setNewPath("new");
+        commit.setNewPath(asTreeString("new"));
 
         assertThat(commit)
                 .hasNewPath("new")
-                .hasOldPath(Commit.NO_FILE_NAME)
+                .hasOldPath(CommitDiffItem.NO_FILE_NAME)
                 .isNotMove()
                 .isNotDelete();
 
-        commit.setOldPath("old");
+        commit.setOldPath(asTreeString("old"));
         assertThat(commit)
                 .hasNewPath("new")
                 .hasOldPath("old")
                 .isMove()
                 .isNotDelete();
 
-        commit.setNewPath(Commit.NO_FILE_NAME);
+        commit.setNewPath(asTreeString(CommitDiffItem.NO_FILE_NAME));
         assertThat(commit)
-                .hasNewPath(Commit.NO_FILE_NAME)
+                .hasNewPath(CommitDiffItem.NO_FILE_NAME)
                 .hasOldPath("old")
                 .isNotMove()
                 .isDelete();
     }
 
+    private TreeString asTreeString(final String old) {
+        return BUILDER.intern(old);
+    }
+
     @Override
-    protected Commit createSerializable() {
-        return new Commit(ID, AUTHOR, COMMITTED_AT).addLines(5).deleteLines(8).setNewPath("file.txt");
+    protected CommitDiffItem createSerializable() {
+        return new CommitDiffItem(ID, AUTHOR, COMMITTED_AT)
+                .addLines(5)
+                .deleteLines(8)
+                .setNewPath(asTreeString("file.txt"));
     }
 }

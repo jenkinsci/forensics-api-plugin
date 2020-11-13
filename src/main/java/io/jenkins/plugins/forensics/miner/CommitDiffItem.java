@@ -5,32 +5,34 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import edu.hm.hafner.util.Generated;
+import edu.hm.hafner.util.TreeString;
 
 /**
- * Represents an SCM commit. For each commit the number of added and deleted lines will be recorded. Since a commit
- * consists of a list of differences the number of added or deleted lines can be updated several times until the final
- * size has been reached.
+ * Represents all changes related to a specific file in a given SCM commit (diff). For each commit the number of added
+ * and deleted lines will be recorded. Since a commit consists of a list of differences the number of added or deleted
+ * lines can be updated several times until the final size has been reached.
  *
  * @author Ullrich Hafner
  */
-public class Commit implements Serializable {
+public class CommitDiffItem implements Serializable {
     private static final long serialVersionUID = 1L; // since 0.8.0
 
     /** Indicates that a file name has not been set or a file has been deleted. */
     static final String NO_FILE_NAME = "/dev/null";
+    private static final TreeString NO_FILE_AS_TREE_STRING = TreeString.valueOf(NO_FILE_NAME);
 
-    private final String id;
-    private final String author;
+    private String id;
+    private String author;
     private final int time;
 
     private int totalAddedLines = 0;
     private int totalDeletedLines = 0;
 
-    private String oldPath = NO_FILE_NAME;
-    private String newPath = NO_FILE_NAME;
+    private TreeString oldPath = NO_FILE_AS_TREE_STRING;
+    private TreeString newPath = NO_FILE_AS_TREE_STRING;
 
     /**
-     * Creates a new {@link Commit}.
+     * Creates a new {@link CommitDiffItem}.
      *
      * @param id
      *         commit ID
@@ -40,21 +42,33 @@ public class Commit implements Serializable {
      *         the time of the commit (given as number of seconds since the standard base time known as "the epoch", *
      *         namely January 1, 1970, 00:00:00 GMT)
      */
-    public Commit(final String id, final String author, final int time) {
-        this.id = id;
-        this.author = author;
+    public CommitDiffItem(final String id, final String author, final int time) {
+        this.id = id.intern();
+        this.author = author.intern();
         this.time = time;
     }
 
     /**
-     * Creates a new copy of the specified {@link Commit}. Note that the number of added and deleted lines will be set
-     * to zero, so this constructor is not a copy constructor in the common sense.
+     * Called after de-serialization to improve the memory usage.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        id = id.intern();
+        author = author.intern();
+
+        return this;
+    }
+
+    /**
+     * Creates a new copy of the specified {@link CommitDiffItem}. Note that the number of added and deleted lines will
+     * be set to zero, so this constructor is not a copy constructor in the common sense.
      *
      * @param copy
      *         the commit to copy the base properties from
      */
     @SuppressWarnings("CopyConstructorMissesField")
-    public Commit(final Commit copy) {
+    public CommitDiffItem(final CommitDiffItem copy) {
         this(copy.getId(), copy.getAuthor(), copy.getTime());
     }
 
@@ -79,7 +93,7 @@ public class Commit implements Serializable {
     }
 
     public String getOldPath() {
-        return oldPath;
+        return oldPath.toString();
     }
 
     public boolean isDelete() {
@@ -101,7 +115,7 @@ public class Commit implements Serializable {
     }
 
     public String getNewPath() {
-        return newPath;
+        return newPath.toString();
     }
 
     /**
@@ -122,7 +136,7 @@ public class Commit implements Serializable {
      *
      * @return this
      */
-    public Commit addLines(final int addedLines) {
+    public CommitDiffItem addLines(final int addedLines) {
         totalAddedLines += addedLines;
 
         return this;
@@ -136,7 +150,7 @@ public class Commit implements Serializable {
      *
      * @return this
      */
-    public Commit deleteLines(final int deletedLines) {
+    public CommitDiffItem deleteLines(final int deletedLines) {
         totalDeletedLines += deletedLines;
 
         return this;
@@ -152,7 +166,7 @@ public class Commit implements Serializable {
      *
      * @return this
      */
-    public Commit setOldPath(final String oldPath) {
+    public CommitDiffItem setOldPath(final TreeString oldPath) {
         this.oldPath = oldPath;
 
         return this;
@@ -168,7 +182,7 @@ public class Commit implements Serializable {
      *
      * @return this
      */
-    public Commit setNewPath(final String newPath) {
+    public CommitDiffItem setNewPath(final TreeString newPath) {
         this.newPath = newPath;
 
         return this;
@@ -183,7 +197,7 @@ public class Commit implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Commit commit = (Commit) o;
+        CommitDiffItem commit = (CommitDiffItem) o;
         return time == commit.time
                 && totalAddedLines == commit.totalAddedLines && totalDeletedLines == commit.totalDeletedLines
                 && id.equals(commit.id) && author.equals(commit.author)
@@ -199,7 +213,7 @@ public class Commit implements Serializable {
     @Override
     @Generated
     public String toString() {
-        return new StringJoiner(", ", Commit.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", CommitDiffItem.class.getSimpleName() + "[", "]")
                 .add("id='" + id + "'")
                 .add("author='" + author + "'")
                 .add("time=" + time)

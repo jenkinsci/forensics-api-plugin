@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.SerializableTest;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -17,15 +19,16 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  */
 class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
     private static final String AUTHOR = "author";
+    private static final TreeStringBuilder BUILDER = new TreeStringBuilder();
 
     @Override
     protected CommitStatistics createSerializable() {
-        List<Commit> commits = new ArrayList<>();
+        List<CommitDiffItem> commits = new ArrayList<>();
 
-        Commit first = new Commit("1", AUTHOR, 0);
+        CommitDiffItem first = new CommitDiffItem("1", AUTHOR, 0);
         first.addLines(3).deleteLines(2);
         commits.add(first);
-        Commit second = new Commit("2", "anotherAuthor", 2);
+        CommitDiffItem second = new CommitDiffItem("2", "anotherAuthor", 2);
         second.addLines(3).deleteLines(4);
         commits.add(second);
 
@@ -35,7 +38,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
     @Test
     @SuppressWarnings("checkstyle:JavaNCSS")
     void shouldCountCorrectly() {
-        List<Commit> commits = new ArrayList<>();
+        List<CommitDiffItem> commits = new ArrayList<>();
 
         assertThat(CommitStatistics.countChanges(commits)).isZero();
         assertThat(CommitStatistics.countDeletes(commits)).isZero();
@@ -54,7 +57,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 0 lines added",
                 "-> 0 lines deleted");
 
-        Commit first = new Commit("1", AUTHOR, 0);
+        CommitDiffItem first = new CommitDiffItem("1", AUTHOR, 0);
         first.addLines(3).deleteLines(2);
         commits.add(first);
 
@@ -75,7 +78,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 3 lines added",
                 "-> 2 lines deleted");
 
-        Commit second = new Commit("2", "anotherAuthor", 2);
+        CommitDiffItem second = new CommitDiffItem("2", "anotherAuthor", 2);
         second.addLines(3).deleteLines(4);
         commits.add(second);
 
@@ -96,9 +99,9 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 6 lines added",
                 "-> 6 lines deleted");
 
-        Commit third = new Commit("2", AUTHOR, 2);
-        third.setNewPath(Commit.NO_FILE_NAME);
-        third.setOldPath("old");
+        CommitDiffItem third = new CommitDiffItem("2", AUTHOR, 2);
+        third.setNewPath(asTreeString(CommitDiffItem.NO_FILE_NAME));
+        third.setOldPath(asTreeString("old"));
         commits.add(third);
 
         assertThat(CommitStatistics.countChanges(commits)).isEqualTo(2);
@@ -119,9 +122,9 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 6 lines added",
                 "-> 6 lines deleted");
 
-        Commit forth = new Commit("3", AUTHOR, 3);
-        forth.setNewPath("new");
-        forth.setOldPath("old");
+        CommitDiffItem forth = new CommitDiffItem("3", AUTHOR, 3);
+        forth.setNewPath(asTreeString("new"));
+        forth.setOldPath(asTreeString("old"));
         commits.add(forth);
 
         assertThat(CommitStatistics.countChanges(commits)).isEqualTo(2);
@@ -144,7 +147,11 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 6 lines deleted");
     }
 
-    private FilteredLog logCommits(final List<Commit> commits) {
+    private TreeString asTreeString(final String old) {
+        return BUILDER.intern(old);
+    }
+
+    private FilteredLog logCommits(final List<CommitDiffItem> commits) {
         FilteredLog log = new FilteredLog("Error");
         CommitStatistics.logCommits(commits, log);
         return log;

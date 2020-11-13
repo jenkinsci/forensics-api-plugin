@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 
@@ -19,6 +21,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  */
 class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStatistics> {
     private static final String FILE = "/path/to/file.txt";
+    private static final TreeString FILE_TREE_STRING = new TreeStringBuilder().intern(FILE);
     private static final int ONE_DAY = 60 * 60 * 24;
     private static final String ISSUE_BUILDER = "/analysis/IssueBuilder.java";
 
@@ -54,9 +57,16 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     void shouldWriteReport() {
         RepositoryStatistics statistics = new RepositoryStatistics();
         FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        Commit first = new Commit("1", "name", ONE_DAY * 2).addLines(4).setNewPath(FILE);
-        Commit second = new Commit("2", "another", ONE_DAY * 3).addLines(4).deleteLines(3).setNewPath(FILE);
-        Commit third = new Commit("3", "another", ONE_DAY * 4).deleteLines(2).setNewPath(FILE);
+        CommitDiffItem first = new CommitDiffItem("1", "name", ONE_DAY * 2)
+                .addLines(4)
+                .setNewPath(FILE_TREE_STRING);
+        CommitDiffItem second = new CommitDiffItem("2", "another", ONE_DAY * 3)
+                .addLines(4)
+                .deleteLines(3)
+                .setNewPath(FILE_TREE_STRING);
+        CommitDiffItem third = new CommitDiffItem("3", "another", ONE_DAY * 4)
+                .deleteLines(2)
+                .setNewPath(FILE_TREE_STRING);
         fileStatistics.inspectCommit(first);
         fileStatistics.inspectCommit(second);
         fileStatistics.inspectCommit(third);

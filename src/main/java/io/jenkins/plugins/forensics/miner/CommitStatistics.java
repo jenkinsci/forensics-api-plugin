@@ -32,15 +32,15 @@ public class CommitStatistics implements Serializable {
      * @param commits
      *         the commits to aggregate the statistics for
      */
-    public CommitStatistics(final Collection<? extends Commit> commits) {
+    public CommitStatistics(final Collection<? extends CommitDiffItem> commits) {
         addedLines = countAddedLines(commits);
         deletedLines = countDeletedLines(commits);
         authorCount = countAuthors(commits);
         commitCount = countCommits(commits);
         filesCount = (int) commits.stream()
-                .map(Commit::getNewPath)
+                .map(CommitDiffItem::getNewPath)
                 .distinct()
-                .filter(name -> !Commit.NO_FILE_NAME.equals(name))
+                .filter(name -> !CommitDiffItem.NO_FILE_NAME.equals(name))
                 .count();
     }
 
@@ -130,12 +130,12 @@ public class CommitStatistics implements Serializable {
                 .toString();
     }
 
-    private static int getDistinctCount(final Collection<? extends Commit> commits,
-            final Function<Commit, String> property) {
+    private static int getDistinctCount(final Collection<? extends CommitDiffItem> commits,
+            final Function<CommitDiffItem, String> property) {
         return (int) commits.stream().map(property).distinct().count();
     }
 
-    private static int count(final Collection<? extends Commit> commits, final ToIntFunction<Commit> property) {
+    private static int count(final Collection<? extends CommitDiffItem> commits, final ToIntFunction<CommitDiffItem> property) {
         return commits.stream().mapToInt(property).sum();
     }
 
@@ -148,8 +148,8 @@ public class CommitStatistics implements Serializable {
      *
      * @return number of RENAME commits
      */
-    public static int countMoves(final Collection<? extends Commit> commits) {
-        return (int) commits.stream().filter(Commit::isMove).count();
+    public static int countMoves(final Collection<? extends CommitDiffItem> commits) {
+        return (int) commits.stream().filter(CommitDiffItem::isMove).count();
     }
 
     /**
@@ -160,8 +160,8 @@ public class CommitStatistics implements Serializable {
      *
      * @return number of DELETE commits
      */
-    public static int countDeletes(final Collection<? extends Commit> commits) {
-        return (int) commits.stream().filter(Commit::isDelete).count();
+    public static int countDeletes(final Collection<? extends CommitDiffItem> commits) {
+        return (int) commits.stream().filter(CommitDiffItem::isDelete).count();
     }
 
     /**
@@ -172,24 +172,24 @@ public class CommitStatistics implements Serializable {
      *
      * @return number of RENAME commits
      */
-    public static int countChanges(final Collection<? extends Commit> commits) {
+    public static int countChanges(final Collection<? extends CommitDiffItem> commits) {
         return (int) commits.stream().filter(commit -> !commit.hasOldPath()).count();
     }
 
-    private static int countAddedLines(final Collection<? extends Commit> commits) {
-        return count(commits, Commit::getTotalAddedLines);
+    private static int countAddedLines(final Collection<? extends CommitDiffItem> commits) {
+        return count(commits, CommitDiffItem::getTotalAddedLines);
     }
 
-    private static int countDeletedLines(final Collection<? extends Commit> commits) {
-        return count(commits, Commit::getTotalDeletedLines);
+    private static int countDeletedLines(final Collection<? extends CommitDiffItem> commits) {
+        return count(commits, CommitDiffItem::getTotalDeletedLines);
     }
 
-    private static int countAuthors(final Collection<? extends Commit> commits) {
-        return getDistinctCount(commits, Commit::getAuthor);
+    private static int countAuthors(final Collection<? extends CommitDiffItem> commits) {
+        return getDistinctCount(commits, CommitDiffItem::getAuthor);
     }
 
-    private static int countCommits(final Collection<? extends Commit> commits) {
-        return getDistinctCount(commits, Commit::getId);
+    private static int countCommits(final Collection<? extends CommitDiffItem> commits) {
+        return getDistinctCount(commits, CommitDiffItem::getId);
     }
 
     /**
@@ -200,7 +200,7 @@ public class CommitStatistics implements Serializable {
      * @param logger
      *         the logger
      */
-    public static void logCommits(final List<Commit> commits, final FilteredLog logger) {
+    public static void logCommits(final List<CommitDiffItem> commits, final FilteredLog logger) {
         logger.logInfo("-> %d commits analyzed", countCommits(commits));
         logIfPositive(countChanges(commits), "-> %d MODIFY commits", logger);
         logIfPositive(countMoves(commits), "-> %d RENAME commits", logger);

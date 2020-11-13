@@ -122,9 +122,9 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      */
     @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
     public static class ForensicsRow {
-        private final Commit commit;
+        private final CommitDiffItem commit;
 
-        ForensicsRow(final Commit commit) {
+        ForensicsRow(final CommitDiffItem commit) {
             this.commit = commit;
         }
 
@@ -168,13 +168,13 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         private LinesDataSet createDataSetPerCommit(final FileStatistics current) {
             LinesDataSet model = new LinesDataSet();
-            for (Commit commit : current.getCommits()) {
+            for (CommitDiffItem commit : current.getCommits()) {
                 model.add(commit.getId(), computeSeries(commit));
             }
             return model;
         }
 
-        private Map<String, Integer> computeSeries(final Commit commit) {
+        private Map<String, Integer> computeSeries(final CommitDiffItem commit) {
             Map<String, Integer> commitChanges = new HashMap<>();
             commitChanges.put(ADDED_KEY, commit.getTotalAddedLines());
             commitChanges.put(DELETED_KEY, commit.getTotalDeletedLines());

@@ -39,7 +39,7 @@ public class FileStatistics implements Serializable {
     private transient int numberOfCommits; // unused starting from 0.8.x
 
     private CommitStatistics statistics = new CommitStatistics(); // since 0.8.0
-    private List<Commit> commits = new ArrayList<>(); // since 0.8.0
+    private List<CommitDiffItem> commits = new ArrayList<>(); // since 0.8.0
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -76,7 +76,7 @@ public class FileStatistics implements Serializable {
      *
      * @return all commits for this file
      */
-    public List<Commit> getCommits() {
+    public List<CommitDiffItem> getCommits() {
         return commits;
     }
 
@@ -160,7 +160,7 @@ public class FileStatistics implements Serializable {
      * @param additionalCommit
      *         the additional commit to inspect
      */
-    public void inspectCommit(final Commit additionalCommit) {
+    public void inspectCommit(final CommitDiffItem additionalCommit) {
         commits.add(additionalCommit);
 
         updateProperties();
@@ -173,7 +173,7 @@ public class FileStatistics implements Serializable {
      * @param additionalCommits
      *         the additional commits to inspect
      */
-    public void inspectCommits(final Collection<Commit> additionalCommits) {
+    public void inspectCommits(final Collection<CommitDiffItem> additionalCommits) {
         commits.addAll(additionalCommits);
 
         updateProperties();

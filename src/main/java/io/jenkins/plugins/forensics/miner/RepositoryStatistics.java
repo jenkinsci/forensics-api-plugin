@@ -1,6 +1,7 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +26,10 @@ import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 public class RepositoryStatistics implements Serializable {
     private static final long serialVersionUID = 8L; // release 0.8.0
 
-    private final Map<String, FileStatistics> statisticsPerFile = new HashMap<>();
+    private Map<String, FileStatistics> statisticsPerFile; // before 0.8.0, mapped in readResolve
+
+    private transient Map<String, FileStatistics> statisticsMapping = new HashMap<>();
+    private Collection<FileStatistics> fileStatistics;
 
     private String latestCommitId; // @since 0.8.0
     private CommitStatistics statistics = new CommitStatistics();
@@ -59,6 +63,26 @@ public class RepositoryStatistics implements Serializable {
         if (latestCommitId == null) {
             latestCommitId = StringUtils.EMPTY;
         }
+        if (statisticsPerFile == null) { // since 0.8.0: rebuild mapping
+            statisticsMapping = new HashMap<>();
+            fileStatistics.forEach(s -> statisticsMapping.put(s.getFileName(), s));
+        }
+        else { // before 0.8.0: restore map
+            statisticsMapping = statisticsPerFile;
+            statisticsPerFile = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Called before serialization to fill the fileStatistics field.
+     *
+     * @return this
+     */
+    protected Object writeReplace() {
+        fileStatistics = new ArrayList<>(statisticsMapping.values());
+
         return this;
     }
 
@@ -68,7 +92,7 @@ public class RepositoryStatistics implements Serializable {
      * @return {@code true} if the repository is empty, {@code false} otherwise
      */
     public boolean isEmpty() {
-        return statisticsPerFile.isEmpty();
+        return statisticsMapping.isEmpty();
     }
 
     /**
@@ -95,7 +119,7 @@ public class RepositoryStatistics implements Serializable {
      * @return number of files in the repository
      */
     public int size() {
-        return statisticsPerFile.size();
+        return statisticsMapping.size();
     }
 
     /**
@@ -107,7 +131,7 @@ public class RepositoryStatistics implements Serializable {
      * @return {@code true} if the file file is part of the repository, {@code false} otherwise
      */
     public boolean contains(final String fileName) {
-        return statisticsPerFile.containsKey(fileName);
+        return statisticsMapping.containsKey(fileName);
     }
 
     /**
@@ -116,7 +140,7 @@ public class RepositoryStatistics implements Serializable {
      * @return the file names
      */
     public Set<String> getFiles() {
-        return Collections.unmodifiableSet(statisticsPerFile.keySet());
+        return Collections.unmodifiableSet(statisticsMapping.keySet());
     }
 
     /**
@@ -125,7 +149,7 @@ public class RepositoryStatistics implements Serializable {
      * @return the statistics
      */
     public Collection<FileStatistics> getFileStatistics() {
-        return Collections.unmodifiableCollection(statisticsPerFile.values());
+        return Collections.unmodifiableCollection(statisticsMapping.values());
     }
 
     /**
@@ -134,7 +158,7 @@ public class RepositoryStatistics implements Serializable {
      * @return the mapping of file names to statistics
      */
     public Map<String, FileStatistics> getMapping() {
-        return Collections.unmodifiableMap(statisticsPerFile);
+        return Collections.unmodifiableMap(statisticsMapping);
     }
 
     /**
@@ -149,7 +173,7 @@ public class RepositoryStatistics implements Serializable {
      */
     public FileStatistics get(final String fileName) {
         if (contains(fileName)) {
-            return statisticsPerFile.get(fileName);
+            return statisticsMapping.get(fileName);
         }
         throw new NoSuchElementException(String.format("No information for file %s stored", fileName));
     }
@@ -160,25 +184,25 @@ public class RepositoryStatistics implements Serializable {
      * @param commits
      *         the additional commits
      */
-    public void addAll(final List<Commit> commits) {
+    public void addAll(final List<CommitDiffItem> commits) {
         FileStatisticsBuilder builder = new FileStatisticsBuilder();
-        for (Commit commit : commits) {
+        for (CommitDiffItem commit : commits) {
             if (commit.isDelete()) {
-                statisticsPerFile.remove(commit.getOldPath());
+                statisticsMapping.remove(commit.getOldPath());
             }
             else if (commit.isMove()) {
-                FileStatistics existing = statisticsPerFile.remove(commit.getOldPath());
+                FileStatistics existing = statisticsMapping.remove(commit.getOldPath());
                 if (existing == null) {
-                    statisticsPerFile.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
+                    statisticsMapping.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
                 }
                 else {
-                    statisticsPerFile.put(commit.getNewPath(), existing);
+                    statisticsMapping.put(commit.getNewPath(), existing);
                 }
-                statisticsPerFile.get(commit.getNewPath()).inspectCommit(commit);
+                statisticsMapping.get(commit.getNewPath()).inspectCommit(commit);
             }
             else {
-                statisticsPerFile.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
-                statisticsPerFile.get(commit.getNewPath()).inspectCommit(commit);
+                statisticsMapping.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
+                statisticsMapping.get(commit.getNewPath()).inspectCommit(commit);
             }
         }
         statistics = new CommitStatistics(commits);
@@ -212,7 +236,7 @@ public class RepositoryStatistics implements Serializable {
      *         the additional statistics to add
      */
     public void add(final FileStatistics additionalStatistics) {
-        statisticsPerFile.merge(additionalStatistics.getFileName(), additionalStatistics, this::merge);
+        statisticsMapping.merge(additionalStatistics.getFileName(), additionalStatistics, this::merge);
         updateTotalLoc();
     }
 
@@ -222,7 +246,7 @@ public class RepositoryStatistics implements Serializable {
     }
 
     private int sum(final ToIntFunction<FileStatistics> property) {
-        return statisticsPerFile.values().stream().mapToInt(property).sum();
+        return statisticsMapping.values().stream().mapToInt(property).sum();
     }
 
     private FileStatistics merge(final FileStatistics existing, final FileStatistics additional) {
@@ -251,11 +275,11 @@ public class RepositoryStatistics implements Serializable {
             return false;
         }
         RepositoryStatistics that = (RepositoryStatistics) o;
-        return statisticsPerFile.equals(that.statisticsPerFile) && latestCommitId.equals(that.latestCommitId);
+        return statisticsMapping.equals(that.statisticsMapping) && latestCommitId.equals(that.latestCommitId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(statisticsPerFile, latestCommitId);
+        return Objects.hash(statisticsMapping, latestCommitId);
     }
 }

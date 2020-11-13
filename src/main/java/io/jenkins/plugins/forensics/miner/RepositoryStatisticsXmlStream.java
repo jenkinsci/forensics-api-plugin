@@ -24,7 +24,7 @@ public class RepositoryStatisticsXmlStream extends AbstractXmlStream<RepositoryS
 
     @Override
     protected void configureXStream(final XStream2 xStream) {
-        xStream.alias("commit", Commit.class);
+        xStream.alias("diff", CommitDiffItem.class);
         xStream.alias("repo", RepositoryStatistics.class);
         xStream.alias("file", FileStatistics.class);
     }
