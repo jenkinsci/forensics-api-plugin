@@ -39,7 +39,7 @@ public class CommitDiffItem implements Serializable {
      * @param author
      *         author of the commit
      * @param time
-     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch", *
+     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch",
      *         namely January 1, 1970, 00:00:00 GMT)
      */
     public CommitDiffItem(final String id, final String author, final int time) {
