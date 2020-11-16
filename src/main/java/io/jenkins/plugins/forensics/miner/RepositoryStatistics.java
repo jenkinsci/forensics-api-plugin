@@ -14,6 +14,7 @@ import java.util.function.ToIntFunction;
 
 import org.apache.commons.lang3.StringUtils;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
@@ -26,10 +27,11 @@ import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 public class RepositoryStatistics implements Serializable {
     private static final long serialVersionUID = 8L; // release 0.8.0
 
+    @CheckForNull
     private Map<String, FileStatistics> statisticsPerFile; // before 0.8.0, mapped in readResolve
 
     private transient Map<String, FileStatistics> statisticsMapping = new HashMap<>();
-    private Collection<FileStatistics> fileStatistics;
+    private Collection<FileStatistics> fileStatistics = new ArrayList<>();
 
     private String latestCommitId; // @since 0.8.0
     private CommitStatistics statistics = new CommitStatistics();
@@ -59,6 +61,7 @@ public class RepositoryStatistics implements Serializable {
      * @return this
      */
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    @SuppressWarnings("PMD.NullAssignment")
     protected Object readResolve() {
         if (latestCommitId == null) {
             latestCommitId = StringUtils.EMPTY;
@@ -69,7 +72,7 @@ public class RepositoryStatistics implements Serializable {
         }
         else { // before 0.8.0: restore map
             statisticsMapping = statisticsPerFile;
-            statisticsPerFile = null;
+            statisticsPerFile = null; // set to null to remove the field from serialization
         }
 
         return this;
