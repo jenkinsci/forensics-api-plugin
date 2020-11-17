@@ -22,6 +22,7 @@ import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.echarts.AsyncTrendChart;
+import io.jenkins.plugins.forensics.util.CommitDecorator;
 
 /**
  * Creates a view for the selected link in the details table.
@@ -33,6 +34,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
     private final String fileHash;
     private final RepositoryStatistics repositoryStatistics;
+    private final CommitDecorator decorator;
     private final FileStatistics fileStatistics;
 
     /**
@@ -41,13 +43,17 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      * @param fileLink
      *         the file the view should be created for
      * @param repositoryStatistics
-     *         the RepositoryStatistic containing the file
+     *         the whole repository statistics
+     * @param decorator
+     *         renders commit links
      */
-    public FileDetailsView(final String fileLink, final RepositoryStatistics repositoryStatistics) {
+    public FileDetailsView(final String fileLink, final RepositoryStatistics repositoryStatistics,
+            final CommitDecorator decorator) {
         super();
 
         this.fileHash = fileLink.substring(FILE_NAME_PROPERTY.length());
         this.repositoryStatistics = repositoryStatistics;
+        this.decorator = decorator;
         fileStatistics = filterStatistics();
     }
 
@@ -112,7 +118,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             return fileStatistics
                     .getCommits()
                     .stream()
-                    .map(ForensicsRow::new)
+                    .map(commit -> new ForensicsRow(commit, decorator))
                     .collect(Collectors.toList());
         }
     }
@@ -122,26 +128,32 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      */
     @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
     public static class ForensicsRow {
-        private final CommitDiffItem commit;
+        private final String id;
+        private final String author;
+        private final int totalAddedLines;
+        private final int totalDeletedLines;
 
-        ForensicsRow(final CommitDiffItem commit) {
-            this.commit = commit;
+        ForensicsRow(final CommitDiffItem commit, final CommitDecorator decorator) {
+            id = decorator.asLink(commit.getId());
+            author = commit.getAuthor();
+            totalAddedLines = commit.getTotalAddedLines();
+            totalDeletedLines = commit.getTotalDeletedLines();
         }
 
         public int getAddedLines() {
-            return commit.getTotalAddedLines();
+            return totalAddedLines;
         }
 
         public int getDeletedLines() {
-            return commit.getTotalDeletedLines();
+            return totalDeletedLines;
         }
 
         public String getCommitId() {
-            return commit.getId();
+            return id;
         }
 
         public String getAuthor() {
-            return commit.getAuthor();
+            return author;
         }
     }
 

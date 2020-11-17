@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import edu.hm.hafner.echarts.JacksonFacade;
+import edu.hm.hafner.util.FilteredLog;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -13,6 +14,8 @@ import hudson.model.Run;
 
 import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableModel;
+import io.jenkins.plugins.forensics.util.CommitDecorator;
+import io.jenkins.plugins.forensics.util.CommitDecoratorFactory;
 
 /**
  * Server side model that provides the data for the details view of the repository statistics. The layout of the
@@ -92,7 +95,9 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @SuppressWarnings("unused") //called by jelly view
     public Object getDynamic(final String link, final StaplerRequest request, final StaplerResponse response) {
         try {
-            return new FileDetailsView(link, repositoryStatistics);
+            CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner, new FilteredLog("Ignore"));
+
+            return new FileDetailsView(link, repositoryStatistics, decorator);
         }
         catch (NoSuchElementException nse) {
             try {
