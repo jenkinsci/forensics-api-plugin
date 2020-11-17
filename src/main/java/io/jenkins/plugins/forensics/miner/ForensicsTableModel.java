@@ -98,7 +98,7 @@ public class ForensicsTableModel extends TableModel {
         }
 
         public int getChurn() {
-            return fileStatistics.getChurn();
+            return fileStatistics.getAbsoluteChurn();
         }
     }
 }

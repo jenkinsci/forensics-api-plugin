@@ -1,17 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.StringJoiner;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
-import edu.hm.hafner.util.Generated;
 import edu.hm.hafner.util.PathUtil;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
@@ -26,6 +21,8 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
  *     <li>total number of different authors</li>
  *     <li>creation time</li>
  *     <li>last modification time</li>
+ *     <li>added lines</li>
+ *     <li>deleted lines</li>
  * </ul>
  *
  * @author Ullrich Hafner
@@ -33,21 +30,16 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
 public class FileStatistics implements Serializable {
     private static final long serialVersionUID = 8L; // release 0.8.x
 
-    private final TreeString fileName;
+    private TreeString fileName;
 
-    private int numberOfAuthors;
-    private int numberOfCommits;
     private int creationTime;
     private int lastModificationTime;
 
-    private int linesOfCode;
-    private int churn;
+    private transient int numberOfAuthors; // unused starting from 0.8.x
+    private transient int numberOfCommits; // unused starting from 0.8.x
 
-    private Map<String, Integer> addedLinesOfCommit = new LinkedHashMap<>();
-    private Map<String, Integer> deletedLinesOfCommit = new LinkedHashMap<>();
-    private Map<String, String> authorOfCommit = new LinkedHashMap<>();
-
-    private List<String> commits = new LinkedList<>();
+    private CommitStatistics statistics = new CommitStatistics(); // since 0.8.0
+    private List<CommitDiffItem> commits = new ArrayList<>(); // since 0.8.0
 
     /**
      * Creates a new instance of {@link FileStatistics}.
@@ -63,90 +55,47 @@ public class FileStatistics implements Serializable {
         return fileName.toString();
     }
 
-    public int getChurn() {
-        return churn;
-    }
-
     /**
      * Called after de-serialization to retain backward compatibility.
      *
      * @return this
      */
+    @SuppressWarnings("deprecation")
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
-        if (authorOfCommit == null) {
-            authorOfCommit = new LinkedHashMap<>(); // restore an empty map for release < 0.8.x
-        }
-        else {
-            authorOfCommit = authorOfCommit.entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                            entry -> entry.getValue().intern())); // try to minimize memory
-        }
-        addedLinesOfCommit = readResolve(addedLinesOfCommit);
-        deletedLinesOfCommit = readResolve(deletedLinesOfCommit);
-
         if (commits == null) {
-            commits = new LinkedList<>();
-        }
-        else {
-            commits = commits.stream().map(String::intern).collect(Collectors.toCollection(LinkedList::new));
+            commits = new ArrayList<>(); // restore an empty list for release < 0.8.x
+            statistics = new CommitStatistics(numberOfCommits, numberOfAuthors);
         }
 
         return this;
     }
 
-    private Map<String, Integer> readResolve(final Map<String, Integer> mapToResolve) {
-        if (mapToResolve == null) {
-            return new LinkedHashMap<>();
-        }
-        else {
-            return mapToResolve.entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(entry -> entry.getKey().intern(),
-                            Entry::getValue));
-        }
-    }
-
     /**
-     * Returns all authors of this file.
-     * @return all authors of this file
+     * Returns all commits this file was part of.
+     *
+     * @return all commits for this file
      */
-    public Map<String, String> getAuthorOfCommit() {
-        return authorOfCommit;
-    }
-
-    /**
-     * Returns the author for this file for a specific commit.
-     * @param commitId the id of the commit
-     * @return the author of this commit
-     */
-    public String getAuthor(final String commitId) {
-        return authorOfCommit.get(commitId);
+    public List<CommitDiffItem> getCommits() {
+        return commits;
     }
 
     /**
      * Returns the number of authors for this file.
+     *
      * @return the number authors for this file.
      */
     public int getNumberOfAuthors() {
-        return numberOfAuthors;
+        return statistics.getAuthorCount();
     }
 
     /**
      * Returns the number of times this file was committed.
+     *
      * @return the number of commits for this file
      */
     public int getNumberOfCommits() {
-        return numberOfCommits;
-    }
-
-    /**
-     * Returns all commit ids for this file.
-     * @return all commit ids for this file
-     */
-    public List<String> getCommits() {
-        return commits;
+        return statistics.getCommitCount();
     }
 
     /**
@@ -175,43 +124,16 @@ public class FileStatistics implements Serializable {
      * @return the total lines of code.
      */
     public int getLinesOfCode() {
-        return linesOfCode;
+        return statistics.getLinesOfCode();
     }
 
     /**
-     * Returns all added lines to each commit.
+     * Returns the absolute churn for this file, i.e. the sum of all added and deleted lines.
      *
-     * @return all added lines to each commit.
+     * @return absolute churn
      */
-    public Map<String, Integer> getAddedLinesOfCommit() {
-        return addedLinesOfCommit;
-    }
-
-    /**
-     * Returns the number of added lines to a specific commit id.
-     * @param commitId the commit id
-     * @return the number of added lines
-     */
-    public int getAddedLines(final String commitId) {
-        return addedLinesOfCommit.get(commitId);
-    }
-
-    /**
-     * Returns all deleted lines to each commit.
-     *
-     * @return all deleted lines to each commit.
-     */
-    public Map<String, Integer> getDeletedLinesOfCommit() {
-        return deletedLinesOfCommit;
-    }
-
-    /**
-     * Returns the number of deleted lines to a specific commit id.
-     * @param commitId the commit id
-     * @return the number of deleted lines
-     */
-    public int getDeletedLines(final String commitId) {
-        return deletedLinesOfCommit.get(commitId);
+    public int getAbsoluteChurn() {
+        return statistics.getAbsoluteChurn();
     }
 
     /**
@@ -223,68 +145,49 @@ public class FileStatistics implements Serializable {
      *         namely January 1, 1970, 00:00:00 GMT.).
      * @param author
      *         author (or committer) name
-     */
-    public void inspectCommit(final int commitTime, final String author) {
-        if (numberOfCommits == 0) {
-            lastModificationTime = commitTime;
-        }
-        creationTime = commitTime;
-        numberOfCommits++;
-    }
-
-    /**
-     * Sets the value of lines of code to 0. This is used if a file is moved.
-     */
-    public void resetLinesOfCode() {
-        this.linesOfCode = 0;
-    }
-
-    /**
-     * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
-     * newest commit until the first commit has been reached.
      *
-     * @param commitTime
-     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch", *
-     *         namely January 1, 1970, 00:00:00 GMT.).
-     * @param author
-     *         author (or comitter) name
-     * @param totalLinesOfCode
-     *         total lines of code of this file
-     * @param commitId
-     *         the id of the commit this file was checked in.
-     * @param addedLines
-     *         the number of added lines
-     * @param removedLines
-     *         the number of deleted lines
+     * @deprecated remove before 1.0.0
      */
-    public void inspectCommit(final int commitTime, final String author, final int totalLinesOfCode,
-            final String commitId, final int addedLines, final int removedLines) {
-        inspectCommit(commitTime, author);
-        if (numberOfCommits == 0) {
-            linesOfCode = totalLinesOfCode;
-        }
-        else {
-            linesOfCode += addedLines;
-            linesOfCode -= removedLines;
-        }
-        commits.add(commitId);
-        churn += addedLines + removedLines;
-        addedLinesOfCommit.put(commitId, addedLines);
-        deletedLinesOfCommit.put(commitId, removedLines);
-        authorOfCommit.put(commitId, author);
-        numberOfAuthors = (int) authorOfCommit.values().stream().distinct().count();
-
+    @Deprecated
+    public void inspectCommit(final int commitTime, final String author) {
+        // not useful anymore
     }
 
     /**
-     * Resets the churn of this file.
+     * Inspects and stores the specified commit for this file. Updates all properties after the commit has been added,
+     * including an optional file name rename.
+     *
+     * @param additionalCommit
+     *         the additional commit to inspect
      */
-    public void resetChurn() {
-        churn = 0;
+    public void inspectCommit(final CommitDiffItem additionalCommit) {
+        commits.add(additionalCommit);
+
+        updateProperties();
+    }
+
+    /**
+     * Inspects and stores the specified commits for this file. Updates all properties after the commit has been added,
+     * including an optional file name rename.
+     *
+     * @param additionalCommits
+     *         the additional commits to inspect
+     */
+    public void inspectCommits(final Collection<CommitDiffItem> additionalCommits) {
+        commits.addAll(additionalCommits);
+
+        updateProperties();
+    }
+
+    private void updateProperties() {
+        int lastCommit = commits.size() - 1;
+        lastModificationTime = commits.get(lastCommit).getTime();
+        creationTime = commits.get(0).getTime();
+        statistics = new CommitStatistics(commits);
+        fileName = TreeString.valueOf(commits.get(lastCommit).getNewPath());
     }
 
     @Override
-    @Generated
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -293,29 +196,24 @@ public class FileStatistics implements Serializable {
             return false;
         }
         FileStatistics that = (FileStatistics) o;
-        return numberOfAuthors == that.numberOfAuthors
-                && numberOfCommits == that.numberOfCommits
-                && creationTime == that.creationTime
-                && lastModificationTime == that.lastModificationTime
-                && linesOfCode == that.linesOfCode
-                && churn == that.churn
-                && Objects.equals(fileName, that.fileName)
-                && Objects.equals(addedLinesOfCommit, that.addedLinesOfCommit)
-                && Objects.equals(deletedLinesOfCommit, that.deletedLinesOfCommit)
-                && Objects.equals(authorOfCommit, that.authorOfCommit);
+        return creationTime == that.creationTime && lastModificationTime == that.lastModificationTime
+                && Objects.equals(fileName, that.fileName) && Objects.equals(statistics, that.statistics)
+                && Objects.equals(commits, that.commits);
     }
 
     @Override
-    @Generated
     public int hashCode() {
-        return Objects.hash(fileName, numberOfAuthors, numberOfCommits, creationTime, lastModificationTime, linesOfCode,
-                churn, addedLinesOfCommit, deletedLinesOfCommit, authorOfCommit);
+        return Objects.hash(fileName, creationTime, lastModificationTime, statistics, commits);
     }
 
     @Override
-    @Generated
     public String toString() {
-        return ReflectionToStringBuilder.toString(this);
+        return new StringJoiner(", ", FileStatistics.class.getSimpleName() + "[", "]")
+                .add("fileName=" + fileName)
+                .add("creationTime=" + creationTime)
+                .add("lastModificationTime=" + lastModificationTime)
+                .add("statistics=" + statistics)
+                .toString();
     }
 
     /**

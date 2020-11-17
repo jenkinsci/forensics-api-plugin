@@ -36,7 +36,7 @@ public class FilesCountTrendChart {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel(); // TODO: should the setters be mandatory in constructor?
+        LinesChartModel model = new LinesChartModel();
         model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
         model.setBuildNumbers(dataSet.getBuildNumbers());
 
