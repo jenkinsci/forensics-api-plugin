@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import edu.hm.hafner.echarts.JacksonFacade;
-import edu.hm.hafner.util.FilteredLog;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -95,7 +94,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @SuppressWarnings("unused") //called by jelly view
     public Object getDynamic(final String link, final StaplerRequest request, final StaplerResponse response) {
         try {
-            CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner, new FilteredLog("Ignore"));
+            CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner);
 
             return new FileDetailsView(link, repositoryStatistics, decorator);
         }

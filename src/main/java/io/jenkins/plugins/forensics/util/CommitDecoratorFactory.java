@@ -57,6 +57,19 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
                 .findFirst().orElse(new NullDecorator());
     }
 
+    /**
+     * Returns a commit decorator for the specified {@link Run build}.
+     *
+     * @param run
+     *         the current build
+     *
+     * @return a commit decorator for the SCM of the specified build or a {@link NullDecorator} if the SCM is not
+     *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
+     */
+    public static CommitDecorator findCommitDecorator(final Run<?, ?> run) {
+        return findCommitDecorator(run, new FilteredLog("ignored"));
+    }
+
     private static List<CommitDecoratorFactory> findAllExtensions() {
         return new JenkinsFacade().getExtensionsFor(CommitDecoratorFactory.class);
     }
