@@ -166,16 +166,18 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             LinesDataSet dataSet = createDataSetPerCommit(fileStatistics, decorator);
 
             LinesChartModel model = new LinesChartModel();
-            Palette[] colors = {Palette.GREEN, Palette.RED};
             model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
             model.setBuildNumbers(dataSet.getBuildNumbers());
-            int index = 0;
-            for (String name : dataSet.getDataSetIds()) {
-                LineSeries series = new LineSeries(name, colors[index++].getNormal(), StackedMode.SEPARATE_LINES,
-                        FilledMode.LINES);
-                series.addAll(dataSet.getSeries(name));
-                model.addSeries(series);
-            }
+
+            LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), Palette.GREEN.getNormal(),
+                    StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+            added.addAll(dataSet.getSeries(ADDED_KEY));
+            LineSeries deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), Palette.GREEN.getNormal(),
+                    StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+            deleted.addAll(dataSet.getSeries(DELETED_KEY));
+
+            model.addSeries(added, deleted);
+
             return model;
         }
 
@@ -195,5 +197,4 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             return commitChanges;
         }
     }
-
 }
