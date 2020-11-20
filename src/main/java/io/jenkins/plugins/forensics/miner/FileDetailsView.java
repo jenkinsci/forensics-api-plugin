@@ -70,7 +70,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      * @return LinesChartModel for this file displaying deleted and added lines.
      */
     public LinesChartModel createChartModel() {
-        return new FileChurnTrendChart().create(fileStatistics);
+        return new FileChurnTrendChart().create(fileStatistics, decorator);
     }
 
     @JavaScriptMethod
@@ -161,8 +161,9 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         private static final String ADDED_KEY = "added";
         private static final String DELETED_KEY = "deleted";
 
-        public LinesChartModel create(final FileStatistics fileStatistics) {
-            LinesDataSet dataSet = createDataSetPerCommit(fileStatistics);
+        public LinesChartModel create(final FileStatistics fileStatistics,
+                final CommitDecorator decorator) {
+            LinesDataSet dataSet = createDataSetPerCommit(fileStatistics, decorator);
 
             LinesChartModel model = new LinesChartModel();
             Palette[] colors = {Palette.GREEN, Palette.RED};
@@ -178,10 +179,11 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             return model;
         }
 
-        private LinesDataSet createDataSetPerCommit(final FileStatistics current) {
+        private LinesDataSet createDataSetPerCommit(final FileStatistics current,
+                final CommitDecorator decorator) {
             LinesDataSet model = new LinesDataSet();
             for (CommitDiffItem commit : current.getCommits()) {
-                model.add(commit.getId(), computeSeries(commit));
+                model.add(decorator.asText(commit.getId()), computeSeries(commit));
             }
             return model;
         }
