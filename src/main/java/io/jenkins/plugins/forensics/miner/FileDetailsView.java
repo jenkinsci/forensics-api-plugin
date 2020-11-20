@@ -172,7 +172,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), Palette.GREEN.getNormal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             added.addAll(dataSet.getSeries(ADDED_KEY));
-            LineSeries deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), Palette.GREEN.getNormal(),
+            LineSeries deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), Palette.RED .getNormal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             deleted.addAll(dataSet.getSeries(DELETED_KEY));
 
