@@ -74,7 +74,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
                 "-> 1 commits analyzed",
-                "-> 1 MODIFY commits",
+                "-> 1 MODIFY commit diff items",
                 "-> 3 lines added",
                 "-> 2 lines deleted");
 
@@ -95,7 +95,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
                 "-> 2 commits analyzed",
-                "-> 2 MODIFY commits",
+                "-> 2 MODIFY commit diff items",
                 "-> 6 lines added",
                 "-> 6 lines deleted");
 
@@ -117,8 +117,8 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
                 "-> 2 commits analyzed",
-                "-> 2 MODIFY commits",
-                "-> 1 DELETE commits",
+                "-> 2 MODIFY commit diff items",
+                "-> 1 DELETE commit diff items",
                 "-> 6 lines added",
                 "-> 6 lines deleted");
 
@@ -140,9 +140,9 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
                 "-> 3 commits analyzed",
-                "-> 2 MODIFY commits",
-                "-> 1 RENAME commits",
-                "-> 1 DELETE commits",
+                "-> 2 MODIFY commit diff items",
+                "-> 1 RENAME commit diff items",
+                "-> 1 DELETE commit diff items",
                 "-> 6 lines added",
                 "-> 6 lines deleted");
     }
