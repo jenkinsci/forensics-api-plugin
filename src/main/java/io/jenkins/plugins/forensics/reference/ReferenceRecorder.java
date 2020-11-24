@@ -76,6 +76,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return StringUtils.defaultIfBlank(StringUtils.strip(defaultBranch), DEFAULT_BRANCH);
     }
 
+    @Override
     protected Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
         Optional<Job<?, ?>> referenceJob = resolveReferenceJob(log);
         if (referenceJob.isPresent()) {
