@@ -44,6 +44,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     private static final String DEFAULT_BRANCH = "master";
 
     private String defaultBranch = DEFAULT_BRANCH;
+    private boolean latestBuildIfNotFound = false;
 
     /**
      * Creates a new instance of {@link ReferenceRecorder}.
@@ -53,6 +54,22 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      */
     protected ReferenceRecorder(final JenkinsFacade jenkins) {
         super(jenkins);
+    }
+
+    /**
+     * If enabled, then the latest build of the reference job will be used if no other reference build has been found.
+     *
+     * @param latestBuildIfNotFound
+     *         if {@code true} then the latest build of the reference job will be used if no matching reference build
+     *         has been found, otherwise no reference build is returned.
+     */
+    @DataBoundSetter
+    public void setLatestBuildIfNotFound(final boolean latestBuildIfNotFound) {
+        this.latestBuildIfNotFound = latestBuildIfNotFound;
+    }
+
+    public boolean isLatestBuildIfNotFound() {
+        return latestBuildIfNotFound;
     }
 
     /**
@@ -77,7 +94,35 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     @Override
-    protected Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
+    protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
+        Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, log);
+        if (actualReferenceJob.isPresent()) {
+            Job<?, ?> reference = actualReferenceJob.get();
+            Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
+            if (lastCompletedBuild == null) {
+                log.logInfo("No completed build found");
+            }
+            else {
+                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild);
+                if (referenceBuild.isPresent()) {
+                    Run<?, ?> result = referenceBuild.get();
+                    log.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
+
+                    return new ReferenceBuild(run, log.getInfoMessages(), result);
+                }
+                log.logInfo("No reference build found that contains matching commits");
+                if (isLatestBuildIfNotFound()) {
+                    log.logInfo("Falling back to latest build of reference job: '%s'",
+                            lastCompletedBuild.getDisplayName());
+
+                    return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
+                }
+            }
+        }
+        return new ReferenceBuild(run, log.getInfoMessages());
+    }
+
+    private Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
         Optional<Job<?, ?>> referenceJob = resolveReferenceJob(log);
         if (referenceJob.isPresent()) {
             return referenceJob;
@@ -109,4 +154,17 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         }
         return Optional.empty();
     }
+
+    /**
+     * Returns the reference build for the given build {@code owner}. The search should start with the last
+     * completed build of the reference build.
+     *
+     * @param owner
+     *         the owner to get the reference build for
+     * @param lastCompletedBuildOfReferenceJob
+     *         the last completed build of the reference job
+     *
+     * @return the reference build (if available)
+     */
+    protected abstract Optional<Run<?, ?>> find(Run<?, ?> owner, Run<?, ?> lastCompletedBuildOfReferenceJob);
 }

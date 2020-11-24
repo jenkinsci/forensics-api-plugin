@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.reference;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,11 +57,11 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Ullrich Hafner
  */
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
-    static final String NO_REFERENCE_JOB = "-";
+    /** Indicates that no reference job has been defined yet. */
+    public static final String NO_REFERENCE_JOB = "-";
 
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;
-    private boolean latestBuildIfNotFound = false;
 
     /**
      * Creates a new instance of {@link SimpleReferenceRecorder}.
@@ -110,22 +111,6 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         return referenceJob;
     }
 
-    /**
-     * If enabled, then the latest build of the reference job will be used if no other reference build has been found.
-     *
-     * @param latestBuildIfNotFound
-     *         if {@code true} then the latest build of the reference job will be used if no matching reference build
-     *         has been found, otherwise no reference build is returned.
-     */
-    @DataBoundSetter
-    public void setLatestBuildIfNotFound(final boolean latestBuildIfNotFound) {
-        this.latestBuildIfNotFound = latestBuildIfNotFound;
-    }
-
-    public boolean isLatestBuildIfNotFound() {
-        return latestBuildIfNotFound;
-    }
-
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
@@ -147,8 +132,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         logHandler.log(log);
     }
 
-    private ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
-        Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, log);
+    protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
+        Optional<Job<?, ?>> actualReferenceJob = resolveReferenceJob(log);
         if (actualReferenceJob.isPresent()) {
             Job<?, ?> reference = actualReferenceJob.get();
             Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
@@ -156,57 +141,18 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
                 log.logInfo("No completed build found");
             }
             else {
-                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild);
-                if (referenceBuild.isPresent()) {
-                    Run<?, ?> result = referenceBuild.get();
-                    log.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
+                log.logInfo("Found reference build '%s' for target branch", lastCompletedBuild.getDisplayName());
 
-                    return new ReferenceBuild(run, log.getInfoMessages(), result);
-                }
-                log.logInfo("No reference build found that contains matching commits");
-                if (isLatestBuildIfNotFound()) {
-                    log.logInfo("Falling back to latest build of reference job: '%s'",
-                            lastCompletedBuild.getDisplayName());
-
-                    return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
-                }
+                return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
             }
-        }
-        return new ReferenceBuild(run, log.getInfoMessages());
-    }
-
-    /**
-     * Returns the reference build for the given build {@code owner}.
-     *
-     * @param owner
-     *         the owner to get the reference build for
-     * @param lastCompletedBuildOfReferenceJob
-     *         the last completed build of the
-     *
-     * @return the reference build (if available)
-     */
-    protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob) {
-        return Optional.of(lastCompletedBuildOfReferenceJob);
-    }
-
-    /**
-     * Finds a reference job that should be used as starting point to find the reference build.
-     *
-     * @param run
-     *         the build to get the reference for
-     * @param log
-     *         the logger
-     *
-     * @return the reference job (if available)
-     */
-    protected Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
-        Optional<Job<?, ?>> reference = resolveReferenceJob(log);
-        if (reference.isPresent()) {
-            return reference;
         }
         log.logError("You need to define a valid reference job using the 'referenceJob' property");
 
-        return Optional.empty();
+        return createEmptyReferenceBuild(run, log.getInfoMessages());
+    }
+
+    protected ReferenceBuild createEmptyReferenceBuild(final Run<?, ?> run, final List<String> messages) {
+        return new ReferenceBuild(run, messages);
     }
 
     /**
