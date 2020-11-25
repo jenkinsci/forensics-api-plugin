@@ -5,28 +5,14 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
-import hudson.model.TaskListener;
-import hudson.tasks.BuildStepDescriptor;
-import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
-import hudson.tasks.Recorder;
-import hudson.util.ComboBoxModel;
-import hudson.util.FormValidation;
 import jenkins.branch.MultiBranchProject;
-import jenkins.tasks.SimpleBuildStep;
 
 import io.jenkins.plugins.util.JenkinsFacade;
-import io.jenkins.plugins.util.LogHandler;
 
 /**
  * Base class for recorders that find reference builds.
@@ -54,16 +40,11 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Ullrich Hafner
  */
 @SuppressWarnings("PMD.DataClass")
-public abstract class ReferenceRecorder extends Recorder implements SimpleBuildStep {
-    static final String NO_REFERENCE_JOB = "-";
-
+public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     private static final String DEFAULT_BRANCH = "master";
 
-    private final JenkinsFacade jenkins;
-
-    private String referenceJob = StringUtils.EMPTY;
-    private boolean latestBuildIfNotFound = false;
     private String defaultBranch = DEFAULT_BRANCH;
+    private boolean latestBuildIfNotFound = false;
 
     /**
      * Creates a new instance of {@link ReferenceRecorder}.
@@ -72,37 +53,7 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
      *         facade to Jenkins
      */
     protected ReferenceRecorder(final JenkinsFacade jenkins) {
-        super();
-
-        this.jenkins = jenkins;
-    }
-
-    /**
-     * Sets the reference job: this job will be used as baseline to search for the best matching reference build. If
-     * the reference job should be computed automatically (supported by {@link MultiBranchProject multi-branch projects}
-     * only), then let this field empty.
-     *
-     * @param referenceJob
-     *         the name of reference job
-     */
-    @DataBoundSetter
-    public void setReferenceJob(final String referenceJob) {
-        if (NO_REFERENCE_JOB.equals(referenceJob)) {
-            this.referenceJob = StringUtils.EMPTY;
-        }
-        this.referenceJob = StringUtils.strip(referenceJob);
-    }
-
-    /**
-     * Returns the name of the reference job. If the job is not defined, then {@link #NO_REFERENCE_JOB} is returned.
-     *
-     * @return the name of reference job, or {@link #NO_REFERENCE_JOB} if undefined
-     */
-    public String getReferenceJob() {
-        if (StringUtils.isBlank(referenceJob)) {
-            return NO_REFERENCE_JOB;
-        }
-        return referenceJob;
+        super(jenkins);
     }
 
     /**
@@ -143,27 +94,7 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
     }
 
     @Override
-    public BuildStepMonitor getRequiredMonitorService() {
-        return BuildStepMonitor.NONE;
-    }
-
-    @Override
-    public ReferenceRecorderDescriptor getDescriptor() {
-        return (ReferenceRecorderDescriptor) super.getDescriptor();
-    }
-
-    @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace,
-            @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
-        FilteredLog log = new FilteredLog("Errors while computing the reference build");
-
-        run.addAction(findReferenceBuild(run, log));
-
-        LogHandler logHandler = new LogHandler(listener, "ReferenceFinder");
-        logHandler.log(log);
-    }
-
-    private ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
+    protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
         Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, log);
         if (actualReferenceJob.isPresent()) {
             Job<?, ?> reference = actualReferenceJob.get();
@@ -191,89 +122,49 @@ public abstract class ReferenceRecorder extends Recorder implements SimpleBuildS
         return new ReferenceBuild(run, log.getInfoMessages());
     }
 
-    protected abstract Optional<Run<?, ?>> find(Run<?, ?> run, Run<?, ?> lastCompletedBuildOfReferenceJob);
-
     private Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
-        String jobName = getReferenceJob();
-        if (isValidJobName(jobName)) {
-            log.logInfo("Configured reference job: '%s'", jobName);
-
-            return findJob(jobName, log);
+        Optional<Job<?, ?>> referenceJob = resolveReferenceJob(log);
+        if (referenceJob.isPresent()) {
+            return referenceJob;
         }
-        else {
-            Job<?, ?> job = run.getParent();
-            ItemGroup<?> topLevel = job.getParent();
-            if (topLevel instanceof MultiBranchProject) {
-                // TODO: we should make use of the branch API
-                if (getReferenceBranch().equals(job.getName())) {
-                    log.logInfo("No reference job required - we are already on the default branch for '%s'",
-                            job.getName());
-                }
-                else {
-                    log.logInfo("Reference job inferred from toplevel project '%s'", topLevel.getDisplayName());
-                    String referenceFromDefaultBranch = job.getParent().getFullName() + "/" + getReferenceBranch();
-                    log.logInfo("Target branch: '%s'", getReferenceBranch());
-                    log.logInfo("Inferred job name: '%s'", referenceFromDefaultBranch);
 
-                    return findJob(referenceFromDefaultBranch, log);
-                }
+        return discoverJobFromMultiBranchPipeline(run, log);
+    }
+
+    private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog log) {
+        Job<?, ?> job = run.getParent();
+        ItemGroup<?> topLevel = job.getParent();
+        if (topLevel instanceof MultiBranchProject) {
+            // TODO: we should make use of the branch API
+            if (getReferenceBranch().equals(job.getName())) {
+                log.logInfo("No reference job required - we are already on the default branch for '%s'",
+                        job.getName());
             }
             else {
-                log.logInfo("Consider configuring a reference job using the 'referenceJob' property");
+                log.logInfo("Reference job inferred from toplevel project '%s'", topLevel.getDisplayName());
+                String referenceFromDefaultBranch = job.getParent().getFullName() + "/" + getReferenceBranch();
+                log.logInfo("Target branch: '%s'", getReferenceBranch());
+                log.logInfo("Inferred job name: '%s'", referenceFromDefaultBranch);
+
+                return findJob(referenceFromDefaultBranch, log);
             }
-            return Optional.empty();
         }
-    }
-
-    private Optional<Job<?, ?>> findJob(final String jobName, final FilteredLog log) {
-        Optional<Job<?, ?>> job = jenkins.getJob(jobName);
-        if (!job.isPresent()) {
-            log.logInfo("There is no such job - maybe the job has been renamed or deleted?");
+        else {
+            log.logInfo("Consider configuring a reference job using the 'referenceJob' property");
         }
-        return job;
-    }
-
-    private boolean isValidJobName(final String name) {
-        return StringUtils.isNotBlank(name) && !NO_REFERENCE_JOB.equals(name);
+        return Optional.empty();
     }
 
     /**
-     * Descriptor for this step: defines the context and the UI data binding and validation.
+     * Returns the reference build for the given build {@code owner}. The search should start with the last
+     * completed build of the reference build.
+     *
+     * @param owner
+     *         the owner to get the reference build for
+     * @param lastCompletedBuildOfReferenceJob
+     *         the last completed build of the reference job
+     *
+     * @return the reference build (if available)
      */
-    protected static class ReferenceRecorderDescriptor extends BuildStepDescriptor<Publisher> {
-        @NonNull
-        @Override
-        public String getDisplayName() {
-            return Messages.Recorder_DisplayName();
-        }
-
-        @Override
-        public boolean isApplicable(final Class<? extends AbstractProject> jobType) {
-            return true;
-        }
-
-        private final ReferenceJobModelValidation model = new ReferenceJobModelValidation();
-
-        /**
-         * Returns the model with the possible reference jobs.
-         *
-         * @return the model with the possible reference jobs
-         */
-        public ComboBoxModel doFillReferenceJobItems() {
-            return model.getAllJobs();
-        }
-
-        /**
-         * Performs on-the-fly validation of the reference job.
-         *
-         * @param referenceJob
-         *         the reference job
-         *
-         * @return the validation result
-         */
-        @SuppressWarnings("unused") // Used in jelly validation
-        public FormValidation doCheckReferenceJob(@QueryParameter final String referenceJob) {
-            return model.validateJob(referenceJob);
-        }
-    }
+    protected abstract Optional<Run<?, ?>> find(Run<?, ?> owner, Run<?, ?> lastCompletedBuildOfReferenceJob);
 }

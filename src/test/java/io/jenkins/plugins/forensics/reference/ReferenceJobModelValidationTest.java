@@ -26,23 +26,24 @@ import static org.mockito.Mockito.*;
  */
 class ReferenceJobModelValidationTest {
     @Test
-    void doFillReferenceJobItemsShouldBeNotEmpty() {
+    void shouldHaveEmptyListModel() {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
         when(jenkins.getAllJobNames()).thenReturn(new HashSet<>());
 
         ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
 
-        assertThat(model.getAllJobs()).containsExactly(NO_REFERENCE_JOB);
+        assertThat(model.getAllJobs()).isEmpty();
     }
 
     @Test
     void shouldValidateToOkIfEmpty() {
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation();
+        JenkinsFacade jenkins = mock(JenkinsFacade.class);
+        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
 
         assertSoftly(softly -> {
-            softly.assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.OK);
-            softly.assertThat(model.validateJob("").kind).isEqualTo(Kind.OK);
-            softly.assertThat(model.validateJob(null).kind).isEqualTo(Kind.OK);
+            softly.assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.ERROR);
+            softly.assertThat(model.validateJob("").kind).isEqualTo(Kind.ERROR);
+            softly.assertThat(model.validateJob(null).kind).isEqualTo(Kind.ERROR);
         });
     }
 
@@ -57,29 +58,9 @@ class ReferenceJobModelValidationTest {
         ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
 
         assertThat(model.validateJob(jobName).kind).isEqualTo(Kind.OK);
+        assertThat(model.validateJob("other").kind).isEqualTo(Kind.ERROR);
     }
 
-    @Test
-    void doCheckReferenceJobShouldBeNOkWithInvalidValue() {
-        String referenceJob = "referenceJob";
-        JenkinsFacade jenkins = mock(JenkinsFacade.class);
-        when(jenkins.getJob(referenceJob)).thenReturn(Optional.empty());
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
-
-        assertThat(model.validateJob(referenceJob).kind).isEqualTo(Kind.ERROR);
-        assertThat(model.validateJob(referenceJob).getLocalizedMessage()).isEqualTo(
-                "There is no such job - maybe the job has been renamed?");
-    }
-
-    @Test
-    void shouldContainEmptyJobPlaceHolder() {
-        JenkinsFacade jenkins = mock(JenkinsFacade.class);
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
-        ComboBoxModel actualModel = model.getAllJobs();
-
-        assertThat(actualModel).hasSize(1);
-        assertThat(actualModel).containsExactly(NO_REFERENCE_JOB);
-    }
 
     @Test
     void shouldContainSingleElementAndPlaceHolder() {
@@ -93,7 +74,6 @@ class ReferenceJobModelValidationTest {
 
         ComboBoxModel actualModel = model.getAllJobs();
 
-        assertThat(actualModel).hasSize(2);
-        assertThat(actualModel).containsExactly(NO_REFERENCE_JOB, name);
+        assertThat(actualModel).hasSize(1).containsExactly(name);
     }
 }
