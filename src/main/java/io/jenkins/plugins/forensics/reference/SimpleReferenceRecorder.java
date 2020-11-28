@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 import org.jenkinsci.Symbol;
 import hudson.Extension;
 import hudson.FilePath;
@@ -232,6 +233,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          *
          * @return the validation result
          */
+        @POST
         @SuppressWarnings("unused") // Used in jelly validation
         public FormValidation doCheckReferenceJob(@QueryParameter final String referenceJob) {
             return model.validateJob(referenceJob);

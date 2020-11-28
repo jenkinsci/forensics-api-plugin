@@ -7,13 +7,13 @@
     <j:set var="s" value="${it.result.latestStatistics}" />
     <ul>
       <li>
+        New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
+      </li>
+      <li>
         New added lines: ${s.addedLines}
       </li>
       <li>
         New deleted lines: ${s.deletedLines}
-      </li>
-      <li>
-        New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
       </li>
     </ul>
   </t:summary>
