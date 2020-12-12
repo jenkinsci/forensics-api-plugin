@@ -17,6 +17,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
+import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -221,8 +222,12 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          *
          * @return the model with the possible reference jobs
          */
+        @POST
         public ComboBoxModel doFillReferenceJobItems() {
-            return model.getAllJobs();
+            if (new JenkinsFacade().hasPermission(Item.CONFIGURE)) {
+                return model.getAllJobs();
+            }
+            return new ComboBoxModel();
         }
 
         /**
