@@ -16,10 +16,12 @@ used to track the original commit that introduced a piece of code.
 - **File statistics**: Collects commit statistics for all repository files in the style of 
   [Code as a Crime Scene](https://www.adamtornhill.com/articles/crimescene/codeascrimescene.htm) 
   \[Adam Tornhill, November 2013\]:
-  - total number of commits
-  - total number of different authors
+  - commits count
+  - different authors count
   - creation time
   - last modification time
+  - lines of code (from the commit details)
+  - code churn (changed lines since created)
 - **Commit tracking**: Tracks all new commits that are part of a build. Using this information plugins can search for 
  builds that contain a specific commit. 
 - **Reference build**: Several plugins that report build statistics (test results, code coverage, metrics, static 
@@ -35,10 +37,20 @@ interested what changed in a branch or pull request with respect to the main bra
 target branch): e.g., how will the code coverage change if the team merges the changes. Selecting the correct reference
 build is not that easy, since the main branch of a project will evolve more frequently than a specific feature or bugfix
 branch.    
+- **Repository Browser**: Provides a [RepositoryBrowser](https://javadoc.jenkins.io/hudson/scm/RepositoryBrowser.html) 
+  for commits. Since the original Jenkins interface has no API to generate links to simple
+  commits, this decorator adds such a functionality. Note that this API does not only obtain such links, it also
+  renders these links as HTML `a` tags.
 
 ## Implementations
 
 [Jenkins Git Forensics Plugin](https://github.com/jenkinsci/git-forensics-plugin) is a plugin that implements the 
 corresponding extension points for Git. Other version control systems are not yet supported.  
 
+## User documentation
+
+Currently this API is only implemented by the 
+[Jenkins Git Forensics Plugin](https://github.com/jenkinsci/git-forensics-plugin)
+so please refer to the [documentation](https://github.com/jenkinsci/git-forensics-plugin/README.md)
+there on how to use the features. 
 
