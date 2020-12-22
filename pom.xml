@@ -33,7 +33,7 @@
     <bootstrap4-api.version>4.5.3-1</bootstrap4-api.version>
     <data-tables-api.version>1.10.21-3</data-tables-api.version>
     <echarts-api.version>4.9.0-2</echarts-api.version>
-    <plugin-util-api.version>1.6.1-rc245.abae4f306dc2</plugin-util-api.version>
+    <plugin-util-api.version>1.6.1</plugin-util-api.version>
 
   </properties>
 
