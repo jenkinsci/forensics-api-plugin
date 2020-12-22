@@ -204,6 +204,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     @Extension
     @Symbol("discoverReferenceBuild")
     public static class SimpleReferenceRecorderDescriptor extends BuildStepDescriptor<Publisher> {
+        private static final JenkinsFacade JENKINS = new JenkinsFacade();
+
         @NonNull
         @Override
         public String getDisplayName() {
@@ -224,7 +226,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          */
         @POST
         public ComboBoxModel doFillReferenceJobItems() {
-            if (new JenkinsFacade().hasPermission(Item.CONFIGURE)) {
+            if (JENKINS.hasPermission(Item.CONFIGURE)) {
                 return model.getAllJobs();
             }
             return new ComboBoxModel();
@@ -241,6 +243,9 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         @POST
         @SuppressWarnings("unused") // Used in jelly validation
         public FormValidation doCheckReferenceJob(@QueryParameter final String referenceJob) {
+            if (!JENKINS.hasPermission(Item.CONFIGURE)) {
+                return FormValidation.ok();
+            }
             return model.validateJob(referenceJob);
         }
     }
