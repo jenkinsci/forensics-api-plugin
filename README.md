@@ -51,6 +51,6 @@ corresponding extension points for Git. Other version control systems are not ye
 
 Currently this API is only implemented by the 
 [Jenkins Git Forensics Plugin](https://github.com/jenkinsci/git-forensics-plugin)
-so please refer to the [documentation](https://github.com/jenkinsci/git-forensics-plugin/README.md)
+so please refer to the [documentation](https://github.com/jenkinsci/git-forensics-plugin/blob/master/README.md)
 there on how to use the features. 
 
