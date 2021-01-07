@@ -1,10 +1,12 @@
 package io.jenkins.plugins.forensics.util;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition;
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Job;
@@ -32,7 +34,13 @@ public class ScmResolver {
         if (run instanceof AbstractBuild) {
             return extractFromProject((AbstractBuild<?, ?>) run);
         }
-        else if (job instanceof SCMTriggerItem) {
+        if (run instanceof WorkflowRun) {
+            List<SCM> scms = ((WorkflowRun) run).getSCMs();
+            if (!scms.isEmpty()) {
+                return scms.get(0);
+            }
+        }
+        if (job instanceof SCMTriggerItem) {
             return extractFromPipeline(job);
         }
         return new NullSCM();
