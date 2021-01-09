@@ -40,17 +40,15 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
     /**
      * Returns a commit decorator for the specified {@link Run build}.
      *
-     * @param run
-     *         the current build
+     * @param scm
+     *         the scm
      * @param logger
      *         a logger to report error messages
      *
-     * @return a commit decorator for the SCM of the specified build or a {@link NullDecorator} if the SCM is not
+     * @return a commit decorator for the SCM or a {@link NullDecorator} if the SCM is not
      *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
      */
-    public static CommitDecorator findCommitDecorator(final Run<?, ?> run, final FilteredLog logger) {
-        SCM scm = new ScmResolver().getScm(run);
-
+    public static CommitDecorator findCommitDecorator(final SCM scm, final FilteredLog logger) {
         return findAllExtensions().stream()
                 .map(factory -> factory.createCommitDecorator(scm, logger))
                 .flatMap(OPTIONAL_MAPPER)
@@ -60,14 +58,14 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
     /**
      * Returns a commit decorator for the specified {@link Run build}.
      *
-     * @param run
-     *         the current build
+     * @param scm
+     *         the scm
      *
-     * @return a commit decorator for the SCM of the specified build or a {@link NullDecorator} if the SCM is not
+     * @return a commit decorator for the SCM or a {@link NullDecorator} if the SCM is not
      *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
      */
-    public static CommitDecorator findCommitDecorator(final Run<?, ?> run) {
-        return findCommitDecorator(run, new FilteredLog("ignored"));
+    public static CommitDecorator findCommitDecorator(final SCM scm) {
+        return findCommitDecorator(scm, new FilteredLog("ignored"));
     }
 
     private static List<CommitDecoratorFactory> findAllExtensions() {
