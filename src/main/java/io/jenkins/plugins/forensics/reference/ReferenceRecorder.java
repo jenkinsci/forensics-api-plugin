@@ -45,6 +45,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     private String defaultBranch = DEFAULT_BRANCH;
     private boolean latestBuildIfNotFound = false;
+    private String scm = StringUtils.EMPTY;
 
     /**
      * Creates a new instance of {@link ReferenceRecorder}.
@@ -87,6 +88,22 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     public String getDefaultBranch() {
         return defaultBranch;
+    }
+
+    /**
+     * Sets the SCM that should be used to find the reference build for. The reference recorder will select the SCM
+     * based on a substring comparison, there is no need to specify the full name.
+     *
+     * @param scm
+     *         the ID of the SCM to use (a substring of the full ID)
+     */
+    @DataBoundSetter
+    public void setScm(final String scm) {
+        this.scm = scm;
+    }
+
+    public String getScm() {
+        return scm;
     }
 
     private String getReferenceBranch() {
