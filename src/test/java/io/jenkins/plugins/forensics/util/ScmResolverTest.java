@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Andreas Reiser
  */
+@SuppressWarnings("rawtypes")
 class ScmResolverTest {
     @Test
     void shouldCreateNullBlamerOnNullScm() {
@@ -37,7 +38,7 @@ class ScmResolverTest {
     }
 
     @Test
-    void shouldCreateGitBlamerOnGitScm() {
+    void shouldResolveScmOnGitScm() {
         AbstractProject job = mock(AbstractProject.class);
         SCM scm = mock(SCM.class);
         when(job.getScm()).thenReturn(scm);
@@ -47,7 +48,7 @@ class ScmResolverTest {
     }
 
     @Test
-    void shouldCreateGitBlamerOnGitScmOnRoot() {
+    void shouldResolveScmOnGitScmOnRoot() {
         AbstractProject job = mock(AbstractProject.class);
 
         AbstractProject root = mock(AbstractProject.class);
@@ -62,7 +63,7 @@ class ScmResolverTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void shouldCreateGitBlamerForPipeline() {
+    void shouldResolveScmForPipeline() {
         Job pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
 
         SCM gitScm = mock(SCM.class);
@@ -73,7 +74,7 @@ class ScmResolverTest {
     }
 
     @Test
-    void shouldCreateGitBlamerForPipelineWithFlowNode() throws IOException {
+    void shouldResolveScmForPipelineWithFlowNode() throws IOException {
         WorkflowJob pipeline = createPipeline();
         pipeline.setDefinition(createCpsFlowDefinition());
 

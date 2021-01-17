@@ -80,8 +80,6 @@ public abstract class MinerFactory implements ExtensionPoint {
         return new NullMiner();
     }
 
-
-
     private static Optional<RepositoryMiner> findMiner(final Run<?, ?> run, final FilePath workTree,
             final TaskListener listener, final FilteredLog logger) {
         SCM scm = new ScmResolver().getScm(run);
@@ -90,6 +88,31 @@ public abstract class MinerFactory implements ExtensionPoint {
                 .map(minerFactory -> minerFactory.createMiner(scm, run, workTree, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst();
+    }
+
+    /**
+     * Returns a miner for the repository of the specified {@link Run build}.
+     *
+     * @param scm
+     *         the SCM repository
+     * @param run
+     *         the current build
+     * @param workTree
+     *         the working tree of the repository
+     * @param listener
+     *         a task listener
+     * @param logger
+     *         a logger to report error messages
+     *
+     * @return a miner for the SCM of the specified build or a {@link NullMiner} if the SCM is not supported
+     */
+    public static RepositoryMiner findMiner(final SCM scm, final Run<?, ?> run,
+            final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
+        return findAllExtensions().stream()
+                .map(minerFactory -> minerFactory.createMiner(scm, run, workTree, listener, logger))
+                .flatMap(OPTIONAL_MAPPER)
+                .findFirst()
+                .orElse(new NullMiner());
     }
 
     private static List<MinerFactory> findAllExtensions() {

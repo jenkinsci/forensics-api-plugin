@@ -1,0 +1,12 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
+
+  <st:documentation>
+    Provides a text box to select the SCM.
+  </st:documentation>
+
+  <f:entry title="${%title.scm}" field="scm" description="${%description.scm}">
+    <f:textbox/>
+  </f:entry>
+
+</j:jelly>
