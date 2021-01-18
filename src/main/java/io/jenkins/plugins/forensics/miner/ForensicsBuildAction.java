@@ -3,6 +3,8 @@ package io.jenkins.plugins.forensics.miner;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
+
 import edu.hm.hafner.util.VisibleForTesting;
 
 import org.kohsuke.stapler.StaplerProxy;
@@ -23,6 +25,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     private final int numberOfFiles;
     private final int miningDurationSeconds;
+    private String scmKey;
+    private final String fileName;
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -33,10 +37,31 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      * @param miningDurationSeconds
      *         the duration of the mining operation in [s]
+     * @deprecated use {@link #ForensicsBuildAction(Run, RepositoryStatistics, int, String, int)}
      */
+    @Deprecated
     public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
             final int miningDurationSeconds) {
-        this(owner, repositoryStatistics, true, miningDurationSeconds);
+        this(owner, repositoryStatistics, true, miningDurationSeconds, StringUtils.EMPTY, 0);
+    }
+
+    /**
+     * Creates a new instance of {@link ForensicsBuildAction}.
+     *
+     * @param owner
+     *         the associated build that created the statistics
+     * @param repositoryStatistics
+     *         the statistics to persist with this action
+     * @param miningDurationSeconds
+     *         the duration of the mining operation in [s]
+     * @param scmKey
+     *         key of the repository
+     * @param number
+     *         unique number of the results (used as part of the serialization file name)
+     */
+    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
+            final int miningDurationSeconds, final String scmKey, final int number) {
+        this(owner, repositoryStatistics, true, miningDurationSeconds, scmKey, number);
     }
 
     /**
@@ -50,14 +75,35 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         determines whether the result should be persisted in the build folder
      * @param miningDurationSeconds
      *         the duration of the mining operation in [s]
+     * @param scmKey
+     *         key of the repository
+     * @param number
+     *         unique number of the results (used as part of the serialization file name)
      */
     @VisibleForTesting
     ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final boolean canSerialize, final int miningDurationSeconds) {
+            final boolean canSerialize, final int miningDurationSeconds, final String scmKey, final int number) {
         super(owner, repositoryStatistics, canSerialize);
 
         numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
+        this.scmKey = scmKey;
+        fileName = getFileName(number);
+    }
+
+    @Override
+    protected Object readResolve() {
+        if (scmKey == null) {
+            scmKey = StringUtils.EMPTY;
+        }
+        return super.readResolve();
+    }
+
+    private String getFileName(final int number) {
+        if (number == 0) {
+            return "repository-statistics.xml";
+        }
+        return String.format("repository-statistics-%d.xml", number);
     }
 
     @Override
@@ -78,7 +124,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     protected String getBuildResultBaseName() {
-        return "repository-statistics.xml";
+        return fileName;
     }
 
     @Override
@@ -112,5 +158,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     public int getMiningDurationSeconds() {
         return miningDurationSeconds;
+    }
+
+    public String getScmKey() {
+        return scmKey;
     }
 }

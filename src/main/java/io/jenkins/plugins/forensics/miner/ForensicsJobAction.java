@@ -55,5 +55,4 @@ public class ForensicsJobAction extends AsyncTrendJobAction<ForensicsBuildAction
     protected LinesChartModel createChartModel() {
         return new FilesCountTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
     }
-
 }

@@ -2,10 +2,13 @@
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
   <t:summary icon="/plugin/forensics-api/icons/forensics-48x48.png">
-    ${%title}: <a href="forensics">${%summary(size(it.result))}</a>
-    (total lines of code: ${it.result.totalLinesOfCode}, total churn: ${it.result.totalChurn})
+    ${%title}: ${it.scmKey}
     <j:set var="s" value="${it.result.latestStatistics}" />
     <ul>
+      <li>
+        <a href="forensics">${%summary(size(it.result))}</a>
+        (total lines of code: ${it.result.totalLinesOfCode}, total churn: ${it.result.totalChurn})
+      </li>
       <li>
         New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
       </li>
@@ -14,6 +17,9 @@
       </li>
       <li>
         New deleted lines: ${s.deletedLines}
+      </li>
+      <li>
+        Miner runtime: ${it.miningDurationSeconds}
       </li>
     </ul>
   </t:summary>

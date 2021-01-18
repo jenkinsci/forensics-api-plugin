@@ -1,6 +1,7 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
 import io.jenkins.plugins.forensics.util.ScmResolver;
+import io.jenkins.plugins.util.BuildAction;
 import io.jenkins.plugins.util.LogHandler;
 
 /**
@@ -73,8 +75,30 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     @Override
     public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace,
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
+        mineRepositories(run, workspace, listener);
+    }
+
+    private void mineRepositories(final Run<?, ?> run, final FilePath workspace, final TaskListener listener)
+            throws InterruptedException {
+        int number = 0;
         for (SCM repository : getRepositories(run)) {
-            mineRepository(repository, run, workspace, listener);
+            long startOfMining = System.nanoTime();
+            LogHandler logHandler = new LogHandler(listener, "Forensics");
+
+            FilteredLog logger = new FilteredLog("Errors while mining " + repository);
+            logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
+            logger.logInfo("-> checking SCM `%s`", repository);
+
+            RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
+            logHandler.log(logger);
+
+            RepositoryStatistics repositoryStatistics = previousBuildStatistics(scm, run);
+            RepositoryStatistics addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
+
+            logHandler.log(logger);
+            int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
+            run.addAction(
+                    new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds, scm, number++));
         }
     }
 
@@ -85,39 +109,15 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
                 .collect(Collectors.toList());
     }
 
-    private void mineRepository(final SCM repository, final Run<?, ?> run, final FilePath workspace,
-            final TaskListener listener) throws InterruptedException {
-        long startOfMining = System.nanoTime();
-        LogHandler logHandler = new LogHandler(listener, "Forensics");
-
-        FilteredLog logger = new FilteredLog("Errors while mining " + repository);
-        logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
-        logger.logInfo("-> checking SCM `%s`", repository);
-
-        RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
-        logHandler.log(logger);
-
-        RepositoryStatistics repositoryStatistics = previousBuildStatistics(run);
-        RepositoryStatistics addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
-
-        logHandler.log(logger);
-        int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
-        run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds));
-    }
-
-    /**
-     * Extracts information from the previous build.
-     *
-     * @param run
-     *         The current build.
-     *
-     * @return The RepositoryStatistics of the previous build.
-     */
-    private RepositoryStatistics previousBuildStatistics(final Run<?, ?> run) {
+    private RepositoryStatistics previousBuildStatistics(final String repository, final Run<?, ?> run) {
         for (Run<?, ?> build = run.getPreviousBuild(); build != null; build = build.getPreviousBuild()) {
-            ForensicsBuildAction action = build.getAction(ForensicsBuildAction.class);
-            if (action != null) {
-                return action.getResult();
+            List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
+            if (!actions.isEmpty()) {
+                return actions.stream()
+                        .filter(a -> repository.equals(a.getScmKey()))
+                        .findAny()
+                        .map(BuildAction::getResult)
+                        .orElse(new RepositoryStatistics());
             }
         }
 
