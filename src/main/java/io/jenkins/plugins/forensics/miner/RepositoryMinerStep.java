@@ -87,7 +87,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
             FilteredLog logger = new FilteredLog("Errors while mining " + repository);
             logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
-            logger.logInfo("-> checking SCM `%s`", repository);
+            logger.logInfo("-> checking SCM '%s'", repository.getKey());
 
             RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
             logHandler.log(logger);

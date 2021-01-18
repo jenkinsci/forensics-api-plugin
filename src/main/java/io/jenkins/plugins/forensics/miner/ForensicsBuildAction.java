@@ -23,11 +23,13 @@ import io.jenkins.plugins.util.BuildAction;
  */
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
     private static final long serialVersionUID = -263122257268060032L;
+    private static final String DEFAULT_FILE_NAME = "repository-statistics.xml";
 
     private final int numberOfFiles;
     private final int miningDurationSeconds;
-    private String scmKey;
-    private final String fileName;
+
+    private String scmKey; // since 0.9.0
+    private String fileName; // since 0.9.0
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -98,12 +100,15 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         if (scmKey == null) {
             scmKey = StringUtils.EMPTY;
         }
+        if (fileName == null) {
+            fileName = DEFAULT_FILE_NAME;
+        }
         return super.readResolve();
     }
 
     private String getFileName(final int number) {
         if (number == 0) {
-            return "repository-statistics.xml";
+            return DEFAULT_FILE_NAME;
         }
         return String.format("repository-statistics-%d.xml", number);
     }
