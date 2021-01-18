@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.VisibleForTesting;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Action;
@@ -92,6 +93,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     }
 
     @Override
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (scmKey == null) {
             scmKey = StringUtils.EMPTY;
