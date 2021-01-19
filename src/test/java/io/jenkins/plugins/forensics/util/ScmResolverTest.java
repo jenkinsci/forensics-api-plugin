@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
@@ -30,47 +29,45 @@ import static org.mockito.Mockito.*;
  *
  * @author Andreas Reiser
  */
-@SuppressWarnings("rawtypes")
 class ScmResolverTest {
     @Test
     void shouldCreateNullBlamerOnNullScm() {
-        assertThatScm(mock(Run.class)).isInstanceOf(NullSCM.class);
+        assertThatScmOf(mock(Run.class)).isInstanceOf(NullSCM.class);
     }
 
     @Test
     void shouldResolveScmOnGitScm() {
-        AbstractProject job = mock(AbstractProject.class);
+        AbstractProject<?, ?> job = mock(AbstractProject.class);
         SCM scm = mock(SCM.class);
         when(job.getScm()).thenReturn(scm);
 
-        AbstractBuild build = createBuildFor(job);
-        assertThatScm(build).isInstanceOf(SCM.class);
+        AbstractBuild<?, ?> build = createBuildFor(job);
+        assertThatScmOf(build).isInstanceOf(SCM.class);
     }
 
     @Test
     void shouldResolveScmOnGitScmOnRoot() {
-        AbstractProject job = mock(AbstractProject.class);
+        AbstractProject<?, ?> job = mock(AbstractProject.class);
 
-        AbstractProject root = mock(AbstractProject.class);
+        AbstractProject<?, ?> root = mock(AbstractProject.class);
         SCM gitScm = mock(SCM.class);
         when(root.getScm()).thenReturn(gitScm);
 
-        when(job.getRootProject()).thenReturn(root);
+        when(job.getRootProject()).thenAnswer(i -> root);
 
-        AbstractBuild build = createBuildFor(job);
-        assertThatScm(build).isInstanceOf(SCM.class);
+        AbstractBuild<?, ?> build = createBuildFor(job);
+        assertThatScmOf(build).isInstanceOf(SCM.class);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldResolveScmForPipeline() {
-        Job pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
+        Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
 
         SCM gitScm = mock(SCM.class);
-        when(((SCMTriggerItem) pipeline).getSCMs()).thenReturn(asSingleton(gitScm));
+        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Collections.singletonList(gitScm));
 
         Run<?, ?> run = createRunFor(pipeline);
-        assertThatScm(run).isInstanceOf(SCM.class);
+        assertThatScmOf(run).isInstanceOf(SCM.class);
     }
 
     @Test
@@ -79,7 +76,7 @@ class ScmResolverTest {
         pipeline.setDefinition(createCpsFlowDefinition());
 
         Run<?, ?> run = createRunFor(pipeline);
-        assertThatScm(run).isInstanceOf(SCM.class);
+        assertThatScmOf(run).isInstanceOf(SCM.class);
     }
 
     private CpsScmFlowDefinition createCpsFlowDefinition() {
@@ -89,9 +86,8 @@ class ScmResolverTest {
         return flowDefinition;
     }
 
-    @SuppressWarnings("unchecked")
     private WorkflowJob createPipeline() throws IOException {
-        ItemGroup group = mock(ItemGroup.class);
+        ItemGroup<?> group = mock(ItemGroup.class);
         WorkflowJob pipeline = new WorkflowJob(group, "stub");
         when(group.getRootDirFor(any())).thenReturn(Files.createTempFile("", "").toFile());
         when(group.getFullName()).thenReturn("bla");
@@ -100,52 +96,48 @@ class ScmResolverTest {
 
     @Test
     void shouldCreateNullBlamerForPipelineWithNoScm() {
-        Job pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
+        Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
 
         when(((SCMTriggerItem) pipeline).getSCMs()).thenReturn(new ArrayList<>());
 
         Run<?, ?> run = createRunFor(pipeline);
-        assertThatScm(run).isInstanceOf(NullSCM.class);
-    }
-
-    private List asSingleton(final SCM gitScm) {
-        return Collections.singletonList(gitScm);
+        assertThatScmOf(run).isInstanceOf(NullSCM.class);
     }
 
     @Test
     void shouldCreateNullBlamerIfNeitherProjectNorRootHaveScm() {
-        AbstractProject job = mock(AbstractProject.class);
+        AbstractProject<?, ?> job = mock(AbstractProject.class);
 
-        AbstractProject root = mock(AbstractProject.class);
-        when(job.getRootProject()).thenReturn(root);
+        AbstractProject<?, ?> root = mock(AbstractProject.class);
+        when(job.getRootProject()).thenAnswer(i -> root);
 
-        AbstractBuild build = createBuildFor(job);
+        AbstractBuild<?, ?> build = createBuildFor(job);
 
-        assertThatScm(build).isInstanceOf(NullSCM.class);
+        assertThatScmOf(build).isInstanceOf(NullSCM.class);
     }
 
-    private ObjectAssert<SCM> assertThatScm(final Run run) {
+    private ObjectAssert<SCM> assertThatScmOf(final Run<?, ?> run) {
         return assertThat(new ScmResolver().getScm(run));
     }
 
     private Run<?, ?> createRunFor(final Job<?, ?> job) {
-        Run build = mock(Run.class);
+        Run<?, ?> build = mock(Run.class);
         createRunWithEnvironment(job, build);
         return build;
     }
 
-    private AbstractBuild createBuildFor(final AbstractProject job) {
-        AbstractBuild build = mock(AbstractBuild.class);
+    private AbstractBuild<?, ?> createBuildFor(final AbstractProject<?, ?> job) {
+        AbstractBuild<?, ?> build = mock(AbstractBuild.class);
         createRunWithEnvironment(job, build);
         return build;
     }
 
-    private void createRunWithEnvironment(final Job<?, ?> job, final Run build) {
+    private void createRunWithEnvironment(final Job<?, ?> job, final Run<?, ?> build) {
         try {
             EnvVars environment = mock(EnvVars.class);
             when(build.getEnvironment(TaskListener.NULL)).thenReturn(environment);
 
-            when(build.getParent()).thenReturn(job);
+            when(build.getParent()).thenAnswer(i -> job);
         }
         catch (IOException | InterruptedException exception) {
             throw new AssertionError(exception);
