@@ -91,7 +91,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
                 .map(blamerFactory -> blamerFactory.createBlamer(scm, run, workTree, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst()
-                .orElse(new NullBlamer());
+                .orElse(createNullBlamer(logger));
     }
 
     private static Blamer createNullBlamer(final FilteredLog logger) {
