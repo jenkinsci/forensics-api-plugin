@@ -115,18 +115,19 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public Collection<? extends Action> getProjectActions() {
-        return Arrays.asList(new ForensicsJobAction(getOwner().getParent()),
-                new ForensicsCodeMetricAction(getOwner().getParent()));
+        return Arrays.asList(new ForensicsJobAction(getOwner().getParent(), scmKey),
+                new ForensicsCodeMetricAction(getOwner().getParent(), scmKey));
+    }
+
+    @Override
+    protected ForensicsJobAction createProjectAction() {
+        // This method actually is obsolete and will not be called anymore
+        return new ForensicsJobAction(getOwner().getParent(), scmKey);
     }
 
     @Override
     protected RepositoryStatisticsXmlStream createXmlStream() {
         return new RepositoryStatisticsXmlStream();
-    }
-
-    @Override
-    protected ForensicsJobAction createProjectAction() {
-        return new ForensicsJobAction(getOwner().getParent());
     }
 
     @Override
