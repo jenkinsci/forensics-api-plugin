@@ -25,6 +25,7 @@ import io.jenkins.plugins.forensics.util.CommitDecoratorFactory;
 public class ForensicsViewModel extends DefaultAsyncTableContentProvider implements ModelObject {
     private final Run<?, ?> owner;
     private final RepositoryStatistics repositoryStatistics;
+    private final String scmKey;
 
     /**
      * Creates a new {@link ForensicsViewModel} instance.
@@ -33,12 +34,15 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
      *         the build as owner of this view
      * @param repositoryStatistics
      *         the statistics to show in the view
+     * @param scmKey
+     *         key of the repository
      */
-    ForensicsViewModel(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics) {
+    ForensicsViewModel(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics, final String scmKey) {
         super();
 
         this.owner = owner;
         this.repositoryStatistics = repositoryStatistics;
+        this.scmKey = scmKey;
     }
 
     public Run<?, ?> getOwner() {
@@ -47,7 +51,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title();
+        return Messages.ForensicsView_Title(scmKey);
     }
 
     @Override

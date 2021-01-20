@@ -146,7 +146,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title();
+        return Messages.ForensicsView_Title(scmKey);
     }
 
     /**
@@ -156,7 +156,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      */
     @Override
     public Object getTarget() {
-        return new ForensicsViewModel(getOwner(), getResult());
+        return new ForensicsViewModel(getOwner(), getResult(), scmKey);
     }
 
     @Override

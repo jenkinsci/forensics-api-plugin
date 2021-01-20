@@ -97,8 +97,8 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
             logHandler.log(logger);
             int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
-            run.addAction(
-                    new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds, scm, number++));
+            run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds,
+                    repository.getKey(), number++));
         }
     }
 
@@ -114,7 +114,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
             if (!actions.isEmpty()) {
                 return actions.stream()
-                        .filter(a -> repository.equals(a.getScmKey()))
+                        .filter(a -> a.getScmKey().contains(repository))
                         .findAny()
                         .map(BuildAction::getResult)
                         .orElse(new RepositoryStatistics());
