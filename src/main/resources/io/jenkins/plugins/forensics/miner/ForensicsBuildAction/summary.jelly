@@ -6,7 +6,7 @@
     <j:set var="s" value="${it.result.latestStatistics}" />
     <ul>
       <li>
-        <a href="forensics">${%summary(size(it.result))}</a>
+        <a href="${it.urlName}">${%summary(size(it.result))}</a>
         (total lines of code: ${it.result.totalLinesOfCode}, total churn: ${it.result.totalChurn})
       </li>
       <li>
@@ -19,7 +19,7 @@
         New deleted lines: ${s.deletedLines}
       </li>
       <li>
-        Miner runtime: ${it.miningDurationSeconds}
+        Miner runtime: ${it.miningDurationSeconds} seconds
       </li>
     </ul>
   </t:summary>

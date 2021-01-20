@@ -27,6 +27,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     private final int numberOfFiles;
     private final int miningDurationSeconds;
+    private final String urlName;
 
     private String scmKey; // since 0.9.0
     private String fileName; // since 0.9.0
@@ -91,7 +92,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
         this.scmKey = scmKey;
-        fileName = getFileName(number);
+
+        fileName = createFileName(number);
+        urlName = createUrlName(number);
 
         if (canSerialize) {
             createXmlStream().write(owner.getRootDir().toPath().resolve(fileName), repositoryStatistics);
@@ -110,11 +113,18 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         return super.readResolve();
     }
 
-    private String getFileName(final int number) {
+    private String createFileName(final int number) {
         if (number == 0) {
             return DEFAULT_FILE_NAME;
         }
         return String.format("repository-statistics-%d.xml", number);
+    }
+
+    private String createUrlName(final int number) {
+        if (number == 0) {
+            return ForensicsJobAction.FORENSICS_ID;
+        }
+        return String.format("%s-%d", ForensicsJobAction.FORENSICS_ID, number);
     }
 
     @Override
@@ -161,7 +171,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public String getUrlName() {
-        return ForensicsJobAction.FORENSICS_ID;
+        return urlName;
     }
 
     public int getNumberOfFiles() {
