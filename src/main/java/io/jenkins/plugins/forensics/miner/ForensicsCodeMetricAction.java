@@ -9,9 +9,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import hudson.model.Job;
 
-import io.jenkins.plugins.echarts.AsyncTrendJobAction;
-import io.jenkins.plugins.echarts.BuildActionIterator;
-
 /**
  * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
  * (i.e. a {@link ForensicsBuildAction} with a {@link RepositoryStatistics} instance). This action also is responsible
@@ -19,9 +16,7 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
  *
  * @author Giulia Del Bravo
  */
-public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuildAction> {
-    private final String scmKey;
-
+public class ForensicsCodeMetricAction extends AbstractForensicsAction {
     /**
      * Creates a new instance of {@link ForensicsCodeMetricAction}.
      *
@@ -43,15 +38,13 @@ public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuil
      *         key of the repository
      */
     public ForensicsCodeMetricAction(final Job<?, ?> owner, final String scmKey) {
-        super(owner, ForensicsBuildAction.class);
-
-        this.scmKey = scmKey;
+        super(owner, scmKey);
     }
 
-
     @Override
-    protected LinesChartModel createChartModel() {
-        return new ForensicsCodeMetricTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
+    LinesChartModel createChart(final Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory,
+            final ChartModelConfiguration configuration) {
+        return new ForensicsCodeMetricTrendChart().create(buildHistory, configuration);
     }
 
     /**
@@ -74,11 +67,5 @@ public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuil
     @Override
     public String getUrlName() {
         return null;
-    }
-
-    @Override
-    protected Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
-        return () -> new BuildActionIterator<>(ForensicsBuildAction.class, getLatestAction(),
-                a -> scmKey.equals(a.getScmKey()));
     }
 }

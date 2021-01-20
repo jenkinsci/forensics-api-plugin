@@ -86,12 +86,16 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     @VisibleForTesting
     ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
             final boolean canSerialize, final int miningDurationSeconds, final String scmKey, final int number) {
-        super(owner, repositoryStatistics, canSerialize);
+        super(owner, repositoryStatistics, false);
 
         numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
         this.scmKey = scmKey;
         fileName = getFileName(number);
+
+        if (canSerialize) {
+            createXmlStream().write(owner.getRootDir().toPath().resolve(fileName), repositoryStatistics);
+        }
     }
 
     @Override

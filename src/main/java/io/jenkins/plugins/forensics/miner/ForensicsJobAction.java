@@ -9,9 +9,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import hudson.model.Job;
 
-import io.jenkins.plugins.echarts.AsyncTrendJobAction;
-import io.jenkins.plugins.echarts.BuildActionIterator;
-
 /**
  * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
  * (i.e. a {@link ForensicsBuildAction} with a {@link RepositoryStatistics} instance). This action also is responsible
@@ -19,11 +16,9 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
  *
  * @author Ullrich Hafner
  */
-public class ForensicsJobAction extends AsyncTrendJobAction<ForensicsBuildAction> {
+public class ForensicsJobAction extends AbstractForensicsAction {
     static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
     static final String FORENSICS_ID = "forensics";
-
-    private final String scmKey;
 
     /**
      * Creates a new instance of {@link ForensicsJobAction}.
@@ -46,9 +41,7 @@ public class ForensicsJobAction extends AsyncTrendJobAction<ForensicsBuildAction
      *         key of the repository
      */
     public ForensicsJobAction(final Job<?, ?> owner, final String scmKey) {
-        super(owner, ForensicsBuildAction.class);
-
-        this.scmKey = scmKey;
+        super(owner, scmKey);
     }
 
     @Override
@@ -74,13 +67,8 @@ public class ForensicsJobAction extends AsyncTrendJobAction<ForensicsBuildAction
     }
 
     @Override
-    protected LinesChartModel createChartModel() {
-        return new FilesCountTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
-    }
-
-    @Override
-    protected Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
-        return () -> new BuildActionIterator<>(ForensicsBuildAction.class, getLatestAction(),
-                a -> scmKey.equals(a.getScmKey()));
+    LinesChartModel createChart(final Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory,
+            final ChartModelConfiguration configuration) {
+        return new FilesCountTrendChart().create(buildHistory, configuration);
     }
 }
