@@ -28,6 +28,10 @@ abstract class AbstractForensicsAction extends AsyncTrendJobAction<ForensicsBuil
         this.scmKey = scmKey;
     }
 
+    public String getScmKey() {
+        return scmKey;
+    }
+
     @Override
     protected Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
         return () -> {
