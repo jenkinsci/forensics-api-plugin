@@ -185,4 +185,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     public String getScmKey() {
         return scmKey;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%s]", urlName, scmKey);
+    }
 }
