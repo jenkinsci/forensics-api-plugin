@@ -1,8 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,7 +79,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     private void mineRepositories(final Run<?, ?> run, final FilePath workspace, final TaskListener listener)
             throws InterruptedException {
         int number = 0;
-        for (SCM repository : getRepositories(run)) {
+        for (SCM repository : new ScmResolver().getScms(run, getScm())) {
             long startOfMining = System.nanoTime();
             LogHandler logHandler = new LogHandler(listener, "Forensics");
 
@@ -100,13 +98,6 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds,
                     repository.getKey(), number++));
         }
-    }
-
-    private Collection<? extends SCM> getRepositories(final Run<?, ?> run) {
-        return new ScmResolver().getScms(run)
-                .stream()
-                .filter(r -> r.getKey().contains(getScm()))
-                .collect(Collectors.toList());
     }
 
     private RepositoryStatistics previousBuildStatistics(final String repository, final Run<?, ?> run) {

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition;
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition;
@@ -39,6 +40,23 @@ public class ScmResolver {
             return new NullSCM();
         }
         return scms.iterator().next();
+    }
+
+    /**
+     * Returns the SCMs in a given build, filtered by the name.
+     *
+     * @param run
+     *         the build to get the SCMs from
+     * @param keyFilter
+     *         substring that must be part of the SCM key
+     *
+     * @return the SCMs
+     */
+    public Collection<? extends SCM> getScms(final Run<?, ?> run, final String keyFilter) {
+        return getScms(run)
+                .stream()
+                .filter(r -> r.getKey().contains(keyFilter))
+                .collect(Collectors.toList());
     }
 
     /**

@@ -73,7 +73,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
      * Returns a blamer for the specified {@link SCM repository}.
      *
      * @param scm
-     *         the SCM repository
+     *         the key of the SCM repository (substring that must be part of the SCM key)
      * @param run
      *         the current build
      * @param workTree
@@ -85,10 +85,15 @@ public abstract class BlamerFactory implements ExtensionPoint {
      *
      * @return a blamer for the SCM of the specified build or a {@link NullBlamer} if the SCM is not supported
      */
-    public static Blamer findBlamer(final SCM scm, final Run<?, ?> run,
+    public static Blamer findBlamer(final String scm, final Run<?, ?> run,
             final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
+        Collection<? extends SCM> scms = new ScmResolver().getScms(run, scm);
+        if (scms.isEmpty()) {
+            logger.logInfo("-> No SCM found.");
+            return new NullBlamer();
+        }
         return findAllExtensions().stream()
-                .map(blamerFactory -> blamerFactory.createBlamer(scm, run, workTree, listener, logger))
+                .map(blamerFactory -> blamerFactory.createBlamer(scms.iterator().next(), run, workTree, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst()
                 .orElse(createNullBlamer(logger));
