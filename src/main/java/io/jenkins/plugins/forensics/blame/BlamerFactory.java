@@ -89,7 +89,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
             final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
         Collection<? extends SCM> scms = new ScmResolver().getScms(run, scm);
         if (scms.isEmpty()) {
-            logger.logInfo("-> No SCM found.");
+            logger.logInfo("-> No SCM found");
             return new NullBlamer();
         }
         return findAllExtensions().stream()
