@@ -60,7 +60,9 @@ public abstract class MinerFactory implements ExtensionPoint {
      *         a logger to report error messages
      *
      * @return a miner for the SCM of the specified build or a {@link NullMiner} if the SCM is not supported
+     * @deprecated use {@link #findMiner(SCM, Run, FilePath, TaskListener, FilteredLog)}
      */
+    @Deprecated
     public static RepositoryMiner findMiner(final Run<?, ?> run,
             final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
         return scmDirectories.stream()
@@ -106,7 +108,7 @@ public abstract class MinerFactory implements ExtensionPoint {
      *
      * @return a miner for the SCM of the specified build or a {@link NullMiner} if the SCM is not supported
      */
-    public static RepositoryMiner findMiner(final SCM scm, final Run<?, ?> run,
+    static RepositoryMiner findMiner(final SCM scm, final Run<?, ?> run,
             final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
         return findAllExtensions().stream()
                 .map(minerFactory -> minerFactory.createMiner(scm, run, workTree, listener, logger))
