@@ -3,6 +3,7 @@ package io.jenkins.plugins.forensics.util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.assertj.core.api.ObjectAssert;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -61,6 +63,14 @@ class ScmResolverTest {
 
     @Test
     void shouldResolveScmForPipeline() {
+        WorkflowRun build = mock(WorkflowRun.class);
+        SCM gitScm = mock(SCM.class);
+        when(build.getSCMs()).thenAnswer(i -> Collections.singletonList(gitScm));
+        assertThatScmOf(build).isInstanceOf(SCM.class);
+    }
+
+    @Test
+    void shouldResolveScmForSCMTriggerItem() {
         Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
 
         SCM gitScm = mock(SCM.class);
@@ -68,6 +78,43 @@ class ScmResolverTest {
 
         Run<?, ?> run = createRunFor(pipeline);
         assertThatScmOf(run).isInstanceOf(SCM.class);
+    }
+
+    @Test
+    void shouldSkipDuplicateScms() {
+        Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
+
+        SCM first = createScm("key");
+        SCM second = createScm("otherKey");
+        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Arrays.asList(first, second));
+
+        Run<?, ?> run = createRunFor(pipeline);
+        assertThat(new ScmResolver().getScms(run)).hasSize(2);
+
+        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Arrays.asList(first, first));
+
+        Run<?, ?> duplicates = createRunFor(pipeline);
+        assertThat(new ScmResolver().getScms(duplicates)).hasSize(1);
+    }
+
+    @Test
+    void shouldFilterScms() {
+        Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
+
+        SCM first = createScm("key");
+        SCM second = createScm("otherKey");
+        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Arrays.asList(first, second));
+
+        Run<?, ?> run = createRunFor(pipeline);
+        assertThat(new ScmResolver().getScms(run, "ey")).hasSize(2);
+        assertThat(new ScmResolver().getScms(run, "other")).hasSize(1);
+        assertThat(new ScmResolver().getScms(run, "key")).hasSize(1);
+    }
+
+    private SCM createScm(final String key) {
+        SCM first = mock(SCM.class);
+        when(first.getKey()).thenReturn(key);
+        return first;
     }
 
     @Test

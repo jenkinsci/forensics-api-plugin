@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -68,6 +69,19 @@ public class ScmResolver {
      * @return the SCMs
      */
     public Collection<? extends SCM> getScms(final Run<?, ?> run) {
+        Collection<? extends SCM> allScms = findScms(run);
+        Set<String> ids = allScms.stream().map(SCM::getKey).collect(Collectors.toSet());
+        List<SCM> uniqueScms = new ArrayList<>();
+        for (SCM scm : allScms) {
+            if (ids.contains(scm.getKey())) {
+                uniqueScms.add(scm);
+                ids.remove(scm.getKey());
+            }
+        }
+        return uniqueScms;
+    }
+
+    private Collection<? extends SCM> findScms(final Run<?, ?> run) {
         if (run instanceof AbstractBuild) {
             return extractFromProject((AbstractBuild<?, ?>) run);
         }
@@ -101,7 +115,7 @@ public class ScmResolver {
     }
 
     private Collection<? extends SCM> extractFromProject(final AbstractBuild<?, ?> run) {
-        AbstractProject<?, ?> project = run.getProject();
+        AbstractProject<?, ?> project = run.getParent();
         if (project.getScm() != null) {
             return asCollection(project.getScm());
         }
