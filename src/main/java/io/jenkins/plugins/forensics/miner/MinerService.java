@@ -17,7 +17,7 @@ import io.jenkins.plugins.util.BuildAction;
  * @author Ullrich Hafner
  */
 public class MinerService {
-    static final String NO_MINER_ERROR = "<a href=\"https://github.com/jenkinsci/forensics-api-plugin\">Repository miner</a> is not configured, skipping repository mining";
+    static final String NO_MINER_ERROR = "Repository miner is not configured, skipping repository mining";
 
     /**
      * Queries the statistics for the selected files of the aggregated repository statistics of the specified build.
