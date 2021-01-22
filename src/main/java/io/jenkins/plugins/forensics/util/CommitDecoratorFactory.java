@@ -47,10 +47,27 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
      *
      * @return a commit decorator for the SCM of the specified build or a {@link NullDecorator} if the SCM is not
      *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
+     * @deprecated use {@link #findCommitDecorator(SCM, FilteredLog)}
      */
+    @Deprecated
     public static CommitDecorator findCommitDecorator(final Run<?, ?> run, final FilteredLog logger) {
         SCM scm = new ScmResolver().getScm(run);
 
+        return findCommitDecorator(scm, logger);
+    }
+
+    /**
+     * Returns a commit decorator for the specified {@link SCM scm}.
+     *
+     * @param scm
+     *         the SCM to get the decorator for
+     * @param logger
+     *         a logger to report error messages
+     *
+     * @return a commit decorator for the specified SCM or a {@link NullDecorator} if the SCM is not
+     *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
+     */
+    public static CommitDecorator findCommitDecorator(final SCM scm, final FilteredLog logger) {
         return findAllExtensions().stream()
                 .map(factory -> factory.createCommitDecorator(scm, logger))
                 .flatMap(OPTIONAL_MAPPER)

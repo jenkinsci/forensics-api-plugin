@@ -1,12 +1,13 @@
 package io.jenkins.plugins.forensics.miner;
 
+import org.apache.commons.lang3.StringUtils;
+
+import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import hudson.model.Job;
-
-import io.jenkins.plugins.echarts.AsyncTrendJobAction;
 
 /**
  * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
@@ -15,21 +16,35 @@ import io.jenkins.plugins.echarts.AsyncTrendJobAction;
  *
  * @author Giulia Del Bravo
  */
-public class ForensicsCodeMetricAction extends AsyncTrendJobAction<ForensicsBuildAction> {
+public class ForensicsCodeMetricAction extends AbstractForensicsAction {
+    /**
+     * Creates a new instance of {@link ForensicsCodeMetricAction}.
+     *
+     * @param owner
+     *         the job that owns this action
+     * @deprecated use {@link #ForensicsCodeMetricAction(Job, String)}
+     */
+    @Deprecated
+    public ForensicsCodeMetricAction(final Job<?, ?> owner) {
+        this(owner, StringUtils.EMPTY);
+    }
 
     /**
      * Creates a new instance of {@link ForensicsCodeMetricAction}.
      *
      * @param owner
      *         the job that owns this action
+     * @param scmKey
+     *         key of the repository
      */
-    public ForensicsCodeMetricAction(final Job<?, ?> owner) {
-        super(owner, ForensicsBuildAction.class);
+    public ForensicsCodeMetricAction(final Job<?, ?> owner, final String scmKey) {
+        super(owner, scmKey);
     }
 
     @Override
-    protected LinesChartModel createChartModel() {
-        return new ForensicsCodeMetricTrendChart().create(createBuildHistory(), new ChartModelConfiguration());
+    LinesChartModel createChart(final Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory,
+            final ChartModelConfiguration configuration) {
+        return new ForensicsCodeMetricTrendChart().create(buildHistory, configuration);
     }
 
     /**

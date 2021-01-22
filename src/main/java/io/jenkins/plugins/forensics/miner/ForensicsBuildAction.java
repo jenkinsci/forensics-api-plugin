@@ -3,7 +3,10 @@ package io.jenkins.plugins.forensics.miner;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
+
 import edu.hm.hafner.util.VisibleForTesting;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Action;
@@ -20,9 +23,14 @@ import io.jenkins.plugins.util.BuildAction;
  */
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
     private static final long serialVersionUID = -263122257268060032L;
+    private static final String DEFAULT_FILE_NAME = "repository-statistics.xml";
 
     private final int numberOfFiles;
     private final int miningDurationSeconds;
+    private final String urlName;
+
+    private String scmKey; // since 0.9.0
+    private String fileName; // since 0.9.0
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -33,10 +41,31 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      * @param miningDurationSeconds
      *         the duration of the mining operation in [s]
+     * @deprecated use {@link #ForensicsBuildAction(Run, RepositoryStatistics, int, String, int)}
      */
+    @Deprecated
     public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
             final int miningDurationSeconds) {
-        this(owner, repositoryStatistics, true, miningDurationSeconds);
+        this(owner, repositoryStatistics, true, miningDurationSeconds, StringUtils.EMPTY, 0);
+    }
+
+    /**
+     * Creates a new instance of {@link ForensicsBuildAction}.
+     *
+     * @param owner
+     *         the associated build that created the statistics
+     * @param repositoryStatistics
+     *         the statistics to persist with this action
+     * @param miningDurationSeconds
+     *         the duration of the mining operation in [s]
+     * @param scmKey
+     *         key of the repository
+     * @param number
+     *         unique number of the results (used as part of the serialization file name)
+     */
+    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
+            final int miningDurationSeconds, final String scmKey, final int number) {
+        this(owner, repositoryStatistics, true, miningDurationSeconds, scmKey, number);
     }
 
     /**
@@ -50,20 +79,64 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         determines whether the result should be persisted in the build folder
      * @param miningDurationSeconds
      *         the duration of the mining operation in [s]
+     * @param scmKey
+     *         key of the repository
+     * @param number
+     *         unique number of the results (used as part of the serialization file name)
      */
     @VisibleForTesting
     ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final boolean canSerialize, final int miningDurationSeconds) {
-        super(owner, repositoryStatistics, canSerialize);
+            final boolean canSerialize, final int miningDurationSeconds, final String scmKey, final int number) {
+        super(owner, repositoryStatistics, false);
 
         numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
+        this.scmKey = scmKey;
+
+        fileName = createFileName(number);
+        urlName = createUrlName(number);
+
+        if (canSerialize) {
+            createXmlStream().write(owner.getRootDir().toPath().resolve(fileName), repositoryStatistics);
+        }
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    protected Object readResolve() {
+        if (scmKey == null) {
+            scmKey = StringUtils.EMPTY;
+        }
+        if (fileName == null) {
+            fileName = DEFAULT_FILE_NAME;
+        }
+        return super.readResolve();
+    }
+
+    private String createFileName(final int number) {
+        if (number == 0) {
+            return DEFAULT_FILE_NAME;
+        }
+        return String.format("repository-statistics-%d.xml", number);
+    }
+
+    private String createUrlName(final int number) {
+        if (number == 0) {
+            return ForensicsJobAction.FORENSICS_ID;
+        }
+        return String.format("%s-%d", ForensicsJobAction.FORENSICS_ID, number);
     }
 
     @Override
     public Collection<? extends Action> getProjectActions() {
-        return Arrays.asList(new ForensicsJobAction(getOwner().getParent()),
-                new ForensicsCodeMetricAction(getOwner().getParent()));
+        return Arrays.asList(new ForensicsJobAction(getOwner().getParent(), scmKey),
+                new ForensicsCodeMetricAction(getOwner().getParent(), scmKey));
+    }
+
+    @Override
+    protected ForensicsJobAction createProjectAction() {
+        // This method actually is obsolete and will not be called anymore
+        return new ForensicsJobAction(getOwner().getParent(), scmKey);
     }
 
     @Override
@@ -72,13 +145,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     }
 
     @Override
-    protected ForensicsJobAction createProjectAction() {
-        return new ForensicsJobAction(getOwner().getParent());
-    }
-
-    @Override
     protected String getBuildResultBaseName() {
-        return "repository-statistics.xml";
+        return fileName;
     }
 
     @Override
@@ -88,7 +156,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title();
+        return Messages.ForensicsView_Title(StringUtils.defaultIfBlank(
+                StringUtils.substringAfterLast(scmKey, '/'), scmKey));
     }
 
     /**
@@ -98,12 +167,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      */
     @Override
     public Object getTarget() {
-        return new ForensicsViewModel(getOwner(), getResult());
+        return new ForensicsViewModel(getOwner(), getResult(), scmKey);
     }
 
     @Override
     public String getUrlName() {
-        return ForensicsJobAction.FORENSICS_ID;
+        return urlName;
     }
 
     public int getNumberOfFiles() {
@@ -112,5 +181,14 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     public int getMiningDurationSeconds() {
         return miningDurationSeconds;
+    }
+
+    public String getScmKey() {
+        return scmKey;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%s]", urlName, scmKey);
     }
 }

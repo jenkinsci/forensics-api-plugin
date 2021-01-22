@@ -69,6 +69,36 @@ public abstract class BlamerFactory implements ExtensionPoint {
                 .orElseGet(() -> createNullBlamer(logger));
     }
 
+    /**
+     * Returns a blamer for the specified {@link SCM repository}.
+     *
+     * @param scm
+     *         the key of the SCM repository (substring that must be part of the SCM key)
+     * @param run
+     *         the current build
+     * @param workTree
+     *         the working tree of the repository
+     * @param listener
+     *         a task listener
+     * @param logger
+     *         a logger to report error messages
+     *
+     * @return a blamer for the SCM of the specified build or a {@link NullBlamer} if the SCM is not supported
+     */
+    public static Blamer findBlamer(final String scm, final Run<?, ?> run,
+            final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
+        Collection<? extends SCM> scms = new ScmResolver().getScms(run, scm);
+        if (scms.isEmpty()) {
+            logger.logInfo("-> no SCM found");
+            return new NullBlamer();
+        }
+        return findAllExtensions().stream()
+                .map(blamerFactory -> blamerFactory.createBlamer(scms.iterator().next(), run, workTree, listener, logger))
+                .flatMap(OPTIONAL_MAPPER)
+                .findFirst()
+                .orElse(createNullBlamer(logger));
+    }
+
     private static Blamer createNullBlamer(final FilteredLog logger) {
         if (findAllExtensions().isEmpty()) {
             logger.logInfo("-> No blamer installed yet. You need to install the 'git-forensics' plugin to enable blaming for Git.");

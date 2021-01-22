@@ -32,7 +32,7 @@
     <jquery3-api.version>3.5.1-2</jquery3-api.version>
     <bootstrap4-api.version>4.5.3-1</bootstrap4-api.version>
     <data-tables-api.version>1.10.21-3</data-tables-api.version>
-    <echarts-api.version>4.9.0-2</echarts-api.version>
+    <echarts-api.version>4.9.0-3</echarts-api.version>
     <plugin-util-api.version>1.6.1</plugin-util-api.version>
 
   </properties>
@@ -61,6 +61,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
 
     <dependency>
@@ -127,6 +128,13 @@
       <version>${plugin-util-api.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
