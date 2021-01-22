@@ -46,7 +46,7 @@ public class ForensicsJobAction extends AbstractForensicsAction {
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title(getScmKey());
+        return Messages.Forensics_Action();
     }
 
     /**
