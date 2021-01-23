@@ -49,7 +49,8 @@ class MinerServiceTest {
         assertThat(statistics).isEmpty();
         assertThat(logger.getErrorMessages()).isEmpty();
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository statistics for affected files (0 of 0)");
+                .containsExactly("Extracting repository forensics for 0 affected files (files in repository: 0)",
+                        "-> 0 affected files processed");
     }
 
     @Test
@@ -65,7 +66,8 @@ class MinerServiceTest {
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
         assertThat(logger.getErrorMessages()).isEmpty();
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository statistics for affected files (1 of 1)");
+                .containsExactly("Extracting repository forensics for 1 affected files (files in repository: 1)",
+                        "-> 1 affected files processed");
     }
 
     @Test
@@ -86,7 +88,8 @@ class MinerServiceTest {
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
         assertThat(logger.getErrorMessages()).isEmpty();
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository statistics for affected files (1 of 1)");
+                .containsExactly("Extracting repository forensics for 1 affected files (files in repository: 1)",
+                        "-> 1 affected files processed");
     }
 
     @Test
@@ -102,7 +105,8 @@ class MinerServiceTest {
         assertThat(statistics).isEmpty();
         assertThat(logger.getErrorMessages()).isNotEmpty().contains("No statistics found for file 'not-existing'");
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository statistics for affected files (1 of 1)");
+                .containsExactly("Extracting repository forensics for 1 affected files (files in repository: 1)",
+                        "-> 0 affected files processed");
     }
 
     @Test
@@ -118,7 +122,8 @@ class MinerServiceTest {
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
         assertThat(logger.getErrorMessages()).isNotEmpty().contains("No statistics found for file 'not-existing'");
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository statistics for affected files (2 of 1)");
+                .containsExactly("Extracting repository forensics for 2 affected files (files in repository: 1)",
+                        "-> 1 affected files processed");
     }
 
     private Run<?, ?> configureBuildWithSingleMiningResult() {

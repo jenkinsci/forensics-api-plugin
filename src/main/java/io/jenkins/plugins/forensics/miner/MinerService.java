@@ -78,7 +78,7 @@ public class MinerService {
                 logger.logError("No statistics found for file '%s'", file);
             }
         }
-        logger.logInfo("-> %d affected files processed", files.size(), everything.size());
+        logger.logInfo("-> %d affected files processed", selected.size());
         return selected;
     }
 }
