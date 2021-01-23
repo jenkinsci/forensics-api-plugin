@@ -67,7 +67,8 @@ public class MinerService {
                 .findAny()
                 .map(BuildAction::getResult)
                 .orElse(new RepositoryStatistics());
-        logger.logInfo("Extracting repository statistics for affected files (%d of %d)", files.size(), everything.size());
+        logger.logInfo("Extracting repository forensics for %d affected files (files in repository: %d)",
+                files.size(), everything.size());
 
         for (String file : files) {
             if (everything.contains(file)) {
@@ -77,6 +78,7 @@ public class MinerService {
                 logger.logError("No statistics found for file '%s'", file);
             }
         }
+        logger.logInfo("-> %d affected files processed", selected.size());
         return selected;
     }
 }
