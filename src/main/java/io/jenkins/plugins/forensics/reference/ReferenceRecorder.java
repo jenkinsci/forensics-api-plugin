@@ -162,7 +162,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             else if (target != null) {
                 log.logInfo("Reference job inferred from toplevel project '%s'", topLevel.getDisplayName());
                 log.logInfo("Target branch: '%s'", getReferenceBranch());
-                log.logInfo("Inferred job: '%s'", target);
+                log.logInfo("Inferred job: '%s'", target.getDisplayName());
 
                 return Optional.of(target);
             }
