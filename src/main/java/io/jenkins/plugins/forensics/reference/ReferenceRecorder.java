@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import edu.hm.hafner.util.FilteredLog;
 
 import org.kohsuke.stapler.DataBoundSetter;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -154,7 +152,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         Job<?, ?> job = run.getParent();
         ItemGroup<?> topLevel = job.getParent();
         if (topLevel instanceof MultiBranchProject) {
-            WorkflowJob target = ((WorkflowMultiBranchProject) topLevel).getItemByBranchName(getReferenceBranch());
+            Job<?, ?> target = ((MultiBranchProject<?, ?>) topLevel).getItemByBranchName(getReferenceBranch());
             if (job.equals(target)) {
                 log.logInfo("No reference job required - we are already on the default branch for '%s'",
                         job.getName());
