@@ -18,7 +18,7 @@
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>0.10.0</revision>
+    <revision>0.9.1</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
@@ -107,6 +107,10 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-multibranch</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>

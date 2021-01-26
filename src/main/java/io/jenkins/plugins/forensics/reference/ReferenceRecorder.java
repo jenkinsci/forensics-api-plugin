@@ -152,18 +152,20 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         Job<?, ?> job = run.getParent();
         ItemGroup<?> topLevel = job.getParent();
         if (topLevel instanceof MultiBranchProject) {
-            // TODO: we should make use of the branch API
-            if (getReferenceBranch().equals(job.getName())) {
+            Job<?, ?> target = ((MultiBranchProject<?, ?>) topLevel).getItemByBranchName(getReferenceBranch());
+            if (job.equals(target)) {
                 log.logInfo("No reference job required - we are already on the default branch for '%s'",
                         job.getName());
             }
-            else {
+            else if (target != null) {
                 log.logInfo("Reference job inferred from toplevel project '%s'", topLevel.getDisplayName());
-                String referenceFromDefaultBranch = job.getParent().getFullName() + "/" + getReferenceBranch();
                 log.logInfo("Target branch: '%s'", getReferenceBranch());
-                log.logInfo("Inferred job name: '%s'", referenceFromDefaultBranch);
+                log.logInfo("Inferred job: '%s'", target.getDisplayName());
 
-                return findJob(referenceFromDefaultBranch, log);
+                return Optional.of(target);
+            }
+            else {
+                log.logError("Target job not found (is target branch '%s' correctly defined?)", getReferenceBranch());
             }
         }
         else {
