@@ -156,8 +156,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title(StringUtils.defaultIfBlank(
-                StringUtils.substringAfterLast(scmKey, '/'), scmKey));
+        return Messages.Forensics_Action();
     }
 
     /**
