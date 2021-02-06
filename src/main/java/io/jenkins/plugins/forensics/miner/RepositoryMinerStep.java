@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -52,6 +53,20 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         super();
 
         // empty constructor required for Stapler
+    }
+
+    /**
+     * Called after de-serialization to retain backward compatibility or to populate new elements (that would be
+     * otherwise initialized to {@code null}).
+     *
+     * @return this
+     */
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    protected Object readResolve() {
+        if (scm == null) {
+            scm = StringUtils.EMPTY;
+        }
+        return this;
     }
 
     /**
