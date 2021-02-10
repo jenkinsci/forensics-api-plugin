@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import edu.hm.hafner.util.FilteredLog;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
@@ -222,11 +223,13 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         /**
          * Returns the model with the possible reference jobs.
          *
+         * @param project
+         *         the project that is configured
          * @return the model with the possible reference jobs
          */
         @POST
-        public ComboBoxModel doFillReferenceJobItems() {
-            if (JENKINS.hasPermission(Item.CONFIGURE)) {
+        public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final AbstractProject<?, ?> project) {
+            if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 return model.getAllJobs();
             }
             return new ComboBoxModel();
@@ -235,6 +238,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         /**
          * Performs on-the-fly validation of the reference job.
          *
+         * @param project
+         *         the project that is configured
          * @param referenceJob
          *         the reference job
          *
@@ -242,8 +247,9 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          */
         @POST
         @SuppressWarnings("unused") // Used in jelly validation
-        public FormValidation doCheckReferenceJob(@QueryParameter final String referenceJob) {
-            if (!JENKINS.hasPermission(Item.CONFIGURE)) {
+        public FormValidation doCheckReferenceJob(@AncestorInPath final AbstractProject<?, ?> project,
+                @QueryParameter final String referenceJob) {
+            if (!JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 return FormValidation.ok();
             }
             return model.validateJob(referenceJob);
