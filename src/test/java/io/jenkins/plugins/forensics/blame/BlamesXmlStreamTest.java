@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -72,15 +70,6 @@ class BlamesXmlStreamTest extends SerializableTest<Blames> {
         report.setEmail(101, "ullrich.hafner@gmail.com");
 
         assertThat(blames.getBlame(REPORT)).isEqualTo(report);
-    }
-
-    private Path createTempFile() {
-        try {
-            return Files.createTempFile("test", ".blames");
-        }
-        catch (IOException exception) {
-            throw new AssertionError(exception);
-        }
     }
 
     @Override

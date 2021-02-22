@@ -18,7 +18,7 @@
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>0.11.0</revision>
+    <revision>1.0.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
@@ -33,7 +33,7 @@
     <bootstrap4-api.version>4.6.0-1</bootstrap4-api.version>
     <data-tables-api.version>1.10.23-2</data-tables-api.version>
     <echarts-api.version>4.9.0-3</echarts-api.version>
-    <plugin-util-api.version>1.7.0</plugin-util-api.version>
+    <plugin-util-api.version>2.0.0-rc274.6fb09404abba</plugin-util-api.version>
 
   </properties>
 
