@@ -30,6 +30,7 @@
     <!-- Jenkins Plugin Dependencies Versions -->
     <plugin-util-api.version>2.0.0-rc274.6fb09404abba</plugin-util-api.version>
     <data-tables-api.version>1.10.23-2</data-tables-api.version>
+    <echarts-api.version>4.9.0-4-rc347.a2fab3149472</echarts-api.version>
 
   </properties>
 
@@ -68,6 +69,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>echarts-api</artifactId>
+      <version>${echarts-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
