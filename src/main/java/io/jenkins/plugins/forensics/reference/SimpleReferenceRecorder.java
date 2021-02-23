@@ -60,6 +60,7 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Arne Schöntag
  * @author Ullrich Hafner
  */
+@SuppressWarnings("PMD.ExcessiveImports")
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
     /** Indicates that no reference job has been defined yet. */
     public static final String NO_REFERENCE_JOB = "-";
