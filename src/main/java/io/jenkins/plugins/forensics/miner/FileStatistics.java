@@ -137,23 +137,6 @@ public class FileStatistics implements Serializable {
     }
 
     /**
-     * Inspects the next commit for this file. The commits should be inspected in a sorted way, i.e. starting with the
-     * newest commit until the first commit has been reached.
-     *
-     * @param commitTime
-     *         the time of the commit (given as number of seconds since the standard base time known as "the epoch",
-     *         namely January 1, 1970, 00:00:00 GMT.).
-     * @param author
-     *         author (or committer) name
-     *
-     * @deprecated remove before 1.0.0
-     */
-    @Deprecated
-    public void inspectCommit(final int commitTime, final String author) {
-        // not useful anymore
-    }
-
-    /**
      * Inspects and stores the specified commit for this file. Updates all properties after the commit has been added,
      * including an optional file name rename.
      *

@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import edu.hm.hafner.util.FilteredLog;
 
@@ -14,26 +13,6 @@ import edu.hm.hafner.util.FilteredLog;
  */
 public abstract class RepositoryMiner implements Serializable {
     private static final long serialVersionUID = -8878714986510536182L;
-
-    /**
-     * Obtains statistical information for the specified files. If the collection of files is empty, then the statistics
-     * for the whole repository will be returned.
-     *
-     * @param absoluteFileNames
-     *         the files to gather statistics for
-     * @param logger
-     *         the logger to use
-     *
-     * @return the statistics
-     * @throws InterruptedException
-     *         if the user canceled the processing
-     * @deprecated replaced by {@link #mine(RepositoryStatistics, FilteredLog)}
-     */
-    @Deprecated
-    public RepositoryStatistics mine(final Collection<String> absoluteFileNames, final FilteredLog logger)
-            throws InterruptedException {
-        return mine(new RepositoryStatistics(), logger);
-    }
 
     /**
      * Obtains commit statistics for a source code repository.
