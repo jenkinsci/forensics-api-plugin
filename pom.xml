@@ -28,8 +28,8 @@
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <plugin-util-api.version>2.0.0-rc278.241f36dbbad8</plugin-util-api.version>
-    <data-tables-api.version>1.10.23-3-rc391.920c10987e49</data-tables-api.version>
-    <echarts-api.version>4.9.0-4-rc351.79d6c6255205</echarts-api.version>
+    <data-tables-api.version>1.10.23-3-rc393.cd58f9c6c9ca</data-tables-api.version>
+    <echarts-api.version>4.9.0-4-rc353.37214cc4c96e</echarts-api.version>
 
   </properties>
 
