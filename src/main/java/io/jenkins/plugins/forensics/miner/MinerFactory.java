@@ -1,6 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -15,7 +14,6 @@ import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
-import io.jenkins.plugins.forensics.util.ScmResolver;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
@@ -47,31 +45,6 @@ public abstract class MinerFactory implements ExtensionPoint {
     public abstract Optional<RepositoryMiner> createMiner(SCM scm, Run<?, ?> run, FilePath workspace,
             TaskListener listener, FilteredLog logger);
 
-    /**
-     * Returns a miner for the repository of the specified {@link Run build}.
-     *
-     * @param run
-     *         the current build
-     * @param scmDirectories
-     *         paths to search for the SCM repository
-     * @param listener
-     *         a task listener
-     * @param logger
-     *         a logger to report error messages
-     *
-     * @return a miner for the SCM of the specified build or a {@link NullMiner} if the SCM is not supported
-     * @deprecated use {@link #findMiner(SCM, Run, FilePath, TaskListener, FilteredLog)}
-     */
-    @Deprecated
-    public static RepositoryMiner findMiner(final Run<?, ?> run,
-            final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
-        return scmDirectories.stream()
-                .map(directory -> findMiner(run, directory, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
-                .findFirst()
-                .orElseGet(() -> createNullMiner(logger));
-    }
-
     private static RepositoryMiner createNullMiner(final FilteredLog logger) {
         if (findAllExtensions().isEmpty()) {
             logger.logInfo("-> No miner installed yet. You need to install the `git-forensics` plugin to enable mining of Git repositories.");
@@ -80,16 +53,6 @@ public abstract class MinerFactory implements ExtensionPoint {
             logger.logInfo("-> No suitable miner found.");
         }
         return new NullMiner();
-    }
-
-    private static Optional<RepositoryMiner> findMiner(final Run<?, ?> run, final FilePath workTree,
-            final TaskListener listener, final FilteredLog logger) {
-        SCM scm = new ScmResolver().getScm(run);
-
-        return findAllExtensions().stream()
-                .map(minerFactory -> minerFactory.createMiner(scm, run, workTree, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
-                .findFirst();
     }
 
     /**
@@ -114,7 +77,7 @@ public abstract class MinerFactory implements ExtensionPoint {
                 .map(minerFactory -> minerFactory.createMiner(scm, run, workTree, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
                 .findFirst()
-                .orElse(new NullMiner());
+                .orElseGet(() -> createNullMiner(logger));
     }
 
     private static List<MinerFactory> findAllExtensions() {

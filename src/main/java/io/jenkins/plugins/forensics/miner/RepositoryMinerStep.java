@@ -12,6 +12,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.workflow.steps.Step;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -86,7 +87,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     }
 
     @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace,
+    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
         mineRepositories(run, workspace, listener);
     }
