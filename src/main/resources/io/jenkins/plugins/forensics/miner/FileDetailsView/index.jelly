@@ -4,9 +4,7 @@
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
 
-
-  <bs:layout title="${it.fileName}" norefresh="true">
-
+  <l:layout title="${it.fileName}" norefresh="true" nogrid="true">
 
     <l:main-panel>
 
@@ -52,7 +50,7 @@
 
     </l:main-panel>
 
-  </bs:layout>
+  </l:layout>
 
 </j:jelly>
 
