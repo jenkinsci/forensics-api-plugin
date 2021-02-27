@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
-
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
@@ -17,18 +15,6 @@ import hudson.model.Job;
  * @author Giulia Del Bravo
  */
 public class ForensicsCodeMetricAction extends AbstractForensicsAction {
-    /**
-     * Creates a new instance of {@link ForensicsCodeMetricAction}.
-     *
-     * @param owner
-     *         the job that owns this action
-     * @deprecated use {@link #ForensicsCodeMetricAction(Job, String)}
-     */
-    @Deprecated
-    public ForensicsCodeMetricAction(final Job<?, ?> owner) {
-        this(owner, StringUtils.EMPTY);
-    }
-
     /**
      * Creates a new instance of {@link ForensicsCodeMetricAction}.
      *

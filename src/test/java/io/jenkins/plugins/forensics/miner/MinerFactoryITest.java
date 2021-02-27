@@ -1,6 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import org.junit.ClassRule;
@@ -32,11 +31,6 @@ public class MinerFactoryITest {
     @ClassRule
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
 
-    private static final String NO_SUITABLE_MINER_FOUND = "-> No suitable miner found.";
-    private static final String EMPTY_FACTORY_NULL_MINER = "EmptyFactory returned NullMiner";
-    private static final String ACTUAL_FACTORY_NULL_MINER = "ActualFactory returned NullMiner";
-    private static final String ACTUAL_FACTORY_CREATED_A_MINER = "ActualFactory created a miner";
-
     /**
      * Verifies that a {@link NullMiner} is selected if the workspace is not a supported SCM.
      *
@@ -50,7 +44,10 @@ public class MinerFactoryITest {
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
         assertThat(nullMiner.mine(new RepositoryStatistics(), log)).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_MINER_FOUND, ACTUAL_FACTORY_NULL_MINER, EMPTY_FACTORY_NULL_MINER);
+        assertThat(log.getInfoMessages()).containsOnly(
+                "-> No suitable miner found.",
+                "ActualFactory returned NullMiner",
+                "EmptyFactory returned NullMiner");
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
@@ -69,29 +66,11 @@ public class MinerFactoryITest {
         assertThat(repositoryMiner.mine(new RepositoryStatistics(), log)).isNotEmpty();
 
         assertThat(log.getErrorMessages()).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_CREATED_A_MINER);
-    }
-
-    /**
-     * Verifies that correct {@link RepositoryMiner} instance is created for the second repository. (The first
-     * repository does return a {@link NullMiner}.
-     */
-    @Test
-    public void shouldSelectMinerBasedOnEmptyFactory() {
-        FilteredLog log = new FilteredLog("Foo");
-
-        Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
-        RepositoryMiner testMinerSecondMatch = MinerFactory.findMiner(mock(Run.class), directories, TaskListener.NULL,
-                log);
-        assertThat(log.getErrorMessages()).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_MINER, ACTUAL_FACTORY_NULL_MINER,
-                ACTUAL_FACTORY_CREATED_A_MINER);
-
-        assertThat(testMinerSecondMatch).isInstanceOf(TestMiner.class);
+        assertThat(log.getInfoMessages()).containsOnly("ActualFactory created a miner");
     }
 
     private RepositoryMiner createMiner(final String path, final FilteredLog log) {
-        return MinerFactory.findMiner(mock(Run.class), asSourceDirectories(createWorkspace(path)),
+        return MinerFactory.findMiner(mock(SCM.class), mock(Run.class), createWorkspace(path),
                 TaskListener.NULL, log);
     }
 

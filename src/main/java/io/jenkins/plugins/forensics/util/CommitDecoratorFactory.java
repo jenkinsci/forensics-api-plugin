@@ -38,25 +38,6 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
     public abstract Optional<CommitDecorator> createCommitDecorator(SCM scm, FilteredLog logger);
 
     /**
-     * Returns a commit decorator for the specified {@link Run build}.
-     *
-     * @param run
-     *         the current build
-     * @param logger
-     *         a logger to report error messages
-     *
-     * @return a commit decorator for the SCM of the specified build or a {@link NullDecorator} if the SCM is not
-     *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
-     * @deprecated use {@link #findCommitDecorator(SCM, FilteredLog)}
-     */
-    @Deprecated
-    public static CommitDecorator findCommitDecorator(final Run<?, ?> run, final FilteredLog logger) {
-        SCM scm = new ScmResolver().getScm(run);
-
-        return findCommitDecorator(scm, logger);
-    }
-
-    /**
      * Returns a commit decorator for the specified {@link SCM scm}.
      *
      * @param scm
@@ -84,7 +65,7 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
      *         supported or if the SCM does not provide a {@link RepositoryBrowser} implementation
      */
     public static CommitDecorator findCommitDecorator(final Run<?, ?> run) {
-        return findCommitDecorator(run, new FilteredLog("ignored"));
+        return findCommitDecorator(new ScmResolver().getScm(run), new FilteredLog("ignored"));
     }
 
     private static List<CommitDecoratorFactory> findAllExtensions() {

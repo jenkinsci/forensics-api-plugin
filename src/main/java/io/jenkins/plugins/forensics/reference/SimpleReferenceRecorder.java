@@ -14,6 +14,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.verb.POST;
 import org.jenkinsci.Symbol;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -59,6 +60,7 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Arne Schöntag
  * @author Ullrich Hafner
  */
+@SuppressWarnings("PMD.ExcessiveImports")
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
     /** Indicates that no reference job has been defined yet. */
     public static final String NO_REFERENCE_JOB = "-";
@@ -125,7 +127,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     }
 
     @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace,
+    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
         FilteredLog log = new FilteredLog("Errors while computing the reference build:");
 

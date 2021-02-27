@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>analysis-pom</artifactId>
-    <version>4.7.0</version>
+    <version>5.0.0</version>
     <relativePath />
   </parent>
 
@@ -18,22 +18,18 @@
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>0.11.0</revision>
+    <revision>1.0.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
 
     <!-- Library Dependencies Versions -->
-    <commons.lang.version>3.11</commons.lang.version>
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <font-awesome-api.version>5.15.2-1</font-awesome-api.version>
-    <jquery3-api.version>3.5.1-2</jquery3-api.version>
-    <bootstrap4-api.version>4.6.0-1</bootstrap4-api.version>
-    <data-tables-api.version>1.10.23-2</data-tables-api.version>
-    <echarts-api.version>4.9.0-3</echarts-api.version>
-    <plugin-util-api.version>1.7.0</plugin-util-api.version>
+    <plugin-util-api.version>2.0.0</plugin-util-api.version>
+    <data-tables-api.version>1.10.23-3</data-tables-api.version>
+    <echarts-api.version>4.9.0-4</echarts-api.version>
 
   </properties>
 
@@ -52,16 +48,6 @@
     </developer>
   </developers>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>jackson2-api</artifactId>
-        <version>2.11.1</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
 
     <dependency>
@@ -70,28 +56,14 @@
       <version>${plugin-util-api.version}</version>
     </dependency>
 
-    <!-- Project Dependencies -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commons.lang.version}</version>
-    </dependency>
-
     <!-- Jenkins Plugin Dependencies -->
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>font-awesome-api</artifactId>
-      <version>${font-awesome-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>bootstrap4-api</artifactId>
-      <version>${bootstrap4-api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.jenkins.plugins</groupId>
-      <artifactId>jquery3-api</artifactId>
-      <version>${jquery3-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>

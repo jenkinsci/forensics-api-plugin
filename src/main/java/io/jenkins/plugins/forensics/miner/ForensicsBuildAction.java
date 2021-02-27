@@ -41,23 +41,6 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the statistics to persist with this action
      * @param miningDurationSeconds
      *         the duration of the mining operation in [s]
-     * @deprecated use {@link #ForensicsBuildAction(Run, RepositoryStatistics, int, String, int)}
-     */
-    @Deprecated
-    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final int miningDurationSeconds) {
-        this(owner, repositoryStatistics, true, miningDurationSeconds, StringUtils.EMPTY, 0);
-    }
-
-    /**
-     * Creates a new instance of {@link ForensicsBuildAction}.
-     *
-     * @param owner
-     *         the associated build that created the statistics
-     * @param repositoryStatistics
-     *         the statistics to persist with this action
-     * @param miningDurationSeconds
-     *         the duration of the mining operation in [s]
      * @param scmKey
      *         key of the repository
      * @param number

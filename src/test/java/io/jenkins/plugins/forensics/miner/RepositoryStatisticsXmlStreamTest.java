@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -87,15 +85,6 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
                 .hasAbsoluteChurn(8 + 5)
                 .hasCreationTime(ONE_DAY * 2)
                 .hasLastModificationTime(ONE_DAY * 4);
-    }
-
-    private Path createTempFile() {
-        try {
-            return Files.createTempFile("test", ".xml");
-        }
-        catch (IOException exception) {
-            throw new AssertionError(exception);
-        }
     }
 
     @Override
