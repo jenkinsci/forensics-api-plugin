@@ -8,8 +8,9 @@ import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
 
 import hudson.model.Job;
+import hudson.model.Run;
 
-import io.jenkins.plugins.echarts.AsyncTrendJobAction;
+import io.jenkins.plugins.echarts.AsyncConfigurableTrendJobAction;
 import io.jenkins.plugins.echarts.BuildActionIterator;
 
 /**
@@ -19,7 +20,7 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
  *
  * @author Ullrich Hafner
  */
-abstract class AbstractForensicsAction extends AsyncTrendJobAction<ForensicsBuildAction> {
+abstract class AbstractForensicsAction extends AsyncConfigurableTrendJobAction<ForensicsBuildAction> {
     private final String scmKey;
 
     AbstractForensicsAction(final Job<?, ?> owner, final String scmKey) {
@@ -36,18 +37,24 @@ abstract class AbstractForensicsAction extends AsyncTrendJobAction<ForensicsBuil
     protected Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
         return () -> {
             Predicate<ForensicsBuildAction> predicate = a -> scmKey.equals(a.getScmKey());
-            Optional<ForensicsBuildAction> latestAction = getOwner().getActions(ForensicsBuildAction.class)
-                    .stream()
-                    .filter(predicate)
-                    .findAny();
-
+            Run<?, ?> lastCompletedBuild = getOwner().getLastCompletedBuild();
+            Optional<ForensicsBuildAction> latestAction;
+            if (lastCompletedBuild == null) {
+                latestAction = Optional.empty();
+            }
+            else {
+                latestAction = lastCompletedBuild.getActions(ForensicsBuildAction.class)
+                        .stream()
+                        .filter(predicate)
+                        .findAny();
+            }
             return new BuildActionIterator<>(ForensicsBuildAction.class, latestAction, predicate);
         };
     }
 
     @Override
-    protected LinesChartModel createChartModel() {
-        return createChart(createBuildHistory(), new ChartModelConfiguration());
+    protected LinesChartModel createChartModel(final String configuration) {
+        return createChart(createBuildHistory(), ChartModelConfiguration.fromJson(configuration));
     }
 
     abstract LinesChartModel createChart(Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory,
