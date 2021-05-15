@@ -18,8 +18,16 @@ public class ForensicsCodeMetricSeriesBuilder extends SeriesBuilder<ForensicsBui
     @Override
     protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
         Map<String, Integer> series = new HashMap<>();
-        series.put(LOC_KEY, current.getResult().getTotalLinesOfCode());
-        series.put(CHURN_KEY, current.getResult().getTotalChurn());
+        int totalChurn = current.getTotalChurn();
+        if (totalChurn == 0) { // results are from forensics-api < 1.1.0
+            series.put(LOC_KEY, current.getResult().getTotalLinesOfCode());
+            series.put(CHURN_KEY, current.getResult().getTotalChurn());
+        }
+        else {
+            series.put(LOC_KEY, current.getTotalLinesOfCode());
+            series.put(CHURN_KEY, totalChurn);
+        }
+
         return series;
     }
 }

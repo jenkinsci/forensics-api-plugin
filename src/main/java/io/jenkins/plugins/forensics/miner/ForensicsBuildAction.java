@@ -32,6 +32,10 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private String scmKey; // since 0.9.0
     private String fileName; // since 0.9.0
 
+    private final int totalLinesOfCode; // since 1.1.0
+    private final int totalChurn; // since 1.1.0
+    private CommitStatistics commitStatistics;  // since 1.1.0
+
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
      *
@@ -79,6 +83,10 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         fileName = createFileName(number);
         urlName = createUrlName(number);
 
+        totalLinesOfCode = repositoryStatistics.getTotalLinesOfCode();
+        totalChurn = repositoryStatistics.getTotalChurn();
+        commitStatistics = repositoryStatistics.getLatestStatistics();
+
         if (canSerialize) {
             createXmlStream().write(owner.getRootDir().toPath().resolve(fileName), repositoryStatistics);
         }
@@ -93,6 +101,10 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         if (fileName == null) {
             fileName = DEFAULT_FILE_NAME;
         }
+        if (commitStatistics == null) {
+            commitStatistics = new CommitStatistics();
+        }
+
         return super.readResolve();
     }
 
@@ -163,6 +175,18 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     public int getMiningDurationSeconds() {
         return miningDurationSeconds;
+    }
+
+    public int getTotalLinesOfCode() {
+        return totalLinesOfCode;
+    }
+
+    public int getTotalChurn() {
+        return totalChurn;
+    }
+
+    public CommitStatistics getCommitStatistics() {
+        return commitStatistics;
     }
 
     public String getScmKey() {
