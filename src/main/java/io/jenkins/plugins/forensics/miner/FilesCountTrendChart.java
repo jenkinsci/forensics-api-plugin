@@ -37,14 +37,17 @@ public class FilesCountTrendChart {
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel();
-        model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-        model.setBuildNumbers(dataSet.getBuildNumbers());
+        if (dataSet.getDomainAxisSize() > 0) {
+            model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
+            model.setBuildNumbers(dataSet.getBuildNumbers());
+        }
 
         LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),
                 StackedMode.SEPARATE_LINES, FilledMode.FILLED);
-        series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
-        model.addSeries(series);
-
+        if (dataSet.getDomainAxisSize() > 0) {
+            series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
+            model.addSeries(series);
+        }
         return model;
     }
 }

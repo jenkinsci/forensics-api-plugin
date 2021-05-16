@@ -1,6 +1,7 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:c="/charts">
+<j:jelly xmlns:j="jelly:core" xmlns:c="/charts" xmlns:f="/forensics">
 
-  <c:trend-chart it="${from}" title="${%SCM Files Count Trend}" enableLinks="true" configurationId="defaultTrendConfiguration"/>
+  <f:trend suffix="forensics"/>
+  <c:trend-chart it="${from}" title="${%SCM Files Count Trend}" enableLinks="true" configurationId="forensics"/>
 
 </j:jelly>

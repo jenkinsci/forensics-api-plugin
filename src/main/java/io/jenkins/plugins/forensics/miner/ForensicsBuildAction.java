@@ -1,15 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.StaplerProxy;
-import hudson.model.Action;
 import hudson.model.Run;
 
 import io.jenkins.plugins.util.BuildAction;
@@ -123,14 +119,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     }
 
     @Override
-    public Collection<? extends Action> getProjectActions() {
-        return Arrays.asList(new ForensicsJobAction(getOwner().getParent(), scmKey),
-                new ForensicsCodeMetricAction(getOwner().getParent(), scmKey));
-    }
-
-    @Override
     protected ForensicsJobAction createProjectAction() {
-        // This method actually is obsolete and will not be called anymore
         return new ForensicsJobAction(getOwner().getParent(), scmKey);
     }
 
