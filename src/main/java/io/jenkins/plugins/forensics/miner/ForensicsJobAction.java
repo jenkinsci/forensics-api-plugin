@@ -106,7 +106,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
         ChartModelConfiguration modelConfiguration = ChartModelConfiguration.fromJson(configuration);
         ChartType chart = getChart(configuration);
         if (chart == ChartType.LOC) {
-            return new ForensicsCodeMetricTrendChart().create(buildHistory, modelConfiguration);
+            return new CodeMetricTrendChart().create(buildHistory, modelConfiguration);
         }
         if (chart == ChartType.DELTA) {
             return new AddedVersusDeletedLinesTrendChart().create(buildHistory, modelConfiguration);

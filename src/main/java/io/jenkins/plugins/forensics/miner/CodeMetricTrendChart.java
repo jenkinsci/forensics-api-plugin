@@ -20,7 +20,7 @@ import edu.hm.hafner.echarts.Palette;
  * @author Giulia Del Bravo
  * @see JacksonFacade
  */
-public class ForensicsCodeMetricTrendChart {
+class CodeMetricTrendChart {
     /**
      * Creates the chart for the specified results.
      *
@@ -32,9 +32,9 @@ public class ForensicsCodeMetricTrendChart {
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
+    LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
-        ForensicsCodeMetricSeriesBuilder builder = new ForensicsCodeMetricSeriesBuilder();
+        CodeMetricSeriesBuilder builder = new CodeMetricSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel();

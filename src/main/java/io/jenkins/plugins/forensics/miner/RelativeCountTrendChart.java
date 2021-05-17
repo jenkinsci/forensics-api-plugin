@@ -11,15 +11,15 @@ import edu.hm.hafner.echarts.LinesDataSet;
 import edu.hm.hafner.echarts.Palette;
 
 /**
- * Builds the Java side model for a trend chart showing the number of files in the repository. The trend chart contains
- * one series that shows the number of files per build. The number of builds to consider is controlled by a {@link
- * ChartModelConfiguration} instance. The created model object can be serialized to JSON (e.g., using the {@link
- * JacksonFacade}) and can be used 1:1 as ECharts configuration object in the corresponding JS file.
+ * Builds the Java side model for a trend chart showing the number modified files, commits and authors in the
+ * repository. The trend chart contains three series, one for each criteria.  The number of builds to consider is
+ * controlled by a {@link ChartModelConfiguration} instance. The created model object can be serialized to JSON (e.g.,
+ * using the {@link JacksonFacade}) and can be used 1:1 as ECharts configuration object in the corresponding JS file.
  *
  * @author Ullrich Hafner
  * @see JacksonFacade
  */
-public class RelativeCountTrendChart {
+class RelativeCountTrendChart {
     /**
      * Creates the chart for the specified results.
      *
@@ -31,7 +31,7 @@ public class RelativeCountTrendChart {
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
+    LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
         RelativeCountSeriesBuilder builder = new RelativeCountSeriesBuilder();
 
@@ -42,13 +42,24 @@ public class RelativeCountTrendChart {
             model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
             model.setBuildNumbers(dataSet.getBuildNumbers());
 
-            LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),
-                    StackedMode.SEPARATE_LINES, FilledMode.FILLED);
-            series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
+            LineSeries authors = getSeries(dataSet, "Authors", Palette.BLUE,
+                    RelativeCountSeriesBuilder.AUTHORS_KEY);
+            LineSeries commits = getSeries(dataSet, "Commits", Palette.GREEN,
+                    RelativeCountSeriesBuilder.COMMITS_KEY);
+            LineSeries files = getSeries(dataSet, "Modified files", Palette.ORANGE,
+                    RelativeCountSeriesBuilder.FILES_KEY);
 
-            model.addSeries(series);
+            model.addSeries(authors, commits, files);
         }
 
         return model;
     }
+
+    private LineSeries getSeries(final LinesDataSet dataSet,
+            final String name, final Palette color, final String dataSetId) {
+        LineSeries series = new LineSeries(name, color.getNormal(), StackedMode.SEPARATE_LINES, FilledMode.LINES);
+        series.addAll(dataSet.getSeries(dataSetId));
+        return series;
+    }
+
 }

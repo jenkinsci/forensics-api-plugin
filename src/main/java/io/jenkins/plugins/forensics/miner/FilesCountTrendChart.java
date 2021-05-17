@@ -19,7 +19,7 @@ import edu.hm.hafner.echarts.Palette;
  * @author Ullrich Hafner
  * @see JacksonFacade
  */
-public class FilesCountTrendChart {
+class FilesCountTrendChart {
     /**
      * Creates the chart for the specified results.
      *

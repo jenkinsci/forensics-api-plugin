@@ -6,12 +6,12 @@ import java.util.Map;
 import edu.hm.hafner.echarts.SeriesBuilder;
 
 /**
- * Builds one x-axis point for the series of a line chart showing the number of modified files, number of commits and
- * umber of authors in the repository.
+ * Builds one x-axis point for the series of a line chart showing the number of modified files, commits and
+ * authors in the repository.
  *
  * @author Ullrich Hafner
  */
-public class RelativeCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+class RelativeCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
     static final String AUTHORS_KEY = "authors";
     static final String FILES_KEY = "files";
     static final String COMMITS_KEY = "commits";
