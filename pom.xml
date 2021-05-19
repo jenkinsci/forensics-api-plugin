@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>analysis-pom</artifactId>
-    <version>5.6.0</version>
+    <version>5.7.0</version>
     <relativePath />
   </parent>
 
@@ -27,10 +27,11 @@
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <plugin-util-api.version>2.1.0</plugin-util-api.version>
+    <plugin-util-api.version>2.2.0</plugin-util-api.version>
     <data-tables-api.version>1.10.23-3</data-tables-api.version>
+    <jquery3-api.version>3.6.0-1</jquery3-api.version>
+    <font-awesome-api.version>5.15.3-2</font-awesome-api.version>
     <echarts-api.version>5.1.0-3-rc440.bf1a5b2177c1</echarts-api.version>
-    <font-awesome-api.version>5.15.2-2</font-awesome-api.version>
     <bootstrap5-api.version>5.0.0-1</bootstrap5-api.version>
 
   </properties>
