@@ -40,8 +40,6 @@
 
   <c:trend-chart it="${from}" title="${%SCM Forensics Trend}" enableLinks="true" configurationId="forensics"/>
 
-  <script type="text/javascript" src="${resURL}/plugin/forensics-api/js/chart-configuration.js"/>
-
   <script>
     function fillForensics (trendConfiguration, jsonConfiguration) {
       const type = jsonConfiguration['chartType'];

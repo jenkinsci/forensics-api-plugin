@@ -29,7 +29,7 @@
     <!-- Jenkins Plugin Dependencies Versions -->
     <plugin-util-api.version>2.1.0</plugin-util-api.version>
     <data-tables-api.version>1.10.23-3</data-tables-api.version>
-    <echarts-api.version>5.1.0-3-rc438.c93a60077404</echarts-api.version>
+    <echarts-api.version>5.1.0-3-rc440.bf1a5b2177c1</echarts-api.version>
     <font-awesome-api.version>5.15.2-2</font-awesome-api.version>
     <bootstrap5-api.version>5.0.0-1</bootstrap5-api.version>
 
