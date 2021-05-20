@@ -3,14 +3,9 @@ package io.jenkins.plugins.forensics.miner;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
+import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -30,6 +25,7 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
 public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<ForensicsBuildAction> {
     static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
     static final String FORENSICS_ID = "forensics";
+    private static final JacksonFacade JACKSON_FACADE = new JacksonFacade();
 
     enum ChartType {
         FILES, LOC, DELTA, COUNT
@@ -118,21 +114,11 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     }
 
     private ChartType getChart(final String configuration) {
-        try {
-            ObjectMapper mapper = (new ObjectMapper()).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            ObjectNode node = mapper.readValue(configuration, ObjectNode.class);
-            JsonNode typeNode = node.get("chartType");
-            if (typeNode != null) {
-                String value = typeNode.asText("files");
-                for (ChartType chartType : ChartType.values()) {
-                    if (chartType.name().equalsIgnoreCase(value)) {
-                        return chartType;
-                    }
-                }
+        String type = JACKSON_FACADE.getString(configuration, "chartType", "files");
+        for (ChartType chartType : ChartType.values()) {
+            if (chartType.name().equalsIgnoreCase(type)) {
+                return chartType;
             }
-        }
-        catch (JsonProcessingException exception) {
-            // ignore
         }
 
         return ChartType.FILES;
