@@ -3,6 +3,8 @@ package io.jenkins.plugins.forensics.miner;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.StringUtils;
+
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.JacksonFacade;
@@ -116,7 +118,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     private ChartType getChart(final String configuration) {
         String type = JACKSON_FACADE.getString(configuration, "chartType", "files");
         for (ChartType chartType : ChartType.values()) {
-            if (chartType.name().equalsIgnoreCase(type)) {
+            if (StringUtils.equalsIgnoreCase(chartType.name(), type)) {
                 return chartType;
             }
         }
