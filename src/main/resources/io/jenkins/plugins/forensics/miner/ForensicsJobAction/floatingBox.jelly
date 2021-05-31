@@ -41,15 +41,17 @@
   <c:trend-chart it="${from}" title="${%SCM Forensics Trend}" enableLinks="true" configurationId="forensics"/>
 
   <script>
-    function fillForensics (trendConfiguration, jsonConfiguration) {
+    function fillForensics(trendConfiguration, jsonConfiguration) {
       const type = jsonConfiguration['chartType'];
       if (type) {
         trendConfiguration.find('#' + type).prop('checked', true);
       }
     }
 
-    function saveForensics (trendConfiguration, jsonConfiguration) {
-      jsonConfiguration['chartType'] = trendConfiguration.find('input[name=chartType]:checked').attr('id');
+    function saveForensics(trendConfiguration) {
+      return {
+        'chartType': trendConfiguration.find('input[name=chartType]:checked').attr('id')
+      };
     }
 
     echartsJenkinsApi.configureTrend('forensics', fillForensics, saveForensics)
