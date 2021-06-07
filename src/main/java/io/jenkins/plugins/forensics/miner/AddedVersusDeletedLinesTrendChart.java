@@ -27,8 +27,10 @@ class AddedVersusDeletedLinesTrendChart {
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel();
-        model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-
+        if (dataSet.getDomainAxisSize() > 0) {
+            model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
+            model.setBuildNumbers(dataSet.getBuildNumbers());
+        }
         LineSeries newSeries = getSeries(dataSet, "Added Lines", Palette.GREEN,
                 AddedVersusDeletedLinesSeriesBuilder.ADDED);
         LineSeries fixedSeries = getSeries(dataSet, "Deleted Lines", Palette.RED,
