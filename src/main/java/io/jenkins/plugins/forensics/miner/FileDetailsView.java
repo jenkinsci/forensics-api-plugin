@@ -165,10 +165,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
                 final CommitDecorator decorator) {
             LinesDataSet dataSet = createDataSetPerCommit(fileStatistics, decorator);
 
-            LinesChartModel model = new LinesChartModel();
-            model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-            model.setBuildNumbers(dataSet.getBuildNumbers());
-
+            LinesChartModel model = new LinesChartModel(dataSet);
             LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), Palette.GREEN.getNormal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             added.addAll(dataSet.getSeries(ADDED_KEY));

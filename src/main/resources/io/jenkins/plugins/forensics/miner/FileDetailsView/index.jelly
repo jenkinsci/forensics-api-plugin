@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dt="/data-tables"
-         xmlns:bs="/bootstrap">
+         xmlns:bs="/bootstrap5">
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
 
@@ -8,7 +8,7 @@
 
     <l:main-panel>
 
-      <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
+      <st:adjunct includes="io.jenkins.plugins.bootstrap5"/>
       <st:adjunct includes="io.jenkins.plugins.data-tables"/>
       <st:adjunct includes="io.jenkins.plugins.echarts"/>
 

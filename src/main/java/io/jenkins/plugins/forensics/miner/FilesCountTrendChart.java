@@ -19,7 +19,7 @@ import edu.hm.hafner.echarts.Palette;
  * @author Ullrich Hafner
  * @see JacksonFacade
  */
-public class FilesCountTrendChart {
+class FilesCountTrendChart {
     /**
      * Creates the chart for the specified results.
      *
@@ -36,15 +36,13 @@ public class FilesCountTrendChart {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel();
-        model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-        model.setBuildNumbers(dataSet.getBuildNumbers());
-
+        LinesChartModel model = new LinesChartModel(dataSet);
         LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),
                 StackedMode.SEPARATE_LINES, FilledMode.FILLED);
-        series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
-        model.addSeries(series);
-
+        if (dataSet.getDomainAxisSize() > 0) {
+            series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
+            model.addSeries(series);
+        }
         return model;
     }
 }

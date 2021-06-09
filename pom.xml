@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>analysis-pom</artifactId>
-    <version>5.7.0</version>
+    <version>5.8.0</version>
     <relativePath />
   </parent>
 
@@ -18,7 +18,7 @@
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>1.0.1</revision>
+    <revision>1.1.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
@@ -27,13 +27,12 @@
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <plugin-util-api.version>2.2.0</plugin-util-api.version>
-    <data-tables-api.version>1.10.23-3</data-tables-api.version>
-    <echarts-api.version>5.0.1-1</echarts-api.version>
+    <plugin-util-api.version>2.3.0</plugin-util-api.version>
+    <data-tables-api.version>1.10.25-1</data-tables-api.version>
     <jquery3-api.version>3.6.0-1</jquery3-api.version>
-    <bootstrap4-api.version>4.6.0-3</bootstrap4-api.version>
-    <font-awesome-api.version>5.15.3-2</font-awesome-api.version>
-    <popper-api.version>1.16.1-2</popper-api.version>
+    <font-awesome-api.version>5.15.3-3</font-awesome-api.version>
+    <echarts-api.version>5.1.2-1</echarts-api.version>
+    <bootstrap5-api.version>5.0.1-2</bootstrap5-api.version>
 
   </properties>
 
@@ -68,18 +67,12 @@
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
-      <artifactId>bootstrap4-api</artifactId>
-      <version>${bootstrap4-api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.jenkins.plugins</groupId>
-      <artifactId>popper-api</artifactId>
-      <version>${popper-api.version}</version>
+      <artifactId>bootstrap5-api</artifactId>
+      <version>${bootstrap5-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>jquery3-api</artifactId>
-      <version>${jquery3-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>

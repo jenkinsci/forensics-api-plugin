@@ -10,7 +10,7 @@ import edu.hm.hafner.echarts.SeriesBuilder;
  *
  * @author Ullrich Hafner
  */
-public class FilesCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+class FilesCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
     static final String TOTALS_KEY = "total";
 
     @Override

@@ -11,15 +11,16 @@ import edu.hm.hafner.echarts.SeriesBuilder;
  *
  * @author Giulia Del Bravo
  */
-public class ForensicsCodeMetricSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+class CodeMetricSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
     static final String LOC_KEY = Messages.TrendChart_Loc_Legend_Label();
     static final String CHURN_KEY = Messages.TrendChart_Churn_Legend_Label();
 
     @Override
     protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
         Map<String, Integer> series = new HashMap<>();
-        series.put(LOC_KEY, current.getResult().getTotalLinesOfCode());
-        series.put(CHURN_KEY, current.getResult().getTotalChurn());
+        series.put(LOC_KEY, current.getTotalLinesOfCode());
+        series.put(CHURN_KEY, current.getTotalChurn());
+
         return series;
     }
 }
