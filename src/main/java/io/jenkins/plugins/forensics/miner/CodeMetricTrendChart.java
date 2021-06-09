@@ -37,11 +37,7 @@ class CodeMetricTrendChart {
         CodeMetricSeriesBuilder builder = new CodeMetricSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel();
-        if (dataSet.getDomainAxisSize() > 0) {
-            model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-            model.setBuildNumbers(dataSet.getBuildNumbers());
-        }
+        LinesChartModel model = new LinesChartModel(dataSet);
         Palette[] colors = {Palette.BLUE, Palette.ORANGE};
         int index = 0;
         for (String name : dataSet.getDataSetIds()) {

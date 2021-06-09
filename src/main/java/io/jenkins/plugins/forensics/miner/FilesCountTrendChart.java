@@ -36,12 +36,7 @@ class FilesCountTrendChart {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel();
-        if (dataSet.getDomainAxisSize() > 0) {
-            model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-            model.setBuildNumbers(dataSet.getBuildNumbers());
-        }
-
+        LinesChartModel model = new LinesChartModel(dataSet);
         LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),
                 StackedMode.SEPARATE_LINES, FilledMode.FILLED);
         if (dataSet.getDomainAxisSize() > 0) {

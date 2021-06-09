@@ -35,13 +35,9 @@ class RelativeCountTrendChart {
             final ChartModelConfiguration configuration) {
         RelativeCountSeriesBuilder builder = new RelativeCountSeriesBuilder();
 
-        LinesChartModel model = new LinesChartModel();
-
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
+        LinesChartModel model = new LinesChartModel(dataSet);
         if (dataSet.getDomainAxisSize() > 0) {
-            model.setDomainAxisLabels(dataSet.getDomainAxisLabels());
-            model.setBuildNumbers(dataSet.getBuildNumbers());
-
             LineSeries authors = getSeries(dataSet, "Authors", Palette.BLUE,
                     RelativeCountSeriesBuilder.AUTHORS_KEY);
             LineSeries commits = getSeries(dataSet, "Commits", Palette.GREEN,
