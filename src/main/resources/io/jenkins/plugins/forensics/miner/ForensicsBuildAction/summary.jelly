@@ -3,21 +3,29 @@
 
   <t:summary icon="/plugin/forensics-api/icons/forensics-48x48.png">
     ${%title}: ${it.scmKey}
-    <j:set var="s" value="${it.result.latestStatistics}" />
+    <j:set var="s" value="${it.commitStatistics}" />
+    <j:set var="d" value="${it.deltaCommitStatistics}" />
     <ul>
       <li>
         <a href="${it.urlName}">${%summary(size(it.result))}</a>
-        (total lines of code: ${it.result.totalLinesOfCode}, total churn: ${it.result.totalChurn})
+        (total lines of code: ${it.totalLinesOfCode}, total churn: ${it.totalChurn})
       </li>
       <li>
-        New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
+        New commits since previous build: ${s.commitCount}
+          (from ${s.authorCount} authors
+            in ${s.filesCount} files
+            with ${s.addedLines} added
+            and ${s.deletedLines} deleted lines)
       </li>
-      <li>
-        New added lines: ${s.addedLines}
-      </li>
-      <li>
-        New deleted lines: ${s.deletedLines}
-      </li>
+      <j:if test="${it.deltaNumberOfFiles > 0}">
+        <li>
+          New commits since reference build <a href="${rootURL}/${it.referenceBuild.url}">${it.referenceBuild.displayName}</a>: ${d.commitCount}
+          (from ${d.authorCount} authors
+          in ${d.filesCount} files
+          with ${d.addedLines} added
+          and ${d.deletedLines} deleted lines)
+        </li>
+      </j:if>
       <li>
         Miner runtime: ${it.miningDurationSeconds} seconds
       </li>
