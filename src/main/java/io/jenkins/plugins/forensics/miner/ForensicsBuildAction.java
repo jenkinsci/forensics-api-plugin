@@ -2,19 +2,16 @@ package io.jenkins.plugins.forensics.miner;
 
 import org.apache.commons.lang3.StringUtils;
 
-import edu.hm.hafner.util.FilteredLog;
-import edu.hm.hafner.util.NoSuchElementException;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Run;
 
-import io.jenkins.plugins.forensics.reference.ReferenceFinder;
 import io.jenkins.plugins.util.BuildAction;
 
 /**
- * Controls the live cycle of the forensics results in a job. This action persists the results of a build and displays a
+ * Controls the life cycle of the forensics results in a job. This action persists the results of a build and displays a
  * summary on the build page. The actual visualization of the results is defined in the matching {@code summary.jelly}
  * file. This action also provides access to the forensics details: these are rendered using a new view instance.
  *
@@ -36,11 +33,6 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private final int totalChurn; // since 1.1.0
     private CommitStatistics commitStatistics;  // since 1.1.0
 
-    private final int deltaNumberOfFiles; // since 1.2.0
-    private final int deltaTotalLinesOfCode; // since 1.2.0
-    private final int deltaTotalChurn; // since 1.2.0
-    private CommitStatistics deltaCommitStatistics; // since 1.2.0
-
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
      *
@@ -57,7 +49,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      */
     public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
             final int miningDurationSeconds, final String scmKey, final int number) {
-        this(owner, repositoryStatistics, new RepositoryStatistics(), miningDurationSeconds, scmKey, number);
+        this(owner, repositoryStatistics, true, miningDurationSeconds, scmKey, number);
     }
 
     /**
@@ -67,8 +59,8 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         the associated build that created the statistics
      * @param repositoryStatistics
      *         the statistics to persist with this action
-     * @param deltaStatistics
-     *         the statistics compared to the reference build (if available)
+     * @param canSerialize
+     *         determines whether the result should be persisted in the build folder
      * @param miningDurationSeconds
      *         the duration of the mining operation in [s]
      * @param scmKey
@@ -76,33 +68,21 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      * @param number
      *         unique number of the results (used as part of the serialization file name)
      */
-    public ForensicsBuildAction(final Run<?, ?> owner,
-            final RepositoryStatistics repositoryStatistics, final RepositoryStatistics deltaStatistics,
-            final int miningDurationSeconds, final String scmKey, final int number) {
-        this(owner, repositoryStatistics, deltaStatistics, true, miningDurationSeconds, scmKey, number);
-    }
-
     @VisibleForTesting
-    ForensicsBuildAction(final Run<?, ?> owner,
-            final RepositoryStatistics repositoryStatistics, final RepositoryStatistics deltaStatistics,
+    ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
             final boolean canSerialize, final int miningDurationSeconds, final String scmKey, final int number) {
         super(owner, repositoryStatistics, false);
 
+        numberOfFiles = repositoryStatistics.size();
         this.miningDurationSeconds = miningDurationSeconds;
         this.scmKey = scmKey;
 
         fileName = createFileName(number);
         urlName = createUrlName(number);
 
-        numberOfFiles = repositoryStatistics.size();
         totalLinesOfCode = repositoryStatistics.getTotalLinesOfCode();
         totalChurn = repositoryStatistics.getTotalChurn();
         commitStatistics = repositoryStatistics.getLatestStatistics();
-
-        deltaNumberOfFiles = deltaStatistics.size();
-        deltaTotalLinesOfCode = deltaStatistics.getTotalLinesOfCode();
-        deltaTotalChurn = deltaStatistics.getTotalChurn();
-        deltaCommitStatistics = deltaStatistics.getLatestStatistics();
 
         if (canSerialize) {
             createXmlStream().write(owner.getRootDir().toPath().resolve(fileName), repositoryStatistics);
@@ -120,9 +100,6 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         }
         if (commitStatistics == null) {
             commitStatistics = new CommitStatistics();
-        }
-        if (deltaCommitStatistics == null) {
-            deltaCommitStatistics = new CommitStatistics();
         }
 
         return super.readResolve();
@@ -182,12 +159,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         return urlName;
     }
 
-    public int getMiningDurationSeconds() {
-        return miningDurationSeconds;
-    }
-
     public int getNumberOfFiles() {
         return numberOfFiles;
+    }
+
+    public int getMiningDurationSeconds() {
+        return miningDurationSeconds;
     }
 
     public int getTotalLinesOfCode() {
@@ -200,27 +177,6 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     public CommitStatistics getCommitStatistics() {
         return commitStatistics;
-    }
-
-    public Run<?, ?> getReferenceBuild() {
-        return new ReferenceFinder().findReference(getOwner(), new FilteredLog(""))
-                .orElseThrow(() -> new NoSuchElementException("No reference build available"));
-    }
-
-    public int getDeltaNumberOfFiles() {
-        return deltaNumberOfFiles;
-    }
-
-    public int getDeltaTotalLinesOfCode() {
-        return deltaTotalLinesOfCode;
-    }
-
-    public int getDeltaTotalChurn() {
-        return deltaTotalChurn;
-    }
-
-    public CommitStatistics getDeltaCommitStatistics() {
-        return deltaCommitStatistics;
     }
 
     public String getScmKey() {

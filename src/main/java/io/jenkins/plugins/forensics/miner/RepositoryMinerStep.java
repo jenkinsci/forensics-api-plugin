@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +25,6 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
-import io.jenkins.plugins.forensics.reference.ReferenceFinder;
 import io.jenkins.plugins.forensics.util.ScmResolver;
 import io.jenkins.plugins.util.BuildAction;
 import io.jenkins.plugins.util.LogHandler;
@@ -39,6 +37,8 @@ import io.jenkins.plugins.util.LogHandler;
  *     <li>total number of different authors</li>
  *     <li>creation time</li>
  *     <li>last modification time</li>
+ *     <li>lines of code (from the commit details)</li>
+ *     <li>code churn (changed lines since created)</li>
  * </ul>
  * Stores the created statistics in a {@link RepositoryStatistics} instance. The result is attached to
  * a {@link Run} by registering a {@link ForensicsBuildAction}.
@@ -64,6 +64,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
      *
      * @return this
      */
+    @SuppressWarnings("unused")
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (scm == null) {
@@ -108,58 +109,29 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
             logHandler.log(logger);
 
-            RepositoryStatistics repositoryStatistics = previousBuildStatistics(run);
+            RepositoryStatistics repositoryStatistics = previousBuildStatistics(scm, run);
             RepositoryStatistics addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
-
-            RepositoryStatistics deltaStatistics = createDeltaStatistics(miner, run, logger);
 
             logHandler.log(logger);
             int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
-            run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, deltaStatistics,
-                    miningDurationSeconds, repository.getKey(), number++));
+            run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds,
+                    repository.getKey(), number++));
         }
     }
 
-    /**
-     * Returns the delta statistics of the current build compared to the best common ancestor commit with the reference
-     * build. If no reference build has been found, then an empty mining result is returned.
-     *
-     * @param miner
-     *         the miner
-     * @param run
-     *         the current build
-     * @param logger
-     *         the logger
-     *
-     * @return the delta statistics if a reference build with previous results has been found
-     * @throws InterruptedException
-     *         if the user stops the processing
-     */
-    private RepositoryStatistics createDeltaStatistics(final RepositoryMiner miner,
-            final Run<?, ?> run, final FilteredLog logger) throws InterruptedException {
-        Optional<Run<?, ?>> referenceBuild = new ReferenceFinder().findReference(run, logger);
-        if (referenceBuild.isPresent()) { // can't use streams due to checked exception
-            return miner.mine(referenceBuild.get(), logger);
-        }
-        return new RepositoryStatistics();
-    }
-
-    private RepositoryStatistics previousBuildStatistics(final Run<?, ?> run) {
+    private RepositoryStatistics previousBuildStatistics(final String repository, final Run<?, ?> run) {
         for (Run<?, ?> build = run.getPreviousBuild(); build != null; build = build.getPreviousBuild()) {
             List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
             if (!actions.isEmpty()) {
-                return extractResult(actions).orElse(new RepositoryStatistics());
+                return actions.stream()
+                        .filter(a -> a.getScmKey().contains(repository))
+                        .findAny()
+                        .map(BuildAction::getResult)
+                        .orElse(new RepositoryStatistics());
             }
         }
 
         return new RepositoryStatistics();
-    }
-
-    private Optional<RepositoryStatistics> extractResult(final List<ForensicsBuildAction> actions) {
-        return actions.stream()
-                .filter(a -> a.getScmKey().contains(scm))
-                .findAny()
-                .map(BuildAction::getResult);
     }
 
     @Override
