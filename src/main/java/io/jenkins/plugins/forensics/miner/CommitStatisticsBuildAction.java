@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import hudson.model.Action;
 import hudson.model.InvisibleAction;
@@ -25,6 +26,7 @@ import io.jenkins.plugins.forensics.reference.ReferenceBuild;
 public class CommitStatisticsBuildAction extends InvisibleAction implements LastBuildAction, RunAction2, Serializable {
     private static final long serialVersionUID = -263122257268060032L;
 
+    @SuppressFBWarnings(value = "SE", justification = "transient field owner ist restored using a Jenkins callback")
     private transient Run<?, ?> owner;
 
     private final String scmKey;
