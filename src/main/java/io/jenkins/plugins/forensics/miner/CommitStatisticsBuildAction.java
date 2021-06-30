@@ -25,7 +25,7 @@ import io.jenkins.plugins.forensics.reference.ReferenceBuild;
 public class CommitStatisticsBuildAction extends InvisibleAction implements LastBuildAction, RunAction2, Serializable {
     private static final long serialVersionUID = -263122257268060032L;
 
-    private Run<?, ?> owner;
+    private transient Run<?, ?> owner;
 
     private final String scmKey;
     private final CommitStatistics commitStatistics;
@@ -42,6 +42,8 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
      */
     public CommitStatisticsBuildAction(final Run<?, ?> owner,
             final String scmKey, final CommitStatistics commitStatistics) {
+        super();
+
         this.owner = owner;
         this.scmKey = scmKey;
         this.commitStatistics = commitStatistics;
