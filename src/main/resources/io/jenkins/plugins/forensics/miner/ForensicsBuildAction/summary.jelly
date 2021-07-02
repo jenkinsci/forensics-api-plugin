@@ -13,7 +13,7 @@
         New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
       </li>
       <li>
-        New lines: ${s.addedLines} added, ${s.deletedLines} deleted
+        Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
       </li>
       <li>
         Miner runtime: ${it.miningDurationSeconds} seconds
