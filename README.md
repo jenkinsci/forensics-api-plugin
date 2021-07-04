@@ -26,7 +26,7 @@ used to track the original commit that introduced a piece of code.
 all commits of a pull request). This includes: 
   - commits count
   - changed files count
-  - addded and deleted lines 
+  - added and deleted lines 
 - **Reference build**: Several plugins that report build statistics (test results, code coverage, metrics, static 
 analysis warnings) typically show their reports in two different ways: either as absolute report 
 (e.g., total number of tests or warnings, overall code coverage) or as relative delta report (e.g., additional tests,
