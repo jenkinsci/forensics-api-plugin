@@ -6,15 +6,14 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1be7bb5b899446968e411e6e59c8ea6c)](https://www.codacy.com/app/jenkinsci/forensics-api-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jenkinsci/forensics-api-plugin&amp;utm_campaign=Badge_Grade)
 [![Codecov](https://codecov.io/gh/jenkinsci/forensics-api-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/jenkinsci/forensics-api-plugin)
 
-This Forensics API Jenkins plug-in defines an API to mine and analyze data from a source control repository. Currently, this plugin is only used
-by the [Jenkins Warning Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin).
+This Forensics API Jenkins plug-in defines an API to mine and analyze data from a source control repository. 
  
 This API plugin provides the following services:
 - **Blames**: Shows what revision and author last modified a specified set of lines of a file. This information can be 
 used to track the original commit that introduced a piece of code. 
-- **File statistics**: Collects commit statistics for all repository files in the style of 
+- **File statistics**: Incrementally collects global commit statistics for all repository files in the style of 
   [Code as a Crime Scene](https://www.adamtornhill.com/articles/crimescene/codeascrimescene.htm) 
-  \[Adam Tornhill, November 2013\]:
+  \[Adam Tornhill, November 2013\]. This includes:
   - commits count
   - different authors count
   - creation time
@@ -23,6 +22,11 @@ used to track the original commit that introduced a piece of code.
   - code churn (changed lines since created)
 - **Commit tracking**: Tracks all new commits that are part of a build. Using this information plugins can search for 
  builds that contain a specific commit. 
+- **Commit statistics**: Collects commit statistics for all new commits in a build or in a series of builds (e.g. for 
+all commits of a pull request). This includes: 
+  - commits count
+  - changed files count
+  - addded and deleted lines 
 - **Reference build**: Several plugins that report build statistics (test results, code coverage, metrics, static 
 analysis warnings) typically show their reports in two different ways: either as absolute report 
 (e.g., total number of tests or warnings, overall code coverage) or as relative delta report (e.g., additional tests,
