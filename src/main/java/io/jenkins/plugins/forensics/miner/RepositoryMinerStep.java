@@ -37,6 +37,8 @@ import io.jenkins.plugins.util.LogHandler;
  *     <li>total number of different authors</li>
  *     <li>creation time</li>
  *     <li>last modification time</li>
+ *     <li>lines of code (from the commit details)</li>
+ *     <li>code churn (changed lines since created)</li>
  * </ul>
  * Stores the created statistics in a {@link RepositoryStatistics} instance. The result is attached to
  * a {@link Run} by registering a {@link ForensicsBuildAction}.
@@ -62,6 +64,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
      *
      * @return this
      */
+    @SuppressWarnings("unused")
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (scm == null) {

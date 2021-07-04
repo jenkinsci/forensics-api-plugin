@@ -11,23 +11,24 @@ import hudson.model.Run;
 import io.jenkins.plugins.util.BuildAction;
 
 /**
- * Controls the live cycle of the forensics results in a job. This action persists the results of a build and displays a
+ * Controls the life cycle of the forensics results in a job. This action persists the results of a build and displays a
  * summary on the build page. The actual visualization of the results is defined in the matching {@code summary.jelly}
  * file. This action also provides access to the forensics details: these are rendered using a new view instance.
  *
  * @author Ullrich Hafner
  */
+@SuppressWarnings("PMD.DataClass")
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
     private static final long serialVersionUID = -263122257268060032L;
     private static final String DEFAULT_FILE_NAME = "repository-statistics.xml";
 
-    private final int numberOfFiles;
     private final int miningDurationSeconds;
     private final String urlName;
 
     private String scmKey; // since 0.9.0
     private String fileName; // since 0.9.0
 
+    private final int numberOfFiles;
     private final int totalLinesOfCode; // since 1.1.0
     private final int totalChurn; // since 1.1.0
     private CommitStatistics commitStatistics;  // since 1.1.0

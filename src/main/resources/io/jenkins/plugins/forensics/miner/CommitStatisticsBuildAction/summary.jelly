@@ -1,0 +1,26 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
+
+  <t:summary icon="/plugin/forensics-api/icons/diff-stat-48x48.png">
+    ${%title}: ${it.scmKey}
+    <j:set var="s" value="${it.commitStatistics}"/>
+    <ul>
+      <li>
+        Commits: ${s.commitCount} -
+        <j:choose>
+          <j:when test="${it.referenceBuild != null}">
+            compared to target branch of build <j:out value="${it.referenceBuild.referenceLink}"/>
+          </j:when>
+            compared to previous build
+        </j:choose>
+      </li>
+      <li>
+        Changed files: ${s.filesCount}
+      </li>
+      <li>
+        Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
+      </li>
+    </ul>
+  </t:summary>
+
+</j:jelly>
