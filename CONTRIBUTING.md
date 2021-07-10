@@ -1,7 +1,6 @@
 # Contributing to the Forensics API Jenkins Plugin
 
-This page provides information about contributing code to the Forensics API Jenkins plug-in. This
-library is used by Jenkins' [Warnings Next Generation Plugin](https://github.com/jenkinsci/warnings-ng-plugin). 
+This document provides information about contributing code to the Forensics API Jenkins plug-in.  
 
 ## Beginner Topics
 
@@ -48,7 +47,7 @@ To submit a pull request:
 1. Commit changes and push them to your fork on GitHub.
 It is a good practice is to create branches instead of pushing to master.
 2. In GitHub Web UI click the **New Pull Request** button.
-3. Select `analysis-model` as **base fork** and `master` as **base**, then click **Create Pull Request**.
+3. Select `forensics-api-plugin` as **base fork** and `master` as **base**, then click **Create Pull Request**.
 4. Fill in the Pull Request description. It should reflect the changes, the reason behind the changes, and if available a
 reference to the Jenkins ticket in our [issue tracker](https://issues.jenkins-ci.org/).
 5. Click **Create Pull Request**.
@@ -61,23 +60,12 @@ There is no additional action required from pull request authors at this point.
 
 ## Copyright
 
-The Static Analysis Model and Parsers Library  is licensed under [MIT license](./LICENSE). 
+This plugin is licensed under [MIT license](./LICENSE). 
 We consider all contributions as MIT unless it's explicitly stated otherwise. 
 MIT-incompatible code contributions will be rejected.
 Contributions under MIT-compatible licenses may be also rejected if they are not ultimately necessary.
 
-We **Do NOT** require pull request submitters to sign the 
-[contributor agreement](https://wiki.jenkins.io/display/JENKINS/Copyright+on+source+code)
-as long as the code is licensed under MIT and merged by one of the contributors with the signed agreement.
-
 ## Continuous Integration
 
 The Jenkins project has a Continuous Integration server... powered by Jenkins, of course.
-The CI job for this project is located at [ci.jenkins.io](https://ci.jenkins.io/job/Plugins/job/analysis-model/).
-
-# Links
-
-* [Jenkins Contribution Landing Page](https://jenkins.io/paricipate/)
-* [Jenkins IRC Channel](https://jenkins.io/chat/)
-* [Beginners Guide To Contributing](https://wiki.jenkins.io/display/JENKINS/Beginners+Guide+to+Contributing)
-
+The CI job for this project is located at [ci.jenkins.io](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/).
