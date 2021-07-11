@@ -63,9 +63,40 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
         return commitStatistics;
     }
 
+    /**
+     * Returns whether the statistics are based on a reference build or on the previous build.
+     *
+     * @return {@code true} if there is a reference build defined, {@code false} otherwise
+     */
+    public boolean hasReferenceBuild() {
+        ReferenceBuild referenceBuildAction = getOwner().getAction(ReferenceBuild.class);
+        if (referenceBuildAction == null) {
+            return false;
+        }
+        return referenceBuildAction.hasReferenceBuild();
+    }
+
+    /**
+     * Returns the reference build action if present.
+     *
+     * @return the action
+     */
     @CheckForNull
     public ReferenceBuild getReferenceBuild() {
         return getOwner().getAction(ReferenceBuild.class);
+    }
+
+    /**
+     * Returns a link that can be used in Jelly views to navigate to the reference build.
+     *
+     * @return the link
+     */
+    public String getReferenceBuildLink() {
+        ReferenceBuild build = getReferenceBuild();
+        if (build == null) {
+            return ReferenceBuild.NO_REFERENCE_BUILD;
+        }
+        return build.getReferenceLink();
     }
 
     @Override
