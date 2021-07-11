@@ -8,10 +8,12 @@
       <li>
         Commits: ${s.commitCount} -
         <j:choose>
-          <j:when test="${it.referenceBuild != null}">
-            compared to target branch of build <j:out value="${it.referenceBuild.referenceLink}"/>
+          <j:when test="${it.hasReferenceBuild()}">
+            compared to target branch build <j:out value="${it.referenceBuildLink}"/>
           </j:when>
+          <j:otherwise>
             compared to previous build
+          </j:otherwise>
         </j:choose>
       </li>
       <li>
