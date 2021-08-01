@@ -201,7 +201,7 @@ public class CommitStatistics implements Serializable {
      *         the logger
      */
     public static void logCommits(final List<CommitDiffItem> commits, final FilteredLog logger) {
-        logger.logInfo("-> %d commits analyzed", countCommits(commits));
+        logger.logInfo("-> %d commits with differences analyzed", countCommits(commits));
         logIfPositive(countChanges(commits), "-> %d MODIFY commit diff items", logger);
         logIfPositive(countMoves(commits), "-> %d RENAME commit diff items", logger);
         logIfPositive(countDeletes(commits), "-> %d DELETE commit diff items", logger);
