@@ -45,7 +45,12 @@
         {
           const trendProxy = <st:bind value="${it}"/>;
           trendProxy.getBuildTrendModel(function (lineModel) {
-                echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON);
+              const openCommit = function (commit) {
+                  trendProxy.getCommitUrl(commit, function (commitUrl) {
+                        console.log(commitUrl.responseJSON);
+                  });
+              };
+              echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON, null, openCommit);
           });
         }
       </script>

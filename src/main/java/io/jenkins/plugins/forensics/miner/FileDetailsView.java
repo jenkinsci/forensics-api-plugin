@@ -75,6 +75,12 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // Called by jelly view
+    public String getCommitUrl(final String commit) {
+        return decorator.getRawLink(commit);
+    }
+
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // Called by jelly view
     @Override
     public String getBuildTrendModel() {
         return new JacksonFacade().toJson(createChartModel());
