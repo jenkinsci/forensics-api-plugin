@@ -100,7 +100,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
         try {
             CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner);
 
-            return new FileDetailsView(link, repositoryStatistics, decorator);
+            return new FileDetailsView(owner, link, repositoryStatistics, decorator);
         }
         catch (NoSuchElementException nse) {
             try {

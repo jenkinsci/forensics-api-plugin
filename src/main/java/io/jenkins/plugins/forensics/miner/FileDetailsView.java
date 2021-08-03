@@ -17,6 +17,7 @@ import edu.hm.hafner.echarts.Palette;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
+import hudson.model.Run;
 
 import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableColumn;
@@ -32,6 +33,7 @@ import io.jenkins.plugins.forensics.util.CommitDecorator;
 public class FileDetailsView extends DefaultAsyncTableContentProvider implements ModelObject, AsyncTrendChart {
     private static final String FILE_NAME_PROPERTY = "fileName.";
 
+    private final Run<?, ?> owner;
     private final String fileHash;
     private final RepositoryStatistics repositoryStatistics;
     private final CommitDecorator decorator;
@@ -47,10 +49,11 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      * @param decorator
      *         renders commit links
      */
-    public FileDetailsView(final String fileLink, final RepositoryStatistics repositoryStatistics,
+    public FileDetailsView(final Run<?,?> owner, final String fileLink, final RepositoryStatistics repositoryStatistics,
             final CommitDecorator decorator) {
         super();
 
+        this.owner = owner;
         this.fileHash = fileLink.substring(FILE_NAME_PROPERTY.length());
         this.repositoryStatistics = repositoryStatistics;
         this.decorator = decorator;
@@ -62,6 +65,10 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
                 .stream()
                 .filter(f -> String.valueOf(f.getFileName().hashCode()).equals(fileHash)).findAny().orElseThrow(
                         () -> new NoSuchElementException("No file found with hash code " + fileHash));
+    }
+
+    public Run<?, ?> getOwner() {
+        return owner;
     }
 
     /**
