@@ -33,11 +33,11 @@ public class ReferenceFinder {
             Optional<Run<?, ?>> referenceBuild = action.getReferenceBuild();
             if (referenceBuild.isPresent()) {
                 Run<?, ?> reference = referenceBuild.get();
-                log.logInfo("-> found '%s'", reference.getFullDisplayName());
+                log.logInfo("-> Found '%s'", reference.getFullDisplayName());
 
                 return Optional.of(reference);
             }
-            log.logInfo("-> no reference build recorded");
+            log.logInfo("-> No reference build recorded");
         }
         return Optional.empty();
     }
