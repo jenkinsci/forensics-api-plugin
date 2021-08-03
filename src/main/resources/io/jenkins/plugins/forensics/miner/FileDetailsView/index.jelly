@@ -44,7 +44,9 @@
       <script>
         {
           const trendProxy = <st:bind value="${it}"/>;
-          echartsJenkinsApi.renderTrendChart('churn-trend-chart', `false`, trendProxy);
+          trendProxy.getBuildTrendModel(function (lineModel) {
+                echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON);
+          });
         }
       </script>
 
