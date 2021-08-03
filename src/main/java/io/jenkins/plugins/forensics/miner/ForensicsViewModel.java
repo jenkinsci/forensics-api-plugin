@@ -51,7 +51,11 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title(scmKey);
+        return Messages.Forensics_Action();
+    }
+
+    public String getScmKey() {
+        return scmKey;
     }
 
     @Override

@@ -11,6 +11,8 @@
 
     <link rel="stylesheet" href="${resURL}/plugin/forensics-api/css/custom-style.css"/>
 
+    <h4>${%Full path}: ${it.fullPath}</h4>
+
     <div class="row py-3">
       <div class="col">
 
