@@ -36,11 +36,12 @@
 
     <script>
       {
-      const trendProxy =<st:bind value="${it}"/>;
-      echartsJenkinsApi.renderTrendChart('churn-trend-chart', `false`, trendProxy);
+        const trendProxy = <st:bind value="${it}"/>;
+        trendProxy.getBuildTrendModel(function (lineModel) {
+              echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON);
+        });
       }
     </script>
-
   </bs:page>
 
 </j:jelly>
