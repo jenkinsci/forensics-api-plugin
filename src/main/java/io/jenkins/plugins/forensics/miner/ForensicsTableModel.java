@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
+
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableColumn.ColumnCss;
 import io.jenkins.plugins.datatables.TableModel;
+
+import static j2html.TagCreator.*;
 
 /**
  * Provides the dynamic model for the details table that shows the source control file statistics.
@@ -42,14 +46,12 @@ public class ForensicsTableModel extends TableModel {
     public List<TableColumn> getColumns() {
         List<TableColumn> columns = new ArrayList<>();
 
-        columns.add(new TableColumn(Messages.Table_Column_File(), "fileName").setWidth(2));
+        columns.add(new TableColumn(Messages.Table_Column_File(), "fileName"));
         columns.add(new TableColumn(Messages.Table_Column_AuthorsSize(), "authorsSize"));
         columns.add(new TableColumn(Messages.Table_Column_CommitsSize(), "commitsSize"));
         columns.add(new TableColumn(Messages.Table_Column_LastCommit(), "modifiedAt")
-                .setWidth(2)
                 .setHeaderClass(ColumnCss.DATE));
         columns.add(new TableColumn(Messages.Table_Column_AddedAt(), "addedAt")
-                .setWidth(2)
                 .setHeaderClass(ColumnCss.DATE));
         columns.add(new TableColumn(Messages.Table_Column_LOC(), "linesOfCode"));
         columns.add(new TableColumn(Messages.Table_Column_Churn(), "churn"));
@@ -73,8 +75,20 @@ public class ForensicsTableModel extends TableModel {
             this.fileStatistics = fileStatistics;
         }
 
+        /**
+         * SHows the file name column: the column shows the name without the path. The full path is shown
+         * as additional tooltip.
+         *
+         * @return the file name column (as HTML a tag)
+         */
         public String getFileName() {
-            return "<a href=\"fileName." + fileStatistics.getFileName().hashCode() + "\">" + fileStatistics.getFileName() + "</a>";
+            String fullPath = fileStatistics.getFileName();
+
+            return a().withHref("fileName." + fullPath.hashCode())
+                    .withText(FilenameUtils.getName(fullPath))
+                    .attr("data-bs-toggle", "tooltip")
+                    .attr("data-bs-placement", "left")
+                    .withTitle(fullPath).render();
         }
 
         public int getAuthorsSize() {
