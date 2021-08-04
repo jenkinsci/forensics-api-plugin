@@ -51,7 +51,11 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
 
     @Override
     public String getDisplayName() {
-        return Messages.ForensicsView_Title(scmKey);
+        return Messages.Forensics_Action();
+    }
+
+    public String getScmKey() {
+        return scmKey;
     }
 
     @Override
@@ -100,7 +104,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
         try {
             CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner);
 
-            return new FileDetailsView(link, repositoryStatistics, decorator);
+            return new FileDetailsView(owner, link, repositoryStatistics, decorator);
         }
         catch (NoSuchElementException nse) {
             try {
