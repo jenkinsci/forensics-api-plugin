@@ -36,10 +36,17 @@
 
     <script>
       {
-        const trendProxy = <st:bind value="${it}"/>;
-        trendProxy.getBuildTrendModel(function (lineModel) {
-              echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON);
-        });
+          const trendProxy = <st:bind value="${it}"/>;
+          trendProxy.getBuildTrendModel(function (lineModel) {
+              const openCommit = function (commit) {
+                  trendProxy.getCommitUrl(commit, function (commitUrl) {
+                      if (commitUrl.responseJSON.startsWith('http')) {
+                          window.location.assign(commitUrl.responseJSON);
+                      }
+                  });
+              };
+              echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON, null, openCommit);
+          });
       }
     </script>
   </bs:page>

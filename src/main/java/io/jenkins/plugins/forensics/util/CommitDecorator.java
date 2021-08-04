@@ -1,5 +1,7 @@
 package io.jenkins.plugins.forensics.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import hudson.scm.RepositoryBrowser;
 
 /**
@@ -21,12 +23,26 @@ public abstract class CommitDecorator {
     public abstract String asLink(String id);
 
     /**
-     * Renders the commit ID as a human readable text.
+     * Returns the raw link for the specified commit ID.
      *
      * @param id
      *         the ID of the commit
      *
-     * @return a commit ID as human readable text
+     * @return a raw link to the commit, e.g. https://github.com/jenkinsci/analysis-model/commit/9f5eb8b28e422d6249e6c29dc65173a59f2d9f6f
+     */
+    public String getRawLink(final String id) {
+        return StringUtils.defaultString(
+                StringUtils.substringBetween(asLink(id), "href=\"", "\""),
+                id);
+    }
+
+    /**
+     * Renders the commit ID as a human-readable text.
+     *
+     * @param id
+     *         the ID of the commit
+     *
+     * @return a commit ID as human-readable text
      */
     public String asText(final String id) {
         return id;
