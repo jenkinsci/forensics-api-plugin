@@ -85,6 +85,14 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         return new FileChurnTrendChart().create(fileStatistics, decorator);
     }
 
+    /**
+     * Returns the repository URL for the specified commit.
+     *
+     * @param commit
+     *         the commit to get the URL for
+     *
+     * @return the repository URL
+     */
     @JavaScriptMethod
     @SuppressWarnings("unused") // Called by jelly view
     public String getCommitUrl(final String commit) {
@@ -188,6 +196,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             LinesDataSet dataSet = createDataSetPerCommit(fileStatistics, decorator);
 
             LinesChartModel model = new LinesChartModel(dataSet);
+            model.setDomainAxisItemName("Commit");
             LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), Palette.GREEN.getNormal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             added.addAll(dataSet.getSeries(ADDED_KEY));
