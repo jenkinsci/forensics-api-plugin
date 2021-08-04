@@ -8,6 +8,8 @@
 
     <st:adjunct includes="io.jenkins.plugins.data-tables"/>
 
+    <h4>SCM: ${it.scmKey}</h4>
+
     <div class="row py-3 flex-nowrap">
       <div class="col-6">
 

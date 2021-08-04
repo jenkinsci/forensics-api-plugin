@@ -1,58 +1,48 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:dt="/data-tables"
-         xmlns:bs="/bootstrap5">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:dt="/data-tables" xmlns:bs="/bootstrap5">
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
 
-  <l:layout title="${it.fileName}" norefresh="true" nogrid="true">
+  <bs:page it="${it}">
 
-    <l:main-panel>
+    <st:adjunct includes="io.jenkins.plugins.bootstrap5"/>
+    <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+    <st:adjunct includes="io.jenkins.plugins.echarts"/>
 
-      <st:adjunct includes="io.jenkins.plugins.bootstrap5"/>
-      <st:adjunct includes="io.jenkins.plugins.data-tables"/>
-      <st:adjunct includes="io.jenkins.plugins.echarts"/>
+    <link rel="stylesheet" href="${resURL}/plugin/forensics-api/css/custom-style.css"/>
 
-      <link rel="stylesheet" href="${resURL}/plugin/forensics-api/css/custom-style.css"/>
+    <h4>${%Full path}: ${it.fullPath}</h4>
 
-      <div class="fluid-container">
+    <div class="row py-3">
+      <div class="col">
 
-        <h3>${it.displayName}</h3>
-
-        <div class="row py-3">
-          <div class="col">
-
-            <bs:card title="${%File churn}" fontAwesomeIcon="chart-line">
-              <div id="churn-trend-chart" class="graph-cursor-pointer card-chart"/>
-            </bs:card>
-
-          </div>
-        </div>
-        <div class="row py-3">
-
-          <div class="col">
-            <div id="statistics">
-              <bs:card title="${%Details}" fontAwesomeIcon="chart-bar">
-                <dt:table model="${it.getTableModel('forensics')}"/>
-              </bs:card>
-            </div>
-          </div>
-
-        </div>
+        <bs:card title="${%File churn}" fontAwesomeIcon="chart-line">
+          <div id="churn-trend-chart" class="graph-cursor-pointer card-chart"/>
+        </bs:card>
 
       </div>
+    </div>
+    <div class="row py-3">
 
-      <script>
-        {
-          const trendProxy = <st:bind value="${it}"/>;
-          trendProxy.getBuildTrendModel(function (lineModel) {
-                echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON);
-          });
-        }
-      </script>
+      <div class="col">
+        <div id="statistics">
+          <bs:card title="${%Details}" fontAwesomeIcon="chart-bar">
+            <dt:table model="${it.getTableModel('forensics')}"/>
+          </bs:card>
+        </div>
+      </div>
 
-    </l:main-panel>
+    </div>
 
-  </l:layout>
+    <script>
+      {
+        const trendProxy = <st:bind value="${it}"/>;
+        trendProxy.getBuildTrendModel(function (lineModel) {
+              echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON);
+        });
+      }
+    </script>
+  </bs:page>
 
 </j:jelly>
 
