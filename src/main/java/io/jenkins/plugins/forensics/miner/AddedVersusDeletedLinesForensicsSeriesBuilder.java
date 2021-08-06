@@ -16,8 +16,11 @@ class AddedVersusDeletedLinesForensicsSeriesBuilder extends SeriesBuilder<Forens
 
     @Override
     protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
+        return computeAddedVsDeletedSeries(current.getCommitStatistics());
+    }
+
+    static Map<String, Integer> computeAddedVsDeletedSeries(final CommitStatistics commitStatistics) {
         Map<String, Integer> series = new HashMap<>();
-        CommitStatistics commitStatistics = current.getCommitStatistics();
         series.put(ADDED, commitStatistics.getAddedLines());
         series.put(DELETED, commitStatistics.getDeletedLines());
         return series;
