@@ -10,7 +10,7 @@ import edu.hm.hafner.echarts.SeriesBuilder;
  *
  * @author Ullrich Hafner
  */
-class AddedVersusDeletedLinesSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+class AddedVersusDeletedLinesForensicsSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
     static final String ADDED = "added";
     static final String DELETED = "deleted";
 

@@ -9,6 +9,7 @@ import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
 import edu.hm.hafner.echarts.Palette;
+import edu.hm.hafner.echarts.SeriesBuilder;
 
 /**
  * Builds the Java side model for a trend chart showing the number of deleted and added lines of code in a build.
@@ -21,16 +22,30 @@ import edu.hm.hafner.echarts.Palette;
  * @see JacksonFacade
  */
 class AddedVersusDeletedLinesTrendChart {
-    LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
-            final ChartModelConfiguration configuration) {
-        AddedVersusDeletedLinesSeriesBuilder builder = new AddedVersusDeletedLinesSeriesBuilder();
-        LinesDataSet dataSet = builder.createDataSet(configuration, results);
+    /**
+     * Creates the chart for the specified results.
+     *
+     * @param results
+     *         the results to render - these results must be provided in descending order, i.e. the current
+     *         build is the head of the list, then the previous builds, and so on
+     * @param configuration
+     *         the chart configuration to be used
+     * @param seriesBuilder
+     *         the builder to plot the data points
+     * @param <T>
+     *         the type of the action that stores the results
+     *
+     * @return the chart model, ready to be serialized to JSON
+     */
+    <T> LinesChartModel create(final Iterable<? extends BuildResult<T>> results,
+            final ChartModelConfiguration configuration, final SeriesBuilder<T> seriesBuilder) {
+        LinesDataSet dataSet = seriesBuilder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel(dataSet);
         LineSeries newSeries = getSeries(dataSet, "Added Lines", Palette.GREEN,
-                AddedVersusDeletedLinesSeriesBuilder.ADDED);
+                AddedVersusDeletedLinesForensicsSeriesBuilder.ADDED);
         LineSeries fixedSeries = getSeries(dataSet, "Deleted Lines", Palette.RED,
-                AddedVersusDeletedLinesSeriesBuilder.DELETED);
+                AddedVersusDeletedLinesForensicsSeriesBuilder.DELETED);
 
         model.addSeries(newSeries, fixedSeries);
 

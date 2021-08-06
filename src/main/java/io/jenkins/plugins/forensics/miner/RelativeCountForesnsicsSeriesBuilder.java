@@ -11,7 +11,7 @@ import edu.hm.hafner.echarts.SeriesBuilder;
  *
  * @author Ullrich Hafner
  */
-class RelativeCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+class RelativeCountForesnsicsSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
     static final String AUTHORS_KEY = "authors";
     static final String FILES_KEY = "files";
     static final String COMMITS_KEY = "commits";

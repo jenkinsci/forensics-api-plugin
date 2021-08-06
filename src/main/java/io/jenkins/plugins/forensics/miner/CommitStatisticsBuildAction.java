@@ -116,6 +116,6 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
 
     @Override
     public Collection<? extends Action> getProjectActions() {
-        return Collections.emptyList();
+        return Collections.singleton(new CommitStatisticsJobAction(owner.getParent(), scmKey));
     }
 }
