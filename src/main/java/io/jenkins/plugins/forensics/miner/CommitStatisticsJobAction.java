@@ -37,6 +37,8 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     private final Job<?, ?> owner;
 
     CommitStatisticsJobAction(final Job<?, ?> owner, final String scmKey) {
+        super();
+
         this.owner = owner;
         this.scmKey = scmKey;
     }
@@ -63,9 +65,9 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     }
 
     private ChartType getChart(final String configuration) {
-        String type = JACKSON_FACADE.getString(configuration, "chartType", "delta");
+        String type = StringUtils.removeEnd(JACKSON_FACADE.getString(configuration, "chartType", "delta"), "-commit-statistics");
         for (ChartType chartType : ChartType.values()) {
-            if (StringUtils.equalsIgnoreCase(chartType.name(), type)) {
+            if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
                 return chartType;
             }
         }

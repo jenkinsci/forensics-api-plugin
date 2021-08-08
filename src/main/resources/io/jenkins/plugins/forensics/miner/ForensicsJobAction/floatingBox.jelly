@@ -8,26 +8,26 @@
       </label>
     </div>
     <div class="mb-3">
-      <input class="form-check-input" type="radio" name="chartType" id="files" checked="true"/>
-      <label class="form-check-label" for="files">
+      <input class="form-check-input" type="radio" name="chartType-forensics" id="files-forensics" checked="true"/>
+      <label class="form-check-label" for="files-forensics">
         Total number of files
       </label>
     </div>
     <div class="mb-3">
-      <input class="form-check-input" type="radio" name="chartType" id="loc"/>
-      <label class="form-check-label" for="loc">
+      <input class="form-check-input" type="radio" name="chartType-forensics" id="loc-forensics"/>
+      <label class="form-check-label" for="loc-forensics">
         Total lines of code and churn
       </label>
     </div>
     <div class="mb-3">
-      <input class="form-check-input" type="radio" name="chartType" id="delta"/>
-      <label class="form-check-label" for="delta">
+      <input class="form-check-input" type="radio" name="chartType-forensics" id="delta-forensics"/>
+      <label class="form-check-label" for="delta-forensics">
         Deleted and added lines
       </label>
     </div>
     <div class="mb-3">
-      <input class="form-check-input" type="radio" name="chartType" id="count"/>
-      <label class="form-check-label" for="count">
+      <input class="form-check-input" type="radio" name="chartType-forensics" id="count-forensics"/>
+      <label class="form-check-label" for="count-forensics">
         Author, commit, and modified files count
       </label>
     </div>
@@ -50,7 +50,7 @@
 
     function saveForensics(trendConfiguration) {
       return {
-        'chartType': trendConfiguration.find('input[name=chartType]:checked').attr('id')
+        'chartType': trendConfiguration.find('input[name=chartType-forensics]:checked').attr('id')
       };
     }
 

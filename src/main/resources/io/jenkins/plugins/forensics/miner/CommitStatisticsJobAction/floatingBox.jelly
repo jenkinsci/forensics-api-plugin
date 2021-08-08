@@ -8,14 +8,14 @@
       </label>
     </div>
     <div class="mb-3">
-      <input class="form-check-input" type="radio" name="chartType" id="delta" checked="true"/>
-      <label class="form-check-label" for="delta">
+      <input class="form-check-input" type="radio" name="chartType-commit-statistics" id="delta-commit-statistics" checked="true"/>
+      <label class="form-check-label" for="delta-commit-statistics">
         Deleted and added lines
       </label>
     </div>
     <div class="mb-3">
-      <input class="form-check-input" type="radio" name="chartType" id="count"/>
-      <label class="form-check-label" for="count">
+      <input class="form-check-input" type="radio" name="chartType-commit-statistics" id="count-commit-statistics"/>
+      <label class="form-check-label" for="count-commit-statistics">
         Author, commit, and modified files count
       </label>
     </div>
@@ -38,7 +38,7 @@
 
     function saveCommitStatistics(trendConfiguration) {
       return {
-        'chartType': trendConfiguration.find('input[name=chartType]:checked').attr('id')
+        'chartType': trendConfiguration.find('input[name=chartType-commit-statistics]:checked').attr('id')
       };
     }
 

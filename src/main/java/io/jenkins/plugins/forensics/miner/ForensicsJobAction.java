@@ -118,9 +118,9 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     }
 
     private ChartType getChart(final String configuration) {
-        String type = JACKSON_FACADE.getString(configuration, "chartType", "files");
+        String type = StringUtils.removeEnd(JACKSON_FACADE.getString(configuration, "chartType", "files"), "-forensics");
         for (ChartType chartType : ChartType.values()) {
-            if (StringUtils.equalsIgnoreCase(chartType.name(), type)) {
+            if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
                 return chartType;
             }
         }
