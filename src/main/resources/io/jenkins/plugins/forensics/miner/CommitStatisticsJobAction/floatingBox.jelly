@@ -32,13 +32,13 @@
     function fillCommitStatistics(trendConfiguration, jsonConfiguration) {
       const type = jsonConfiguration['chartType'];
       if (type) {
-        trendConfiguration.find('#' + type).prop('checked', true);
+        trendConfiguration.find('#' + type + '-commit-statistics').prop('checked', true);
       }
     }
 
     function saveCommitStatistics(trendConfiguration) {
       return {
-        'chartType': trendConfiguration.find('input[name=chartType-commit-statistics]:checked').attr('id')
+        'chartType': trendConfiguration.find('input[name=chartType-commit-statistics]:checked').attr('id').replace('-commit-statistics', '')
       };
     }
 

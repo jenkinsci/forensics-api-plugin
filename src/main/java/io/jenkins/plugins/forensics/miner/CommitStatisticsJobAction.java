@@ -65,7 +65,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     }
 
     private ChartType getChart(final String configuration) {
-        String type = StringUtils.removeEnd(JACKSON_FACADE.getString(configuration, "chartType", "delta"), "-commit-statistics");
+        String type = JACKSON_FACADE.getString(configuration, "chartType", "delta");
         for (ChartType chartType : ChartType.values()) {
             if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
                 return chartType;
