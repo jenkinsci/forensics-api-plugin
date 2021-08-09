@@ -11,14 +11,13 @@ import edu.hm.hafner.echarts.SeriesBuilder;
  *
  * @author Ullrich Hafner
  */
-class RelativeCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
+class RelativeCountForesnsicsSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
     static final String AUTHORS_KEY = "authors";
     static final String FILES_KEY = "files";
     static final String COMMITS_KEY = "commits";
 
     @Override
     protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
-        Map<String, Integer> series = new HashMap<>();
         CommitStatistics commitStatistics;
         if (current.getTotalLinesOfCode() == 0) {
             commitStatistics = current.getResult().getLatestStatistics();
@@ -26,6 +25,11 @@ class RelativeCountSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
         else {
             commitStatistics = current.getCommitStatistics();
         }
+        return computeRelativeCountStatistics(commitStatistics);
+    }
+
+    static Map<String, Integer> computeRelativeCountStatistics(final CommitStatistics commitStatistics) {
+        Map<String, Integer> series = new HashMap<>();
         series.put(AUTHORS_KEY, commitStatistics.getAuthorCount());
         series.put(FILES_KEY, commitStatistics.getFilesCount());
         series.put(COMMITS_KEY, commitStatistics.getCommitCount());

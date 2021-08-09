@@ -107,10 +107,12 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
             return new CodeMetricTrendChart().create(buildHistory, modelConfiguration);
         }
         if (chart == ChartType.DELTA) {
-            return new AddedVersusDeletedLinesTrendChart().create(buildHistory, modelConfiguration);
+            return new AddedVersusDeletedLinesTrendChart().create(buildHistory, modelConfiguration,
+                    new AddedVersusDeletedLinesForensicsSeriesBuilder());
         }
         if (chart == ChartType.COUNT) {
-            return new RelativeCountTrendChart().create(buildHistory, modelConfiguration);
+            return new RelativeCountTrendChart().create(buildHistory, modelConfiguration,
+                    new RelativeCountForesnsicsSeriesBuilder());
         }
         return new FilesCountTrendChart().create(buildHistory, modelConfiguration);
     }
@@ -118,7 +120,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     private ChartType getChart(final String configuration) {
         String type = JACKSON_FACADE.getString(configuration, "chartType", "files");
         for (ChartType chartType : ChartType.values()) {
-            if (StringUtils.equalsIgnoreCase(chartType.name(), type)) {
+            if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
                 return chartType;
             }
         }

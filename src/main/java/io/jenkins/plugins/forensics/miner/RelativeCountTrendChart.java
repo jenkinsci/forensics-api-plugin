@@ -9,6 +9,7 @@ import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
 import edu.hm.hafner.echarts.Palette;
+import edu.hm.hafner.echarts.SeriesBuilder;
 
 /**
  * Builds the Java side model for a trend chart showing the number modified files, commits and authors in the
@@ -28,22 +29,24 @@ class RelativeCountTrendChart {
      *         build is the head of the list, then the previous builds, and so on
      * @param configuration
      *         the chart configuration to be used
+     * @param seriesBuilder
+     *         the builder to plot the data points
+     * @param <T>
+     *         the type of the action that stores the results
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
-            final ChartModelConfiguration configuration) {
-        RelativeCountSeriesBuilder builder = new RelativeCountSeriesBuilder();
-
-        LinesDataSet dataSet = builder.createDataSet(configuration, results);
+    <T> LinesChartModel create(final Iterable<? extends BuildResult<T>> results,
+            final ChartModelConfiguration configuration, final SeriesBuilder<T> seriesBuilder) {
+        LinesDataSet dataSet = seriesBuilder.createDataSet(configuration, results);
         LinesChartModel model = new LinesChartModel(dataSet);
         if (dataSet.getDomainAxisSize() > 0) {
             LineSeries authors = getSeries(dataSet, "Authors", Palette.BLUE,
-                    RelativeCountSeriesBuilder.AUTHORS_KEY);
+                    RelativeCountForesnsicsSeriesBuilder.AUTHORS_KEY);
             LineSeries commits = getSeries(dataSet, "Commits", Palette.GREEN,
-                    RelativeCountSeriesBuilder.COMMITS_KEY);
+                    RelativeCountForesnsicsSeriesBuilder.COMMITS_KEY);
             LineSeries files = getSeries(dataSet, "Modified files", Palette.ORANGE,
-                    RelativeCountSeriesBuilder.FILES_KEY);
+                    RelativeCountForesnsicsSeriesBuilder.FILES_KEY);
 
             model.addSeries(authors, commits, files);
         }
