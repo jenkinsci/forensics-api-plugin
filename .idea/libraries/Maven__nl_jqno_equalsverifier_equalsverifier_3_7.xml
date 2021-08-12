@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: nl.jqno.equalsverifier:equalsverifier:3.7">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/nl/jqno/equalsverifier/equalsverifier/3.7/equalsverifier-3.7.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/nl/jqno/equalsverifier/equalsverifier/3.7/equalsverifier-3.7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/nl/jqno/equalsverifier/equalsverifier/3.7/equalsverifier-3.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

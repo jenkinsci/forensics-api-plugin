@@ -33,6 +33,7 @@
     <font-awesome-api.version>5.15.3-4</font-awesome-api.version>
     <echarts-api.version>5.1.2-7</echarts-api.version>
     <bootstrap5-api.version>5.0.2-1</bootstrap5-api.version>
+    <pull-request-monitoring.version>1.7.8</pull-request-monitoring.version>
 
   </properties>
 
@@ -84,6 +85,12 @@
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>data-tables-api</artifactId>
       <version>${data-tables-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>pull-request-monitoring</artifactId>
+      <version>${pull-request-monitoring.version}</version>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
