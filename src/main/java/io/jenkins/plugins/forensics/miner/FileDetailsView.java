@@ -121,7 +121,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     }
 
     @Override
-    public TableModel getTableModel(final String s) {
+    public TableModel getTableModel(final String id) {
         return new FileTableModel();
     }
 

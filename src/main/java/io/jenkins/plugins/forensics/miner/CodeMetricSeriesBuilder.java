@@ -12,8 +12,8 @@ import edu.hm.hafner.echarts.SeriesBuilder;
  * @author Giulia Del Bravo
  */
 class CodeMetricSeriesBuilder extends SeriesBuilder<ForensicsBuildAction> {
-    static final String LOC_KEY = Messages.TrendChart_Loc_Legend_Label();
-    static final String CHURN_KEY = Messages.TrendChart_Churn_Legend_Label();
+    static final String LOC_KEY = "loc";
+    static final String CHURN_KEY = "churn";
 
     @Override
     protected Map<String, Integer> computeSeries(final ForensicsBuildAction current) {
