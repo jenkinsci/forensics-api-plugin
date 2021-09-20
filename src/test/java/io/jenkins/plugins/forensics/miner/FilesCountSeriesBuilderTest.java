@@ -22,7 +22,6 @@ import static org.mockito.Mockito.*;
  * @author Ullrich Hafner
  */
 class FilesCountSeriesBuilderTest {
-    /** Verifies that an empty list of builds produces no data. */
     @Test
     void shouldHaveEmptyDataSetForEmptyIterator() {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
@@ -39,10 +38,6 @@ class FilesCountSeriesBuilderTest {
         return configuration;
     }
 
-    /**
-     * Verifies that a list with one build result produces one column with rows containing the correct number of issues
-     * per priority.
-     */
     @Test
     void shouldHaveThreeValuesForSingleBuild() {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
@@ -59,9 +54,6 @@ class FilesCountSeriesBuilderTest {
         assertThat(dataSet.getSeries(TOTALS_KEY)).containsExactly(1);
     }
 
-    /**
-     * Verifies that the number of builds in the chart is limited by the {@link ChartModelConfiguration} settings.
-     */
     @Test
     void shouldHaveNotMoreValuesThatAllowed() {
         FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
