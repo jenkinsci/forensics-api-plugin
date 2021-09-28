@@ -18,8 +18,8 @@ import io.jenkins.plugins.util.JenkinsFacade;
 import static j2html.TagCreator.*;
 
 /**
- * Stores the reference build for a given build. The reference build is a build in a different Jenkins job
- * that can be used to compute delta reports.
+ * Stores the reference build for a given build. The reference build is a build in a different Jenkins job that can be
+ * used to compute delta reports.
  *
  * @author Ullrich Hafner
  * @see ReferenceRecorder
@@ -32,6 +32,26 @@ public class ReferenceBuild implements RunAction2, Serializable {
      * initially but has been deleted afterwards.
      */
     public static final String NO_REFERENCE_BUILD = "-";
+
+    /**
+     * Returns a link that can be used in Jelly views to navigate to the reference build.
+     *
+     * @param referenceBuildId
+     *         ID of the reference build
+     *
+     * @return the link
+     */
+    public static String getReferenceBuildLink(final String referenceBuildId) {
+        if (!isValidBuildId(referenceBuildId)) {
+            return NO_REFERENCE_BUILD;
+        }
+        JenkinsFacade jenkinsFacade = new JenkinsFacade();
+        Optional<Run<?, ?>> possibleReferenceBuild = jenkinsFacade.getBuild(referenceBuildId);
+        if (possibleReferenceBuild.isPresent()) {
+            return createLink(possibleReferenceBuild.get(), jenkinsFacade);
+        }
+        return String.format("#%s", referenceBuildId);
+    }
 
     private final String referenceBuildId;
     private final JenkinsFacade jenkinsFacade;
@@ -103,12 +123,12 @@ public class ReferenceBuild implements RunAction2, Serializable {
      * @return the link
      */
     public String getReferenceLink() {
-        return getReferenceBuild().map(this::createLink)
+        return getReferenceBuild().map(run -> createLink(run, jenkinsFacade))
                 .orElse(String.format("Reference build '%s' not found anymore "
-                                + "- maybe the build has been renamed or deleted?", getReferenceBuildId()));
+                        + "- maybe the build has been renamed or deleted?", getReferenceBuildId()));
     }
 
-    private String createLink(final Run<?, ?> run) {
+    private static String createLink(final Run<?, ?> run, final JenkinsFacade jenkinsFacade) {
         return a().withText(run.getFullDisplayName())
                 .withHref(jenkinsFacade.getAbsoluteUrl(run.getUrl()))
                 .withClasses("model-link", "inside").render();
@@ -120,7 +140,11 @@ public class ReferenceBuild implements RunAction2, Serializable {
      * @return {@code true} if a reference build has been recorded, {@code false} if not
      */
     public boolean hasReferenceBuild() {
-        return !StringUtils.equals(referenceBuildId, NO_REFERENCE_BUILD);
+        return isValidBuildId(referenceBuildId);
+    }
+
+    private static boolean isValidBuildId(final String buildId) {
+        return !StringUtils.equals(buildId, NO_REFERENCE_BUILD);
     }
 
     /**
