@@ -178,6 +178,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return discoverJobFromMultiBranchPipeline(run, log);
     }
 
+    @SuppressWarnings("rawtypes")
     private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog log) {
         Job<?, ?> job = run.getParent();
         ItemGroup<?> topLevel = job.getParent();
@@ -211,6 +212,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return Optional.empty();
     }
 
+    @SuppressWarnings("rawtypes")
     private Optional<? extends Job> findPrimaryBranch(final ItemGroup<?> topLevel) {
         return topLevel.getAllItems().stream()
                 .map(Item::getAllJobs)
