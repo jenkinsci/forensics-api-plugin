@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.VisibleForTesting;
 
 import org.kohsuke.stapler.DataBoundSetter;
 import hudson.model.Item;
@@ -14,6 +15,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHead.HeadByItem;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
@@ -140,6 +142,11 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return targetBranch;
     }
 
+    @VisibleForTesting
+    ScmFacade getScmFacade() {
+        return new ScmFacade();
+    }
+
     @Override
     protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
         Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, log);
@@ -186,7 +193,8 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             MultiBranchProject<?, ?> multiBranchProject = (MultiBranchProject<?, ?>) topLevel;
 
             log.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
-            SCMHead currentBuildSCMHead = SCMHead.HeadByItem.findHead(job);
+
+            SCMHead currentBuildSCMHead = getScmFacade().findHead(job);
             if (currentBuildSCMHead instanceof ChangeRequestSCMHead) {
                 SCMHead target = ((ChangeRequestSCMHead) currentBuildSCMHead).getTarget();
                 log.logInfo("-> detected a pull or merge request '%s' for target branch '%s'",
@@ -254,4 +262,14 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      * @return the reference build (if available)
      */
     protected abstract Optional<Run<?, ?>> find(Run<?, ?> owner, Run<?, ?> lastCompletedBuildOfReferenceJob);
+
+    static class ScmFacade {
+        SCMHead findHead(final Job<?, ?> job) {
+            SCMHead head = HeadByItem.findHead(job);
+            if (head instanceof ChangeRequestSCMHead) {
+                return head;
+            }
+            return null;
+        }
+    }
 }
