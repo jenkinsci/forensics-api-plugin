@@ -131,17 +131,6 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return scm;
     }
 
-    private String getReferenceBranch(final FilteredLog log) {
-        String targetBranch = getTargetBranch();
-        if (StringUtils.isAllBlank(targetBranch)) {
-            log.logInfo("-> no target branch defined, falling back to plugin default target branch '%s'",
-                    DEFAULT_TARGET_BRANCH);
-            return DEFAULT_TARGET_BRANCH;
-        }
-        log.logInfo("-> using target branch '%s' as configured in step", targetBranch);
-        return targetBranch;
-    }
-
     @VisibleForTesting
     ScmFacade getScmFacade() {
         return new ScmFacade();
@@ -194,6 +183,14 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
             log.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
 
+            String targetBranch = getTargetBranch();
+            if (StringUtils.isNotEmpty(targetBranch)) {
+                log.logInfo("-> using target branch '%s' as configured in step", targetBranch);
+
+                return findJobForTargetBranch(multiBranchProject, job, targetBranch, log);
+            }
+            log.logInfo("-> no target branch configured in step", targetBranch);
+
             SCMHead currentBuildSCMHead = getScmFacade().findHead(job);
             if (currentBuildSCMHead instanceof ChangeRequestSCMHead) {
                 SCMHead target = ((ChangeRequestSCMHead) currentBuildSCMHead).getTarget();
@@ -205,14 +202,13 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             Optional<? extends Job> primaryBranch = findPrimaryBranch(topLevel);
             if (primaryBranch.isPresent()) {
                 Job<?, ?> primaryBranchJob = primaryBranch.get();
-                log.logInfo("-> using configured primary branch '%s' as target branch", primaryBranchJob.getDisplayName());
+                log.logInfo("-> using configured primary branch '%s' of SCM as target branch", primaryBranchJob.getDisplayName());
 
                 return Optional.of(primaryBranchJob);
             }
 
-            String referenceBranch = getReferenceBranch(log);
-
-            return findJobForTargetBranch(multiBranchProject, job, referenceBranch, log);
+            log.logInfo("-> falling back to plugin default target branch '%s'", DEFAULT_TARGET_BRANCH);
+            return findJobForTargetBranch(multiBranchProject, job, DEFAULT_TARGET_BRANCH, log);
         }
         else {
             log.logInfo("Consider configuring a reference job using the 'referenceJob' property");

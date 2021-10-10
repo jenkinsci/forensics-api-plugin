@@ -24,82 +24,95 @@ import static org.mockito.Mockito.*;
  */
 class ReferenceRecorderTest {
     @Test
-    void shouldCreateReferenceRecorder() {
+    void shouldNotFindReferenceJobForMultiBranchProject() {
         Run<?, ?> build = mock(Run.class);
+        Job<?, ?> job = createJob(build);
+        createMultiBranch(job);
 
-        Job<?, ?> job = mock(Job.class);
-        when(build.getParent()).thenAnswer(i -> job);
+        ReferenceRecorder recorder = createSut();
 
-        WorkflowMultiBranchProject parent = mock(WorkflowMultiBranchProject.class);
-        when(job.getParent()).thenAnswer(i -> parent);
-
-        ReferenceRecorder recorder = mock(ReferenceRecorder.class, CALLS_REAL_METHODS);
-        FilteredLog log = new FilteredLog("EMPTY");
+        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).startsWith("Found a `MultiBranchProject`"));
+                .anySatisfy(m -> assertThat(m).contains("Found a `MultiBranchProject`"))
+                .anySatisfy(m -> assertThat(m).contains("falling back to plugin default target branch 'master'"));
 
         assertThat(referenceBuild.getReferenceBuild()).isEmpty();
     }
 
     @Test
-    void shouldObtainReferenceFromGivenTargetBranch() {
+    void shouldObtainReferenceFromPullRequestTarget() {
         Run<?, ?> build = mock(Run.class);
+        Job<?, ?> job = createJob(build);
+        WorkflowMultiBranchProject parent = createMultiBranch(job);
 
-        Job<?, ?> job = mock(Job.class);
-        when(build.getParent()).thenAnswer(i -> job);
+        ReferenceRecorder recorder = createSut();
 
-        WorkflowMultiBranchProject parent = mock(WorkflowMultiBranchProject.class);
-        when(job.getParent()).thenAnswer(i -> parent);
+        Run<?, ?> prBuild = configurePrJobAndBuild(recorder, parent, job);
+        when(recorder.find(build, prBuild)).thenReturn(Optional.of(prBuild));
 
-        Job<?, ?> targetJob = mock(Job.class);
-        when(parent.getItemByBranchName("target")).thenAnswer(i-> targetJob);
-
-        Run<?, ?> targetBuild = mock(Run.class);
-        when(targetBuild.getExternalizableId()).thenReturn("target-id");
-
-        when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
-
-        ReferenceRecorder recorder = mock(ReferenceRecorder.class, CALLS_REAL_METHODS);
-        recorder.setTargetBranch("target");
-
-        when(recorder.find(build, targetBuild)).thenReturn(Optional.of(targetBuild));
-
-        FilteredLog log = new FilteredLog("EMPTY");
+        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).startsWith("Found a `MultiBranchProject`"));
+                .anySatisfy(m -> assertThat(m).contains("no target branch configured in step"))
+                .anySatisfy(m -> assertThat(m).contains("detected a pull or merge request 'pr' for target branch 'pr-target'"));
+
+        assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("pr-id");
+    }
+
+    @Test
+    void targetShouldHavePrecedenceBeforePullRequestTarget() {
+        Run<?, ?> build = mock(Run.class);
+        Job<?, ?> job = createJob(build);
+        WorkflowMultiBranchProject parent = createMultiBranch(job);
+
+        ReferenceRecorder recorder = createSut();
+        Run<?, ?> targetBuild = configureTargetJobAndBuild(recorder, parent);
+
+        configurePrJobAndBuild(recorder, parent, job); // will not be used since target branch has been set
+
+        when(recorder.find(build, targetBuild)).thenReturn(Optional.of(targetBuild));
+
+        FilteredLog log = createLog();
+        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+
+        assertThat(log.getInfoMessages())
+                .anySatisfy(m -> assertThat(m).contains("using target branch 'target' as configured in step"))
+                .noneSatisfy(m-> assertThat(m).contains("detected a pull or merge request"));
 
         assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("target-id");
     }
 
-    @Test
-    void shouldObtainReferenceFromPullRequestTarget() {
-        Run<?, ?> build = mock(Run.class);
+    private ReferenceRecorder createSut() {
+        return mock(ReferenceRecorder.class, CALLS_REAL_METHODS);
+    }
 
-        Job<?, ?> job = mock(Job.class);
-        when(build.getParent()).thenAnswer(i -> job);
+    private FilteredLog createLog() {
+        return new FilteredLog("EMPTY");
+    }
 
+    private WorkflowMultiBranchProject createMultiBranch(final Job<?, ?> job) {
         WorkflowMultiBranchProject parent = mock(WorkflowMultiBranchProject.class);
         when(job.getParent()).thenAnswer(i -> parent);
+        return parent;
+    }
 
-        Job<?, ?> targetJob = mock(Job.class);
-        when(parent.getItemByBranchName("target")).thenAnswer(i-> targetJob);
+    private Job<?, ?> createJob(final Run<?, ?> build) {
+        Job<?, ?> job = mock(Job.class);
+        when(build.getParent()).thenAnswer(i -> job);
+        return job;
+    }
+
+    private Run<?, ?> configurePrJobAndBuild(final ReferenceRecorder recorder,
+            final WorkflowMultiBranchProject parent, final Job<?, ?> job) {
         Job<?, ?> prJob = mock(Job.class);
         when(parent.getItemByBranchName("pr-target")).thenAnswer(i-> prJob);
-
-        Run<?, ?> targetBuild = mock(Run.class);
-        when(targetBuild.getExternalizableId()).thenReturn("target-id");
-        when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
-
         Run<?, ?> prBuild = mock(Run.class);
         when(prBuild.getExternalizableId()).thenReturn("pr-id");
         when(prJob.getLastCompletedBuild()).thenAnswer(i -> prBuild);
 
-        ReferenceRecorder recorder = mock(ReferenceRecorder.class, CALLS_REAL_METHODS);
-        recorder.setTargetBranch("target");
         ScmFacade scmFacade = mock(ScmFacade.class);
         SCMHead pr = mock(SCMHead.class, withSettings().extraInterfaces(ChangeRequestSCMHead.class));
         when(pr.toString()).thenReturn("pr");
@@ -110,14 +123,19 @@ class ReferenceRecorderTest {
 
         when(recorder.getScmFacade()).thenReturn(scmFacade);
 
-        when(recorder.find(build, prBuild)).thenReturn(Optional.of(prBuild));
+        return prBuild;
+    }
 
-        FilteredLog log = new FilteredLog("EMPTY");
-        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+    private Run<?, ?> configureTargetJobAndBuild(final ReferenceRecorder recorder,
+            final WorkflowMultiBranchProject parent) {
+        recorder.setTargetBranch("target");
 
-        assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).startsWith("-> detected a pull or merge request 'pr' for target branch 'pr-target'"));
+        Job<?, ?> targetJob = mock(Job.class);
+        when(parent.getItemByBranchName("target")).thenAnswer(i-> targetJob);
+        Run<?, ?> targetBuild = mock(Run.class);
+        when(targetBuild.getExternalizableId()).thenReturn("target-id");
+        when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
 
-        assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("pr-id");
+        return targetBuild;
     }
 }
