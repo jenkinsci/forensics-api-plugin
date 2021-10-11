@@ -1,16 +1,23 @@
 package io.jenkins.plugins.forensics.reference;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.VisibleForTesting;
 
 import org.kohsuke.stapler.DataBoundSetter;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import jenkins.branch.MultiBranchProject;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHead.HeadByItem;
+import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
+import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
 import io.jenkins.plugins.util.JenkinsFacade;
 
@@ -41,9 +48,9 @@ import io.jenkins.plugins.util.JenkinsFacade;
  */
 @SuppressWarnings("PMD.DataClass")
 public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
-    private static final String DEFAULT_BRANCH = "master";
+    private static final String DEFAULT_TARGET_BRANCH = "master";
 
-    private String defaultBranch = DEFAULT_BRANCH;
+    private String defaultBranch = DEFAULT_TARGET_BRANCH;
     private boolean latestBuildIfNotFound = false;
     private String scm = StringUtils.EMPTY;
 
@@ -80,13 +87,31 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      *
      * @param defaultBranch
      *         the name of the default branch
+     * @deprecated renamed to {@link #setTargetBranch(String)}
      */
+    @Deprecated
     @DataBoundSetter
     public void setDefaultBranch(final String defaultBranch) {
         this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
     }
 
     public String getDefaultBranch() {
+        return defaultBranch;
+    }
+
+    /**
+     * Sets the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered
+     * the base branch in your repository. The builds of all other branches and pull requests will use this target
+     * branch as baseline to search for a matching reference build.
+     *
+     * @param targetBranch
+     *         the name of the default branch
+     */
+    public void setTargetBranch(final String targetBranch) {
+        this.defaultBranch = StringUtils.stripToEmpty(targetBranch);
+    }
+
+    public String getTargetBranch() {
         return defaultBranch;
     }
 
@@ -106,8 +131,9 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return scm;
     }
 
-    private String getReferenceBranch() {
-        return StringUtils.defaultIfBlank(StringUtils.strip(defaultBranch), DEFAULT_BRANCH);
+    @VisibleForTesting
+    ScmFacade getScmFacade() {
+        return new ScmFacade();
     }
 
     @Override
@@ -148,29 +174,76 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return discoverJobFromMultiBranchPipeline(run, log);
     }
 
+    @SuppressWarnings("rawtypes")
     private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog log) {
         Job<?, ?> job = run.getParent();
         ItemGroup<?> topLevel = job.getParent();
         if (topLevel instanceof MultiBranchProject) {
-            Job<?, ?> target = ((MultiBranchProject<?, ?>) topLevel).getItemByBranchName(getReferenceBranch());
-            if (job.equals(target)) {
-                log.logInfo("No reference job required - we are already on the default branch for '%s'",
-                        job.getName());
-            }
-            else if (target != null) {
-                log.logInfo("Reference job inferred from toplevel project '%s'", topLevel.getDisplayName());
-                log.logInfo("Target branch: '%s'", getReferenceBranch());
-                log.logInfo("Inferred job: '%s'", target.getDisplayName());
+            MultiBranchProject<?, ?> multiBranchProject = (MultiBranchProject<?, ?>) topLevel;
 
-                return Optional.of(target);
+            log.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
+
+            String targetBranch = getTargetBranch();
+            if (StringUtils.isNotEmpty(targetBranch)) {
+                log.logInfo("-> using target branch '%s' as configured in step", targetBranch);
+
+                return findJobForTargetBranch(multiBranchProject, job, targetBranch, log);
             }
-            else {
-                log.logError("Target job not found (is target branch '%s' correctly defined?)", getReferenceBranch());
+            log.logInfo("-> no target branch configured in step", targetBranch);
+
+            Optional<ChangeRequestSCMHead> possibleHead = getScmFacade().findHead(job);
+            if (possibleHead.isPresent()) {
+                ChangeRequestSCMHead prHead = possibleHead.get();
+                SCMHead target = prHead.getTarget();
+                log.logInfo("-> detected a pull or merge request '%s' for target branch '%s'",
+                        prHead, target.getName());
+                return findJobForTargetBranch(multiBranchProject, job, target.getName(), log);
             }
+
+            Optional<? extends Job> possiblePrimaryBranch = findPrimaryBranch(topLevel);
+            if (possiblePrimaryBranch.isPresent()) {
+                Job<?, ?> primaryBranchJob = possiblePrimaryBranch.get();
+                log.logInfo("-> using configured primary branch '%s' of SCM as target branch", primaryBranchJob.getDisplayName());
+
+                return Optional.of(primaryBranchJob);
+            }
+
+            log.logInfo("-> falling back to plugin default target branch '%s'", DEFAULT_TARGET_BRANCH);
+            return findJobForTargetBranch(multiBranchProject, job, DEFAULT_TARGET_BRANCH, log);
         }
         else {
             log.logInfo("Consider configuring a reference job using the 'referenceJob' property");
         }
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Optional<? extends Job> findPrimaryBranch(final ItemGroup<?> topLevel) {
+        return topLevel.getAllItems().stream()
+                .map(Item::getAllJobs)
+                .flatMap(Collection::stream)
+                .filter(this::hasDefaultTargetBranchDefined)
+                .findAny();
+    }
+
+    private boolean hasDefaultTargetBranchDefined(final Job<?, ?> job) {
+        return job.getAction(PrimaryInstanceMetadataAction.class) != null;
+    }
+
+    private Optional<Job<?, ?>> findJobForTargetBranch(final MultiBranchProject<?, ?> multiBranchProject,
+            final Job<?, ?> job, final String targetBranch, final FilteredLog log) {
+        Job<?, ?> target = multiBranchProject.getItemByBranchName(targetBranch);
+        if (job.equals(target)) {
+            log.logInfo("-> no reference job required - this build is already for the default target branch '%s'",
+                    job.getName());
+        }
+        else if (target != null) {
+            log.logInfo("-> inferred job for target branch: '%s'", target.getDisplayName());
+
+            return Optional.of(target);
+        }
+        log.logError("-> no job found for target branch '%s' (is the branch correctly defined?)", targetBranch);
+
         return Optional.empty();
     }
 
@@ -186,4 +259,14 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      * @return the reference build (if available)
      */
     protected abstract Optional<Run<?, ?>> find(Run<?, ?> owner, Run<?, ?> lastCompletedBuildOfReferenceJob);
+
+    static class ScmFacade {
+        Optional<ChangeRequestSCMHead> findHead(final Job<?, ?> job) {
+            SCMHead head = HeadByItem.findHead(job);
+            if (head instanceof ChangeRequestSCMHead) {
+                return Optional.of((ChangeRequestSCMHead) head);
+            }
+            return Optional.empty();
+        }
+    }
 }
