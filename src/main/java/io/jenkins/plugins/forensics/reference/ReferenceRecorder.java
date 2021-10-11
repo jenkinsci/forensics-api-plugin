@@ -200,9 +200,9 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
                 return findJobForTargetBranch(multiBranchProject, job, target.getName(), log);
             }
 
-            Optional<? extends Job> primaryBranch = findPrimaryBranch(topLevel);
-            if (primaryBranch.isPresent()) {
-                Job<?, ?> primaryBranchJob = primaryBranch.get();
+            Optional<? extends Job> possiblePrimaryBranch = findPrimaryBranch(topLevel);
+            if (possiblePrimaryBranch.isPresent()) {
+                Job<?, ?> primaryBranchJob = possiblePrimaryBranch.get();
                 log.logInfo("-> using configured primary branch '%s' of SCM as target branch", primaryBranchJob.getDisplayName());
 
                 return Optional.of(primaryBranchJob);
