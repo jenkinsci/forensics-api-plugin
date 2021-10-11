@@ -114,11 +114,11 @@ class ReferenceRecorderTest {
         when(prJob.getLastCompletedBuild()).thenAnswer(i -> prBuild);
 
         ScmFacade scmFacade = mock(ScmFacade.class);
-        SCMHead pr = mock(SCMHead.class, withSettings().extraInterfaces(ChangeRequestSCMHead.class));
+        ChangeRequestSCMHead pr = mock(ChangeRequestSCMHead.class);
         when(pr.toString()).thenReturn("pr");
-        when(scmFacade.findHead(job)).thenAnswer(i -> pr);
+        when(scmFacade.findHead(job)).thenReturn(Optional.of(pr));
         SCMHead target = mock(SCMHead.class);
-        when(((ChangeRequestSCMHead) pr).getTarget()).thenReturn(target);
+        when(pr.getTarget()).thenReturn(target);
         when(target.getName()).thenReturn("pr-target");
 
         when(recorder.getScmFacade()).thenReturn(scmFacade);

@@ -191,11 +191,12 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             }
             log.logInfo("-> no target branch configured in step", targetBranch);
 
-            SCMHead currentBuildSCMHead = getScmFacade().findHead(job);
-            if (currentBuildSCMHead instanceof ChangeRequestSCMHead) {
-                SCMHead target = ((ChangeRequestSCMHead) currentBuildSCMHead).getTarget();
+            Optional<ChangeRequestSCMHead> possibleHead = getScmFacade().findHead(job);
+            if (possibleHead.isPresent()) {
+                ChangeRequestSCMHead prHead = possibleHead.get();
+                SCMHead target = prHead.getTarget();
                 log.logInfo("-> detected a pull or merge request '%s' for target branch '%s'",
-                        currentBuildSCMHead, target.getName());
+                        prHead, target.getName());
                 return findJobForTargetBranch(multiBranchProject, job, target.getName(), log);
             }
 
@@ -260,12 +261,12 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     protected abstract Optional<Run<?, ?>> find(Run<?, ?> owner, Run<?, ?> lastCompletedBuildOfReferenceJob);
 
     static class ScmFacade {
-        SCMHead findHead(final Job<?, ?> job) {
+        Optional<ChangeRequestSCMHead> findHead(final Job<?, ?> job) {
             SCMHead head = HeadByItem.findHead(job);
             if (head instanceof ChangeRequestSCMHead) {
-                return head;
+                return Optional.of((ChangeRequestSCMHead) head);
             }
-            return null;
+            return Optional.empty();
         }
     }
 }
