@@ -4,7 +4,7 @@ import java.util.Map;
 
 import edu.hm.hafner.echarts.SeriesBuilder;
 
-import static io.jenkins.plugins.forensics.miner.RelativeCountForesnsicsSeriesBuilder.*;
+import static io.jenkins.plugins.forensics.miner.RelativeCountForensicsSeriesBuilder.*;
 
 /**
  * Builds one x-axis point for the series of a line chart showing the number of modified files, commits and authors in

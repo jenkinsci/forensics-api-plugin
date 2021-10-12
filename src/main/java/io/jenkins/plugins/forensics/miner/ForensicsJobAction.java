@@ -112,7 +112,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
         }
         if (chart == ChartType.COUNT) {
             return new RelativeCountTrendChart().create(buildHistory, modelConfiguration,
-                    new RelativeCountForesnsicsSeriesBuilder());
+                    new RelativeCountForensicsSeriesBuilder());
         }
         return new FilesCountTrendChart().create(buildHistory, modelConfiguration);
     }

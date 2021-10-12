@@ -42,11 +42,11 @@ class RelativeCountTrendChart {
         LinesChartModel model = new LinesChartModel(dataSet);
         if (dataSet.getDomainAxisSize() > 0) {
             LineSeries authors = getSeries(dataSet, "Authors", Palette.BLUE,
-                    RelativeCountForesnsicsSeriesBuilder.AUTHORS_KEY);
+                    RelativeCountForensicsSeriesBuilder.AUTHORS_KEY);
             LineSeries commits = getSeries(dataSet, "Commits", Palette.GREEN,
-                    RelativeCountForesnsicsSeriesBuilder.COMMITS_KEY);
+                    RelativeCountForensicsSeriesBuilder.COMMITS_KEY);
             LineSeries files = getSeries(dataSet, "Modified files", Palette.ORANGE,
-                    RelativeCountForesnsicsSeriesBuilder.FILES_KEY);
+                    RelativeCountForensicsSeriesBuilder.FILES_KEY);
 
             model.addSeries(authors, commits, files);
         }
