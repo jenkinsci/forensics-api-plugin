@@ -69,7 +69,7 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
      * @return {@code true} if there is a reference build defined, {@code false} otherwise
      */
     public boolean hasReferenceBuild() {
-        ReferenceBuild referenceBuildAction = getOwner().getAction(ReferenceBuild.class);
+        ReferenceBuild referenceBuildAction = getReferenceBuild();
         if (referenceBuildAction == null) {
             return false;
         }
