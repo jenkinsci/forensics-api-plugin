@@ -25,7 +25,7 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
  * @author Ullrich Hafner
  */
 public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<ForensicsBuildAction> {
-    static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics-24x24.png";
+    static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics.svg";
     static final String FORENSICS_ID = "forensics";
     private static final JacksonFacade JACKSON_FACADE = new JacksonFacade();
 
