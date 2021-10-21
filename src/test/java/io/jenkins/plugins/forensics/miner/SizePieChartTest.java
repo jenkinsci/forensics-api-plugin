@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.echarts.PieChartModel;
 
-
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 
-class SizePieChartTest {
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
+class SizePieChartTest {
 
     @Test
     void shouldCreate() {
@@ -23,10 +23,9 @@ class SizePieChartTest {
         Function<FileStatistics, Integer> sizeMethod = fileStatistics1 -> 5;
         int breakpoint = 3;
 
+        PieChartModel model = chart.create(repositoryStatistics, sizeMethod, breakpoint);
 
-        PieChartModel model = chart.create(repositoryStatistics,sizeMethod,breakpoint);
-
-
+        assertThat(model.getName()).isEqualTo("");
 
     }
 }
