@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import static io.jenkins.plugins.forensics.miner.AddedVersusDeletedLinesForensicsSeriesBuilder.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AddedVersusDeletedLinesCommitStatisticsSeriesBuilderTest {
