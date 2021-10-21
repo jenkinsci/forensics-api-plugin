@@ -12,7 +12,7 @@ class AddedVersusDeletedLinesCommitStatisticsSeriesBuilderTest {
     @Test
     void shouldComputeSeries() {
         AddedVersusDeletedLinesCommitStatisticsSeriesBuilder builder = new AddedVersusDeletedLinesCommitStatisticsSeriesBuilder();
-        CommitStatisticsBuildAction actionStub = createCommitStatisticsBuildActionStub();
+        CommitStatisticsBuildAction actionStub = createCommitStatisticsBuildActionStub(10, 20);
 
         Map<String, Integer> series = builder.computeSeries(actionStub);
         assertThat(series)
@@ -20,12 +20,12 @@ class AddedVersusDeletedLinesCommitStatisticsSeriesBuilderTest {
                 .containsEntry(DELETED, 20);
     }
 
-    private CommitStatisticsBuildAction createCommitStatisticsBuildActionStub() {
+    private CommitStatisticsBuildAction createCommitStatisticsBuildActionStub(int addedLines, int deletedLines) {
         CommitStatisticsBuildAction actionStub = mock(CommitStatisticsBuildAction.class);
         CommitStatistics commitStatisticsStub = mock(CommitStatistics.class);
         when(actionStub.getCommitStatistics()).thenReturn(commitStatisticsStub);
-        when(commitStatisticsStub.getAddedLines()).thenReturn(10);
-        when(commitStatisticsStub.getDeletedLines()).thenReturn(20);
+        when(commitStatisticsStub.getAddedLines()).thenReturn(addedLines);
+        when(commitStatisticsStub.getDeletedLines()).thenReturn(deletedLines);
         return actionStub;
     }
 }
