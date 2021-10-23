@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
@@ -39,6 +37,5 @@ class SizePieChartTest {
         PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint1);
 
         assertThat(model.getData()).isNotEmpty();
-
     }
 }
