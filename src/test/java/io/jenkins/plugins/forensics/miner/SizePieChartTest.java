@@ -16,34 +16,29 @@ import static org.mockito.Mockito.*;
 class SizePieChartTest {
 
     @Test
-    void shouldCreate() {
+    void shouldCreateEmpty() {
         SizePieChart chart = new SizePieChart();
-
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
-
-        FileStatistics fileStatistics = new FileStatisticsBuilder().build("Hi");
-
-
         int breakpoint = 3;
 
         PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
 
         assertThat(model.getData()).isEmpty();
     }
-    @Test
-    void shouldCreate2() {
-        SizePieChart chart = new SizePieChart();
 
+    @Test
+    void shouldCreateNotEmpty() {
+        SizePieChart chart = new SizePieChart();
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
-        FileStatistics fileStatistics = new FileStatisticsBuilder().build("Hi");
+        FileStatistics fileStatistics = new FileStatisticsBuilder().build("1");
         HashSet<FileStatistics> hashSet = new HashSet<>();
         hashSet.add(fileStatistics);
         when(repositoryStatisticsStub.getFileStatistics()).thenReturn(hashSet);
+        int breakpoint1 = 20;
 
-        int breakpoint = 3;
+        PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint1);
 
-        PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
+        assertThat(model.getData()).isNotEmpty();
 
-        assertThat(model.getData()).isEmpty();
     }
 }
