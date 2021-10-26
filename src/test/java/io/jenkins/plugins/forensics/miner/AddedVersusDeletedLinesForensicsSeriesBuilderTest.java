@@ -7,32 +7,35 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class AddedVersusDeletedLinesForensicsSeriesBuilderTest {
 
+    private static final String ADDED = "added";
+    private static final String DELETED = "deleted";
+
     @Test
-    void computeSeries() {
-        Map<String, Integer> series = AddedVersusDeletedLinesForensicsSeriesBuilder.computeAddedVsDeletedSeries(createCommitStatistics(new int[][]{{10,0}, {10,5}, {1,0}}));
-        assertThat(series.get("added")).isEqualTo(21);
-        assertThat(series.get("deleted")).isEqualTo(5);
-        Map<String, Integer> series2 = AddedVersusDeletedLinesForensicsSeriesBuilder.computeAddedVsDeletedSeries(createCommitStatistics(new int[][]{{1,0}}));
-        assertThat(series2.get("added")).isEqualTo(1);
-        assertThat(series2.get("deleted")).isEqualTo(0);
-        Map<String, Integer> series3 = AddedVersusDeletedLinesForensicsSeriesBuilder.computeAddedVsDeletedSeries(createCommitStatistics(new int[][]{{0,1}}));
-        assertThat(series3.get("added")).isEqualTo(0);
-        assertThat(series3.get("deleted")).isEqualTo(1);
-        Map<String, Integer> series4 = AddedVersusDeletedLinesForensicsSeriesBuilder.computeAddedVsDeletedSeries(createCommitStatistics(new int[][]{{0,0}}));
-        assertThat(series4.get("added")).isEqualTo(0);
-        assertThat(series4.get("deleted")).isEqualTo(0);
+    void shouldCreateSeriesWithMockito() {
+        // Given
+        AddedVersusDeletedLinesForensicsSeriesBuilder builder = new AddedVersusDeletedLinesForensicsSeriesBuilder();
+        ForensicsBuildAction actionStub = mock(ForensicsBuildAction.class);
+        when(actionStub.getCommitStatistics()).thenReturn(createCommitStatistics(0, 0));
+
+        // When
+        Map<String, Integer> series = builder.computeSeries(actionStub);
+
+        // Then
+        assertThat(series)
+                .containsEntry(ADDED, 0)
+                .containsEntry(DELETED, 0);
+
     }
 
-    private CommitStatistics createCommitStatistics(int[][] commitsAddedAndDeletedValues){
+    private CommitStatistics createCommitStatistics(final int added, final int delted) {
         List<CommitDiffItem> commits = new ArrayList<>();
-        for(int i = 0; i< commitsAddedAndDeletedValues.length; i++){
-            CommitDiffItem item = new CommitDiffItem( i+"", "author", i);
-            item.addLines(commitsAddedAndDeletedValues[i][0]).deleteLines(commitsAddedAndDeletedValues[i][1]);
-            commits.add(item);
-        }
+        CommitDiffItem item = new CommitDiffItem("1", "author", 1);
+        item.addLines(added).deleteLines(delted);
+        commits.add(item);
         return new CommitStatistics(commits);
     }
 }
