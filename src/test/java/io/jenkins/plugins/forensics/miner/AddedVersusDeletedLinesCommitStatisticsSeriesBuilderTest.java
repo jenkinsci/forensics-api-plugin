@@ -20,7 +20,7 @@ class AddedVersusDeletedLinesCommitStatisticsSeriesBuilderTest {
                 .containsEntry(DELETED, 20);
     }
 
-    private CommitStatisticsBuildAction createCommitStatisticsBuildActionStub(int addedLines, int deletedLines) {
+    private CommitStatisticsBuildAction createCommitStatisticsBuildActionStub(final int addedLines, final int deletedLines) {
         CommitStatisticsBuildAction actionStub = mock(CommitStatisticsBuildAction.class);
         CommitStatistics commitStatisticsStub = mock(CommitStatistics.class);
         when(actionStub.getCommitStatistics()).thenReturn(commitStatisticsStub);
