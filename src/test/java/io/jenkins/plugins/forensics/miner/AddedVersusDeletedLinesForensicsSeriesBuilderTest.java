@@ -19,22 +19,22 @@ class AddedVersusDeletedLinesForensicsSeriesBuilderTest {
         // Given
         AddedVersusDeletedLinesForensicsSeriesBuilder builder = new AddedVersusDeletedLinesForensicsSeriesBuilder();
         ForensicsBuildAction actionStub = mock(ForensicsBuildAction.class);
-        when(actionStub.getCommitStatistics()).thenReturn(createCommitStatistics(0, 0));
+        when(actionStub.getCommitStatistics()).thenReturn(createCommitStatistics(1, 2));
 
         // When
         Map<String, Integer> series = builder.computeSeries(actionStub);
 
         // Then
         assertThat(series)
-                .containsEntry(ADDED, 0)
-                .containsEntry(DELETED, 0);
+                .containsEntry(ADDED, 1)
+                .containsEntry(DELETED, 2);
 
     }
 
-    private CommitStatistics createCommitStatistics(final int added, final int delted) {
+    private CommitStatistics createCommitStatistics(final int added, final int deleted) {
         List<CommitDiffItem> commits = new ArrayList<>();
         CommitDiffItem item = new CommitDiffItem("1", "author", 1);
-        item.addLines(added).deleteLines(delted);
+        item.addLines(added).deleteLines(deleted);
         commits.add(item);
         return new CommitStatistics(commits);
     }
