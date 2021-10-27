@@ -42,7 +42,7 @@ class ForensicsTableModelTest {
 
         Object actual = tableModel.getRows().get(0);
         assertThat(actual).isInstanceOf(ForensicsRow.class);
-        assertThat(((ForensicsRow) actual)).hasAuthorsSize(0);
+        assertThat((ForensicsRow) actual).hasAuthorsSize(0);
     }
 
     private FileStatistics createFileStatistics() {
