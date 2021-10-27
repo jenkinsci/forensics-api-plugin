@@ -1,69 +1,80 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 
-import edu.hm.hafner.util.TreeString;
-import edu.hm.hafner.util.TreeStringBuilder;
-
-
-import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+import io.jenkins.plugins.datatables.TableColumn;
+import io.jenkins.plugins.forensics.miner.ForensicsTableModel.ForensicsRow;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.assertThat;
-
+import static org.mockito.Mockito.*;
 
 class ForensicsTableModelTest {
-    private static final String FILE = "file";
-    private static final TreeString FILE_TREE_STRING = new TreeStringBuilder().intern(FILE);
-    private static final int ONE_DAY = 60 * 60 * 24;
 
     @Test
-    void shouldCreateForensicsTableModel(){
+    void shouldCreateForensicsTableModel() {
         RepositoryStatistics statistics = new RepositoryStatistics();
         ForensicsTableModel tableModel = new ForensicsTableModel(statistics);
+
         assertThat(tableModel).isNotNull();
-    }
+        assertThat(tableModel).hasId(ForensicsJobAction.FORENSICS_ID);
+        assertThat(tableModel.getColumns())
+                .hasSize(7)
+                .extracting(TableColumn::getHeaderLabel)
+                .containsExactly(
+                        Messages.Table_Column_File(),
+                        Messages.Table_Column_AuthorsSize(),
+                        Messages.Table_Column_CommitsSize(),
+                        Messages.Table_Column_LastCommit(),
+                        Messages.Table_Column_AddedAt(),
+                        Messages.Table_Column_LOC(),
+                        Messages.Table_Column_Churn()
+                );
 
-
-    @Test
-    void getId() {
-        RepositoryStatistics statistics = new RepositoryStatistics();
-        ForensicsTableModel tableModel = new ForensicsTableModel(statistics);
-        assertThat(tableModel.getId()).isEqualTo(ForensicsJobAction.FORENSICS_ID);
-    }
-
-    @Test
-    void getColumns() {
-        RepositoryStatistics statistics = new RepositoryStatistics();
-        ForensicsTableModel tableModel = new ForensicsTableModel(statistics);
-
-        assertThat(tableModel.getColumns().size()).isEqualTo(7);
-        assertThat(tableModel.getColumns().get(0).getHeaderLabel()).isEqualTo(Messages.Table_Column_File());
-        assertThat(tableModel.getColumns().get(1).getHeaderLabel()).isEqualTo(Messages.Table_Column_AuthorsSize());
-        assertThat(tableModel.getColumns().get(2).getHeaderLabel()).isEqualTo(Messages.Table_Column_CommitsSize());
-        assertThat(tableModel.getColumns().get(3).getHeaderLabel()).isEqualTo(Messages.Table_Column_LastCommit());
-        assertThat(tableModel.getColumns().get(4).getHeaderLabel()).isEqualTo(Messages.Table_Column_AddedAt());
-        assertThat(tableModel.getColumns().get(5).getHeaderLabel()).isEqualTo(Messages.Table_Column_LOC());
-        assertThat(tableModel.getColumns().get(6).getHeaderLabel()).isEqualTo(Messages.Table_Column_Churn());
     }
 
     @Test
-    void getRows() {
+    void shouldReturnRows() {
         RepositoryStatistics statistics = new RepositoryStatistics();
-        statistics.addAll(Collections.singleton(createFileStatistics()));
+        statistics.add(createFileStatistics());
         ForensicsTableModel tableModel = new ForensicsTableModel(statistics);
         tableModel.getRows();
-        assertThat(tableModel.getRows().size()).isEqualTo(1);
+        assertThat(tableModel.getRows()).hasSize(1);
+
+        Object actual = tableModel.getRows().get(0);
+        assertThat(actual).isInstanceOf(ForensicsRow.class);
+        assertThat(((ForensicsRow) actual)).hasAuthorsSize(0);
     }
 
-
     private FileStatistics createFileStatistics() {
-        FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        CommitDiffItem commit = new CommitDiffItem("1", "one", ONE_DAY * 9)
-                .setNewPath(FILE_TREE_STRING);
-        fileStatistics.inspectCommit(commit);
+        FileStatistics fileStatistics = mock(FileStatistics.class);
+        CommitDiffItem commitDiffItem = mock(CommitDiffItem.class);
+        when(commitDiffItem.getTotalAddedLines()).thenReturn(1);
+        fileStatistics.inspectCommit(commitDiffItem);
         return fileStatistics;
+    }
+
+    @Test
+    void checkForensicsRowGetters() {
+        FileStatistics fileStatisticsStub = mock(FileStatistics.class);
+        ForensicsRow forensicsRow = new ForensicsRow(fileStatisticsStub);
+
+        when(fileStatisticsStub.getFileName()).thenReturn("filename");
+        when(fileStatisticsStub.getNumberOfAuthors()).thenReturn(1);
+        when(fileStatisticsStub.getNumberOfCommits()).thenReturn(2);
+        when(fileStatisticsStub.getLastModificationTime()).thenReturn(3);
+        when(fileStatisticsStub.getCreationTime()).thenReturn(4);
+        when(fileStatisticsStub.getLinesOfCode()).thenReturn(5);
+        when(fileStatisticsStub.getAbsoluteChurn()).thenReturn(6);
+
+        assertThat(forensicsRow)
+                .hasFileName(
+                        "<a href=\"fileName.-734768633\" data-bs-toggle=\"tooltip\" data-bs-placement=\"left\" title=\"filename\">filename</a>")
+                .hasAuthorsSize(1)
+                .hasCommitsSize(2)
+                .hasModifiedAt(3)
+                .hasAddedAt(4)
+                .hasLinesOfCode(5)
+                .hasChurn(6);
     }
 
 }
