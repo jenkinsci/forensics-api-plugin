@@ -10,8 +10,13 @@ import edu.hm.hafner.echarts.PieChartModel;
 import edu.hm.hafner.echarts.PieData;
 
 /**
- * Builds the model for a pie chart showing the distribution of issues by severity.
- *
+ * Builds the model for a pie chart showing the distribution of issues by a configurable {@code size} property of the
+ * {@link FileStatistics} instances of the underlying model. E.g., this chart can show the distribution of issues by
+ * number of authors or commits. The resulting pie chart groups these numbers in a set of given intervals of the form:
+ * <pre>
+ * {@code }
+ *     [0, b_1], [(b_1 + 1), b2], [(b_2 + 1), b3], ...
+ * </pre>
  * @author Ullrich Hafner
  */
 class SizePieChart {
