@@ -3,7 +3,6 @@ package io.jenkins.plugins.forensics.miner;
 import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
@@ -29,10 +28,13 @@ class AddedVersusDeletedLinesTrendChartTest {
         when(seriesBuilderStub.createDataSet(chartModelConfigurationStub, buildResultsStub))
                 .thenReturn(linesDataSet);
 
-        LinesChartModel lineChartModel = builder.create(buildResultsStub, chartModelConfigurationStub, seriesBuilderStub);
+        LinesChartModel lineChartModel = builder.create(buildResultsStub, chartModelConfigurationStub,
+                seriesBuilderStub);
 
         assertThat(lineChartModel)
-                .satisfies(e -> { assertThat(e.getSeries()).isNotEmpty(); });
+                .satisfies(model -> {
+                    assertThat(model.getSeries()).size().isEqualTo(2);
+                });
     }
 
     private SeriesBuilder createSeriesBuilderStub() {
@@ -54,26 +56,3 @@ class AddedVersusDeletedLinesTrendChartTest {
         };
     }
 }
-
-    //class AddedVersusDeletedLinesCommitStatisticsSeriesBuilderTest {
-//    @Test
-//    void shouldComputeSeries() {
-//        AddedVersusDeletedLinesCommitStatisticsSeriesBuilder builder = new AddedVersusDeletedLinesCommitStatisticsSeriesBuilder();
-//        CommitStatisticsBuildAction actionStub = createCommitStatisticsBuildActionStub(10, 20);
-//
-//        Map<String, Integer> series = builder.computeSeries(actionStub);
-//        assertThat(series)
-//                .containsEntry(ADDED, 10)
-//                .containsEntry(DELETED, 20);
-//    }
-//
-//    private CommitStatisticsBuildAction createCommitStatisticsBuildActionStub(final int addedLines,
-//            final int deletedLines) {
-//        CommitStatisticsBuildAction actionStub = mock(CommitStatisticsBuildAction.class);
-//        CommitStatistics commitStatisticsStub = mock(CommitStatistics.class);
-//        when(actionStub.getCommitStatistics()).thenReturn(commitStatisticsStub);
-//        when(commitStatisticsStub.getAddedLines()).thenReturn(addedLines);
-//        when(commitStatisticsStub.getDeletedLines()).thenReturn(deletedLines);
-//        return actionStub;
-//    }
-//}
