@@ -24,26 +24,19 @@ class AddedVersusDeletedLinesTrendChartTest {
         ChartModelConfiguration chartModelConfigurationStub = createConfiguration();
 
         SeriesBuilder seriesBuilderStub = createSeriesBuilderStub();
+        LinesDataSet linesDataSet = mock(LinesDataSet.class);
+
+        when(seriesBuilderStub.createDataSet(chartModelConfigurationStub, buildResultsStub))
+                .thenReturn(linesDataSet);
 
         LinesChartModel lineChartModel = builder.create(buildResultsStub, chartModelConfigurationStub, seriesBuilderStub);
 
         assertThat(lineChartModel)
-                .satisfies(e -> {
-                    assertThat(e.getSeries()).isNotEmpty();
-                });
+                .satisfies(e -> { assertThat(e.getSeries()).isNotEmpty(); });
     }
 
     private SeriesBuilder createSeriesBuilderStub() {
-        SeriesBuilder seriesBuilderStub = mock(SeriesBuilder.class);
-        LinesDataSet linesDataSet = mock(LinesDataSet.class);
-
-        ChartModelConfiguration configurationStub = createConfiguration();
-        Iterable<BuildResult<CommitStatisticsBuildAction>> buildResultsStub = createBuildResultsStub();
-
-        when(seriesBuilderStub.createDataSet(configurationStub, buildResultsStub))
-                .thenReturn(linesDataSet);
-
-        return seriesBuilderStub;
+        return mock(SeriesBuilder.class);
     }
 
     private ChartModelConfiguration createConfiguration() {
