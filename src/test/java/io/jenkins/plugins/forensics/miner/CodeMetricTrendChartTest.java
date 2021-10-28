@@ -44,8 +44,6 @@ class CodeMetricTrendChartTest {
 
         LinesChartModel linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
 
-        linesChartModel.getSeries().forEach(ser -> System.out.println("Data: " + ser.getData() + ", name: " + ser.getName()));
-
         assertThat(linesChartModel.getSeries()).hasSize(2);
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
         assertThat(linesChartModel.getBuildNumbers()).hasSize(4);
