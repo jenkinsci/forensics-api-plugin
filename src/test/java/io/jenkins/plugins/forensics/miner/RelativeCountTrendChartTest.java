@@ -14,6 +14,12 @@ import edu.hm.hafner.echarts.SeriesBuilder;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests RelativeCountTrendChart.
+ *
+ * @author Nikolas Paripovic
+ *
+ */
 public class RelativeCountTrendChartTest {
 
     private final RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
@@ -41,9 +47,9 @@ public class RelativeCountTrendChartTest {
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
     }
 
-    private Iterable<BuildResult<CommitStatisticsBuildAction>> createBuildResults(boolean withData) {
+    private Iterable<BuildResult<CommitStatisticsBuildAction>> createBuildResults(final boolean withData) {
         List<BuildResult<CommitStatisticsBuildAction>> buildResults = new ArrayList<>();
-        if(withData) {
+        if (withData) {
             buildResults.add(createResult(1, 2, 3));
             buildResults.add(createResult(4, 5, 6));
             buildResults.add(createResult(7, 8, 9));
