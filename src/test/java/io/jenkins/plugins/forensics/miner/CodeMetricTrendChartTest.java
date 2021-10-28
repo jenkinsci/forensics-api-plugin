@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
  * @author Nikolas Paripovic
  *
  */
-public class CodeMetricTrendChartTest {
+class CodeMetricTrendChartTest {
 
     private final CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
 
