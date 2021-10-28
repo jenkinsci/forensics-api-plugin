@@ -26,13 +26,16 @@ import static org.mockito.Mockito.*;
  */
 class ForensicsViewModelTest {
     private static final String SCM_KEY = "scmKey";
+    private static final String LINK = "www.link.com";
+    private static final String ID = "id";
+    private static final String OWNER = "owner";
+    private static final String FORENSIC_ACTION = "Forensics_Action";
 
     @Test
     void shouldGetOwner() {
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
         Run<?, ?> ownerStub = mock(Run.class);
-        final String expected = "owner";
-        when(ownerStub.getDisplayName()).thenReturn(expected);
+        when(ownerStub.getDisplayName()).thenReturn(OWNER);
 
         ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
@@ -44,15 +47,15 @@ class ForensicsViewModelTest {
     void shouldGetDisplayName() {
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
         Run<?, ?> ownerStub = mock(Run.class);
-        final String expected = "Forensics_Action";
-        MockedStatic<Messages> messagesMock = mockStatic(Messages.class);
-        messagesMock.when(Messages::Forensics_Action).thenReturn(expected);
 
-        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
+        try (MockedStatic<Messages> messagesMock = mockStatic(Messages.class)) {
+            messagesMock.when(Messages::Forensics_Action).thenReturn(FORENSIC_ACTION);
 
-        assertThat(sut.getDisplayName().getClass()).isEqualTo(expected.getClass());
-        assertThat(sut.getDisplayName()).isEqualTo(expected);
-        messagesMock.close();
+            ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
+
+            assertThat(sut.getDisplayName().getClass()).isEqualTo(FORENSIC_ACTION.getClass());
+            assertThat(sut.getDisplayName()).isEqualTo(FORENSIC_ACTION);
+        }
     }
 
     @Test
@@ -87,37 +90,35 @@ class ForensicsViewModelTest {
     void shouldGetScmKey() {
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
         Run<?, ?> ownerStub = mock(Run.class);
-        final String expected = "scmKey";
-        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, expected);
+        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
-        assertEquals(expected, sut.getScmKey());
+        assertThat(SCM_KEY).isEqualTo(sut.getScmKey());
     }
 
     @Test
     void shouldGetTableModel() {
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
         Run<?, ?> ownerStub = mock(Run.class);
-        final String id = "id";
 
         ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
-        assertThat(sut.getTableModel(id).getClass()).isEqualTo(ForensicsTableModel.class);
+        assertThat(sut.getTableModel(ID).getClass()).isEqualTo(ForensicsTableModel.class);
     }
 
     @Test
     void shouldGetDynamic() {
         Run<?, ?> ownerStub = mock(Run.class);
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
-        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
         StaplerResponse staplerResponse = mock(StaplerResponse.class);
         StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        final String link = "www.link.com";
+
+        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
         try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
             commitDecoratorFactory.when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
                     .thenReturn(null);
 
-            assertThat(sut.getDynamic(link, staplerRequest, staplerResponse)
+            assertThat(sut.getDynamic(LINK, staplerRequest, staplerResponse)
                     .getClass()).isEqualTo(ForensicsViewModel.class);
         }
     }
@@ -126,18 +127,18 @@ class ForensicsViewModelTest {
     void shouldGetDynamicThrowNoSuchElementException() throws IOException {
         Run<?, ?> ownerStub = mock(Run.class);
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
-        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
         StaplerResponse staplerResponse = mock(StaplerResponse.class);
         doNothing().when(staplerResponse).sendRedirect2(any(String.class));
         StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        final String link = "www.link.com";
+
+        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
         try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
             commitDecoratorFactory.when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
                     .thenThrow(NoSuchElementException.class);
 
-            assertThat(sut.getDynamic(link, staplerRequest, staplerResponse)
+            assertThat(sut.getDynamic(LINK, staplerRequest, staplerResponse)
                     .getClass()).isEqualTo(ForensicsViewModel.class);
             verify(staplerResponse, times(1)).sendRedirect2(any(String.class));
         }
@@ -147,20 +148,20 @@ class ForensicsViewModelTest {
     void shouldGetDynamicThrowIOExceptionException() throws IOException {
         Run<?, ?> ownerStub = mock(Run.class);
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
-        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
         StaplerResponse staplerResponse = mock(StaplerResponse.class);
         doNothing().when(staplerResponse).sendRedirect2(any(String.class));
         doThrow(IOException.class).when(staplerResponse).sendRedirect2(any(String.class));
 
         StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        final String link = "www.link.com";
+
+        ForensicsViewModel sut = new ForensicsViewModel(ownerStub, repositoryStatisticsStub, SCM_KEY);
 
         try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
             commitDecoratorFactory.when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
                     .thenThrow(NoSuchElementException.class);
 
-            assertThat(sut.getDynamic(link, staplerRequest, staplerResponse)
+            assertThat(sut.getDynamic(LINK, staplerRequest, staplerResponse)
                     .getClass()).isEqualTo(ForensicsViewModel.class);
             verify(staplerResponse, times(1)).sendRedirect2(any(String.class));
         }
