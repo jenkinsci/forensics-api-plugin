@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  * @author Nikolas Paripovic
  *
  */
-public class RelativeCountTrendChartTest {
+class RelativeCountTrendChartTest {
 
     private final RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
 
