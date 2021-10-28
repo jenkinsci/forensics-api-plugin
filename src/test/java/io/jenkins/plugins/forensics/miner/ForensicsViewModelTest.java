@@ -16,7 +16,6 @@ import hudson.model.Run;
 import io.jenkins.plugins.forensics.util.CommitDecoratorFactory;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
