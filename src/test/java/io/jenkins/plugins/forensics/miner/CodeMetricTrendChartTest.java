@@ -13,6 +13,12 @@ import edu.hm.hafner.echarts.LinesChartModel;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests CodeMetricTrendChart.
+ *
+ * @author Nikolas Paripovic
+ *
+ */
 public class CodeMetricTrendChartTest {
 
     private final CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
@@ -46,9 +52,9 @@ public class CodeMetricTrendChartTest {
         assertThat(linesChartModel.getBuildNumbers()).containsExactly(1, 4, 7, 10);
     }
 
-    private Iterable<BuildResult<ForensicsBuildAction>> createBuildResults(boolean withData) {
+    private Iterable<BuildResult<ForensicsBuildAction>> createBuildResults(final boolean withData) {
         List<BuildResult<ForensicsBuildAction>> buildResults = new ArrayList<>();
-        if(withData) {
+        if (withData) {
             buildResults.add(createResult(1));
             buildResults.add(createResult(4));
             buildResults.add(createResult(7));
