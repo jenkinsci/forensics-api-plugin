@@ -19,7 +19,4 @@ class CodeMetricSeriesBuilderTest {
         assertThat(series.get("churn")).isEqualTo(5);
        
     }
-
-    //Bonus: Assert ob die Klassen die Methoden haben
-
 } 
