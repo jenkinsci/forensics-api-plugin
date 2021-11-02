@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CodeMetricSeriesBuilderTest {
-
     @Test
     void computeSeries() {
 
