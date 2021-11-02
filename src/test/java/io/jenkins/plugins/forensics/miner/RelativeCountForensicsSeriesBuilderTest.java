@@ -18,7 +18,7 @@ class RelativeCountForensicsSeriesBuilderTest {
         when(commitStatistics.getFilesCount()).thenReturn(3);
         when(commitStatistics.getCommitCount()).thenReturn(4);//
         ForensicsBuildAction action = mock(ForensicsBuildAction.class);
-        when(action.getTotalLinesOfCode()).thenReturn(2);//
+        when(action.getTotalLinesOfCode()).thenReturn(2);
         when(action.getCommitStatistics()).thenReturn(commitStatistics);
         RelativeCountForensicsSeriesBuilder builder = new RelativeCountForensicsSeriesBuilder();
         Map<String, Integer> series = builder.computeSeries(action);
