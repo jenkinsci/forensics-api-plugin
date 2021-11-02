@@ -11,7 +11,7 @@ class CodeMetricSeriesBuilderTest {
     @Test
     void computeSeries() {
         ForensicsBuildAction action = mock(ForensicsBuildAction.class);
-        when(action.getTotalLinesOfCode()).thenReturn(2);//
+        when(action.getTotalLinesOfCode()).thenReturn(2);
         when(action.getTotalChurn()).thenReturn(5);
         CodeMetricSeriesBuilder builder = new CodeMetricSeriesBuilder();
         Map<String, Integer> series = builder.computeSeries(action);
