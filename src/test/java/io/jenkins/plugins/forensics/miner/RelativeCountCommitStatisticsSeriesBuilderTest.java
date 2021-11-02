@@ -4,14 +4,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import static io.jenkins.plugins.forensics.miner.RelativeCountForensicsSeriesBuilder.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RelativeCountCommitStatisticsSeriesBuilderTest {
-    static final String COMMITS = "commits";
-    static final String AUTHORS = "authors";
-    static final String FILES = "files";
-
     @Test
     void computeSeries() {
         final int commitCount = 7;
@@ -25,9 +22,9 @@ class RelativeCountCommitStatisticsSeriesBuilderTest {
                 commitStatisticsBuildActionStub);
 
         assertThat(result)
-                .containsEntry(COMMITS, commitCount)
-                .containsEntry(AUTHORS, authorCount)
-                .containsEntry(FILES, filesCount);
+                .containsEntry(COMMITS_KEY, commitCount)
+                .containsEntry(AUTHORS_KEY, authorCount)
+                .containsEntry(FILES_KEY, filesCount);
     }
 
     private CommitStatisticsBuildAction getCommitStatisticsBuildActionStub(final int commitCount, final int authorCount,
