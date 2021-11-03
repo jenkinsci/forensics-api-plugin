@@ -19,9 +19,8 @@ import static org.mockito.Mockito.*;
  * @author Nikolas Paripovic
  */
 class CodeMetricTrendChartTest {
-
     @Test
-    void shouldCreate() {
+    void shouldCreateEmptyChart() {
         Iterable<BuildResult<ForensicsBuildAction>> buildResults = new ArrayList<>();
         ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
 
@@ -30,7 +29,6 @@ class CodeMetricTrendChartTest {
 
         assertThat(linesChartModel.getSeries()).isEmpty();
         assertThat(linesChartModel.getBuildNumbers()).isEmpty();
-        assertThat(linesChartModel.getDomainAxisLabels()).isEmpty();
         assertThat(linesChartModel.getDomainAxisLabels()).isEmpty();
     }
 
@@ -44,8 +42,7 @@ class CodeMetricTrendChartTest {
 
         assertThat(linesChartModel.getSeries()).hasSize(2);
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
-        assertThat(linesChartModel.getBuildNumbers()).hasSize(4);
-        assertThat(linesChartModel.getBuildNumbers()).containsExactly(1, 4, 7, 10);
+        assertThat(linesChartModel.getBuildNumbers()).hasSize(4).containsExactly(1, 4, 7, 10);
     }
 
     private Iterable<BuildResult<ForensicsBuildAction>> createBuildResultsWithData() {
@@ -66,5 +63,4 @@ class CodeMetricTrendChartTest {
     private ChartModelConfiguration createChartModelConfiguration() {
         return new ChartModelConfiguration();
     }
-
 }
