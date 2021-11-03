@@ -15,46 +15,41 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests RelativeCountTrendChart.
+ * Tests the class {@link RelativeCountTrendChart}.
  *
  * @author Nikolas Paripovic
- *
  */
 class RelativeCountTrendChartTest {
 
-    private final RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
-
     @Test
     void shouldCreate() {
-
-        Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = createBuildResults(false);
+        Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = new ArrayList<>();
         ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
         SeriesBuilder<CommitStatisticsBuildAction> seriesBuilder = createSeriesBuilder();
 
+        RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
         LinesChartModel linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
         assertThat(linesChartModel.getSeries()).isEmpty();
     }
 
     @Test
     void shouldCreateWithData() {
-
-        Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = createBuildResults(true);
+        Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = createBuildResultsWithData();
         ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
         SeriesBuilder<CommitStatisticsBuildAction> seriesBuilder = createSeriesBuilder();
 
+        RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
         LinesChartModel linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
         assertThat(linesChartModel.getSeries()).hasSize(3);
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
     }
 
-    private Iterable<BuildResult<CommitStatisticsBuildAction>> createBuildResults(final boolean withData) {
+    private Iterable<BuildResult<CommitStatisticsBuildAction>> createBuildResultsWithData() {
         List<BuildResult<CommitStatisticsBuildAction>> buildResults = new ArrayList<>();
-        if (withData) {
-            buildResults.add(createResult(1, 2, 3));
-            buildResults.add(createResult(4, 5, 6));
-            buildResults.add(createResult(7, 8, 9));
-            buildResults.add(createResult(10, 11, 12));
-        }
+        buildResults.add(createResult(1, 2, 3));
+        buildResults.add(createResult(4, 5, 6));
+        buildResults.add(createResult(7, 8, 9));
+        buildResults.add(createResult(10, 11, 12));
         return buildResults;
     }
 
@@ -78,6 +73,5 @@ class RelativeCountTrendChartTest {
 
         return new BuildResult<>(build, action);
     }
-
 
 }
