@@ -39,6 +39,7 @@ class CodeMetricTrendChartTest {
         Iterable<BuildResult<ForensicsBuildAction>> buildResults = createBuildResultsWithData();
         ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
 
+        CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
         LinesChartModel linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
 
         assertThat(linesChartModel.getSeries()).hasSize(2);
