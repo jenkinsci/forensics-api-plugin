@@ -29,6 +29,7 @@ class RelativeCountTrendChartTest {
 
         RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
         LinesChartModel linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
+
         assertThat(linesChartModel.getSeries()).isEmpty();
     }
 
@@ -40,6 +41,7 @@ class RelativeCountTrendChartTest {
 
         RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
         LinesChartModel linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
+
         assertThat(linesChartModel.getSeries()).hasSize(3);
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
     }
@@ -70,7 +72,6 @@ class RelativeCountTrendChartTest {
         when(action.getCommitStatistics()).thenReturn(commitStatistics);
 
         Build build = new Build(buildNumber);
-
         return new BuildResult<>(build, action);
     }
 
