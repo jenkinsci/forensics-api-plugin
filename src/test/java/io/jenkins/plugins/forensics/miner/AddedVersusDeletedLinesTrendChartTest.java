@@ -1,16 +1,19 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.ChartModelConfiguration.AxisType;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
 import edu.hm.hafner.echarts.SeriesBuilder;
 
+
+import static io.jenkins.plugins.forensics.miner.ResultStubs.*;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -19,40 +22,30 @@ class AddedVersusDeletedLinesTrendChartTest {
     void shouldCreate() {
         AddedVersusDeletedLinesTrendChart builder = new AddedVersusDeletedLinesTrendChart();
 
-        Iterable<BuildResult<CommitStatisticsBuildAction>> buildResultsStub = createBuildResultsStub();
-        ChartModelConfiguration chartModelConfigurationStub = createConfiguration();
+        ChartModelConfiguration configuration = new ChartModelConfiguration();
 
-        SeriesBuilder seriesBuilderStub = createSeriesBuilderStub();
+        List<BuildResult<ForensicsBuildAction>> results = new ArrayList<>();
+        results.add(createResult(1, 30));
+        results.add(createResult(2, 20));
+
+        LinesChartModel lineChartModel = builder.create(results, configuration, createSeriesBuilderStub(configuration, results));
+
+        assertThat(lineChartModel.getSeries()).hasSize(2);
+
+        assertThatJson(lineChartModel)
+                .node("domainAxisLabels")
+                .isArray().hasSize(2)
+                .contains("#1")
+                .contains("#2");
+    }
+
+    private SeriesBuilder createSeriesBuilderStub(final ChartModelConfiguration configuration,
+            final List<BuildResult<ForensicsBuildAction>> results) {
+        SeriesBuilder seriesBuilderStub = mock(SeriesBuilder.class);
         LinesDataSet linesDataSet = mock(LinesDataSet.class);
 
-        when(seriesBuilderStub.createDataSet(chartModelConfigurationStub, buildResultsStub))
+        when(seriesBuilderStub.createDataSet(configuration, results))
                 .thenReturn(linesDataSet);
-
-        LinesChartModel lineChartModel = builder.create(buildResultsStub, chartModelConfigurationStub,
-                seriesBuilderStub);
-
-        assertThat(lineChartModel)
-                .satisfies(model -> {
-                    assertThat(model.getSeries()).size().isEqualTo(2);
-                });
-    }
-
-    private SeriesBuilder createSeriesBuilderStub() {
-        return mock(SeriesBuilder.class);
-    }
-
-    private ChartModelConfiguration createConfiguration() {
-        ChartModelConfiguration configuration = mock(ChartModelConfiguration.class);
-        when(configuration.getAxisType()).thenReturn(AxisType.BUILD);
-        return configuration;
-    }
-
-    private Iterable<BuildResult<CommitStatisticsBuildAction>> createBuildResultsStub() {
-        return new Iterable<BuildResult<CommitStatisticsBuildAction>>() {
-            @Override
-            public Iterator<BuildResult<CommitStatisticsBuildAction>> iterator() {
-                return null;
-            }
-        };
+        return seriesBuilderStub;
     }
 }
