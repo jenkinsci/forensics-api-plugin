@@ -14,20 +14,18 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests CodeMetricTrendChart.
+ * Tests the class {@link CodeMetricTrendChart}.
  *
  * @author Nikolas Paripovic
- *
  */
 class CodeMetricTrendChartTest {
 
-    private final CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
-
     @Test
     void shouldCreate() {
-        Iterable<BuildResult<ForensicsBuildAction>> buildResults = createBuildResults(false);
+        Iterable<BuildResult<ForensicsBuildAction>> buildResults = new ArrayList<>();
         ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
 
+        CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
         LinesChartModel linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
 
         assertThat(linesChartModel.getSeries()).isEmpty();
@@ -38,8 +36,7 @@ class CodeMetricTrendChartTest {
 
     @Test
     void shouldCreateWithData() {
-
-        Iterable<BuildResult<ForensicsBuildAction>> buildResults = createBuildResults(true);
+        Iterable<BuildResult<ForensicsBuildAction>> buildResults = createBuildResultsWithData();
         ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
 
         LinesChartModel linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
@@ -50,14 +47,12 @@ class CodeMetricTrendChartTest {
         assertThat(linesChartModel.getBuildNumbers()).containsExactly(1, 4, 7, 10);
     }
 
-    private Iterable<BuildResult<ForensicsBuildAction>> createBuildResults(final boolean withData) {
+    private Iterable<BuildResult<ForensicsBuildAction>> createBuildResultsWithData() {
         List<BuildResult<ForensicsBuildAction>> buildResults = new ArrayList<>();
-        if (withData) {
-            buildResults.add(createResult(1));
-            buildResults.add(createResult(4));
-            buildResults.add(createResult(7));
-            buildResults.add(createResult(10));
-        }
+        buildResults.add(createResult(1));
+        buildResults.add(createResult(4));
+        buildResults.add(createResult(7));
+        buildResults.add(createResult(10));
         return buildResults;
     }
 
@@ -70,6 +65,5 @@ class CodeMetricTrendChartTest {
     private ChartModelConfiguration createChartModelConfiguration() {
         return new ChartModelConfiguration();
     }
-
 
 }
