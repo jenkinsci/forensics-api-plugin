@@ -87,6 +87,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      *
      * @param defaultBranch
      *         the name of the default branch
+     *
      * @deprecated renamed to {@link #setTargetBranch(String)}
      */
     @Deprecated
@@ -100,9 +101,9 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     /**
-     * Sets the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered
-     * the base branch in your repository. The builds of all other branches and pull requests will use this target
-     * branch as baseline to search for a matching reference build.
+     * Sets the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered the
+     * base branch in your repository. The builds of all other branches and pull requests will use this target branch as
+     * baseline to search for a matching reference build.
      *
      * @param targetBranch
      *         the name of the default branch
@@ -146,7 +147,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
                 log.logInfo("No completed build found");
             }
             else {
-                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild);
+                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild, log);
                 if (referenceBuild.isPresent()) {
                     Run<?, ?> result = referenceBuild.get();
                     log.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
@@ -191,19 +192,19 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             }
             log.logInfo("-> no target branch configured in step", targetBranch);
 
-            Optional<ChangeRequestSCMHead> possibleHead = getScmFacade().findHead(job);
+            Optional<SCMHead> possibleHead = findTargetBranchHead(job);
             if (possibleHead.isPresent()) {
-                ChangeRequestSCMHead prHead = possibleHead.get();
-                SCMHead target = prHead.getTarget();
-                log.logInfo("-> detected a pull or merge request '%s' for target branch '%s'",
-                        prHead, target.getName());
+                SCMHead target = possibleHead.get();
+                log.logInfo("-> detected a pull or merge request for target branch '%s'", target.getName());
+
                 return findJobForTargetBranch(multiBranchProject, job, target.getName(), log);
             }
 
             Optional<? extends Job> possiblePrimaryBranch = findPrimaryBranch(topLevel);
             if (possiblePrimaryBranch.isPresent()) {
                 Job<?, ?> primaryBranchJob = possiblePrimaryBranch.get();
-                log.logInfo("-> using configured primary branch '%s' of SCM as target branch", primaryBranchJob.getDisplayName());
+                log.logInfo("-> using configured primary branch '%s' of SCM as target branch",
+                        primaryBranchJob.getDisplayName());
 
                 return Optional.of(primaryBranchJob);
             }
@@ -215,6 +216,10 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             log.logInfo("Consider configuring a reference job using the 'referenceJob' property");
         }
         return Optional.empty();
+    }
+
+    protected Optional<SCMHead> findTargetBranchHead(final Job<?, ?> job) {
+        return getScmFacade().findHead(job).map(ChangeRequestSCMHead::getTarget);
     }
 
     @SuppressWarnings("rawtypes")
@@ -248,8 +253,26 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     /**
-     * Returns the reference build for the given build {@code owner}. The search should start with the last
-     * completed build of the reference build.
+     * Returns the reference build for the given build {@code owner}. The search should start with the last completed
+     * build of the reference build.
+     *
+     * @param owner
+     *         the owner to get the reference build for
+     * @param lastCompletedBuildOfReferenceJob
+     *         the last completed build of the reference job
+     * @param log
+     *         the logger to use
+     *
+     * @return the reference build (if available)
+     */
+    protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob,
+            @SuppressWarnings("unused") final FilteredLog log) {
+        return find(owner, lastCompletedBuildOfReferenceJob);
+    }
+
+    /**
+     * Returns the reference build for the given build {@code owner}. The search should start with the last completed
+     * build of the reference build.
      *
      * @param owner
      *         the owner to get the reference build for
@@ -257,8 +280,13 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      *         the last completed build of the reference job
      *
      * @return the reference build (if available)
+     * @deprecated replaced by {@link #find(Run, Run, FilteredLog)}
      */
-    protected abstract Optional<Run<?, ?>> find(Run<?, ?> owner, Run<?, ?> lastCompletedBuildOfReferenceJob);
+    @SuppressWarnings("unused")
+    @Deprecated
+    protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob) {
+        return Optional.empty();
+    }
 
     static class ScmFacade {
         Optional<ChangeRequestSCMHead> findHead(final Job<?, ?> job) {
