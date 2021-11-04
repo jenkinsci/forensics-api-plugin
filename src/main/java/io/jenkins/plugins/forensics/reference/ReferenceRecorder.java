@@ -138,32 +138,32 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     @Override
-    protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
-        Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, log);
+    protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog logger) {
+        Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, logger);
         if (actualReferenceJob.isPresent()) {
             Job<?, ?> reference = actualReferenceJob.get();
             Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
             if (lastCompletedBuild == null) {
-                log.logInfo("No completed build found");
+                logger.logInfo("No completed build found");
             }
             else {
-                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild, log);
+                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild, logger);
                 if (referenceBuild.isPresent()) {
                     Run<?, ?> result = referenceBuild.get();
-                    log.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
+                    logger.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
 
-                    return new ReferenceBuild(run, log.getInfoMessages(), result);
+                    return new ReferenceBuild(run, logger.getInfoMessages(), result);
                 }
-                log.logInfo("No reference build found that contains matching commits");
+                logger.logInfo("No reference build found that contains matching commits");
                 if (isLatestBuildIfNotFound()) {
-                    log.logInfo("Falling back to latest build of reference job: '%s'",
+                    logger.logInfo("Falling back to latest build of reference job: '%s'",
                             lastCompletedBuild.getDisplayName());
 
-                    return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
+                    return new ReferenceBuild(run, logger.getInfoMessages(), lastCompletedBuild);
                 }
             }
         }
-        return new ReferenceBuild(run, log.getInfoMessages());
+        return new ReferenceBuild(run, logger.getInfoMessages());
     }
 
     private Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
@@ -176,44 +176,44 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     @SuppressWarnings("rawtypes")
-    private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog log) {
+    private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog logger) {
         Job<?, ?> job = run.getParent();
         ItemGroup<?> topLevel = job.getParent();
         if (topLevel instanceof MultiBranchProject) {
             MultiBranchProject<?, ?> multiBranchProject = (MultiBranchProject<?, ?>) topLevel;
 
-            log.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
+            logger.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
 
             String targetBranch = getTargetBranch();
             if (StringUtils.isNotEmpty(targetBranch)) {
-                log.logInfo("-> using target branch '%s' as configured in step", targetBranch);
+                logger.logInfo("-> using target branch '%s' as configured in step", targetBranch);
 
-                return findJobForTargetBranch(multiBranchProject, job, targetBranch, log);
+                return findJobForTargetBranch(multiBranchProject, job, targetBranch, logger);
             }
-            log.logInfo("-> no target branch configured in step", targetBranch);
+            logger.logInfo("-> no target branch configured in step", targetBranch);
 
             Optional<SCMHead> possibleHead = findTargetBranchHead(job);
             if (possibleHead.isPresent()) {
                 SCMHead target = possibleHead.get();
-                log.logInfo("-> detected a pull or merge request for target branch '%s'", target.getName());
+                logger.logInfo("-> detected a pull or merge request for target branch '%s'", target.getName());
 
-                return findJobForTargetBranch(multiBranchProject, job, target.getName(), log);
+                return findJobForTargetBranch(multiBranchProject, job, target.getName(), logger);
             }
 
             Optional<? extends Job> possiblePrimaryBranch = findPrimaryBranch(topLevel);
             if (possiblePrimaryBranch.isPresent()) {
                 Job<?, ?> primaryBranchJob = possiblePrimaryBranch.get();
-                log.logInfo("-> using configured primary branch '%s' of SCM as target branch",
+                logger.logInfo("-> using configured primary branch '%s' of SCM as target branch",
                         primaryBranchJob.getDisplayName());
 
                 return Optional.of(primaryBranchJob);
             }
 
-            log.logInfo("-> falling back to plugin default target branch '%s'", DEFAULT_TARGET_BRANCH);
-            return findJobForTargetBranch(multiBranchProject, job, DEFAULT_TARGET_BRANCH, log);
+            logger.logInfo("-> falling back to plugin default target branch '%s'", DEFAULT_TARGET_BRANCH);
+            return findJobForTargetBranch(multiBranchProject, job, DEFAULT_TARGET_BRANCH, logger);
         }
         else {
-            log.logInfo("Consider configuring a reference job using the 'referenceJob' property");
+            logger.logInfo("Consider configuring a reference job using the 'referenceJob' property");
         }
         return Optional.empty();
     }
@@ -236,18 +236,18 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     private Optional<Job<?, ?>> findJobForTargetBranch(final MultiBranchProject<?, ?> multiBranchProject,
-            final Job<?, ?> job, final String targetBranch, final FilteredLog log) {
+            final Job<?, ?> job, final String targetBranch, final FilteredLog logger) {
         Job<?, ?> target = multiBranchProject.getItemByBranchName(targetBranch);
         if (job.equals(target)) {
-            log.logInfo("-> no reference job required - this build is already for the default target branch '%s'",
+            logger.logInfo("-> no reference job required - this build is already for the default target branch '%s'",
                     job.getName());
         }
         else if (target != null) {
-            log.logInfo("-> inferred job for target branch: '%s'", target.getDisplayName());
+            logger.logInfo("-> inferred job for target branch: '%s'", target.getDisplayName());
 
             return Optional.of(target);
         }
-        log.logError("-> no job found for target branch '%s' (is the branch correctly defined?)", targetBranch);
+        logger.logError("-> no job found for target branch '%s' (is the branch correctly defined?)", targetBranch);
 
         return Optional.empty();
     }
@@ -260,13 +260,13 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      *         the owner to get the reference build for
      * @param lastCompletedBuildOfReferenceJob
      *         the last completed build of the reference job
-     * @param log
+     * @param logger
      *         the logger to use
      *
      * @return the reference build (if available)
      */
     protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob,
-            @SuppressWarnings("unused") final FilteredLog log) {
+            @SuppressWarnings("unused") final FilteredLog logger) {
         return find(owner, lastCompletedBuildOfReferenceJob);
     }
 
