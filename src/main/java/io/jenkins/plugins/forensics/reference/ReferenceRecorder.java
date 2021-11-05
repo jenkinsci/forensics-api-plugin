@@ -50,7 +50,7 @@ import io.jenkins.plugins.util.JenkinsFacade;
 public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     private static final String DEFAULT_TARGET_BRANCH = "master";
 
-    private String defaultBranch = DEFAULT_TARGET_BRANCH;
+    private String defaultBranch = StringUtils.EMPTY;
     private boolean latestBuildIfNotFound = false;
     private String scm = StringUtils.EMPTY;
 
