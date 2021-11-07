@@ -63,8 +63,7 @@ class ReferenceRecorderTest {
 
         assertThat(log.getInfoMessages())
                 .anySatisfy(m -> assertThat(m).contains("no target branch configured in step"))
-                .anySatisfy(m -> assertThat(m).contains(
-                        "detected a pull or merge request 'pr' for target branch 'pr-target'"));
+                .anySatisfy(m -> assertThat(m).contains("detected a pull or merge request for target branch 'pr-target'"));
 
         assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("pr-id");
     }
@@ -88,7 +87,8 @@ class ReferenceRecorderTest {
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).contains("Found a `MultiBranchProject`"))
+                .anySatisfy(
+                        m -> assertThat(m).contains("Found a `MultiBranchProject`"))
                 .anySatisfy(
                         m -> assertThat(m).contains("using configured primary branch 'main' of SCM as target branch"));
 
