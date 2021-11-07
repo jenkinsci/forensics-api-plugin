@@ -4,9 +4,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.VisibleForTesting;
 
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import hudson.model.Item;
@@ -17,8 +19,9 @@ import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
 import io.jenkins.plugins.forensics.reference.ReferenceRecorder.ScmFacade;
+import io.jenkins.plugins.util.JenkinsFacade;
 
-import static org.assertj.core.api.Assertions.*;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -27,6 +30,19 @@ import static org.mockito.Mockito.*;
  * @author Ullrich Hafner
  */
 class ReferenceRecorderTest {
+    /**
+     * Verifies that the reference recorder has no initial value for the default branch.
+     */
+    @Test
+    void shouldInitCorrectly() {
+        ReferenceRecorder recorder = new NullReferenceRecorder();
+
+        assertThat(recorder)
+                .hasDefaultBranch(StringUtils.EMPTY)
+                .hasTargetBranch(StringUtils.EMPTY)
+                .hasScm(StringUtils.EMPTY);
+    }
+
     /**
      * Verifies the first alternative: the current build is for a pull request part in a multi-branch project. In this
      * case the target branch stored in the PR will be used as reference job.
@@ -227,5 +243,17 @@ class ReferenceRecorderTest {
         when(recorder.find(build, targetBuild)).thenReturn(Optional.of(targetBuild));
 
         return targetBuild;
+    }
+
+    private static class NullReferenceRecorder extends ReferenceRecorder {
+        @VisibleForTesting
+        NullReferenceRecorder() {
+            super(new JenkinsFacade());
+        }
+
+        @Override
+        protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob) {
+            return Optional.empty();
+        }
     }
 }
