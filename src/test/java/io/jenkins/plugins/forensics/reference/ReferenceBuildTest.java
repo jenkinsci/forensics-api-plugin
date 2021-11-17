@@ -32,7 +32,6 @@ class ReferenceBuildTest {
         Run<?, ?> newBuild = mock(Run.class);
         referenceBuild.onAttached(newBuild);
         assertThat(referenceBuild).hasOwner(newBuild);
-
         referenceBuild.onLoad(currentBuild);
         assertThat(referenceBuild).hasOwner(currentBuild);
     }
@@ -52,7 +51,7 @@ class ReferenceBuildTest {
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
-        assertThat(referenceBuild.getUrlName()).isNull();
+        assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
     }
 
     @Test
@@ -70,7 +69,7 @@ class ReferenceBuildTest {
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
-        assertThat(referenceBuild.getUrlName()).isNull();
+        assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
     }
 
     @Test
@@ -94,7 +93,6 @@ class ReferenceBuildTest {
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
-        assertThat(referenceBuild.getUrlName()).isNull();
+        assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
     }
-
 }
