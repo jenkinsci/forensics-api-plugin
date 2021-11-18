@@ -41,9 +41,8 @@ class RelativeCountForensicsSeriesBuilderTest {
         when(action.getResult()).thenReturn(repositoryStatistics);
         RelativeCountForensicsSeriesBuilder builder = new RelativeCountForensicsSeriesBuilder();
         Map<String, Integer> series = builder.computeSeries(action);
-        assertThat(series.get("authors")).isEqualTo(2);
-        assertThat(series.get("files")).isEqualTo(3);
-        assertThat(series.get("commits")).isEqualTo(4);
-
+        assertThat(series.get(RelativeCountForensicsSeriesBuilder.AUTHORS_KEY)).isEqualTo(2);
+        assertThat(series.get(RelativeCountForensicsSeriesBuilder.FILES_KEY)).isEqualTo(3);
+        assertThat(series.get(RelativeCountForensicsSeriesBuilder.COMMITS_KEY)).isEqualTo(4);
     }
 }

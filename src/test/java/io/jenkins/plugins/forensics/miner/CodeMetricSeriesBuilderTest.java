@@ -15,8 +15,9 @@ class CodeMetricSeriesBuilderTest {
         when(action.getTotalChurn()).thenReturn(5);
         CodeMetricSeriesBuilder builder = new CodeMetricSeriesBuilder();
         Map<String, Integer> series = builder.computeSeries(action);
-        assertThat(series.get("loc")).isEqualTo(2);
-        assertThat(series.get("churn")).isEqualTo(5);
+        assertThat(series.get(CodeMetricSeriesBuilder.LOC_KEY)).isEqualTo(2);
+        assertThat(series.get(CodeMetricSeriesBuilder.CHURN_KEY)).isEqualTo(5);
+
        
     }
 } 
