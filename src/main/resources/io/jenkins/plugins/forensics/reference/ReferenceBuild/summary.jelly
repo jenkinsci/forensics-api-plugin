@@ -1,25 +1,19 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
+<j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson"  xmlns:fa="/font-awesome">
 
   <t:summary icon="/plugin/forensics-api/icons/crosshair.svg">
 
       <j:choose>
         <j:when test="${it.hasReferenceBuild()}">
-          ${%Reference.Build.Found}
+          ${%reference.found}
+          <fa:image-button label="${%Open log messages}" name="info-circle" tooltip="${%icon.info.tooltip}" url="reference" />
           <ul>
             <li><j:out value="${it.referenceLink}"/></li>
-            <j:forEach var="message" items="${it.messages}">
-              <li>${message}</li>
-            </j:forEach>
           </ul>
         </j:when>
         <j:otherwise>
-          ${%No.Reference.Build}
-          <ul>
-            <j:forEach var="message" items="${it.messages}">
-                <li>${message}</li>
-            </j:forEach>
-          </ul>
+          ${%reference.notFound}
+          <fa:image-button label="${%Open error messages}" name="exclamation-triangle" tooltip="${%icon.error.tooltip}" url="reference" class="fa-image-button-warning"/>
         </j:otherwise>
 
       </j:choose>

@@ -10,9 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 
+import io.jenkins.plugins.bootstrap5.MessagesViewModel;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 import static j2html.TagCreator.*;
@@ -24,7 +26,7 @@ import static j2html.TagCreator.*;
  * @author Ullrich Hafner
  * @see ReferenceRecorder
  */
-public class ReferenceBuild implements RunAction2, Serializable {
+public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
     private static final long serialVersionUID = -4549516129641755356L;
 
     /**
@@ -32,6 +34,8 @@ public class ReferenceBuild implements RunAction2, Serializable {
      * initially but has been deleted afterwards.
      */
     public static final String NO_REFERENCE_BUILD = "-";
+
+    static final String REFERENCE_DETAILS_URL = "reference";
 
     /**
      * Returns a link that can be used in Jelly views to navigate to the reference build.
@@ -182,6 +186,16 @@ public class ReferenceBuild implements RunAction2, Serializable {
 
     @Override
     public String getUrlName() {
-        return null;
+        return REFERENCE_DETAILS_URL;
+    }
+
+    /**
+     * Returns the detail view for the messages captured during the computation of the reference build.
+     *
+     * @return the detail view for the messages
+     */
+    @Override
+    public Object getTarget() {
+        return new MessagesViewModel(getOwner(), Messages.Messages_DisplayName(), messages);
     }
 }

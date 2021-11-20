@@ -108,6 +108,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      * @param targetBranch
      *         the name of the default branch
      */
+    @DataBoundSetter
     public void setTargetBranch(final String targetBranch) {
         this.defaultBranch = StringUtils.stripToEmpty(targetBranch);
     }

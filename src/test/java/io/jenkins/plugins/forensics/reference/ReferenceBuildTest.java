@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import hudson.model.Run;
 
+import io.jenkins.plugins.bootstrap5.MessagesViewModel;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -32,7 +33,6 @@ class ReferenceBuildTest {
         Run<?, ?> newBuild = mock(Run.class);
         referenceBuild.onAttached(newBuild);
         assertThat(referenceBuild).hasOwner(newBuild);
-
         referenceBuild.onLoad(currentBuild);
         assertThat(referenceBuild).hasOwner(currentBuild);
     }
@@ -47,12 +47,20 @@ class ReferenceBuildTest {
         assertThat(referenceBuild).hasOnlyMessages(MESSAGES);
         assertThat(referenceBuild).hasOwner(currentBuild);
         assertThat(referenceBuild).hasReferenceBuildId(ReferenceBuild.NO_REFERENCE_BUILD);
-        assertThat(referenceBuild).hasReferenceLink("Reference build '-' not found anymore - maybe the build has been renamed or deleted?");
+        assertThat(referenceBuild).hasReferenceLink(
+                "Reference build '-' not found anymore - maybe the build has been renamed or deleted?");
         assertThat(referenceBuild.getReferenceBuild()).isEmpty();
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
-        assertThat(referenceBuild.getUrlName()).isNull();
+        assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
+
+        assertThat(referenceBuild.getTarget()).isInstanceOfSatisfying(MessagesViewModel.class,
+                model -> {
+                    assertThat(model.getDisplayName()).isEqualTo("Reference build - Messages");
+                    assertThat(model.getErrorMessages()).isEmpty();
+                    assertThat(model.getInfoMessages()).containsAll(MESSAGES);
+                });
     }
 
     @Test
@@ -70,7 +78,7 @@ class ReferenceBuildTest {
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
-        assertThat(referenceBuild.getUrlName()).isNull();
+        assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
     }
 
     @Test
@@ -94,7 +102,6 @@ class ReferenceBuildTest {
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
-        assertThat(referenceBuild.getUrlName()).isNull();
+        assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
     }
-
 }
