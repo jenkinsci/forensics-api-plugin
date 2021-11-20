@@ -6,18 +6,14 @@
       <j:choose>
         <j:when test="${it.hasReferenceBuild()}">
           ${%reference.found}
-          <a id="reference-info" href="reference">
-            <fa:svg-icon name="info-circle" class="info-page-decorator" tooltip="${%messages.tooltip}"/>
-          </a>
+          <fa:image-button label="${%Open log messages}" name="info-circle" tooltip="${%icon.info.tooltip}" url="reference" />
           <ul>
             <li><j:out value="${it.referenceLink}"/></li>
           </ul>
         </j:when>
         <j:otherwise>
           ${%reference.notFound}
-          <a id="reference-info" href="reference">
-            <fa:svg-icon name="exclamation-triangle" class="info-page-decorator" tooltip="${%messages.tooltip}"/>
-          </a>
+          <fa:image-button label="${%Open error messages}" name="exclamation-triangle" tooltip="${%icon.error.tooltip}" url="reference" class="fa-image-button-warning"/>
         </j:otherwise>
 
       </j:choose>
