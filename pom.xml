@@ -12,13 +12,13 @@
   <groupId>io.jenkins.plugins</groupId>
   <packaging>hpi</packaging>
   <name>Forensics API Plugin</name>
-  <version>1.7.0</version>
+  <version>${revision}${changelist}</version>
 
   <description>Defines an API for Jenkins to mine and analyze data from a source code repository.</description>
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>1.7.0</revision>
+    <revision>1.8.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
@@ -146,7 +146,7 @@
     <connection>scm:git:git://github.com/jenkinsci/forensics-api-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/forensics-api-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/forensics-api-plugin</url>
-    <tag>v1.7.0</tag>
+    <tag>${scmTag}</tag>
   </scm>
 
   <repositories>
