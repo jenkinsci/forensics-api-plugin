@@ -85,7 +85,8 @@ class CommitStatisticsJobActionTest {
 
     private Map<String, Object> fromJson(String resultJson) {
         try {
-            return OBJECT_MAPPER.readValue(resultJson, new TypeReference<Map<String, Object>>() {});
+            return OBJECT_MAPPER.readValue(resultJson, new TypeReference<Map<String, Object>>() {
+            });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
