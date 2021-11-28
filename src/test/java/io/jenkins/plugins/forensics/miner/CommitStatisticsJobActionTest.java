@@ -87,7 +87,8 @@ class CommitStatisticsJobActionTest {
         try {
             return OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {
             });
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -95,7 +96,8 @@ class CommitStatisticsJobActionTest {
     private String toJson(final Object object) {
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
     }
