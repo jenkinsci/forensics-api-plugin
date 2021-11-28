@@ -73,7 +73,7 @@ class CommitStatisticsJobActionTest {
                 .asList().containsExactly(1, 2, 3);
     }
 
-    private Run mockRun(int runNumber, String displayName) {
+    private Run mockRun(final int runNumber, final String displayName) {
         Run run = mock(Run.class);
         when(run.getNumber()).thenReturn(runNumber);
         when(run.getDisplayName()).thenReturn(displayName);
@@ -83,20 +83,20 @@ class CommitStatisticsJobActionTest {
         return run;
     }
 
-    private Map<String, Object> fromJson(String resultJson) {
+    private Map<String, Object> fromJson(final String json) {
         try {
-            return OBJECT_MAPPER.readValue(resultJson, new TypeReference<Map<String, Object>>() {
+            return OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {
             });
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
-    private String toJson(Object object) {
+    private String toJson(final Object object) {
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 }
