@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -11,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,15 +61,14 @@ class CommitStatisticsJobActionTest {
         when(run2.getPreviousBuild()).thenAnswer(i -> run3);
 
         CommitStatisticsJobAction commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
-        String resultJson = commitStatisticsJobAction.getConfigurableBuildTrendModel(configuration);
+        String chartModel = commitStatisticsJobAction.getConfigurableBuildTrendModel(configuration);
 
-        assertThat(resultJson).isNotBlank();
-        Map<String, Object> chartModel = fromJson(resultJson);
+        assertThat(chartModel).isNotBlank();
 
-        assertThat(chartModel.get("domainAxisLabels"))
-                .asList().containsExactly("run1", "run2", "run3");
-        assertThat(chartModel.get("buildNumbers"))
-                .asList().containsExactly(1, 2, 3);
+        assertThatJson(chartModel).node("domainAxisLabels")
+                .isArray().containsExactly("run1", "run2", "run3");
+        assertThatJson(chartModel).node("buildNumbers")
+                .isArray().containsExactly(1, 2, 3);
     }
 
     private Run<?, ?> createRun(final int runNumber, final String displayName) {
@@ -80,16 +79,6 @@ class CommitStatisticsJobActionTest {
                 Collections.singletonList(new CommitStatisticsBuildAction(run, SCM_KEY, new CommitStatistics()))
         );
         return run;
-    }
-
-    private Map<String, Object> fromJson(final String json) {
-        try {
-            return OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>()
-            {});
-        }
-        catch (JsonProcessingException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 
     private String toJson(final Object object) {
