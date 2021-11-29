@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Job;
 import hudson.model.Run;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,13 +43,14 @@ class CommitStatisticsJobActionTest {
         assertThat(commitStatisticsJobAction.isTrendVisible()).isTrue();
     }
 
-    @Test
-    void shouldReturnBuildTrendModel() {
+    @ParameterizedTest
+    @ValueSource(strings = {"delta", "count"})
+    void shouldReturnBuildTrendModel(String chartType) {
         Map<String, Object> configurationMap = new HashMap<>();
         configurationMap.put("buildAsDomain", true);
         configurationMap.put("numberOfBuilds", 50);
         configurationMap.put("numberOfDays", 0);
-        configurationMap.put("chartType", "delta");
+        configurationMap.put("chartType", chartType);
 
         String configuration = toJson(configurationMap);
 
