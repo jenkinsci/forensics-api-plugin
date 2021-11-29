@@ -45,7 +45,7 @@ class CommitStatisticsJobActionTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"delta", "count"})
-    void shouldReturnBuildTrendModel(String chartType) {
+    void shouldReturnBuildTrendModel(final String chartType) {
         Map<String, Object> configurationMap = new HashMap<>();
         configurationMap.put("buildAsDomain", true);
         configurationMap.put("numberOfBuilds", 50);
