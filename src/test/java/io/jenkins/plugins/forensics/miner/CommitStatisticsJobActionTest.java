@@ -21,30 +21,29 @@ import static org.mockito.Mockito.when;
  * @author Roman Boiarchuk
  */
 class CommitStatisticsJobActionTest {
-
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String SCM_KEY = "key123";
 
     @Test
     void shouldCorrectlyReturnWhetherTrendIsVisible() {
-        Job job = mock(Job.class);
-        Run run1 = mockRun(1, "run1");
-        Run run2 = mockRun(2, "run2");
-        Run run3 = mockRun(3, "run3");
+        Job<?, ?> job = mock(Job.class);
+        Run<?, ?> run1 = createRun(1, "run1");
+        Run<?, ?> run2 = createRun(2, "run2");
+        Run<?, ?> run3 = createRun(3, "run3");
 
         CommitStatisticsJobAction commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
         assertThat(commitStatisticsJobAction.isTrendVisible()).isFalse();
 
-        when(job.getLastCompletedBuild()).thenReturn(run1);
-        when(run1.getPreviousBuild()).thenReturn(run2);
-        when(run2.getPreviousBuild()).thenReturn(run3);
+        when(job.getLastCompletedBuild()).thenAnswer(i -> run1);
+        when(run1.getPreviousBuild()).thenAnswer(i -> run2);
+        when(run2.getPreviousBuild()).thenAnswer(i -> run3);
 
         assertThat(commitStatisticsJobAction.isTrendVisible()).isTrue();
     }
 
     @Test
     void shouldReturnBuildTrendModel() {
-        HashMap<String, Object> configurationMap = new HashMap<>();
+        Map<String, Object> configurationMap = new HashMap<>();
         configurationMap.put("buildAsDomain", true);
         configurationMap.put("numberOfBuilds", 50);
         configurationMap.put("numberOfDays", 0);
@@ -52,14 +51,14 @@ class CommitStatisticsJobActionTest {
 
         String configuration = toJson(configurationMap);
 
-        Job job = mock(Job.class);
-        Run run1 = mockRun(1, "run1");
-        Run run2 = mockRun(2, "run2");
-        Run run3 = mockRun(3, "run3");
+        Job<?, ?> job = mock(Job.class);
+        Run<?, ?> run1 = createRun(1, "run1");
+        Run<?, ?> run2 = createRun(2, "run2");
+        Run<?, ?> run3 = createRun(3, "run3");
 
-        when(job.getLastCompletedBuild()).thenReturn(run1);
-        when(run1.getPreviousBuild()).thenReturn(run2);
-        when(run2.getPreviousBuild()).thenReturn(run3);
+        when(job.getLastCompletedBuild()).thenAnswer(i -> run1);
+        when(run1.getPreviousBuild()).thenAnswer(i -> run2);
+        when(run2.getPreviousBuild()).thenAnswer(i -> run3);
 
         CommitStatisticsJobAction commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
         String resultJson = commitStatisticsJobAction.getConfigurableBuildTrendModel(configuration);
@@ -73,8 +72,8 @@ class CommitStatisticsJobActionTest {
                 .asList().containsExactly(1, 2, 3);
     }
 
-    private Run mockRun(final int runNumber, final String displayName) {
-        Run run = mock(Run.class);
+    private Run<?, ?> createRun(final int runNumber, final String displayName) {
+        Run<?, ?> run = mock(Run.class);
         when(run.getNumber()).thenReturn(runNumber);
         when(run.getDisplayName()).thenReturn(displayName);
         when(run.getActions(CommitStatisticsBuildAction.class)).thenReturn(
@@ -85,8 +84,8 @@ class CommitStatisticsJobActionTest {
 
     private Map<String, Object> fromJson(final String json) {
         try {
-            return OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
+            return OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>()
+            {});
         }
         catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
