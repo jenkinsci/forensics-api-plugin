@@ -5,7 +5,6 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-import io.jenkins.plugins.forensics.blame.Blamer;
 import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
 import io.jenkins.plugins.forensics.delta.model.Delta;
 import org.junit.ClassRule;
@@ -28,6 +27,9 @@ import static org.mockito.Mockito.mock;
  */
 public class DeltaCalculatorFactoryITest {
 
+    /**
+     * Jenkins rule per suite.
+     */
     @ClassRule
     public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
 
@@ -36,7 +38,9 @@ public class DeltaCalculatorFactoryITest {
     private static final String EMPTY_FACTORY_NULL_DELTA_CALCULATOR = "EmptyFactory returned NullDeltaCalculator";
     private static final String ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR = "ActualFactory created a DeltaCalculator";
 
-    /** Verifies that a {@link NullDeltaCalculator} will be returned if no suitable delta calculator has been found. */
+    /**
+     * Verifies that a {@link NullDeltaCalculator} will be returned if no suitable delta calculator has been found.
+     */
     @Test
     public void shouldSelectNullDeltaCalculator() {
         FilteredLog log = new FilteredLog("Foo");
@@ -48,7 +52,9 @@ public class DeltaCalculatorFactoryITest {
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
-    /** Verifies that the correct {@link DeltaCalculator} instance is created for the first repository. */
+    /**
+     * Verifies that the correct {@link DeltaCalculator} instance is created for the first repository.
+     */
     @Test
     public void shouldSelectDeltaCalculatorForFirstDirectory() {
         FilteredLog log = new FilteredLog("Foo");
@@ -89,7 +95,7 @@ public class DeltaCalculatorFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public Optional<Delta> calculateDelta(String currentCommitId, String referenceCommitId, FilteredLog logger) {
+        public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId, final FilteredLog logger) {
             return Optional.empty();
         }
     }

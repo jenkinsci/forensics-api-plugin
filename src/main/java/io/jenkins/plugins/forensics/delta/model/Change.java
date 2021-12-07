@@ -29,6 +29,13 @@ public class Change implements Serializable {
      */
     private final int toLine;
 
+    /**
+     * Constructor for an instance which wraps a specific change within a file.
+     *
+     * @param changeEditType The type of the change
+     * @param fromLine       The starting line
+     * @param toLine         The ending line
+     */
     public Change(final ChangeEditType changeEditType, final int fromLine, final int toLine) {
         this.changeEditType = changeEditType;
         this.fromLine = fromLine;
