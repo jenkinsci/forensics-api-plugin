@@ -64,7 +64,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
             logger.logInfo("-> no SCMs found to be processed");
             return new NullDeltaCalculator();
         }
-        return findAllExtensions().stream()
+        return findAllDeltaCalculatorFactoryInstances().stream()
                 .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scms.iterator().next(), run,
                         workTree, listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
@@ -85,7 +85,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
     private static Optional<DeltaCalculator> findDeltaCalculator(final Run<?, ?> run, final FilePath workTree,
                                                                  final TaskListener listener, final FilteredLog logger) {
         SCM scm = new ScmResolver().getScm(run);
-        return findAllExtensions().stream()
+        return findAllDeltaCalculatorFactoryInstances().stream()
                 .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scm, run, workTree,
                         listener, logger))
                 .flatMap(OPTIONAL_MAPPER)
@@ -99,11 +99,12 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      * @return the created delta calculator instance
      */
     private static DeltaCalculator createNullDeltaCalculator(final FilteredLog logger) {
-        if (findAllExtensions().isEmpty()) {
+        if (findAllDeltaCalculatorFactoryInstances().isEmpty()) {
             logger.logInfo(
                     "-> No delta calculator installed yet. "
                             + "You need to install the 'git-forensics' plugin to enable it for Git.");
-        } else {
+        }
+        else {
             logger.logInfo("-> No suitable delta calculator found.");
         }
         return new NullDeltaCalculator();
@@ -114,7 +115,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      *
      * @return all found extensions
      */
-    private static List<DeltaCalculatorFactory> findAllExtensions() {
+    private static List<DeltaCalculatorFactory> findAllDeltaCalculatorFactoryInstances() {
         return new JenkinsFacade().getExtensionsFor(DeltaCalculatorFactory.class);
     }
 

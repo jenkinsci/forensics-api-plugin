@@ -48,7 +48,7 @@ public class FileChanges implements Serializable {
         this.fileName = fileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
-        this.changes = changes;
+        this.changes = new HashMap<>(changes);
     }
 
     public String getFileName() {
@@ -68,9 +68,13 @@ public class FileChanges implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         FileChanges that = (FileChanges) o;
         return Objects.equals(fileName, that.fileName)
                 && Objects.equals(fileContent, that.fileContent)

@@ -1,6 +1,7 @@
 package io.jenkins.plugins.forensics.delta.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A change made on specific lines within a specific file.
@@ -52,5 +53,24 @@ public class Change implements Serializable {
 
     public int getToLine() {
         return toLine;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Change change = (Change) o;
+        return fromLine == change.fromLine
+                && toLine == change.toLine
+                && changeEditType == change.changeEditType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(changeEditType, fromLine, toLine);
     }
 }

@@ -68,17 +68,21 @@ public class Delta implements Serializable {
     }
 
     public Map<String, FileChanges> getFileChanges() {
-        return fileChanges;
+        return new HashMap<>(fileChanges);
     }
 
     public void setFileChanges(final Map<String, FileChanges> fileChanges) {
-        this.fileChanges = fileChanges;
+        this.fileChanges = new HashMap<>(fileChanges);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Delta delta = (Delta) o;
         return Objects.equals(currentCommit, delta.currentCommit)
                 && Objects.equals(referenceCommit, delta.referenceCommit)
