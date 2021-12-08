@@ -69,11 +69,11 @@ public class Delta implements Serializable {
     }
 
     public Map<String, FileChanges> getFileChanges() {
-        return new HashMap<>(fileChanges);
+        return fileChanges;
     }
 
     public void setFileChanges(final Map<String, FileChanges> fileChanges) {
-        this.fileChanges = new HashMap<>(fileChanges);
+        this.fileChanges = fileChanges;
     }
 
     @Override

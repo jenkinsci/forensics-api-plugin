@@ -49,7 +49,7 @@ public class FileChanges implements Serializable {
         this.fileName = fileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
-        this.changes = new HashMap<>(changes);
+        this.changes = changes;
     }
 
     public String getFileName() {
@@ -65,7 +65,7 @@ public class FileChanges implements Serializable {
     }
 
     public Map<ChangeEditType, List<Change>> getChanges() {
-        return new HashMap<>(changes);
+        return changes;
     }
 
     @Override
