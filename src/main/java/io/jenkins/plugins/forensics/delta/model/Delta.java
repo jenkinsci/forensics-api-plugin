@@ -6,10 +6,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Models the code difference - so called 'delta' - between two commits.
+ * Data class that represents the code difference - so called 'delta' - between two commits.
  *
  * @author Florian Orendi
  */
+@SuppressWarnings("PMD.DataClass")
 public class Delta implements Serializable {
 
     private static final long serialVersionUID = 5641235877389921937L;

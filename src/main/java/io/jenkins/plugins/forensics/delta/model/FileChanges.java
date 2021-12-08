@@ -11,6 +11,7 @@ import java.util.Objects;
  *
  * @author Florian Orendi
  */
+@SuppressWarnings("PMD.DataClass")
 public class FileChanges implements Serializable {
 
     private static final long serialVersionUID = 6135245877389921937L;
