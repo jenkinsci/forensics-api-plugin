@@ -15,7 +15,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.assertThat;
  *
  * @author Florian Orendi
  */
-public class DeltaTest {
+class DeltaTest {
 
     private static final String CURRENT_COMMIT_ID = "testIdOne";
     private static final String REFERENCE_COMMIT_ID = "testIdTwo";
