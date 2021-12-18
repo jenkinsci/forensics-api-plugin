@@ -1,6 +1,7 @@
 package io.jenkins.plugins.forensics.delta.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +47,7 @@ public class FileChanges implements Serializable {
         this.fileName = fileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
-        this.changes = changes;
+        this.changes = Collections.unmodifiableMap(changes);
     }
 
     public String getFileName() {
