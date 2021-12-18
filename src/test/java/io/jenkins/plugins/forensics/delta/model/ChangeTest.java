@@ -19,7 +19,7 @@ class ChangeTest {
 
     @Test
     void testChangeGetters() {
-        final Change change = createChange();
+        Change change = createChange();
         assertThat(change.getEditType()).isEqualTo(EDIT_TYPE);
         assertThat(change.getFromLine()).isEqualTo(FROM_LINE);
         assertThat(change.getToLine()).isEqualTo(TO_LINE);

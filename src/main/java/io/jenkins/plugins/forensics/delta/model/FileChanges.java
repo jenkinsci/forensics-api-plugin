@@ -1,10 +1,13 @@
 package io.jenkins.plugins.forensics.delta.model;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Wraps all changes made to one specific file.
@@ -13,6 +16,9 @@ import java.util.Objects;
  */
 @SuppressWarnings("PMD.DataClass")
 public class FileChanges implements Serializable {
+
+    static final String ERROR_MESSAGE_UNKNOWN_CHANGE_TYPE =
+            "No information about changes with the edit type '%s' stored";
 
     private static final long serialVersionUID = 6135245877389921937L;
 
@@ -28,7 +34,7 @@ public class FileChanges implements Serializable {
     /**
      * A map changes made to the file, mapped by the {@link ChangeEditType}.
      */
-    private final Map<ChangeEditType, List<Change>> changes;
+    private final Map<ChangeEditType, Set<Change>> changes;
 
     /**
      * Constructor for an instance which wraps all changes made to a specific file.
@@ -43,11 +49,11 @@ public class FileChanges implements Serializable {
      *         The changes made to the file
      */
     public FileChanges(final String fileName, final String fileContent, final FileEditType fileEditType,
-            final Map<ChangeEditType, List<Change>> changes) {
+            final Map<ChangeEditType, Set<Change>> changes) {
         this.fileName = fileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
-        this.changes = Collections.unmodifiableMap(changes);
+        this.changes = new HashMap<>(changes);
     }
 
     public String getFileName() {
@@ -62,8 +68,42 @@ public class FileChanges implements Serializable {
         return fileEditType;
     }
 
-    public Map<ChangeEditType, List<Change>> getChanges() {
-        return changes;
+    public Map<ChangeEditType, Set<Change>> getChanges() {
+        return new HashMap<>(changes);
+    }
+
+    /**
+     * Returns information about changes of a specified type.
+     *
+     * @param changeEditType
+     *         The edit type
+     *
+     * @return the information about changes of the specified type
+     * @throws NoSuchElementException
+     *         if the file ID is not registered
+     */
+    public Set<Change> getChangesByType(final ChangeEditType changeEditType) {
+        if (changes.containsKey(changeEditType)) {
+            return changes.get(changeEditType);
+        }
+        throw new NoSuchElementException(
+                String.format(ERROR_MESSAGE_UNKNOWN_CHANGE_TYPE, changeEditType));
+    }
+
+    /**
+     * Adds information about a change and stores it according to the type of edit.
+     *
+     * @param change
+     *         The change to be stored
+     */
+    public void addChange(final Change change) {
+        ChangeEditType changeEditType = change.getEditType();
+        if (changes.containsKey(changeEditType)) {
+            changes.get(changeEditType).add(change);
+        }
+        else {
+            changes.put(change.getEditType(), Stream.of(change).collect(Collectors.toSet()));
+        }
     }
 
     @Override

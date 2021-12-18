@@ -2,8 +2,10 @@ package io.jenkins.plugins.forensics.delta.model;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -23,9 +25,44 @@ class DeltaTest {
     @Test
     void testDeltaGetters() {
         Delta delta = createDelta();
+
         assertThat(delta.getCurrentCommit()).isEqualTo(CURRENT_COMMIT_ID);
         assertThat(delta.getReferenceCommit()).isEqualTo(REFERENCE_COMMIT_ID);
-        assertThat(delta.getFileChanges()).isEqualTo(FILE_CHANGES_MAP);
+        assertThat(delta.getFileChangesMap()).isEqualTo(FILE_CHANGES_MAP);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenGettingFileChangesWithUnknownFileId() {
+        Delta delta = createDelta();
+        String fileId = "unknown";
+
+        assertThatExceptionOfType(NoSuchElementException.class)
+                .isThrownBy(() -> delta.getFileChangesById(fileId))
+                .withMessage(Delta.ERROR_MESSAGE_UNKNOWN_FILE, fileId);
+    }
+
+    @Test
+    void shouldAddFileChanges() {
+        Delta delta = createDelta();
+
+        assertThat(delta.getFileChangesMap()).isEmpty();
+
+        String fileIdOne = "id1";
+        FileChanges fileChangesOne = Mockito.mock(FileChanges.class);
+        FileChanges fileChangesTwo = Mockito.mock(FileChanges.class);
+
+        delta.addFileChanges(fileIdOne, fileChangesOne);
+
+        assertThat(delta.getFileChangesMap().size()).isEqualTo(1);
+        assertThat(delta.getFileChangesMap()).containsKey(fileIdOne);
+        assertThat(delta.getFileChangesById(fileIdOne)).isEqualTo(fileChangesOne);
+
+        // adds different changes for the same file
+        delta.addFileChanges(fileIdOne, fileChangesTwo);
+
+        assertThat(delta.getFileChangesMap().size()).isEqualTo(1);
+        assertThat(delta.getFileChangesMap()).containsKey(fileIdOne);
+        assertThat(delta.getFileChangesById(fileIdOne)).isEqualTo(fileChangesTwo);
     }
 
     @Test
