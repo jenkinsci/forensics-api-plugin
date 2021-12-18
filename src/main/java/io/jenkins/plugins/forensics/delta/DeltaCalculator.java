@@ -1,10 +1,11 @@
 package io.jenkins.plugins.forensics.delta;
 
-import edu.hm.hafner.util.FilteredLog;
-import io.jenkins.plugins.forensics.delta.model.Delta;
-
 import java.io.Serializable;
 import java.util.Optional;
+
+import edu.hm.hafner.util.FilteredLog;
+
+import io.jenkins.plugins.forensics.delta.model.Delta;
 
 /**
  * Calculates the code difference - so called 'delta' - between two commits.
@@ -18,12 +19,17 @@ public abstract class DeltaCalculator implements Serializable {
     /**
      * Calculates the {@link Delta} between two passed commits.
      *
-     * @param currentCommitId   The currently processed commit ID
-     * @param referenceCommitId The reference commit ID
-     * @param logger            The used log
+     * @param currentCommitId
+     *         The currently processed commit ID
+     * @param referenceCommitId
+     *         The reference commit ID
+     * @param logger
+     *         The used log
+     *
      * @return the delta if it could be calculated
      */
-    public abstract Optional<Delta> calculateDelta(String currentCommitId, String referenceCommitId, FilteredLog logger);
+    public abstract Optional<Delta> calculateDelta(String currentCommitId, String referenceCommitId,
+            FilteredLog logger);
 
     /**
      * A delta calculator that does nothing.
@@ -34,7 +40,7 @@ public abstract class DeltaCalculator implements Serializable {
 
         @Override
         public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId,
-                                              final FilteredLog logger) {
+                final FilteredLog logger) {
             return Optional.empty();
         }
     }

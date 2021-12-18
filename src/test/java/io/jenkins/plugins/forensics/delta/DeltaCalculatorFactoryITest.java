@@ -1,24 +1,26 @@
 package io.jenkins.plugins.forensics.delta;
 
-import edu.hm.hafner.util.FilteredLog;
-import hudson.FilePath;
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import hudson.scm.SCM;
-import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
-import io.jenkins.plugins.forensics.delta.model.Delta;
+import java.util.Collection;
+import java.util.Optional;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
-import java.util.Collection;
-import java.util.Optional;
+import edu.hm.hafner.util.FilteredLog;
 
-import static io.jenkins.plugins.forensics.assertions.Assertions.assertThat;
-import static io.jenkins.plugins.util.PathStubs.asSourceDirectories;
-import static io.jenkins.plugins.util.PathStubs.createWorkspace;
-import static org.mockito.Mockito.mock;
+import hudson.FilePath;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import hudson.scm.SCM;
+
+import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
+import io.jenkins.plugins.forensics.delta.model.Delta;
+
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.util.PathStubs.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the class {@link DeltaCalculatorFactory}.
@@ -48,7 +50,8 @@ public class DeltaCalculatorFactoryITest {
 
         assertThat(nullCalculator).isInstanceOf(NullDeltaCalculator.class);
         assertThat(nullCalculator.calculateDelta("", "", log)).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_DELTA_CALCULATOR_FOUND, ACTUAL_FACTORY_NULL_DELTA_CALCULATOR, EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
+        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_DELTA_CALCULATOR_FOUND,
+                ACTUAL_FACTORY_NULL_DELTA_CALCULATOR, EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
@@ -67,17 +70,19 @@ public class DeltaCalculatorFactoryITest {
     }
 
     /**
-     * Verifies that correct {@link DeltaCalculator} instance is created for the second repository. (The first repository does
-     * return a {@link NullDeltaCalculator}.
+     * Verifies that correct {@link DeltaCalculator} instance is created for the second repository. (The first
+     * repository does return a {@link NullDeltaCalculator}.
      */
     @Test
     public void shouldSelectDeltaCalculatorForSecondDirectory() {
         FilteredLog log = new FilteredLog("Foo");
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
-        DeltaCalculator testDeltaSecondMatch = DeltaCalculatorFactory.findDeltaCalculator(mock(Run.class), directories, TaskListener.NULL, log);
+        DeltaCalculator testDeltaSecondMatch = DeltaCalculatorFactory.findDeltaCalculator(mock(Run.class), directories,
+                TaskListener.NULL, log);
         assertThat(log.getErrorMessages()).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_DELTA_CALCULATOR, ACTUAL_FACTORY_NULL_DELTA_CALCULATOR,
+        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_DELTA_CALCULATOR,
+                ACTUAL_FACTORY_NULL_DELTA_CALCULATOR,
                 ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR);
 
         assertThat(testDeltaSecondMatch).isInstanceOf(TestDeltaCalculator.class);
@@ -95,7 +100,8 @@ public class DeltaCalculatorFactoryITest {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId, final FilteredLog logger) {
+        public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId,
+                final FilteredLog logger) {
             return Optional.empty();
         }
     }
@@ -107,8 +113,9 @@ public class DeltaCalculatorFactoryITest {
     @SuppressWarnings("unused")
     public static class EmptyFactory extends DeltaCalculatorFactory {
         @Override
-        public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run, final FilePath workspace,
-                                                               final TaskListener listener, final FilteredLog logger) {
+        public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run,
+                final FilePath workspace,
+                final TaskListener listener, final FilteredLog logger) {
             logger.logInfo(EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
             return Optional.empty();
         }
@@ -122,7 +129,7 @@ public class DeltaCalculatorFactoryITest {
     public static class ActualFactory extends DeltaCalculatorFactory {
         @Override
         public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run,
-                                                               final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
+                final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
                 logger.logInfo(ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR);
                 return Optional.of(new DeltaCalculatorFactoryITest.TestDeltaCalculator());

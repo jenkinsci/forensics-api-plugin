@@ -1,9 +1,10 @@
 package io.jenkins.plugins.forensics.delta.model;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static io.jenkins.plugins.forensics.assertions.Assertions.assertThat;
+import nl.jqno.equalsverifier.EqualsVerifier;
+
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 /**
  * Tests the class {@link Change}.
@@ -16,24 +17,25 @@ class ChangeTest {
     private static final int FROM_LINE = 1;
     private static final int TO_LINE = 3;
 
-    private static Change change;
-
-    @BeforeAll
-    static void init() {
-        change = new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
-    }
-
     @Test
     void testChangeGetters() {
+        final Change change = createChange();
         assertThat(change.getEditType()).isEqualTo(EDIT_TYPE);
         assertThat(change.getFromLine()).isEqualTo(FROM_LINE);
         assertThat(change.getToLine()).isEqualTo(TO_LINE);
     }
 
     @Test
-    void testChangeSetters() {
-        Change changeTwo = new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
+    void shouldObeyEqualsContract() {
+        EqualsVerifier.simple().forClass(Change.class).verify();
+    }
 
-        assertThat(change).isEqualTo(changeTwo);
+    /**
+     * Factory method which creates an instance of {@link Change}.
+     *
+     * @return the created instance
+     */
+    private Change createChange() {
+        return new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
     }
 }

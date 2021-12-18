@@ -15,14 +15,8 @@ public class FileChanges implements Serializable {
 
     private static final long serialVersionUID = 6135245877389921937L;
 
-    /**
-     * The file name.
-     */
     private final String fileName;
 
-    /**
-     * The new file content.
-     */
     private final String fileContent;
 
     /**
@@ -38,13 +32,17 @@ public class FileChanges implements Serializable {
     /**
      * Constructor for an instance which wraps all changes made to a specific file.
      *
-     * @param fileName     The name of the file
-     * @param fileContent  The content of the file
-     * @param fileEditType The change type how the file has been affected
-     * @param changes      The changes made to the file
+     * @param fileName
+     *         The name of the file
+     * @param fileContent
+     *         The content of the file
+     * @param fileEditType
+     *         The change type how the file has been affected
+     * @param changes
+     *         The changes made to the file
      */
     public FileChanges(final String fileName, final String fileContent, final FileEditType fileEditType,
-                       final Map<ChangeEditType, List<Change>> changes) {
+            final Map<ChangeEditType, List<Change>> changes) {
         this.fileName = fileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
