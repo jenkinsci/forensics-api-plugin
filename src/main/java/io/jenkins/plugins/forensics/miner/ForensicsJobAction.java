@@ -9,7 +9,9 @@ import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LinesChartModel;
+import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import hudson.model.Job;
 import hudson.model.Run;
@@ -41,21 +43,24 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
 
     @Override
     protected Iterable<? extends BuildResult<ForensicsBuildAction>> createBuildHistory() {
-        return () -> {
-            Predicate<ForensicsBuildAction> predicate = a -> scmKey.equals(a.getScmKey());
-            Run<?, ?> lastCompletedBuild = getOwner().getLastCompletedBuild();
-            Optional<ForensicsBuildAction> latestAction;
-            if (lastCompletedBuild == null) {
-                latestAction = Optional.empty();
-            }
-            else {
-                latestAction = lastCompletedBuild.getActions(ForensicsBuildAction.class)
-                        .stream()
-                        .filter(predicate)
-                        .findAny();
-            }
-            return new BuildActionIterator<>(ForensicsBuildAction.class, latestAction, predicate);
-        };
+        return this::createIterator;
+    }
+
+    @NonNull @VisibleForTesting
+    BuildActionIterator<ForensicsBuildAction> createIterator() {
+        Predicate<ForensicsBuildAction> predicate = a -> scmKey.equals(a.getScmKey());
+        Run<?, ?> lastCompletedBuild = getOwner().getLastCompletedBuild();
+        Optional<ForensicsBuildAction> latestAction;
+        if (lastCompletedBuild == null) {
+            latestAction = Optional.empty();
+        }
+        else {
+            latestAction = lastCompletedBuild.getActions(ForensicsBuildAction.class)
+                    .stream()
+                    .filter(predicate)
+                    .findAny();
+        }
+        return new BuildActionIterator<>(ForensicsBuildAction.class, latestAction, predicate);
     }
 
     @Override

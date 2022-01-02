@@ -61,7 +61,6 @@ class ReferenceJobModelValidationTest {
         assertThat(model.validateJob("other").kind).isEqualTo(Kind.ERROR);
     }
 
-
     @Test
     void shouldContainSingleElementAndPlaceHolder() {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
