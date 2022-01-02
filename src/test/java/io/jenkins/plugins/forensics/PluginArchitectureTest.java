@@ -55,12 +55,10 @@ class PluginArchitectureTest {
     static final ArchRule USE_POST_FOR_LIST_AND_COMBOBOX_FILL = PluginArchitectureRules.USE_POST_FOR_LIST_AND_COMBOBOX_FILL;
 
     /** Test classes should not use Junit 4. */
-    // TODO: see https://github.com/TNG/ArchUnit/issues/136
     @ArchTest
     static final ArchRule NO_JUNIT_4 =
             noClasses().that(doNot(
                     have(simpleNameEndingWith("ITest"))
-                            .or(have(simpleNameStartingWith("Integration")))
-                            .or(have(simpleName("ToolsLister")))))
+                            .or(have(simpleNameStartingWith("Integration")))))
                     .should().dependOnClassesThat().resideInAnyPackage("org.junit");
 }
