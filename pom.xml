@@ -139,6 +139,38 @@
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <failBuildOnProblemsFound>true</failBuildOnProblemsFound>
+          <versionFormat>[-0-9._]*</versionFormat>
+          <analysisConfiguration>
+            <revapi.semver.ignore>
+              <enabled>true</enabled>
+            </revapi.semver.ignore>
+            <revapi.differences>
+              <justification>Shaded artefacts are not part of the public API</justification>
+              <criticality>allowed</criticality>
+              <differences combine.children="append">
+                <item>
+                  <regex>true</regex>
+                  <code>java.annotation.*</code>
+                  <annotation>@edu.umd.cs.findbugs.annotations.*</annotation>
+                  <justification>Annotation should be save to change.</justification>
+                </item>
+                <item>
+                  <code>java.method.nowFinal</code>
+                  <classSimpleName>ForensicsBuildAction</classSimpleName>
+                  <method>createXmlStream</method>
+                  <justification>This method is not intended to be overwritten</justification>
+                </item>
+              </differences>
+            </revapi.differences>
+          </analysisConfiguration>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 
