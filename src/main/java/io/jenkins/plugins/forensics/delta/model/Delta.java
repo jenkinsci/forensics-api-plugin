@@ -76,7 +76,7 @@ public class Delta implements Serializable {
     /**
      * Adds information about changes made to the specified file.
      *
-     * If there are already information about changes to the specified file, the old information will be overwritten by
+     * <p>If there are already information about changes to the specified file, the old information will be overwritten by
      * the new one.
      *
      * @param fileId
