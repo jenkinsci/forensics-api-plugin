@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * A change made on specific lines within a specific file.
- * <p>
+ *
  * The lines are defined by a starting and an ending point (1-based line counter), describing the made changes within
  * the new version of the file. In case of a deleted file, the line range describes the deleted lines within the old
  * version of the file, since only then it is possible to determine what has been deleted.
