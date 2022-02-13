@@ -2,7 +2,6 @@ package io.jenkins.plugins.forensics.delta.model;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -39,20 +38,14 @@ class FileChangesTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenGettingChangesOfUnknownType() {
-        FileChanges fileChanges = createFileChanges();
-        assertThatExceptionOfType(NoSuchElementException.class)
-                .isThrownBy(() -> fileChanges.getChangesByType(ChangeEditType.UNDEFINED))
-                .withMessage(FileChanges.ERROR_MESSAGE_UNKNOWN_CHANGE_TYPE, ChangeEditType.UNDEFINED);
-    }
-
-    @Test
     void shouldAddChange() {
         FileChanges fileChanges = createFileChanges();
 
-        assertThat(fileChanges.getChanges()).isEmpty();
-
         ChangeEditType changeEditType = ChangeEditType.REPLACE;
+
+        assertThat(fileChanges.getChanges()).isEmpty();
+        assertThat(fileChanges.getChangesByType(changeEditType)).isEmpty();
+
         Change change = Mockito.mock(Change.class);
         Mockito.when(change.getEditType()).thenReturn(changeEditType);
 

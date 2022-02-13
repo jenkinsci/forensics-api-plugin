@@ -2,8 +2,8 @@ package io.jenkins.plugins.forensics.delta.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,9 +16,6 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("PMD.DataClass")
 public class FileChanges implements Serializable {
-
-    static final String ERROR_MESSAGE_UNKNOWN_CHANGE_TYPE =
-            "No information about changes with the edit type '%s' stored";
 
     private static final long serialVersionUID = 6135245877389921937L;
 
@@ -79,15 +76,12 @@ public class FileChanges implements Serializable {
      *         The edit type
      *
      * @return the information about changes of the specified type
-     * @throws NoSuchElementException
-     *         if the file ID is not registered
      */
     public Set<Change> getChangesByType(final ChangeEditType changeEditType) {
         if (changes.containsKey(changeEditType)) {
             return changes.get(changeEditType);
         }
-        throw new NoSuchElementException(
-                String.format(ERROR_MESSAGE_UNKNOWN_CHANGE_TYPE, changeEditType));
+        return new HashSet<>();
     }
 
     /**
