@@ -3,7 +3,7 @@ package io.jenkins.plugins.forensics.reference;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
 
@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.*;
  *
  * @author Ullrich Hafner
  */
-public class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
+class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     /** Ensures that an error is shown if the publisher has been registered with an invalid configuration. */
     @Test
-    public void shouldReportErrorBecauseReferenceJobIsUndefined() {
+    void shouldReportErrorBecauseReferenceJobIsUndefined() {
         FreeStyleProject job = createJob(StringUtils.EMPTY);
 
         Run<?, ?> build = buildSuccessfully(job);
@@ -34,7 +34,7 @@ public class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerS
 
     /** Finds the reference build in the selected job. */
     @Test
-    public void shouldFindReferenceBuild() {
+    void shouldFindReferenceBuild() {
         FreeStyleProject reference = createFreeStyleProject();
         Run<?, ?> baseline = buildSuccessfully(reference);
 
@@ -46,7 +46,7 @@ public class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerS
 
     /** Uses the latest of two builds as reference build. */
     @Test
-    public void shouldUseLatestReferenceBuild() {
+    void shouldUseLatestReferenceBuild() {
         FreeStyleProject reference = createFreeStyleProject();
         buildSuccessfully(reference); // first build is ignored
         Run<?, ?> baseline = buildSuccessfully(reference);
@@ -59,7 +59,7 @@ public class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerS
 
     /** Finds the reference build in the selected job. */
     @Test
-    public void shouldFindNoReferenceBuild() {
+    void shouldFindNoReferenceBuild() {
         FreeStyleProject reference = createFreeStyleProject();
 
         FreeStyleProject job = createJob(reference.getName());
