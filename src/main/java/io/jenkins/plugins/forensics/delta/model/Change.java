@@ -6,9 +6,9 @@ import java.util.Objects;
 /**
  * A change made on specific lines within a specific file.
  *
- * <p>The lines are defined by a starting and an ending point (1-based line counter), describing the made changes within
- * the new version of the file. In case of a deleted file, the line range describes the deleted lines within the old
- * version of the file, since only then it is possible to determine what has been deleted.
+ * <p>The interval of lines which contain the change is defined by a starting and an ending point (1-based line
+ * counter). Also, the lines of the file before the change has been inserted is specified by a starting and an ending
+ * point, as already described, in order to be able to determine removed lines for example.
  *
  * @author Florian Orendi
  */
@@ -20,16 +20,28 @@ public class Change implements Serializable {
     private final ChangeEditType changeEditType;
 
     /**
-     * The starting point of the change (1-based).
+     * The included starting point of the lines which will be affected by this change (1-based).
+     */
+    private int changedFromLine = 0; // since 1.9.0
+    /**
+     * The included ending point of the lines which will be affected by this change (1-based).
+     */
+    private int changedToLine = 0; // since 1.9.0
+
+    /**
+     * The included starting point of the lines which contain the change (1-based).
      */
     private final int fromLine;
     /**
-     * The ending point of the change (1-based).
+     * The included ending point of the lines which contain the change (1-based).
      */
     private final int toLine;
 
     /**
      * Constructor for an instance which wraps a specific change within a file.
+     *
+     * <p>This constructor is deprecated since it does not initialize the interval which provides the information about
+     * which lines of the original file has been affected by the change. This interval will be initialized with '0'.
      *
      * @param changeEditType
      *         The type of the change
@@ -44,8 +56,39 @@ public class Change implements Serializable {
         this.toLine = toLine;
     }
 
+    /**
+     * Constructor for an instance which wraps a specific change within a file.
+     *
+     * @param changeEditType
+     *         The type of the change
+     * @param changedFromLine
+     *         The starting line of the lines which are affected by the change
+     * @param changedToLine
+     *         The ending line of the lines which are affected by the change
+     * @param fromLine
+     *         The starting line of the inserted change
+     * @param toLine
+     *         The ending line of the inserted change
+     */
+    public Change(final ChangeEditType changeEditType, final int changedFromLine, final int changedToLine,
+            final int fromLine, final int toLine) {
+        this.changeEditType = changeEditType;
+        this.changedFromLine = changedFromLine;
+        this.changedToLine = changedToLine;
+        this.fromLine = fromLine;
+        this.toLine = toLine;
+    }
+
     public ChangeEditType getEditType() {
         return changeEditType;
+    }
+
+    public int getChangedFromLine() {
+        return changedFromLine;
+    }
+
+    public int getChangedToLine() {
+        return changedToLine;
     }
 
     public int getFromLine() {
@@ -54,6 +97,17 @@ public class Change implements Serializable {
 
     public int getToLine() {
         return toLine;
+    }
+
+    /**
+     * Called after de-serialization to retain backward compatibility.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        changedFromLine = 0;
+        changedToLine = 0;
+        return this;
     }
 
     @Override
@@ -65,13 +119,12 @@ public class Change implements Serializable {
             return false;
         }
         Change change = (Change) o;
-        return fromLine == change.fromLine
-                && toLine == change.toLine
-                && changeEditType == change.changeEditType;
+        return changedFromLine == change.changedFromLine && changedToLine == change.changedToLine
+                && fromLine == change.fromLine && toLine == change.toLine && changeEditType == change.changeEditType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(changeEditType, fromLine, toLine);
+        return Objects.hash(changeEditType, changedFromLine, changedToLine, fromLine, toLine);
     }
 }
