@@ -6,9 +6,9 @@ import java.util.Objects;
 /**
  * A change made on specific lines within a specific file.
  *
- * <p>The interval of lines which contain the change is defined by a starting and an ending point (1-based line
- * counter). Also, the lines of the file before the change has been inserted is specified by a starting and an ending
- * point, as already described, in order to be able to determine removed lines for example.
+ * <p>The interval of lines which contains the change is defined by a starting and an ending point (1-based line
+ * counter). Also, the affected lines of the file before the change has been inserted are specified by a starting and an
+ * ending point, as already described, in order to be able to determine removed lines for example.
  *
  * @author Florian Orendi
  */
@@ -97,17 +97,6 @@ public class Change implements Serializable {
 
     public int getToLine() {
         return toLine;
-    }
-
-    /**
-     * Called after de-serialization to retain backward compatibility.
-     *
-     * @return this
-     */
-    protected Object readResolve() {
-        changedFromLine = 0;
-        changedToLine = 0;
-        return this;
     }
 
     @Override
