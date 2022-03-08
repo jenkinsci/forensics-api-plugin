@@ -20,13 +20,20 @@ class ChangeTest {
     private static final int TO_LINE = 3;
 
     @Test
-    void testChangeGetters() {
+    void shouldHaveWorkingGetters() {
         Change change = createChange();
         assertThat(change.getEditType()).isEqualTo(EDIT_TYPE);
         assertThat(change.getChangedFromLine()).isEqualTo(CHANGED_FROM_LINE);
         assertThat(change.getChangedToLine()).isEqualTo(CHANGED_TO_LINE);
         assertThat(change.getFromLine()).isEqualTo(FROM_LINE);
         assertThat(change.getToLine()).isEqualTo(TO_LINE);
+    }
+
+    @Test
+    void shouldInitializeChangedLinesPerDefault() {
+        Change change = new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
+        assertThat(change.getChangedFromLine()).isEqualTo(0);
+        assertThat(change.getChangedToLine()).isEqualTo(0);
     }
 
     @Test
