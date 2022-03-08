@@ -50,6 +50,7 @@ public class Change implements Serializable {
      * @param toLine
      *         The ending line
      */
+    @Deprecated
     public Change(final ChangeEditType changeEditType, final int fromLine, final int toLine) {
         this.changeEditType = changeEditType;
         this.fromLine = fromLine;
