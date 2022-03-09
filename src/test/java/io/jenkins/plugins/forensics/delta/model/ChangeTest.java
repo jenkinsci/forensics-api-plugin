@@ -22,18 +22,18 @@ class ChangeTest {
     @Test
     void shouldHaveWorkingGetters() {
         Change change = createChange();
-        assertThat(change.getEditType()).isEqualTo(EDIT_TYPE);
-        assertThat(change.getChangedFromLine()).isEqualTo(CHANGED_FROM_LINE);
-        assertThat(change.getChangedToLine()).isEqualTo(CHANGED_TO_LINE);
-        assertThat(change.getFromLine()).isEqualTo(FROM_LINE);
-        assertThat(change.getToLine()).isEqualTo(TO_LINE);
+        assertThat(change).hasEditType(EDIT_TYPE);
+        assertThat(change).hasChangedFromLine(CHANGED_FROM_LINE);
+        assertThat(change).hasChangedToLine(CHANGED_TO_LINE);
+        assertThat(change).hasFromLine(FROM_LINE);
+        assertThat(change).hasToLine(TO_LINE);
     }
 
     @Test
     void shouldInitializeChangedLinesPerDefault() {
         Change change = new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
-        assertThat(change.getChangedFromLine()).isEqualTo(0);
-        assertThat(change.getChangedToLine()).isEqualTo(0);
+        assertThat(change).hasChangedFromLine(0);
+        assertThat(change).hasChangedToLine(0);
     }
 
     @Test

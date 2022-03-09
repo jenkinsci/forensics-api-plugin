@@ -53,9 +53,7 @@ public class Change implements Serializable {
      */
     @Deprecated
     public Change(final ChangeEditType changeEditType, final int fromLine, final int toLine) {
-        this.changeEditType = changeEditType;
-        this.fromLine = fromLine;
-        this.toLine = toLine;
+        this(changeEditType, 0, 0, fromLine, toLine);
     }
 
     /**
