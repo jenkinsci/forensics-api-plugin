@@ -14,15 +14,26 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 class ChangeTest {
 
     private static final ChangeEditType EDIT_TYPE = ChangeEditType.INSERT;
+    private static final int CHANGED_FROM_LINE = 1;
+    private static final int CHANGED_TO_LINE = 1;
     private static final int FROM_LINE = 1;
     private static final int TO_LINE = 3;
 
     @Test
-    void testChangeGetters() {
+    void shouldHaveWorkingGetters() {
         Change change = createChange();
-        assertThat(change.getEditType()).isEqualTo(EDIT_TYPE);
-        assertThat(change.getFromLine()).isEqualTo(FROM_LINE);
-        assertThat(change.getToLine()).isEqualTo(TO_LINE);
+        assertThat(change).hasEditType(EDIT_TYPE);
+        assertThat(change).hasChangedFromLine(CHANGED_FROM_LINE);
+        assertThat(change).hasChangedToLine(CHANGED_TO_LINE);
+        assertThat(change).hasFromLine(FROM_LINE);
+        assertThat(change).hasToLine(TO_LINE);
+    }
+
+    @Test
+    void shouldInitializeChangedLinesPerDefault() {
+        Change change = new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
+        assertThat(change).hasChangedFromLine(0);
+        assertThat(change).hasChangedToLine(0);
     }
 
     @Test
@@ -36,6 +47,6 @@ class ChangeTest {
      * @return the created instance
      */
     private Change createChange() {
-        return new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
+        return new Change(EDIT_TYPE, CHANGED_FROM_LINE, CHANGED_TO_LINE, FROM_LINE, TO_LINE);
     }
 }
