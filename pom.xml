@@ -160,10 +160,10 @@
                   <justification>Annotation should be save to change.</justification>
                 </item>
                 <item>
-                  <code>java.method.nowFinal</code>
-                  <classSimpleName>ForensicsBuildAction</classSimpleName>
-                  <method>createXmlStream</method>
-                  <justification>This method is not intended to be overwritten</justification>
+                  <regex>true</regex>
+                  <code>java.class.externalClassExposedInAPI</code>
+                  <package>io.jenkins.plugins.datatables.*</package>
+                  <justification>Datatables are used in dependent plugins as well.</justification>
                 </item>
                 <item>
                   <code>java.field.serialVersionUIDUnchanged</code>
