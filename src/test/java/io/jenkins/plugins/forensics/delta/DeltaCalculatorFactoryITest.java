@@ -50,6 +50,7 @@ public class DeltaCalculatorFactoryITest {
 
         assertThat(nullCalculator).isInstanceOf(NullDeltaCalculator.class);
         assertThat(nullCalculator.calculateDelta("", "", log)).isEmpty();
+        assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), log)).isEmpty();
         assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_DELTA_CALCULATOR_FOUND,
                 ACTUAL_FACTORY_NULL_DELTA_CALCULATOR, EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
         assertThat(log.getErrorMessages()).isEmpty();
@@ -101,6 +102,12 @@ public class DeltaCalculatorFactoryITest {
 
         @Override
         public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId,
+                final FilteredLog logger) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
                 final FilteredLog logger) {
             return Optional.empty();
         }

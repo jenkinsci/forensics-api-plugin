@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import edu.hm.hafner.util.FilteredLog;
 
+import hudson.model.Run;
+
 import io.jenkins.plugins.forensics.delta.model.Delta;
 
 /**
@@ -32,6 +34,21 @@ public abstract class DeltaCalculator implements Serializable {
             FilteredLog logger);
 
     /**
+     * Calculates the {@link Delta} between two passed Jenkins builds.
+     *
+     * @param build
+     *         The currently processed build
+     * @param referenceBuild
+     *         The reference build
+     * @param logger
+     *         The used log
+     *
+     * @return the delta if it could be calculated
+     */
+    public abstract Optional<Delta> calculateDelta(Run<?, ?> build, Run<?, ?> referenceBuild,
+            FilteredLog logger);
+
+    /**
      * A delta calculator that does nothing.
      */
     public static class NullDeltaCalculator extends DeltaCalculator {
@@ -40,6 +57,12 @@ public abstract class DeltaCalculator implements Serializable {
 
         @Override
         public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId,
+                final FilteredLog logger) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
                 final FilteredLog logger) {
             return Optional.empty();
         }
