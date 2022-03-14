@@ -170,6 +170,12 @@
                   <classSimpleName>Change</classSimpleName>
                   <justification>This API is not finally in use yet.</justification>
                 </item>
+                <item>
+                  <code>java.method.abstractMethodAdded</code>
+                  <classSimpleName>DeltaCalculator</classSimpleName>
+                  <method>calculateDelta</method>
+                  <justification>The new method is required when no commit IDs are accessible.</justification>
+                </item>
               </differences>
             </revapi.differences>
           </analysisConfiguration>
