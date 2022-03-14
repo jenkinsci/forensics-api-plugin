@@ -171,10 +171,18 @@
                   <justification>This API is not finally in use yet.</justification>
                 </item>
                 <item>
-                  <code>java.method.abstractMethodAdded</code>
-                  <classSimpleName>DeltaCalculator</classSimpleName>
-                  <method>calculateDelta</method>
-                  <justification>The new method is required when no commit IDs are accessible.</justification>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <package>io.jenkins.plugins.forensics.delta</package>
+                  <methodName>calculateDelta</methodName>
+                  <justification>The additional parameter is required for calculating the code delta.</justification>
+                </item>
+                <item>
+                  <code>java.method.removed</code>
+                  <package>io.jenkins.plugins.forensics.delta</package>
+                  <methodName>calculateDelta</methodName>
+                  <justification>
+                    The removed methods are not required any more for calculating the code delta.
+                  </justification>
                 </item>
               </differences>
             </revapi.differences>
