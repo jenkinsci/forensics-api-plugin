@@ -18,7 +18,7 @@
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>1.10.0</revision>
+    <revision>1.13.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
@@ -192,6 +192,20 @@
                   <code>java.field.serialVersionUIDUnchanged</code>
                   <classSimpleName>Change</classSimpleName>
                   <justification>This API is not finally in use yet.</justification>
+                </item>
+                <item>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <package>io.jenkins.plugins.forensics.delta</package>
+                  <methodName>calculateDelta</methodName>
+                  <justification>The additional parameter is required for calculating the code delta.</justification>
+                </item>
+                <item>
+                  <code>java.method.removed</code>
+                  <package>io.jenkins.plugins.forensics.delta</package>
+                  <methodName>calculateDelta</methodName>
+                  <justification>
+                    The removed methods are not required any more for calculating the code delta.
+                  </justification>
                 </item>
               </differences>
             </revapi.differences>

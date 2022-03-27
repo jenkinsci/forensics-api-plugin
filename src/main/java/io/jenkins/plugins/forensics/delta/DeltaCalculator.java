@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import edu.hm.hafner.util.FilteredLog;
 
+import hudson.model.Run;
+
 import io.jenkins.plugins.forensics.delta.model.Delta;
 
 /**
@@ -17,19 +19,21 @@ public abstract class DeltaCalculator implements Serializable {
     private static final long serialVersionUID = 8641535877389921937L;
 
     /**
-     * Calculates the {@link Delta} between two passed commits.
+     * Calculates the {@link Delta} between two passed Jenkins builds.
      *
-     * @param currentCommitId
-     *         The currently processed commit ID
-     * @param referenceCommitId
-     *         The reference commit ID
+     * @param build
+     *         The currently processed build
+     * @param referenceBuild
+     *         The reference build
+     * @param scmKeyFilter
+     *         The SCM key filter
      * @param logger
      *         The used log
      *
      * @return the delta if it could be calculated
      */
-    public abstract Optional<Delta> calculateDelta(String currentCommitId, String referenceCommitId,
-            FilteredLog logger);
+    public abstract Optional<Delta> calculateDelta(Run<?, ?> build, Run<?, ?> referenceBuild,
+            String scmKeyFilter, FilteredLog logger);
 
     /**
      * A delta calculator that does nothing.
@@ -39,8 +43,8 @@ public abstract class DeltaCalculator implements Serializable {
         private static final long serialVersionUID = 1564285974889709821L;
 
         @Override
-        public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId,
-                final FilteredLog logger) {
+        public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
+                final String scmKeyFilter, final FilteredLog logger) {
             return Optional.empty();
         }
     }

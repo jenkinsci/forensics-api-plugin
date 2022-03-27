@@ -39,7 +39,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         DeltaCalculator nullCalculator = createDeltaCalculator("/", log);
 
         assertThat(nullCalculator).isInstanceOf(NullDeltaCalculator.class);
-        assertThat(nullCalculator.calculateDelta("", "", log)).isEmpty();
+        assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), "", log)).isEmpty();
         assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_DELTA_CALCULATOR_FOUND,
                 ACTUAL_FACTORY_NULL_DELTA_CALCULATOR, EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
         assertThat(log.getErrorMessages()).isEmpty();
@@ -88,8 +88,8 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
-        public Optional<Delta> calculateDelta(final String currentCommitId, final String referenceCommitId,
-                final FilteredLog logger) {
+        public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
+                final String scmFilterKey, final FilteredLog logger) {
             return Optional.empty();
         }
     }
