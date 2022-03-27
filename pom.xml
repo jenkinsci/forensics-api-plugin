@@ -28,7 +28,7 @@
     <testcontainers.version>1.16.3</testcontainers.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
-    <plugin-util-api.version>2.16.0-rc487.cf16c8a3f51d</plugin-util-api.version>
+    <plugin-util-api.version>2.16.0-rc493.d2183b061b77</plugin-util-api.version>
     <data-tables-api.version>1.11.4-3</data-tables-api.version>
     <jquery3-api.version>3.6.0-2</jquery3-api.version>
     <font-awesome-api.version>6.0.0-1</font-awesome-api.version>
