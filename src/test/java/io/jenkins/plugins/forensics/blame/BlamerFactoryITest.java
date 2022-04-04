@@ -3,9 +3,7 @@ package io.jenkins.plugins.forensics.blame;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import edu.hm.hafner.util.FilteredLog;
@@ -17,6 +15,7 @@ import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
 import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
+import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static io.jenkins.plugins.util.PathStubs.*;
@@ -27,11 +26,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Ullrich Hafner
  */
-public class BlamerFactoryITest {
-    /** Jenkins rule per suite. */
-    @ClassRule
-    public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
-
+class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     private static final String FILE_NAME = "file";
     private static final String NO_SUITABLE_BLAMER_FOUND = "-> No suitable blamer found.";
     private static final String ACTUAL_FACTORY_NULL_BLAMER = "ActualFactory returned NullBlamer";
@@ -40,7 +35,7 @@ public class BlamerFactoryITest {
 
     /** Verifies that a {@link NullBlamer} will be returned if no suitable blamer has been found. */
     @Test
-    public void shouldSelectNullBlamer() {
+    void shouldSelectNullBlamer() {
         FilteredLog log = new FilteredLog("Foo");
         Blamer nullBlamer = createBlamer("/", log);
 
@@ -52,7 +47,7 @@ public class BlamerFactoryITest {
 
     /** Verifies that the correct {@link Blamer} instance is created for the first repository. */
     @Test
-    public void shouldSelectBlamerForFirstDirectory() {
+    void shouldSelectBlamerForFirstDirectory() {
         FilteredLog log = new FilteredLog("Foo");
         Blamer testBlamer = createBlamer("/test", log);
 
@@ -69,7 +64,7 @@ public class BlamerFactoryITest {
      * return a {@link NullBlamer}.
      */
     @Test
-    public void shouldSelectBlamerForSecondDirectory() {
+    void shouldSelectBlamerForSecondDirectory() {
         FilteredLog log = new FilteredLog("Foo");
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));

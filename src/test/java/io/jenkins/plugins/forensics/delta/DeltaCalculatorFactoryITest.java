@@ -3,9 +3,7 @@ package io.jenkins.plugins.forensics.delta;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import edu.hm.hafner.util.FilteredLog;
@@ -17,6 +15,7 @@ import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
 import io.jenkins.plugins.forensics.delta.model.Delta;
+import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static io.jenkins.plugins.util.PathStubs.*;
@@ -27,24 +26,15 @@ import static org.mockito.Mockito.*;
  *
  * @author Florian Orendi
  */
-public class DeltaCalculatorFactoryITest {
-
-    /**
-     * Jenkins rule per suite.
-     */
-    @ClassRule
-    public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
-
+class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     private static final String NO_SUITABLE_DELTA_CALCULATOR_FOUND = "-> No suitable delta calculator found.";
     private static final String ACTUAL_FACTORY_NULL_DELTA_CALCULATOR = "ActualFactory returned NullDeltaCalculator";
     private static final String EMPTY_FACTORY_NULL_DELTA_CALCULATOR = "EmptyFactory returned NullDeltaCalculator";
     private static final String ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR = "ActualFactory created a DeltaCalculator";
 
-    /**
-     * Verifies that a {@link NullDeltaCalculator} will be returned if no suitable delta calculator has been found.
-     */
+    /** Verifies that a {@link NullDeltaCalculator} will be returned if no suitable delta calculator has been found. */
     @Test
-    public void shouldSelectNullDeltaCalculator() {
+    void shouldSelectNullDeltaCalculatorIfNoCalculatorIsFound() {
         FilteredLog log = new FilteredLog("Foo");
         DeltaCalculator nullCalculator = createDeltaCalculator("/", log);
 
@@ -55,11 +45,9 @@ public class DeltaCalculatorFactoryITest {
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
-    /**
-     * Verifies that the correct {@link DeltaCalculator} instance is created for the first repository.
-     */
+    /** Verifies that the correct {@link DeltaCalculator} instance is created for the first repository. */
     @Test
-    public void shouldSelectDeltaCalculatorForFirstDirectory() {
+    void shouldSelectDeltaCalculatorForFirstDirectory() {
         FilteredLog log = new FilteredLog("Foo");
         DeltaCalculator deltaCalculator = createDeltaCalculator("/test", log);
 
@@ -74,7 +62,7 @@ public class DeltaCalculatorFactoryITest {
      * repository does return a {@link NullDeltaCalculator}.
      */
     @Test
-    public void shouldSelectDeltaCalculatorForSecondDirectory() {
+    void shouldSelectDeltaCalculatorForSecondDirectory() {
         FilteredLog log = new FilteredLog("Foo");
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));

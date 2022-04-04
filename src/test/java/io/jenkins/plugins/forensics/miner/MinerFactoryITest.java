@@ -2,9 +2,7 @@ package io.jenkins.plugins.forensics.miner;
 
 import java.util.Optional;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import edu.hm.hafner.util.FilteredLog;
@@ -16,6 +14,7 @@ import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
+import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static io.jenkins.plugins.util.PathStubs.*;
@@ -26,19 +25,9 @@ import static org.mockito.Mockito.*;
  *
  * @author Ullrich Hafner
  */
-public class MinerFactoryITest {
-    /** Jenkins rule per suite. */
-    @ClassRule
-    public static final JenkinsRule JENKINS_PER_SUITE = new JenkinsRule();
-
-    /**
-     * Verifies that a {@link NullMiner} is selected if the workspace is not a supported SCM.
-     *
-     * @throws InterruptedException
-     *         never thrown
-     */
+class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @Test
-    public void shouldSelectNullMiner() throws InterruptedException {
+    void shouldSelectNullMinerIfNoScmIsGiven() throws InterruptedException {
         FilteredLog log = new FilteredLog("Foo");
         RepositoryMiner nullMiner = createMiner("/", log);
 
@@ -51,14 +40,8 @@ public class MinerFactoryITest {
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
-    /**
-     * Verifies that the correct {@link RepositoryMiner} instance is created for the first repository.
-     *
-     * @throws InterruptedException
-     *         never thrown
-     */
     @Test
-    public void shouldSelectMinerForFirstDirectory() throws InterruptedException {
+    void shouldSelectMinerForFirstDirectory() throws InterruptedException {
         FilteredLog log = new FilteredLog("Foo");
         RepositoryMiner repositoryMiner = createMiner("/test", log);
 
