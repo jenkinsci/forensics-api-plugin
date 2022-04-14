@@ -25,7 +25,7 @@
 
     <!-- Library Dependencies Versions -->
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
-    <testcontainers.version>1.17.0</testcontainers.version>
+    <testcontainers.version>1.17.1</testcontainers.version>
 
     <!-- Jenkins Plugin Dependencies Versions -->
     <plugin-util-api.version>2.16.0</plugin-util-api.version>
