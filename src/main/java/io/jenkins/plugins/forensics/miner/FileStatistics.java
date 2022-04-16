@@ -46,6 +46,7 @@ public class FileStatistics implements Serializable {
      *
      * @param fileName
      *         the name of the file for which statistics will be generated
+     * @see FileStatisticsBuilder
      */
     private FileStatistics(final TreeString fileName) {
         this.fileName = fileName;
