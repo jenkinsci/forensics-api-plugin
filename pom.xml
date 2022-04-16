@@ -139,6 +139,28 @@
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <versionFormat>[0-9.]*</versionFormat>
+          <analysisConfiguration>
+            <revapi.semver.ignore>
+              <enabled>true</enabled>
+            </revapi.semver.ignore>
+            <revapi.differences>
+              <justification>Ignore refined return type</justification>
+              <criticality>allowed</criticality>
+              <differences combine.children="append">
+                <item>
+                  <methodName>getTableModel</methodName>
+                  <code>java.method.returnTypeChangedCovariantly</code>
+                </item>
+              </differences>
+            </revapi.differences>
+          </analysisConfiguration>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
