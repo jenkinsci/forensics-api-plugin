@@ -125,7 +125,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     }
 
     @Override
-    protected RepositoryStatisticsXmlStream createXmlStream() {
+    protected final RepositoryStatisticsXmlStream createXmlStream() {
         return new RepositoryStatisticsXmlStream();
     }
 

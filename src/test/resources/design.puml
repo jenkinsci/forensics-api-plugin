@@ -7,6 +7,7 @@ skinparam component {
 }
 
 [Blamer] <<..blame..>>
+[Delta] <<..delta..>>
 [Miner] <<..miner>>
 [Reference Recorder] <<..reference..>>
 
@@ -14,6 +15,7 @@ skinparam component {
 
 [Blamer] --> [Utilities]
 [Miner] --> [Utilities]
+[Delta] --> [Utilities]
 [Miner] -> [Reference Recorder]
 [Reference Recorder] --> [Utilities]
 
