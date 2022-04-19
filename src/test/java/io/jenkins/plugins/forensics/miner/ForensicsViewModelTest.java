@@ -9,6 +9,7 @@ import org.mockito.MockedStatic;
 
 import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.PieChartModel;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -105,18 +106,15 @@ class ForensicsViewModelTest {
                 });
     }
 
+    @SuppressFBWarnings(value = "RCN", justification = "False positive")
     private void runWithNullDecorator(final ForensicsViewModel model, final Consumer<ForensicsViewModel> modelConsumer) {
         try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
-            configureFactory(commitDecoratorFactory);
+            commitDecoratorFactory
+                    .when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
+                    .thenReturn(new NullDecorator());
 
             modelConsumer.accept(model);
         }
-    }
-
-    private void configureFactory(
-            final MockedStatic<CommitDecoratorFactory> commitDecoratorFactory) {
-        commitDecoratorFactory.when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
-                .thenReturn(new NullDecorator());
     }
 
     private String createLink() {
