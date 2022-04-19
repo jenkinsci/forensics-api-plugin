@@ -1,6 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.*;
  * Tests the class {@link ForensicsViewModel}.
  *
  * @author Johannes Walter
+ * @author Ullrich Hafner
  */
 class ForensicsViewModelTest {
     private static final String SCM_KEY = "scmKey";
@@ -62,15 +65,55 @@ class ForensicsViewModelTest {
 
         ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), repositoryStatistics, SCM_KEY);
 
-        try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
-            findNullDecorator(commitDecoratorFactory);
+        runWithNullDecorator(model,
+                m -> assertThat(m.getDynamic(createLink(), mock(StaplerRequest.class), mock(StaplerResponse.class)))
+                        .isInstanceOf(FileDetailsView.class)
+        );
+    }
 
-            assertThat(model.getDynamic(createLink(), mock(StaplerRequest.class), mock(StaplerResponse.class)))
-                    .isInstanceOf(FileDetailsView.class);
+    @Test
+    void shouldThrowNoSuchElementExceptionInGetDynamic() throws IOException {
+        ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
+
+        runWithNullDecorator(model,
+                m -> {
+                    try {
+                        StaplerResponse staplerResponse = mock(StaplerResponse.class);
+                        assertThat(m.getDynamic("wrong-link", mock(StaplerRequest.class), staplerResponse)).isSameAs(m);
+                        verify(staplerResponse, times(1)).sendRedirect2(any(String.class));
+                    }
+                    catch (IOException exception) {
+                        throw new UncheckedIOException(exception);
+                    }
+                });
+    }
+
+    @Test
+    void shouldThrowIOExceptionInGetDynamic() throws IOException {
+        ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
+
+        runWithNullDecorator(model,
+                m -> {
+                    try {
+                        StaplerResponse staplerResponse = mock(StaplerResponse.class);
+                        doThrow(IOException.class).when(staplerResponse).sendRedirect2(any(String.class));
+                        assertThat(m.getDynamic("wrong-link", mock(StaplerRequest.class), staplerResponse)).isSameAs(m);
+                    }
+                    catch (IOException exception) {
+                        throw new UncheckedIOException(exception);
+                    }
+                });
+    }
+
+    private void runWithNullDecorator(final ForensicsViewModel model, final Consumer<ForensicsViewModel> modelConsumer) {
+        try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
+            configureFactory(commitDecoratorFactory);
+
+            modelConsumer.accept(model);
         }
     }
 
-    private void findNullDecorator(
+    private void configureFactory(
             final MockedStatic<CommitDecoratorFactory> commitDecoratorFactory) {
         commitDecoratorFactory.when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
                 .thenReturn(new NullDecorator());
@@ -79,21 +122,5 @@ class ForensicsViewModelTest {
     private String createLink() {
         return "filename." + FILE_NAME.hashCode();
     }
-
-    @Test
-    void shouldThrowNoSuchElementExceptionInGetDynamic() throws IOException {
-        StaplerResponse staplerResponse = mock(StaplerResponse.class);
-
-        ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
-
-        try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
-            findNullDecorator(commitDecoratorFactory);
-
-            assertThat(model.getDynamic("wrong-link", mock(StaplerRequest.class), staplerResponse)).isSameAs(model);
-            verify(staplerResponse, times(1)).sendRedirect2(any(String.class));
-
-            doThrow(IOException.class).when(staplerResponse).sendRedirect2(any(String.class));
-            assertThat(model.getDynamic("wrong-link", mock(StaplerRequest.class), staplerResponse)).isSameAs(model);
-        }
-    }
 }
+
