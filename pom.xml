@@ -207,6 +207,10 @@
                     The removed methods are not required any more for calculating the code delta.
                   </justification>
                 </item>
+                <item>
+                  <methodName>getTableModel</methodName>
+                  <code>java.method.returnTypeChangedCovariantly</code>
+                </item>
               </differences>
             </revapi.differences>
           </analysisConfiguration>
