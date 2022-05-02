@@ -194,6 +194,18 @@
                   <justification>This API is not finally in use yet.</justification>
                 </item>
                 <item>
+                  <code>java.field.serialVersionUIDUnchanged</code>
+                  <classSimpleName>FileChanges</classSimpleName>
+                  <justification>This API is not finally in use yet.</justification>
+                </item>
+                <item>
+                  <code>java.method.numberOfParametersChanged</code>
+                  <package>io.jenkins.plugins.forensics.delta.model</package>
+                  <classSimpleName>FileChanges</classSimpleName>
+                  <elementKind>constructor</elementKind>
+                  <justification>The additional parameter is required for processing renamed files.</justification>
+                </item>
+                <item>
                   <code>java.method.numberOfParametersChanged</code>
                   <package>io.jenkins.plugins.forensics.delta</package>
                   <methodName>calculateDelta</methodName>
