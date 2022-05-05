@@ -19,6 +19,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 class FileChangesTest {
 
     private static final String FILE_NAME = "test";
+    private static final String OLD_FILE_NAME = "testOld";
     private static final String FILE_CONTENT = "test";
     private static final FileEditType FILE_EDIT_TYPE = FileEditType.ADD;
     private static final Map<ChangeEditType, Set<Change>> FILE_CHANGES = Collections.emptyMap();
@@ -27,6 +28,7 @@ class FileChangesTest {
     void testFileChangesGetter() {
         FileChanges fileChanges = createFileChanges();
         assertThat(fileChanges.getFileName()).isEqualTo(FILE_NAME);
+        assertThat(fileChanges.getOldFileName()).isEqualTo(OLD_FILE_NAME);
         assertThat(fileChanges.getFileContent()).isEqualTo(FILE_CONTENT);
         assertThat(fileChanges.getFileEditType()).isEqualTo(FILE_EDIT_TYPE);
         assertThat(fileChanges.getChanges()).isEqualTo(FILE_CHANGES);
@@ -67,6 +69,6 @@ class FileChangesTest {
      * @return the created instance
      */
     private FileChanges createFileChanges() {
-        return new FileChanges(FILE_NAME, FILE_CONTENT, FILE_EDIT_TYPE, FILE_CHANGES);
+        return new FileChanges(FILE_NAME, OLD_FILE_NAME, FILE_CONTENT, FILE_EDIT_TYPE, FILE_CHANGES);
     }
 }

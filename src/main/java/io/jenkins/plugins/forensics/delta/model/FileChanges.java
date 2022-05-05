@@ -20,6 +20,7 @@ public class FileChanges implements Serializable {
     private static final long serialVersionUID = 6135245877389921937L;
 
     private final String fileName;
+    private final String oldFileName;
 
     private final String fileContent;
 
@@ -38,6 +39,8 @@ public class FileChanges implements Serializable {
      *
      * @param fileName
      *         The name of the file
+     * @param oldFileName
+     *         The old file name before the edit
      * @param fileContent
      *         The content of the file
      * @param fileEditType
@@ -45,9 +48,10 @@ public class FileChanges implements Serializable {
      * @param changes
      *         The changes made to the file
      */
-    public FileChanges(final String fileName, final String fileContent, final FileEditType fileEditType,
-            final Map<ChangeEditType, Set<Change>> changes) {
+    public FileChanges(final String fileName, final String oldFileName, final String fileContent,
+            final FileEditType fileEditType, final Map<ChangeEditType, Set<Change>> changes) {
         this.fileName = fileName;
+        this.oldFileName = oldFileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
         this.changes = new HashMap<>(changes);
@@ -55,6 +59,10 @@ public class FileChanges implements Serializable {
 
     public String getFileName() {
         return fileName;
+    }
+
+    public String getOldFileName() {
+        return oldFileName;
     }
 
     public String getFileContent() {
@@ -110,6 +118,7 @@ public class FileChanges implements Serializable {
         }
         FileChanges that = (FileChanges) o;
         return Objects.equals(fileName, that.fileName)
+                && Objects.equals(oldFileName, that.oldFileName)
                 && Objects.equals(fileContent, that.fileContent)
                 && fileEditType == that.fileEditType
                 && Objects.equals(changes, that.changes);
@@ -117,6 +126,6 @@ public class FileChanges implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(fileName, fileContent, fileEditType, changes);
+        return Objects.hash(fileName, oldFileName, fileContent, fileEditType, changes);
     }
 }
