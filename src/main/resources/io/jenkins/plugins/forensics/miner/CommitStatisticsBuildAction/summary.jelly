@@ -2,27 +2,30 @@
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
   <t:summary icon="/plugin/forensics-api/icons/diff-stat.svg">
-    ${%title}: ${it.scmKey}
-    <j:set var="s" value="${it.commitStatistics}"/>
-    <ul>
-      <li>
-        Commits: ${s.commitCount} -
-        <j:choose>
-          <j:when test="${it.hasReferenceBuild()}">
-            compared to target branch build <j:out value="${it.referenceBuildLink}"/>
-          </j:when>
-          <j:otherwise>
-            compared to previous build
-          </j:otherwise>
-        </j:choose>
-      </li>
-      <li>
-        Changed files: ${s.filesCount}
-      </li>
-      <li>
-        Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
-      </li>
-    </ul>
+    <span id="commits-statistics-of-${it.scmKey}">
+      ${%title}: ${it.scmKey}
+      <j:set var="s" value="${it.commitStatistics}"/>
+      <ul>
+        <li>
+          Commits: ${s.commitCount} -
+          <j:choose>
+            <j:when test="${it.hasReferenceBuild()}">
+              compared to target branch build
+              <j:out value="${it.referenceBuildLink}"/>
+            </j:when>
+            <j:otherwise>
+              compared to previous build
+            </j:otherwise>
+          </j:choose>
+        </li>
+        <li>
+          Changed files: ${s.filesCount}
+        </li>
+        <li>
+          Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
+        </li>
+      </ul>
+    </span>
   </t:summary>
 
 </j:jelly>
