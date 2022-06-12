@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson"  xmlns:fa="/font-awesome">
 
   <t:summary icon="/plugin/forensics-api/icons/crosshair.svg">
-
+    <span id="reference-build">
       <j:choose>
         <j:when test="${it.hasReferenceBuild()}">
           ${%reference.found}
@@ -17,6 +17,7 @@
         </j:otherwise>
 
       </j:choose>
+    </span>
   </t:summary>
 
 </j:jelly>
