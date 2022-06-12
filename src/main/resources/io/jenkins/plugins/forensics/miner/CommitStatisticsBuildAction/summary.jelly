@@ -2,7 +2,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
   <t:summary icon="/plugin/forensics-api/icons/diff-stat.svg">
-    <span id="commits-statistics-of-${it.scmKey}">
+    <span id="commits-statistics-of-${it.scmKey.hashCode()}">
       ${%title}: ${it.scmKey}
       <j:set var="s" value="${it.commitStatistics}"/>
       <ul>
