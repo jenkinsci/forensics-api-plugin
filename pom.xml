@@ -158,11 +158,13 @@
               </attachments>
               <differences combine.children="append">
                 <item>
+                  <ignore>true</ignore>
                   <code>java.class.externalClassExposedInAPI</code>
                   <classQualifiedName>io.jenkins.plugins.datatables.TableConfiguration.SelectStyle</classQualifiedName>
                   <justification>This enum is safe to be exposed.</justification>
                 </item>
                 <item>
+                  <ignore>true</ignore>
                   <code>java.method.parameterTypeChanged</code>
                   <classQualifiedName>io.jenkins.plugins.datatables.TableConfiguration</classQualifiedName>
                   <justification>This enum is safe to be exposed.</justification>
