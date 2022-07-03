@@ -151,62 +151,21 @@
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
         <configuration>
-          <failBuildOnProblemsFound>true</failBuildOnProblemsFound>
-          <versionFormat>[-0-9._]*</versionFormat>
           <analysisConfiguration>
-            <revapi.semver.ignore>
-              <enabled>true</enabled>
-            </revapi.semver.ignore>
-            <revapi.differences>
-              <justification>Shaded artefacts are not part of the public API</justification>
-              <criticality>allowed</criticality>
+            <revapi.differences id="manually-vetted">
+              <attachments>
+                <vetted>ok</vetted>
+              </attachments>
               <differences combine.children="append">
                 <item>
-                  <regex>true</regex>
-                  <code>java.annotation.*</code>
-                  <annotation>@edu.umd.cs.findbugs.annotations.*</annotation>
-                  <justification>Annotation should be save to change.</justification>
-                </item>
-                <item>
-                  <regex>true</regex>
                   <code>java.class.externalClassExposedInAPI</code>
-                  <package>io.jenkins.plugins.datatables.*</package>
-                  <justification>Datatables are used in dependent plugins as well.</justification>
+                  <classQualifiedName>io.jenkins.plugins.datatables.TableConfiguration.SelectStyle</classQualifiedName>
+                  <justification>This enum is safe to be exposed.</justification>
                 </item>
                 <item>
-                  <code>java.field.serialVersionUIDUnchanged</code>
-                  <classSimpleName>Change</classSimpleName>
-                  <justification>This API is not finally in use yet.</justification>
-                </item>
-                <item>
-                  <code>java.field.serialVersionUIDUnchanged</code>
-                  <classSimpleName>FileChanges</classSimpleName>
-                  <justification>This API is not finally in use yet.</justification>
-                </item>
-                <item>
-                  <code>java.method.numberOfParametersChanged</code>
-                  <package>io.jenkins.plugins.forensics.delta.model</package>
-                  <classSimpleName>FileChanges</classSimpleName>
-                  <elementKind>constructor</elementKind>
-                  <justification>The additional parameter is required for processing renamed files.</justification>
-                </item>
-                <item>
-                  <code>java.method.numberOfParametersChanged</code>
-                  <package>io.jenkins.plugins.forensics.delta</package>
-                  <methodName>calculateDelta</methodName>
-                  <justification>The additional parameter is required for calculating the code delta.</justification>
-                </item>
-                <item>
-                  <code>java.method.removed</code>
-                  <package>io.jenkins.plugins.forensics.delta</package>
-                  <methodName>calculateDelta</methodName>
-                  <justification>
-                    The removed methods are not required any more for calculating the code delta.
-                  </justification>
-                </item>
-                <item>
-                  <methodName>getTableModel</methodName>
-                  <code>java.method.returnTypeChangedCovariantly</code>
+                  <code>java.method.parameterTypeChanged</code>
+                  <classQualifiedName>io.jenkins.plugins.datatables.TableConfiguration</classQualifiedName>
+                  <justification>This enum is safe to be exposed.</justification>
                 </item>
               </differences>
             </revapi.differences>
