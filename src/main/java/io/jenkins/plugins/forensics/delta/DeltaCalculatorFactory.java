@@ -25,7 +25,6 @@ import io.jenkins.plugins.util.JenkinsFacade;
  * @author Florian Orendi
  */
 public abstract class DeltaCalculatorFactory implements ExtensionPoint {
-
     private static final Function<Optional<DeltaCalculator>, Stream<? extends DeltaCalculator>> OPTIONAL_MAPPER
             = o -> o.map(Stream::of).orElseGet(Stream::empty);
 

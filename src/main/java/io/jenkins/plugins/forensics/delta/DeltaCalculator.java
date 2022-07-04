@@ -15,7 +15,6 @@ import io.jenkins.plugins.forensics.delta.model.Delta;
  * @author Florian Orendi
  */
 public abstract class DeltaCalculator implements Serializable {
-
     private static final long serialVersionUID = 8641535877389921937L;
 
     /**
@@ -39,7 +38,6 @@ public abstract class DeltaCalculator implements Serializable {
      * A delta calculator that does nothing.
      */
     public static class NullDeltaCalculator extends DeltaCalculator {
-
         private static final long serialVersionUID = 1564285974889709821L;
 
         @Override
