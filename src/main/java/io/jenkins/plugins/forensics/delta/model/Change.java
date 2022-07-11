@@ -22,11 +22,11 @@ public class Change implements Serializable {
     /**
      * The included starting point of the lines which will be affected by this change (1-based).
      */
-    private int changedFromLine = 0; // since 1.9.0
+    private final int changedFromLine; // since 1.9.0
     /**
      * The included ending point of the lines which will be affected by this change (1-based).
      */
-    private int changedToLine = 0; // since 1.9.0
+    private final int changedToLine; // since 1.9.0
 
     /**
      * The included starting point of the lines which contain the change (1-based).

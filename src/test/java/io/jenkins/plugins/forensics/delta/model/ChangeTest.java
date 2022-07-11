@@ -12,7 +12,6 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  * @author Florian Orendi
  */
 class ChangeTest {
-
     private static final ChangeEditType EDIT_TYPE = ChangeEditType.INSERT;
     private static final int CHANGED_FROM_LINE = 1;
     private static final int CHANGED_TO_LINE = 1;
