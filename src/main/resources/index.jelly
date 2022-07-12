@@ -1,0 +1,5 @@
+<?jelly escape-by-default='true'?>
+
+<div>
+  Defines an API for Jenkins to mine and analyze data from a source code repository.
+</div>

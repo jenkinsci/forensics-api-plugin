@@ -2,23 +2,25 @@
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
   <t:summary icon="/plugin/forensics-api/icons/forensics.svg">
-    ${%title}: ${it.scmKey}
-    <j:set var="s" value="${it.result.latestStatistics}" />
-    <ul>
-      <li>
-        <a href="${it.urlName}">${%summary(size(it.result))}</a>
-        (total lines of code: ${it.result.totalLinesOfCode}, total churn: ${it.result.totalChurn})
-      </li>
-      <li>
-        New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
-      </li>
-      <li>
-        Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
-      </li>
-      <li>
-        Miner runtime: ${it.miningDurationSeconds} seconds
-      </li>
-    </ul>
+    <span id="scm-forensics-of-${it.scmKey.hashCode()}">
+      ${%title}: ${it.scmKey}
+      <j:set var="s" value="${it.result.latestStatistics}"/>
+      <ul>
+        <li>
+          <a href="${it.urlName}">${%summary(size(it.result))}</a>
+          (total lines of code: ${it.result.totalLinesOfCode}, total churn: ${it.result.totalChurn})
+        </li>
+        <li>
+          New commits: ${s.commitCount} (from ${s.authorCount} authors in ${s.filesCount} files)
+        </li>
+        <li>
+          Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
+        </li>
+        <li>
+          Miner runtime: ${it.miningDurationSeconds} seconds
+        </li>
+      </ul>
+    </span>
   </t:summary>
 
 </j:jelly>
