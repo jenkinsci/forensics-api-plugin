@@ -136,7 +136,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public String getIconFileName() {
-        return ForensicsJobAction.SMALL_ICON;
+        return ForensicsJobAction.ICON;
     }
 
     @Override

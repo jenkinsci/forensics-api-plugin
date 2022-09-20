@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson"  xmlns:fa="/font-awesome">
 
-  <t:summary icon="/plugin/forensics-api/icons/crosshair.svg">
+  <t:summary icon="symbol-solid/crosshairs plugin-font-awesome-api">
     <span id="reference-build">
       <j:choose>
         <j:when test="${it.hasReferenceBuild()}">

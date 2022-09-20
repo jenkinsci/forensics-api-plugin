@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
-  <t:summary icon="/plugin/forensics-api/icons/forensics.svg">
+  <t:summary icon="symbol-solid/microscope plugin-font-awesome-api">
     <span id="scm-forensics-of-${it.scmKey.hashCode()}">
       ${%title}: ${it.scmKey}
       <j:set var="s" value="${it.result.latestStatistics}"/>

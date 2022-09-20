@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:t="/lib/hudson">
 
-  <t:summary icon="/plugin/forensics-api/icons/diff-stat.svg">
+  <t:summary icon="symbol-diff-stat plugin-forensics-api">
     <span id="commits-statistics-of-${it.scmKey.hashCode()}">
       ${%title}: ${it.scmKey}
       <j:set var="s" value="${it.commitStatistics}"/>
