@@ -27,7 +27,7 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
  * @author Ullrich Hafner
  */
 public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<ForensicsBuildAction> {
-    static final String SMALL_ICON = "/plugin/forensics-api/icons/forensics.svg";
+    static final String ICON = "symbol-solid/microscope plugin-font-awesome-api";
     static final String FORENSICS_ID = "forensics";
     private static final JacksonFacade JACKSON_FACADE = new JacksonFacade();
 
@@ -96,7 +96,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     @Override
     @CheckForNull
     public String getIconFileName() {
-        return SMALL_ICON;
+        return ICON;
     }
 
     @Override
