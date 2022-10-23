@@ -19,7 +19,7 @@ class CodeMetricSeriesBuilderTest {
         when(forensicsBuildAction.getTotalChurn()).thenReturn(totalChurn);
 
         CodeMetricSeriesBuilder codeMetricSeriesBuilder = new CodeMetricSeriesBuilder();
-        Map<String,Integer> computedSeries = codeMetricSeriesBuilder.computeSeries(forensicsBuildAction);
+        Map<String, Integer> computedSeries = codeMetricSeriesBuilder.computeSeries(forensicsBuildAction);
 
         assertThat(computedSeries).hasSize(2);
         assertThat(computedSeries.get(CodeMetricSeriesBuilder.LOC_KEY)).isEqualTo(totalLinesOfCode);
