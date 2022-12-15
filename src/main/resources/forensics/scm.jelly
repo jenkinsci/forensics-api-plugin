@@ -5,7 +5,7 @@
     Provides a text box to select the SCM.
   </st:documentation>
 
-  <f:entry title="${%title.scm}" field="scm" description="${%description.scm}">
+  <f:entry title="${%title.scm}" field="scm" >
     <f:textbox/>
   </f:entry>
 
