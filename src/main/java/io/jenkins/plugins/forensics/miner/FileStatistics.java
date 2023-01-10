@@ -35,6 +35,9 @@ public class FileStatistics implements Serializable {
     private int creationTime;
     private int lastModificationTime;
 
+    private transient int numberOfAuthors; // unused starting from 0.8.x
+    private transient int numberOfCommits; // unused starting from 0.8.x
+
     private CommitStatistics statistics = new CommitStatistics(); // since 0.8.0
     private List<CommitDiffItem> commits = new ArrayList<>(); // since 0.8.0
 
@@ -63,7 +66,7 @@ public class FileStatistics implements Serializable {
     protected Object readResolve() {
         if (commits == null) {
             commits = new ArrayList<>(); // restore an empty list for release < 0.8.x
-            statistics = new CommitStatistics();
+            statistics = new CommitStatistics(numberOfCommits, numberOfAuthors);
         }
 
         return this;
