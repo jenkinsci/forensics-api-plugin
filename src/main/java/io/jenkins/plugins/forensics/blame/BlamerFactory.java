@@ -3,8 +3,6 @@ package io.jenkins.plugins.forensics.blame;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import edu.hm.hafner.util.FilteredLog;
 
@@ -19,14 +17,11 @@ import io.jenkins.plugins.forensics.util.ScmResolver;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
- * Jenkins extension point that allows plugins to create {@link Blamer} instances based on a supported {@link SCM}.
+ * Jenkins' extension point that allows plugins to create {@link Blamer} instances based on a supported {@link SCM}.
  *
  * @author Ullrich Hafner
  */
 public abstract class BlamerFactory implements ExtensionPoint {
-    private static final Function<Optional<Blamer>, Stream<? extends Blamer>> OPTIONAL_MAPPER
-            = o -> o.map(Stream::of).orElseGet(Stream::empty);
-
     /**
      * Returns a blamer for the specified {@link SCM}.
      *
@@ -64,7 +59,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
             final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
         return scmDirectories.stream()
                 .map(directory -> findBlamer(run, directory, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst()
                 .orElseGet(() -> createNullBlamer(logger));
     }
@@ -94,7 +89,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
         }
         return findAllExtensions().stream()
                 .map(blamerFactory -> blamerFactory.createBlamer(scms.iterator().next(), run, workTree, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst()
                 .orElseGet(() -> createNullBlamer(logger));
     }
@@ -115,7 +110,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
 
         return findAllExtensions().stream()
                 .map(blamerFactory -> blamerFactory.createBlamer(scm, run, workTree, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst();
     }
 

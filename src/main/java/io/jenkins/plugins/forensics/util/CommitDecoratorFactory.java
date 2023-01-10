@@ -2,8 +2,6 @@ package io.jenkins.plugins.forensics.util;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import edu.hm.hafner.util.FilteredLog;
 
@@ -16,15 +14,12 @@ import io.jenkins.plugins.forensics.util.CommitDecorator.NullDecorator;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
- * Jenkins extension point that allows plugins to create {@link CommitDecorator} instances based on a supported {@link
+ * Jenkins' extension point that allows plugins to create {@link CommitDecorator} instances based on a supported {@link
  * SCM} and {@link RepositoryBrowser}.
  *
  * @author Ullrich Hafner
  */
 public abstract class CommitDecoratorFactory implements ExtensionPoint {
-    private static final Function<Optional<CommitDecorator>, Stream<? extends CommitDecorator>> OPTIONAL_MAPPER
-            = o -> o.map(Stream::of).orElseGet(Stream::empty);
-
     /**
      * Returns a commit decorator for the specified {@link SCM} and the associated {@link RepositoryBrowser}.
      *
@@ -51,7 +46,7 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
     public static CommitDecorator findCommitDecorator(final SCM scm, final FilteredLog logger) {
         return findAllExtensions().stream()
                 .map(factory -> factory.createCommitDecorator(scm, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst().orElse(new NullDecorator());
     }
 

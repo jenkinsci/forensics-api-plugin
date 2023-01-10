@@ -49,6 +49,8 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldObtainReferenceFromPullRequestTarget() {
+        FilteredLog log = createLog();
+
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
@@ -56,9 +58,8 @@ class ReferenceRecorderTest {
         ReferenceRecorder recorder = createSut();
 
         Run<?, ?> prBuild = configurePrJobAndBuild(recorder, topLevel, job);
-        when(recorder.find(build, prBuild)).thenReturn(Optional.of(prBuild));
+        when(recorder.find(build, prBuild, log)).thenReturn(Optional.of(prBuild));
 
-        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
@@ -75,15 +76,16 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldFindReferenceJobUsingPrimaryBranch() {
+        FilteredLog log = createLog();
+
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
 
         ReferenceRecorder recorder = createSut();
 
-        configurePrimaryBranch(recorder, topLevel, job, build);
+        configurePrimaryBranch(recorder, topLevel, job, build, log);
 
-        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
@@ -102,6 +104,8 @@ class ReferenceRecorderTest {
      */
     @Test
     void targetShouldHavePrecedenceBeforePullRequestTarget() {
+        FilteredLog log = createLog();
+
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
@@ -109,9 +113,8 @@ class ReferenceRecorderTest {
         ReferenceRecorder recorder = createSut();
 
         configurePrJobAndBuild(recorder, topLevel, job); // will not be used since target branch has been set
-        configureTargetJobAndBuild(recorder, topLevel, build);
+        configureTargetJobAndBuild(recorder, topLevel, build, log);
 
-        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
@@ -129,16 +132,17 @@ class ReferenceRecorderTest {
      */
     @Test
     void targetShouldHavePrecedenceBeforePrimaryBranchTarget() {
+        FilteredLog log = createLog();
+
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
 
         ReferenceRecorder recorder = createSut();
 
-        configurePrimaryBranch(recorder, topLevel, job, build); // will not be used since target branch has been set
-        configureTargetJobAndBuild(recorder, topLevel, build);
+        configurePrimaryBranch(recorder, topLevel, job, build, log); // will not be used since target branch has been set
+        configureTargetJobAndBuild(recorder, topLevel, build, log);
 
-        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
@@ -154,13 +158,13 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldNotFindReferenceJobForMultiBranchProject() {
+        FilteredLog log = createLog();
+
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         createMultiBranch(job);
 
         ReferenceRecorder recorder = createSut();
-
-        FilteredLog log = createLog();
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
@@ -192,7 +196,7 @@ class ReferenceRecorderTest {
 
     private void configurePrimaryBranch(final ReferenceRecorder recorder,
             final WorkflowMultiBranchProject topLevel, final Job<?, ?> job,
-            final Run<?, ?> build) {
+            final Run<?, ?> build, final FilteredLog log) {
         Job<?, ?> main = mock(Job.class);
         Run<?, ?> mainBuild = mock(Run.class);
         when(mainBuild.getExternalizableId()).thenReturn("main-id");
@@ -206,7 +210,7 @@ class ReferenceRecorderTest {
 
         when(topLevel.getAllItems()).thenReturn(Collections.singletonList(item));
 
-        when(recorder.find(build, mainBuild)).thenReturn(Optional.of(mainBuild));
+        when(recorder.find(build, mainBuild, log)).thenReturn(Optional.of(mainBuild));
     }
 
     private Run<?, ?> configurePrJobAndBuild(final ReferenceRecorder recorder,
@@ -231,7 +235,7 @@ class ReferenceRecorderTest {
     }
 
     private Run<?, ?> configureTargetJobAndBuild(final ReferenceRecorder recorder,
-            final WorkflowMultiBranchProject parent, final Run<?, ?> build) {
+            final WorkflowMultiBranchProject parent, final Run<?, ?> build, final FilteredLog log) {
         recorder.setTargetBranch("target");
 
         Job<?, ?> targetJob = mock(Job.class);
@@ -240,7 +244,7 @@ class ReferenceRecorderTest {
         when(targetBuild.getExternalizableId()).thenReturn("target-id");
         when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
 
-        when(recorder.find(build, targetBuild)).thenReturn(Optional.of(targetBuild));
+        when(recorder.find(build, targetBuild, log)).thenReturn(Optional.of(targetBuild));
 
         return targetBuild;
     }
@@ -249,11 +253,6 @@ class ReferenceRecorderTest {
         @VisibleForTesting
         NullReferenceRecorder() {
             super(new JenkinsFacade());
-        }
-
-        @Override
-        protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob) {
-            return Optional.empty();
         }
     }
 }

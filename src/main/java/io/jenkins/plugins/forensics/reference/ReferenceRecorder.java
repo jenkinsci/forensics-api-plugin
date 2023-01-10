@@ -80,22 +80,6 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return latestBuildIfNotFound;
     }
 
-    /**
-     * Sets the default branch for {@link MultiBranchProject multi-branch projects}: the default branch is considered
-     * the base branch in your repository. The builds of all other branches and pull requests will use this default
-     * branch as baseline to search for a matching reference build.
-     *
-     * @param defaultBranch
-     *         the name of the default branch
-     *
-     * @deprecated renamed to {@link #setTargetBranch(String)}
-     */
-    @Deprecated
-    @DataBoundSetter
-    public void setDefaultBranch(final String defaultBranch) {
-        this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
-    }
-
     public String getDefaultBranch() {
         return defaultBranch;
     }
@@ -255,7 +239,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     /**
      * Returns the reference build for the given build {@code owner}. The search should start with the last completed
-     * build of the reference build.
+     * build of the reference build. This default implementation does nothing.
      *
      * @param owner
      *         the owner to get the reference build for
@@ -266,26 +250,9 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      *
      * @return the reference build (if available)
      */
-    protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob,
-            @SuppressWarnings("unused") final FilteredLog logger) {
-        return find(owner, lastCompletedBuildOfReferenceJob);
-    }
-
-    /**
-     * Returns the reference build for the given build {@code owner}. The search should start with the last completed
-     * build of the reference build.
-     *
-     * @param owner
-     *         the owner to get the reference build for
-     * @param lastCompletedBuildOfReferenceJob
-     *         the last completed build of the reference job
-     *
-     * @return the reference build (if available)
-     * @deprecated replaced by {@link #find(Run, Run, FilteredLog)}
-     */
     @SuppressWarnings("unused")
-    @Deprecated
-    protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob) {
+    protected Optional<Run<?, ?>> find(final Run<?, ?> owner, final Run<?, ?> lastCompletedBuildOfReferenceJob,
+            final FilteredLog logger) {
         return Optional.empty();
     }
 

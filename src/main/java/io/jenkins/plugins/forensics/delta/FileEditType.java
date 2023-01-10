@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics.delta.model;
+package io.jenkins.plugins.forensics.delta;
 
 /**
  * Edit types which describe how a file has been changed.

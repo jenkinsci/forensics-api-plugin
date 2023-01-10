@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics.delta.model;
+package io.jenkins.plugins.forensics.delta;
 
 import java.io.Serializable;
 import java.util.HashMap;

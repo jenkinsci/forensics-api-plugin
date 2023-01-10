@@ -18,7 +18,7 @@
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
 
   <properties>
-    <revision>1.18.0</revision>
+    <revision>2.0.0</revision>
     <changelist>-SNAPSHOT</changelist>
 
     <module.name>${project.groupId}.forensics.api</module.name>
@@ -27,7 +27,7 @@
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
     <testcontainers.version>1.17.6</testcontainers.version>
 
-    <plugin-util-api.version>2.20.0</plugin-util-api.version>
+    <plugin-util-api.version>3.0.0-rc674.f33a_a_ee40321</plugin-util-api.version>
   </properties>
 
   <licenses>
@@ -165,6 +165,7 @@
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
         <configuration>
+          <skip>true</skip>
           <analysisConfiguration>
             <revapi.differences id="manually-vetted">
               <attachments>

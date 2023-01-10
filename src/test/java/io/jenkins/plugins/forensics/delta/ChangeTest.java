@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics.delta.model;
+package io.jenkins.plugins.forensics.delta;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,13 +26,6 @@ class ChangeTest {
         assertThat(change).hasChangedToLine(CHANGED_TO_LINE);
         assertThat(change).hasFromLine(FROM_LINE);
         assertThat(change).hasToLine(TO_LINE);
-    }
-
-    @Test
-    void shouldInitializeChangedLinesPerDefault() {
-        Change change = new Change(EDIT_TYPE, FROM_LINE, TO_LINE);
-        assertThat(change).hasChangedFromLine(0);
-        assertThat(change).hasChangedToLine(0);
     }
 
     @Test

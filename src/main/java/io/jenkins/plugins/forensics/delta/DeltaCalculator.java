@@ -7,8 +7,6 @@ import edu.hm.hafner.util.FilteredLog;
 
 import hudson.model.Run;
 
-import io.jenkins.plugins.forensics.delta.model.Delta;
-
 /**
  * Calculates the code difference - so called 'delta' - between two commits.
  *

@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics.delta.model;
+package io.jenkins.plugins.forensics.delta;
 
 /**
  * The edit type of a single change within a specific file.

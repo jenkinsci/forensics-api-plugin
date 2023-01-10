@@ -51,25 +51,6 @@ public class CommitStatistics implements Serializable {
         this(Collections.emptyList());
     }
 
-    /**
-     * Creates a partially filled {@link CommitStatistics} instance.
-     *
-     * @param numberOfCommits
-     *         number of commits
-     * @param numberOfAuthors
-     *         number of authors
-     *
-     * @deprecated just used for deserialization of existing old serialization files
-     */
-    @Deprecated
-    public CommitStatistics(final int numberOfCommits, final int numberOfAuthors) {
-        commitCount = numberOfCommits;
-        authorCount = numberOfAuthors;
-        addedLines = 0;
-        deletedLines = 0;
-        filesCount = 0;
-    }
-
     public int getAddedLines() {
         return addedLines;
     }
