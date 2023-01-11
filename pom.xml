@@ -27,7 +27,7 @@
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
     <testcontainers.version>1.17.6</testcontainers.version>
 
-    <plugin-util-api.version>3.0.0-rc674.f33a_a_ee40321</plugin-util-api.version>
+    <plugin-util-api.version>3.0.0-rc676.39c5d554b_82f</plugin-util-api.version>
   </properties>
 
   <licenses>
