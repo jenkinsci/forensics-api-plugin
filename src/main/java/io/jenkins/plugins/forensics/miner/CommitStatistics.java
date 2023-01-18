@@ -132,7 +132,7 @@ public class CommitStatistics implements Serializable {
 
     private static int getDistinctCount(final Collection<? extends CommitDiffItem> commits,
             final Function<CommitDiffItem, String> property) {
-        return (int) commits.stream().map(property).distinct().count();
+        return (int) commits.stream().map(p -> equalsIgnoreCase(property)).distinct().count();
     }
 
     private static int count(final Collection<? extends CommitDiffItem> commits, final ToIntFunction<CommitDiffItem> property) {

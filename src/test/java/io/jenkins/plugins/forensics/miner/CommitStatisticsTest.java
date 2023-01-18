@@ -90,7 +90,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
-                .hasAuthorCount(2)
+                .hasAuthorCount(1)
                 .hasCommitCount(2);
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
