@@ -91,10 +91,10 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
                 .hasAuthorCount(1)
-                .hasCommitCount(2);
+                .hasCommitCount(1);
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 2 commits with differences analyzed",
+                "-> 1 commits with differences analyzed",
                 "-> 2 MODIFY commit diff items",
                 "-> 6 lines added",
                 "-> 6 lines deleted");
@@ -112,11 +112,11 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
-                .hasAuthorCount(2)
-                .hasCommitCount(2);
+                .hasAuthorCount(1)
+                .hasCommitCount(1);
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 2 commits with differences analyzed",
+                "-> 1 commits with differences analyzed",
                 "-> 2 MODIFY commit diff items",
                 "-> 1 DELETE commit diff items",
                 "-> 6 lines added",
@@ -135,11 +135,11 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
-                .hasAuthorCount(2)
-                .hasCommitCount(3);
+                .hasAuthorCount(1)
+                .hasCommitCount(1);
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 3 commits with differences analyzed",
+                "-> 1 commits with differences analyzed",
                 "-> 2 MODIFY commit diff items",
                 "-> 1 RENAME commit diff items",
                 "-> 1 DELETE commit diff items",

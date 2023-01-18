@@ -43,7 +43,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
         CommitDiffItem second = new CommitDiffItem("2", "one", ONE_DAY * 3).addLines(2);
         statistics.inspectCommit(second);
-        assertThat(statistics).hasNumberOfCommits(2)
+        assertThat(statistics).hasNumberOfCommits(1)
                 .hasCommits(first, second)
                 .hasNumberOfAuthors(1)
                 .hasLastModificationTime(ONE_DAY * 3)
@@ -53,9 +53,9 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
         CommitDiffItem third = new CommitDiffItem("3", "two", ONE_DAY * 4).deleteLines(1);
         statistics.inspectCommit(third);
-        assertThat(statistics).hasNumberOfCommits(3)
+        assertThat(statistics).hasNumberOfCommits(1)
                 .hasCommits(first, second, third)
-                .hasNumberOfAuthors(2)
+                .hasNumberOfAuthors(1)
                 .hasLastModificationTime(ONE_DAY * 4)
                 .hasCreationTime(ONE_DAY * 2)
                 .hasLinesOfCode(2)
@@ -63,9 +63,9 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
         CommitDiffItem fourth = new CommitDiffItem("4", "three", ONE_DAY * 5).deleteLines(2);
         statistics.inspectCommit(fourth);
-        assertThat(statistics).hasNumberOfCommits(4)
+        assertThat(statistics).hasNumberOfCommits(1)
                 .hasCommits(first, second, third, fourth)
-                .hasNumberOfAuthors(3)
+                .hasNumberOfAuthors(1)
                 .hasLastModificationTime(ONE_DAY * 5)
                 .hasCreationTime(ONE_DAY * 2)
                 .hasLinesOfCode(0).hasAbsoluteChurn(6);

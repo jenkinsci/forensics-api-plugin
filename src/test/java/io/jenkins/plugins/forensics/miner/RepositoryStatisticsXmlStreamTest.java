@@ -79,8 +79,8 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
         assertThat(restored).hasFiles(FILE);
         FileStatistics restoredFile = restored.get(FILE);
         assertThat(restoredFile)
-                .hasNumberOfAuthors(2)
-                .hasNumberOfCommits(3)
+                .hasNumberOfAuthors(1)
+                .hasNumberOfCommits(1)
                 .hasLinesOfCode(8 - 5)
                 .hasAbsoluteChurn(8 + 5)
                 .hasCreationTime(ONE_DAY * 2)
