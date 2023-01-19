@@ -90,7 +90,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
-                .hasAuthorCount(1)
+                .hasAuthorCount(2)
                 .hasCommitCount(2);
 
         assertThat(logCommits(commits).getInfoMessages()).containsExactly(
@@ -145,6 +145,24 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 1 DELETE commit diff items",
                 "-> 6 lines added",
                 "-> 6 lines deleted");
+    }
+
+    @Test
+    void checkEmailIdCount(){
+        List<CommitDiffItem> commits = new ArrayList<>();
+
+        CommitDiffItem first = new CommitDiffItem("1", "theauthor@mailto.me", 0);
+        commits.add(first);
+
+        CommitDiffItem second = new CommitDiffItem("2", "Theauthor@mailto.me", 0);
+        commits.add(second);
+
+        CommitStatistics firstCommit = new CommitStatistics(commits);
+        assertThat(firstCommit).hasAuthorCount(1);
+
+        CommitStatistics secondCommit = new CommitStatistics(commits);
+        assertThat(secondCommit).hasAuthorCount(1);
+
     }
 
     private TreeString asTreeString(final String old) {
