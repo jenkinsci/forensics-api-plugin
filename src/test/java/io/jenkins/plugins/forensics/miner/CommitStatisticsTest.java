@@ -154,11 +154,11 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         CommitDiffItem first = new CommitDiffItem("1", "theauthor@mailto.me", 0);
         commits.add(first);
 
-        CommitDiffItem second = new CommitDiffItem("2", "Theauthor@mailto.me", 0);
-        commits.add(second);
-
         CommitStatistics firstCommit = new CommitStatistics(commits);
         assertThat(firstCommit).hasAuthorCount(1);
+
+        CommitDiffItem second = new CommitDiffItem("2", "Theauthor@mailto.me", 0);
+        commits.add(second);
 
         CommitStatistics secondCommit = new CommitStatistics(commits);
         assertThat(secondCommit).hasAuthorCount(1);
