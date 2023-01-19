@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
+import java.util.Locale;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.Generated;
@@ -132,7 +133,7 @@ public class CommitStatistics implements Serializable {
 
     private static int getDistinctCount(final Collection<? extends CommitDiffItem> commits,
             final Function<CommitDiffItem, String> property) {
-        return (int) commits.stream().map(property).distinct().count();
+        return (int) commits.stream().map(property).map(s -> s.toLowerCase(Locale.ENGLISH)).distinct().count();
     }
 
     private static int count(final Collection<? extends CommitDiffItem> commits, final ToIntFunction<CommitDiffItem> property) {
