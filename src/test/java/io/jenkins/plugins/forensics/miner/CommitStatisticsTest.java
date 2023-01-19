@@ -148,7 +148,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
     }
 
     @Test
-    void checkEmailIdCount(){
+    void shouldIgnoreCapitalizationOfEmailNames() {
         List<CommitDiffItem> commits = new ArrayList<>();
 
         CommitDiffItem first = new CommitDiffItem("1", "theauthor@mailto.me", 0);
