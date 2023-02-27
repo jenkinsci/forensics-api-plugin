@@ -6,24 +6,14 @@ package io.jenkins.plugins.forensics.delta;
  * @author Florian Orendi
  */
 public enum ChangeEditType {
-    /**
-     * The new content replaces old content.
-     */
+    /** The new content replaces old content. */
     REPLACE,
-    /**
-     * New content has been added.
-     */
+    /** New content has been added. */
     INSERT,
-    /**
-     * Content has been deleted.
-     */
+    /** Content has been deleted. */
     DELETE,
-    /**
-     * Nothing happened with the content.
-     */
+    /** Nothing happened with the content. */
     EMPTY,
-    /**
-     * The edit type could not be determined.
-     */
+    /** The edit type could not be determined. */
     UNDEFINED
 }
