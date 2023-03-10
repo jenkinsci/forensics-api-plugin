@@ -24,7 +24,6 @@
     <module.name>${project.groupId}.forensics.api</module.name>
 
     <!-- Library Dependencies Versions -->
-    <eclipse-collections.version>9.2.0</eclipse-collections.version>
     <testcontainers.version>1.17.6</testcontainers.version>
 
     <plugin-util-api.version>3.0.0-rc693.c098b_871ea_49</plugin-util-api.version>
