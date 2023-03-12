@@ -3,8 +3,6 @@ package io.jenkins.plugins.forensics.delta;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import edu.hm.hafner.util.FilteredLog;
 
@@ -19,15 +17,12 @@ import io.jenkins.plugins.forensics.util.ScmResolver;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
- * Jenkins extension point that allows plugins to create {@link DeltaCalculator} instances based on a supported {@link
+ * Jenkins' extension point that allows plugins to create {@link DeltaCalculator} instances based on a supported {@link
  * SCM}.
  *
  * @author Florian Orendi
  */
 public abstract class DeltaCalculatorFactory implements ExtensionPoint {
-    private static final Function<Optional<DeltaCalculator>, Stream<? extends DeltaCalculator>> OPTIONAL_MAPPER
-            = o -> o.map(Stream::of).orElseGet(Stream::empty);
-
     /**
      * Returns a {@link DeltaCalculator} for the specified {@link Run build}.
      *
@@ -47,7 +42,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
             final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
         return scmDirectories.stream()
                 .map(directory -> findDeltaCalculator(run, directory, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst()
                 .orElseGet(() -> createNullDeltaCalculator(logger));
     }
@@ -79,7 +74,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
         return findAllDeltaCalculatorFactoryInstances().stream()
                 .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scms.iterator().next(), run,
                         workTree, listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst()
                 .orElseGet(() -> createNullDeltaCalculator(logger));
     }
@@ -105,7 +100,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
         return findAllDeltaCalculatorFactoryInstances().stream()
                 .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scm, run, workTree,
                         listener, logger))
-                .flatMap(OPTIONAL_MAPPER)
+                .flatMap(Optional::stream)
                 .findFirst();
     }
 

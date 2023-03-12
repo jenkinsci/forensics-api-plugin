@@ -14,7 +14,6 @@ import hudson.model.TaskListener;
 import hudson.scm.SCM;
 
 import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
-import io.jenkins.plugins.forensics.delta.model.Delta;
 import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;

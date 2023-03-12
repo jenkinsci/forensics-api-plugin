@@ -63,7 +63,7 @@ public class CommitStatistics implements Serializable {
      * @deprecated just used for deserialization of existing old serialization files
      */
     @Deprecated
-    public CommitStatistics(final int numberOfCommits, final int numberOfAuthors) {
+    CommitStatistics(final int numberOfCommits, final int numberOfAuthors) {
         commitCount = numberOfCommits;
         authorCount = numberOfAuthors;
         addedLines = 0;
@@ -136,7 +136,8 @@ public class CommitStatistics implements Serializable {
         return (int) commits.stream().map(property).map(s -> s.toLowerCase(Locale.ENGLISH)).distinct().count();
     }
 
-    private static int count(final Collection<? extends CommitDiffItem> commits, final ToIntFunction<CommitDiffItem> property) {
+    private static int count(final Collection<? extends CommitDiffItem> commits,
+            final ToIntFunction<CommitDiffItem> property) {
         return commits.stream().mapToInt(property).sum();
     }
 

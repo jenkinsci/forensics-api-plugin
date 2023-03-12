@@ -16,9 +16,6 @@
         <li>
           Changed lines: ${s.addedLines} added, ${s.deletedLines} deleted
         </li>
-        <li>
-          Miner runtime: ${it.miningDurationSeconds} seconds
-        </li>
       </ul>
     </span>
   </t:summary>

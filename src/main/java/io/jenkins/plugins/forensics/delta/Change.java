@@ -1,4 +1,4 @@
-package io.jenkins.plugins.forensics.delta.model;
+package io.jenkins.plugins.forensics.delta;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -6,9 +6,11 @@ import java.util.Objects;
 /**
  * A change made on specific lines within a specific file.
  *
- * <p>The interval of lines which contains the change is defined by a starting and an ending point (1-based line
- * counter). Also, the affected lines of the file before the change has been inserted are specified by a starting and an
- * ending point, as already described, in order to be able to determine removed lines for example.
+ * <p>
+ * The interval of lines which contains the change is defined by a starting and an ending point (1-based line counter).
+ * Also, the affected lines of the file before the change has been inserted are specified by a starting and an ending
+ * point, as already described, in order to be able to determine removed lines for example.
+ * </p>
  *
  * @author Florian Orendi
  */
@@ -36,25 +38,6 @@ public class Change implements Serializable {
      * The included ending point of the lines which contain the change (1-based).
      */
     private final int toLine;
-
-    /**
-     * Constructor for an instance which wraps a specific change within a file.
-     *
-     * @param changeEditType
-     *         The type of the change
-     * @param fromLine
-     *         The starting line
-     * @param toLine
-     *         The ending line
-     *
-     * @deprecated This constructor is deprecated since it does not initialize the interval which provides the
-     *         information about which lines of the original file has been affected by the change. This interval will be
-     *         initialized with '0'.
-     */
-    @Deprecated
-    public Change(final ChangeEditType changeEditType, final int fromLine, final int toLine) {
-        this(changeEditType, 0, 0, fromLine, toLine);
-    }
 
     /**
      * Constructor for an instance which wraps a specific change within a file.
