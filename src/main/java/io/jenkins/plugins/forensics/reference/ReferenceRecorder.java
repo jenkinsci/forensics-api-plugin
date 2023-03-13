@@ -80,6 +80,30 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         return latestBuildIfNotFound;
     }
 
+    /**
+     * Sets the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered the
+     * base branch in your repository. The builds of all other branches and pull requests will use this target branch as
+     * baseline to search for a matching reference build.
+     *
+     * @param defaultBranch
+     *         the name of the default branch
+     * @deprecated use {@link #setTargetBranch(String)} instead
+     */
+    @Deprecated
+    @DataBoundSetter
+    public void setDefaultBranch(final String defaultBranch) {
+        this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
+    }
+
+    /**
+     * Returns the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered
+     * the base branch in your repository. The builds of all other branches and pull requests will use this target branch
+     * as baseline to search for a matching reference build.
+     *
+     * @return the name of the target branch
+     * @deprecated use {@link #getTargetBranch()} instead
+     */
+    @Deprecated
     public String getDefaultBranch() {
         return defaultBranch;
     }
