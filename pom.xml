@@ -26,7 +26,7 @@
     <!-- Library Dependencies Versions -->
     <testcontainers.version>1.17.6</testcontainers.version>
 
-    <plugin-util-api.version>3.0.0</plugin-util-api.version>
+    <plugin-util-api.version>3.1.0</plugin-util-api.version>
 
     <jquery3-api.version>3.6.3-1</jquery3-api.version>
     <plugin-util-api.version>3.0.0</plugin-util-api.version>
