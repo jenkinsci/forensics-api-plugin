@@ -26,15 +26,6 @@
     <!-- Library Dependencies Versions -->
     <testcontainers.version>1.17.6</testcontainers.version>
 
-    <plugin-util-api.version>3.1.0</plugin-util-api.version>
-
-    <jquery3-api.version>3.6.3-1</jquery3-api.version>
-    <plugin-util-api.version>3.1.0</plugin-util-api.version>
-    <bootstrap5-api.version>5.2.2-1</bootstrap5-api.version>
-    <font-awesome-api.version>6.3.0-1</font-awesome-api.version>
-    <data-tables-api.version>1.13.3-2</data-tables-api.version>
-    <echarts-api.version>5.4.0-2</echarts-api.version>
-
   </properties>
 
   <licenses>
@@ -52,49 +43,33 @@
     </developer>
   </developers>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.jenkins.plugins</groupId>
-        <artifactId>commons-text-api</artifactId>
-        <version>1.10.0-36.vc008c8fcda_7b_</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
 
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
-      <version>${plugin-util-api.version}</version>
     </dependency>
 
     <!-- Jenkins Plugin Dependencies -->
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>font-awesome-api</artifactId>
-      <version>${font-awesome-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>bootstrap5-api</artifactId>
-      <version>${bootstrap5-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>jquery3-api</artifactId>
-      <version>${jquery3-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>echarts-api</artifactId>
-      <version>${echarts-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>data-tables-api</artifactId>
-      <version>${data-tables-api.version}</version>
     </dependency>
 
     <dependency>
@@ -122,7 +97,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
-      <version>${plugin-util-api.version}</version>
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
