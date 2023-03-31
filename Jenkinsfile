@@ -164,7 +164,10 @@ def params = [
                         }
                         recordCoverage jacocoArguments
                         if (pit) {
-                          recordCoverage [tools: [[parser: 'PIT']]]
+                          recordCoverage(
+                                tools: [[parser: 'PIT']],
+                                id: 'pit',
+                                name: 'Mutation Coverage')
                         }
                       }
                     }
