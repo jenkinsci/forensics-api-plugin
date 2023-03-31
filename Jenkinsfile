@@ -5,6 +5,7 @@ def configurations = [
 
 def params = [
     failFast: false,
+    pit: true,
     configurations: configurations,
     checkstyle: [qualityGates: [[threshold: 1, type: 'NEW', unstable: true]]],
     pmd: [qualityGates: [[threshold: 1, type: 'NEW', unstable: true]]],
@@ -144,6 +145,10 @@ def params = [
                     mavenOptions += '-DskipTests'
                   }
                   mavenOptions += 'clean install'
+                  def pit = params.containsKey('pit') ? params.pit : false
+                  if (pit && first) {
+                    mavenOptions += ' org.pitest:pitest-maven:mutationCoverage'
+                  }
                   try {
                     infra.runMaven(mavenOptions, jdk, null, null, addToolEnv, useArtifactCachingProxy)
                   } finally {
@@ -158,6 +163,9 @@ def params = [
                           jacocoArguments.putAll(params.jacoco as Map)
                         }
                         recordCoverage jacocoArguments
+                        if (pit) {
+                          recordCoverage [tools: [[parser: 'PIT']]]
+                        }
                       }
                     }
                   }
