@@ -15,7 +15,6 @@ import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
-import edu.hm.hafner.echarts.Palette;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
@@ -25,6 +24,7 @@ import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.echarts.AsyncTrendChart;
+import io.jenkins.plugins.echarts.JenkinsPalette;
 import io.jenkins.plugins.forensics.util.CommitDecorator;
 
 /**
@@ -197,10 +197,10 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
             LinesChartModel model = new LinesChartModel(dataSet);
             model.setDomainAxisItemName("Commit");
-            LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), Palette.GREEN.getNormal(),
+            LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), JenkinsPalette.GREEN.normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             added.addAll(dataSet.getSeries(ADDED_KEY));
-            LineSeries deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), Palette.RED.getNormal(),
+            LineSeries deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), JenkinsPalette.RED.normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             deleted.addAll(dataSet.getSeries(DELETED_KEY));
 

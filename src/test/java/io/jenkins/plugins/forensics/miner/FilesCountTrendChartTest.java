@@ -9,7 +9,8 @@ import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LineSeries;
 import edu.hm.hafner.echarts.LinesChartModel;
-import edu.hm.hafner.echarts.Palette;
+
+import io.jenkins.plugins.echarts.JenkinsPalette;
 
 import static io.jenkins.plugins.forensics.miner.ResultStubs.*;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
@@ -30,7 +31,7 @@ class FilesCountTrendChartTest {
 
         LinesChartModel model = chart.create(results, new ChartModelConfiguration());
 
-        verifySeries(model.getSeries().get(0), Palette.BLUE, Messages.TrendChart_Files_Legend_Label(), 10, 20);
+        verifySeries(model.getSeries().get(0), JenkinsPalette.BLUE, Messages.TrendChart_Files_Legend_Label(), 10, 20);
 
         assertThatJson(model).node("domainAxisLabels")
                 .isArray().hasSize(2)
@@ -43,8 +44,8 @@ class FilesCountTrendChartTest {
                 .isArray().hasSize(2).containsExactly(10, 20);
     }
 
-    private void verifySeries(final LineSeries series, final Palette normalColor, final String newVersusFixedSeriesBuilderName, final int... values) {
-        assertThatJson(series).node("itemStyle").node("color").isEqualTo(normalColor.getNormal());
+    private void verifySeries(final LineSeries series, final JenkinsPalette normalColor, final String newVersusFixedSeriesBuilderName, final int... values) {
+        assertThatJson(series).node("itemStyle").node("color").isEqualTo(normalColor.normal());
         assertThatJson(series).node("name").isEqualTo(newVersusFixedSeriesBuilderName);
         for (int value : values) {
             assertThatJson(series).node("data").isArray().hasSize(values.length).contains(value);
