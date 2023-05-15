@@ -8,7 +8,8 @@ import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
-import edu.hm.hafner.echarts.Palette;
+
+import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
  * Builds the Java side model for a trend chart showing the total number of lines of code and churn for all files in the
@@ -38,11 +39,11 @@ class CodeMetricTrendChart {
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel(dataSet);
-        Palette[] colors = {Palette.BLUE, Palette.ORANGE};
+        JenkinsPalette[] colors = {JenkinsPalette.BLUE, JenkinsPalette.ORANGE};
         int index = 0;
         for (String name : dataSet.getDataSetIds()) {
             int colorIndex = (index++) % colors.length;
-            LineSeries series = new LineSeries(name, colors[colorIndex].getNormal(),
+            LineSeries series = new LineSeries(name, colors[colorIndex].normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.LINES);
             series.addAll(dataSet.getSeries(name));
             model.addSeries(series);

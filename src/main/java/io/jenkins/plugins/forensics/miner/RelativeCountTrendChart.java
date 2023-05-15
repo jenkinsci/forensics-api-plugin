@@ -8,8 +8,9 @@ import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
-import edu.hm.hafner.echarts.Palette;
 import edu.hm.hafner.echarts.SeriesBuilder;
+
+import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
  * Builds the Java side model for a trend chart showing the number modified files, commits and authors in the
@@ -41,11 +42,11 @@ class RelativeCountTrendChart {
         LinesDataSet dataSet = seriesBuilder.createDataSet(configuration, results);
         LinesChartModel model = new LinesChartModel(dataSet);
         if (dataSet.getDomainAxisSize() > 0) {
-            LineSeries authors = getSeries(dataSet, "Authors", Palette.BLUE,
+            LineSeries authors = getSeries(dataSet, "Authors", JenkinsPalette.BLUE,
                     RelativeCountForensicsSeriesBuilder.AUTHORS_KEY);
-            LineSeries commits = getSeries(dataSet, "Commits", Palette.GREEN,
+            LineSeries commits = getSeries(dataSet, "Commits", JenkinsPalette.GREEN,
                     RelativeCountForensicsSeriesBuilder.COMMITS_KEY);
-            LineSeries files = getSeries(dataSet, "Modified files", Palette.ORANGE,
+            LineSeries files = getSeries(dataSet, "Modified files", JenkinsPalette.ORANGE,
                     RelativeCountForensicsSeriesBuilder.FILES_KEY);
 
             model.addSeries(authors, commits, files);
@@ -55,8 +56,8 @@ class RelativeCountTrendChart {
     }
 
     private LineSeries getSeries(final LinesDataSet dataSet,
-            final String name, final Palette color, final String dataSetId) {
-        LineSeries series = new LineSeries(name, color.getNormal(), StackedMode.SEPARATE_LINES, FilledMode.LINES);
+            final String name, final JenkinsPalette color, final String dataSetId) {
+        LineSeries series = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.LINES);
         series.addAll(dataSet.getSeries(dataSetId));
         return series;
     }
