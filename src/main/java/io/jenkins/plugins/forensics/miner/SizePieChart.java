@@ -5,9 +5,10 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import edu.hm.hafner.echarts.Palette;
 import edu.hm.hafner.echarts.PieChartModel;
 import edu.hm.hafner.echarts.PieData;
+
+import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
  * Builds the model for a pie chart showing the distribution of issues by a configurable {@code size} property of the
@@ -41,7 +42,7 @@ class SizePieChart {
         }
         int color = 0;
         for (Entry<Integer, Integer> entry : distribution.entrySet()) {
-            model.add(new PieData("< " + entry.getKey(), entry.getValue()), Palette.color(color++));
+            model.add(new PieData("< " + entry.getKey(), entry.getValue()), JenkinsPalette.chartColor(color++).normal());
         }
         return model;
     }

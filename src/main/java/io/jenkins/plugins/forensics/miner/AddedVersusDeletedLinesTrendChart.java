@@ -8,8 +8,9 @@ import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
-import edu.hm.hafner.echarts.Palette;
 import edu.hm.hafner.echarts.SeriesBuilder;
+
+import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
  * Builds the Java side model for a trend chart showing the number of deleted and added lines of code in a build.
@@ -42,9 +43,9 @@ class AddedVersusDeletedLinesTrendChart {
         LinesDataSet dataSet = seriesBuilder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel(dataSet);
-        LineSeries newSeries = getSeries(dataSet, "Added Lines", Palette.GREEN,
+        LineSeries newSeries = getSeries(dataSet, "Added Lines", JenkinsPalette.GREEN,
                 AddedVersusDeletedLinesForensicsSeriesBuilder.ADDED);
-        LineSeries fixedSeries = getSeries(dataSet, "Deleted Lines", Palette.RED,
+        LineSeries fixedSeries = getSeries(dataSet, "Deleted Lines", JenkinsPalette.RED,
                 AddedVersusDeletedLinesForensicsSeriesBuilder.DELETED);
 
         model.addSeries(newSeries, fixedSeries);
@@ -53,8 +54,8 @@ class AddedVersusDeletedLinesTrendChart {
     }
 
     private LineSeries getSeries(final LinesDataSet dataSet,
-            final String name, final Palette color, final String dataSetId) {
-        LineSeries newSeries = new LineSeries(name, color.getNormal(), StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+            final String name, final JenkinsPalette color, final String dataSetId) {
+        LineSeries newSeries = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.FILLED);
         newSeries.addAll(dataSet.getSeries(dataSetId));
         return newSeries;
     }

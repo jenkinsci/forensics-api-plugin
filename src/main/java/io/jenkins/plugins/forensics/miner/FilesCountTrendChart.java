@@ -8,7 +8,8 @@ import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
-import edu.hm.hafner.echarts.Palette;
+
+import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
  * Builds the Java side model for a trend chart showing the number of files in the repository. The trend chart contains
@@ -37,7 +38,7 @@ class FilesCountTrendChart {
         LinesDataSet dataSet = builder.createDataSet(configuration, results);
 
         LinesChartModel model = new LinesChartModel(dataSet);
-        LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), Palette.BLUE.getNormal(),
+        LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), JenkinsPalette.BLUE.normal(),
                 StackedMode.SEPARATE_LINES, FilledMode.FILLED);
         if (dataSet.getDomainAxisSize() > 0) {
             series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));
