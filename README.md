@@ -1,8 +1,8 @@
 # Jenkins Forensics API Plugin
 
 [![Join the chat at https://gitter.im/jenkinsci/warnings-plugin](https://badges.gitter.im/jenkinsci/warnings-plugin.svg)](https://gitter.im/jenkinsci/warnings-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Jenkins](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/master/badge/icon?subject=Jenkins%20CI)](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/master/)
-[![GitHub Actions](https://github.com/jenkinsci/forensics-api-plugin/workflows/GitHub%20CI/badge.svg?branch=master)](https://github.com/jenkinsci/forensics-api-plugin/actions)
+[![Jenkins](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/main/badge/icon?subject=Jenkins%20CI)](https://ci.jenkins.io/job/Plugins/job/forensics-api-plugin/job/main/)
+[![GitHub Actions](https://github.com/jenkinsci/forensics-api-plugin/workflows/GitHub%20CI/badge.svg?branch=main)](https://github.com/jenkinsci/forensics-api-plugin/actions)
 [![Codecov](https://codecov.io/gh/jenkinsci/forensics-api-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/jenkinsci/forensics-api-plugin)
 
 This Forensics API Jenkins plug-in defines an API to mine and analyze data from a source control repository. 
