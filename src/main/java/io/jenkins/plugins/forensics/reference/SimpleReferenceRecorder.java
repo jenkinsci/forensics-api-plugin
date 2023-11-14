@@ -231,7 +231,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          * @return the model with the possible reference jobs
          * @deprecated use {@link #doFillReferenceJobItems(BuildableItem)}
          */
-        @POST @Deprecated
+        @Deprecated
         public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final AbstractProject<?, ?> project) {
             return doFillReferenceJobItems((BuildableItem) project);
         }
@@ -262,7 +262,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          * @return the validation result
          * @deprecated use {@link #doCheckReferenceJob(BuildableItem, String)}
          */
-        @POST @Deprecated
+        @Deprecated
         @SuppressWarnings("unused") // Used in jelly validation
         public FormValidation doCheckReferenceJob(@AncestorInPath final AbstractProject<?, ?> project,
                 @QueryParameter final String referenceJob) {
