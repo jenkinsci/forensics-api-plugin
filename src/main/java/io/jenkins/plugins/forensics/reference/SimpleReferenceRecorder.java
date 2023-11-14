@@ -19,6 +19,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
+import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -228,9 +229,22 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          * @param project
          *         the project that is configured
          * @return the model with the possible reference jobs
+         * @deprecated use {@link #doFillReferenceJobItems(BuildableItem)}
+         */
+        @POST @Deprecated
+        public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final AbstractProject<?, ?> project) {
+            return doFillReferenceJobItems((BuildableItem) project);
+        }
+
+        /**
+         * Returns the model with the possible reference jobs.
+         *
+         * @param project
+         *         the project that is configured
+         * @return the model with the possible reference jobs
          */
         @POST
-        public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final AbstractProject<?, ?> project) {
+        public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final BuildableItem project) {
             if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 return model.getAllJobs();
             }
@@ -246,10 +260,28 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          *         the reference job
          *
          * @return the validation result
+         * @deprecated use {@link #doCheckReferenceJob(BuildableItem, String)}
+         */
+        @POST @Deprecated
+        @SuppressWarnings("unused") // Used in jelly validation
+        public FormValidation doCheckReferenceJob(@AncestorInPath final AbstractProject<?, ?> project,
+                @QueryParameter final String referenceJob) {
+            return doCheckReferenceJob((BuildableItem) project, referenceJob);
+        }
+
+        /**
+         * Performs on-the-fly validation of the reference job.
+         *
+         * @param project
+         *         the project that is configured
+         * @param referenceJob
+         *         the reference job
+         *
+         * @return the validation result
          */
         @POST
         @SuppressWarnings("unused") // Used in jelly validation
-        public FormValidation doCheckReferenceJob(@AncestorInPath final AbstractProject<?, ?> project,
+        public FormValidation doCheckReferenceJob(@AncestorInPath final BuildableItem project,
                 @QueryParameter final String referenceJob) {
             if (!JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 return FormValidation.ok();
