@@ -19,6 +19,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
+import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -230,7 +231,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          * @return the model with the possible reference jobs
          */
         @POST
-        public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final AbstractProject<?, ?> project) {
+        public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final BuildableItem project) {
             if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 return model.getAllJobs();
             }
@@ -249,7 +250,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          */
         @POST
         @SuppressWarnings("unused") // Used in jelly validation
-        public FormValidation doCheckReferenceJob(@AncestorInPath final AbstractProject<?, ?> project,
+        public FormValidation doCheckReferenceJob(@AncestorInPath final BuildableItem project,
                 @QueryParameter final String referenceJob) {
             if (!JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 return FormValidation.ok();
