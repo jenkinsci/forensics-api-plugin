@@ -13,18 +13,14 @@ import java.util.Objects;
  */
 @SuppressWarnings("PMD.DataClass")
 public class Delta implements Serializable {
+    private static final long serialVersionUID = 5641235877389921937L;
 
     static final String ERROR_MESSAGE_UNKNOWN_FILE = "No information about changes for the file with the ID '%s' stored";
 
-    private static final long serialVersionUID = 5641235877389921937L;
-
     private final String currentCommit;
-
     private final String referenceCommit;
 
-    /**
-     * Map which contains the changes for modified files, mapped by the file ID.
-     */
+    /** Contains the changes for modified files, mapped by the file ID. */
     private final Map<String, FileChanges> fileChangesMap;
 
     /**

@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class SizePieChartTest {
-
     @Test
     void shouldCreateEmptyModel() {
         SizePieChart chart = new SizePieChart();

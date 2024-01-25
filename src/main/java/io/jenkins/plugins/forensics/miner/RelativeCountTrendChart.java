@@ -61,5 +61,4 @@ class RelativeCountTrendChart {
         series.addAll(dataSet.getSeries(dataSetId));
         return series;
     }
-
 }

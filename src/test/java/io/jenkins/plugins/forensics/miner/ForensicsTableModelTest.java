@@ -5,11 +5,10 @@ import org.junit.jupiter.api.Test;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.forensics.miner.ForensicsTableModel.ForensicsRow;
 
-import static io.jenkins.plugins.forensics.assertions.Assertions.assertThat;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ForensicsTableModelTest {
-
     @Test
     void shouldCreateForensicsTableModel() {
         RepositoryStatistics statistics = new RepositoryStatistics();
@@ -29,7 +28,6 @@ class ForensicsTableModelTest {
                         Messages.Table_Column_LOC(),
                         Messages.Table_Column_Churn()
                 );
-
     }
 
     @Test
@@ -76,5 +74,4 @@ class ForensicsTableModelTest {
                 .hasLinesOfCode(5)
                 .hasChurn(6);
     }
-
 }

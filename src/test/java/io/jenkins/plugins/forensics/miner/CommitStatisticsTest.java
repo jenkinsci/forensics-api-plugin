@@ -162,7 +162,6 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
 
         CommitStatistics secondCommit = new CommitStatistics(commits);
         assertThat(secondCommit).hasAuthorCount(1);
-
     }
 
     private TreeString asTreeString(final String old) {

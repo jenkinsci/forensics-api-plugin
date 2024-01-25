@@ -17,7 +17,6 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  * @author Florian Orendi
  */
 class DeltaTest {
-
     private static final String CURRENT_COMMIT_ID = "testIdOne";
     private static final String REFERENCE_COMMIT_ID = "testIdTwo";
     private static final Map<String, FileChanges> FILE_CHANGES_MAP = Collections.emptyMap();
