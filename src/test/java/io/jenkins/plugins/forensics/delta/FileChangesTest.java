@@ -57,7 +57,7 @@ class FileChangesTest {
         assertThat(fileChanges.getChanges()).containsOnly(
                 entry(changeEditType, Set.of(first, second)),
                 entry(ChangeEditType.DELETE, Set.of(unrelated)));
-        assertThat(fileChanges.getChangesByType(changeEditType)).containsExactly(first, second);
+        assertThat(fileChanges.getChangesByType(changeEditType)).containsExactlyInAnyOrder(first, second);
         assertThat(fileChanges).hasModifiedLines(10, 11, 12, 13, 14, 100);
     }
 
