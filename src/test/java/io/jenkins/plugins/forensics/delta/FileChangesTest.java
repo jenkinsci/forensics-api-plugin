@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the class {@link FileChanges}.
@@ -17,21 +17,20 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
  * @author Florian Orendi
  */
 class FileChangesTest {
-
     private static final String FILE_NAME = "test";
     private static final String OLD_FILE_NAME = "testOld";
     private static final String FILE_CONTENT = "test";
     private static final FileEditType FILE_EDIT_TYPE = FileEditType.ADD;
-    private static final Map<ChangeEditType, Set<Change>> FILE_CHANGES = Collections.emptyMap();
 
     @Test
-    void testFileChangesGetter() {
+    void shouldCreateEmptyChanges() {
         FileChanges fileChanges = createFileChanges();
-        assertThat(fileChanges.getFileName()).isEqualTo(FILE_NAME);
-        assertThat(fileChanges.getOldFileName()).isEqualTo(OLD_FILE_NAME);
-        assertThat(fileChanges.getFileContent()).isEqualTo(FILE_CONTENT);
-        assertThat(fileChanges.getFileEditType()).isEqualTo(FILE_EDIT_TYPE);
-        assertThat(fileChanges.getChanges()).isEqualTo(FILE_CHANGES);
+        assertThat(fileChanges).hasFileName(FILE_NAME)
+                .hasOldFileName(OLD_FILE_NAME)
+                .hasFileContent(FILE_CONTENT)
+                .hasFileEditType(FILE_EDIT_TYPE)
+                .hasNoModifiedLines()
+                .hasChanges(Map.of());
     }
 
     @Test
@@ -48,27 +47,29 @@ class FileChangesTest {
         assertThat(fileChanges.getChanges()).isEmpty();
         assertThat(fileChanges.getChangesByType(changeEditType)).isEmpty();
 
-        Change change = Mockito.mock(Change.class);
-        Mockito.when(change.getEditType()).thenReturn(changeEditType);
+        var first = createChange(changeEditType, 10, 14);
+        fileChanges.addChange(first);
+        var second = createChange(changeEditType, 100, 100);
+        fileChanges.addChange(second);
+        var unrelated = createChange(ChangeEditType.DELETE, 1000, 2000);
+        fileChanges.addChange(unrelated);
 
-        fileChanges.addChange(change);
-        fileChanges.addChange(change);
-
-        Map<ChangeEditType, Set<Change>> changesMap = fileChanges.getChanges();
-        assertThat(changesMap.size()).isEqualTo(1);
-        assertThat(changesMap).containsKey(changeEditType);
-
-        Set<Change> changes = fileChanges.getChangesByType(changeEditType);
-        assertThat(changes.size()).isEqualTo(1);
-        assertThat(changes).contains(change);
+        assertThat(fileChanges).hasChanges(
+                Map.of(changeEditType, Set.of(first, second),
+                        ChangeEditType.DELETE, Set.of(unrelated)));
+        assertThat(fileChanges.getChangesByType(changeEditType)).containsExactly(first, second);
+        assertThat(fileChanges).hasModifiedLines(10, 11, 12, 13, 14, 100);
     }
 
-    /**
-     * Factory method which creates an instance of {@link FileChanges}.
-     *
-     * @return the created instance
-     */
+    private Change createChange(final ChangeEditType changeEditType, final int start, final int end) {
+        Change change = mock(Change.class);
+        when(change.getEditType()).thenReturn(changeEditType);
+        when(change.getFromLine()).thenReturn(start);
+        when(change.getToLine()).thenReturn(end);
+        return change;
+    }
+
     private FileChanges createFileChanges() {
-        return new FileChanges(FILE_NAME, OLD_FILE_NAME, FILE_CONTENT, FILE_EDIT_TYPE, FILE_CHANGES);
+        return new FileChanges(FILE_NAME, OLD_FILE_NAME, FILE_CONTENT, FILE_EDIT_TYPE, Collections.emptyMap());
     }
 }
