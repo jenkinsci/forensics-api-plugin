@@ -54,9 +54,9 @@ class FileChangesTest {
         var unrelated = createChange(ChangeEditType.DELETE, 1000, 2000);
         fileChanges.addChange(unrelated);
 
-        assertThat(fileChanges).hasChanges(
-                Map.of(changeEditType, Set.of(first, second),
-                        ChangeEditType.DELETE, Set.of(unrelated)));
+        assertThat(fileChanges.getChanges()).containsOnly(
+                entry(changeEditType, Set.of(first, second)),
+                entry(ChangeEditType.DELETE, Set.of(unrelated)));
         assertThat(fileChanges.getChangesByType(changeEditType)).containsExactly(first, second);
         assertThat(fileChanges).hasModifiedLines(10, 11, 12, 13, 14, 100);
     }
