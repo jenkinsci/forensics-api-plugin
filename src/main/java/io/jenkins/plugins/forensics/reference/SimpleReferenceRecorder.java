@@ -283,7 +283,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         }
 
         @VisibleForTesting
-        SimpleReferenceRecorderDescriptor(final JenkinsFacade jenkins) {
+        protected SimpleReferenceRecorderDescriptor(final JenkinsFacade jenkins) {
             this(jenkins, new ReferenceJobModelValidation(jenkins));
         }
 
