@@ -14,7 +14,6 @@ import io.jenkins.plugins.util.JenkinsFacade;
 
 import static io.jenkins.plugins.forensics.reference.ReferenceRecorder.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.SoftAssertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,11 +39,8 @@ class ReferenceJobModelValidationTest {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
         ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
 
-        assertSoftly(softly -> {
-            softly.assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.ERROR);
-            softly.assertThat(model.validateJob("").kind).isEqualTo(Kind.ERROR);
-            softly.assertThat(model.validateJob(null).kind).isEqualTo(Kind.ERROR);
-        });
+        assertThat(model.validateJob("").kind).isEqualTo(Kind.OK);
+        assertThat(model.validateJob(null).kind).isEqualTo(Kind.OK);
     }
 
     @Test
@@ -59,6 +55,7 @@ class ReferenceJobModelValidationTest {
 
         assertThat(model.validateJob(jobName).kind).isEqualTo(Kind.OK);
         assertThat(model.validateJob("other").kind).isEqualTo(Kind.ERROR);
+        assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.ERROR);
     }
 
     @Test
