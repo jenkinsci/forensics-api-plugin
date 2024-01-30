@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.kohsuke.stapler.AncestorInPath;
@@ -271,7 +272,28 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     @Extension
     @Symbol("discoverReferenceBuild")
     public static class SimpleReferenceRecorderDescriptor extends BuildStepDescriptor<Publisher> {
-        private static final JenkinsFacade JENKINS = new JenkinsFacade();
+        private final JenkinsFacade jenkins;
+        private final ReferenceJobModelValidation model;
+
+        /**
+         * Creates a new descriptor with the concrete services.
+         */
+        public SimpleReferenceRecorderDescriptor() {
+            this(new JenkinsFacade(), new ReferenceJobModelValidation());
+        }
+
+        @VisibleForTesting
+        SimpleReferenceRecorderDescriptor(final JenkinsFacade jenkins) {
+            this(jenkins, new ReferenceJobModelValidation(jenkins));
+        }
+
+        @VisibleForTesting
+        SimpleReferenceRecorderDescriptor(final JenkinsFacade jenkins, final ReferenceJobModelValidation model) {
+            super();
+
+            this.jenkins = jenkins;
+            this.model =  model;
+        }
 
         @NonNull
         @Override
@@ -284,8 +306,6 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
             return true;
         }
 
-        private final ReferenceJobModelValidation model = new ReferenceJobModelValidation();
-
         /**
          * Returns the model with the possible reference jobs.
          *
@@ -296,7 +316,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          */
         @POST
         public ComboBoxModel doFillReferenceJobItems(@AncestorInPath final BuildableItem project) {
-            if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
+            if (jenkins.hasPermission(Item.CONFIGURE, project)) {
                 return model.getAllJobs();
             }
             return new ComboBoxModel();
@@ -316,7 +336,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         @SuppressWarnings("unused") // Used in jelly validation
         public FormValidation doCheckReferenceJob(@AncestorInPath final BuildableItem project,
                 @QueryParameter final String referenceJob) {
-            if (!JENKINS.hasPermission(Item.CONFIGURE, project)) {
+            if (!jenkins.hasPermission(Item.CONFIGURE, project)) {
                 return FormValidation.ok();
             }
             return model.validateJob(referenceJob);
@@ -333,7 +353,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         @POST
         public ListBoxModel doFillRequiredResultItems(@AncestorInPath final BuildableItem project) {
             var resultModel = new ListBoxModel();
-            if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
+            if (jenkins.hasPermission(Item.CONFIGURE, project)) {
                 resultModel.add(Messages.RequiredResult_Failure(), Result.FAILURE.toString());
                 resultModel.add(Messages.RequiredResult_Unstable(), Result.UNSTABLE.toString());
                 resultModel.add(Messages.RequiredResult_Success(), Result.SUCCESS.toString());
