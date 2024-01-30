@@ -331,7 +331,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          * @return the model with the possible build results
          */
         @POST
-        public ListBoxModel doFillRequiredResult(@AncestorInPath final BuildableItem project) {
+        public ListBoxModel doFillRequiredResultItems(@AncestorInPath final BuildableItem project) {
             var resultModel = new ListBoxModel();
             if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
                 resultModel.add(Messages.RequiredResult_Failure(), Result.FAILURE.toString());
