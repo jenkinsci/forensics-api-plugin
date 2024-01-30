@@ -22,6 +22,7 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -30,6 +31,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.ComboBoxModel;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import jenkins.branch.MultiBranchProject;
 import jenkins.tasks.SimpleBuildStep;
 
@@ -54,8 +56,8 @@ import io.jenkins.plugins.util.LogHandler;
  * </p>
  *
  * <p>
- * This recorder unifies the computation of the reference build so consuming plugins can simply use the resulting {@link
- * ReferenceBuild} in order to get a reference for their delta reports.
+ * This recorder unifies the computation of the reference build so consuming plugins can simply use the resulting
+ * {@link ReferenceBuild} in order to get a reference for their delta reports.
  * </p>
  *
  * @author Arne Schöntag
@@ -68,6 +70,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
 
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;
+    private Result requiredResult = Result.FAILURE;
 
     /**
      * Creates a new instance of {@link SimpleReferenceRecorder}.
@@ -90,9 +93,22 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     }
 
     /**
-     * Sets the reference job: this job will be used as baseline to search for the best matching reference build. If the
-     * reference job should be computed automatically (supported by {@link MultiBranchProject multi-branch projects}
-     * only), then let this field empty.
+     * Called after deserialization to retain backward compatibility.
+     *
+     * @return this
+     */
+    protected Object readResolve() {
+        if (requiredResult == null) {
+            requiredResult = Result.FAILURE;
+        }
+        return this;
+    }
+
+    /**
+     * Sets the reference job: this job will be used as a baseline to search for the best matching reference build. If
+     * the reference job should be computed automatically (supported by {@link MultiBranchProject multi-branch projects}
+     * only), then let this field empty. If the reference job is not defined and cannot be computed automatically, then
+     * the current job will be used.
      *
      * @param referenceJob
      *         the name of reference job
@@ -117,6 +133,51 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         return referenceJob;
     }
 
+    /**
+     * Sets that required build result of the reference build. If the reference build has a worse status, then the
+     * selected reference build will not be used.
+     *
+     * @param requiredResult
+     *         the minimum required build result
+     */
+    @DataBoundSetter
+    public void setRequiredResult(final Result requiredResult) {
+        this.requiredResult = requiredResult;
+    }
+
+    public Result getRequiredResult() {
+        return requiredResult;
+    }
+
+    /**
+     * Returns whether the specified build has a result that is better or equal than the required result.
+     *
+     * @param referenceBuild
+     *         the reference build to check
+     *
+     * @return {@code true} if the build has a result that is better or equal than the required result, {@code false}
+     *         otherwise
+     */
+    protected boolean hasRequiredResult(final Run<?, ?> referenceBuild) {
+        var result = referenceBuild.getResult();
+
+        return result != null && result.isBetterOrEqualTo(requiredResult);
+    }
+
+    /**
+     * Creates a message that the reference build has a result that is worse than the required result.
+     *
+     * @param referenceBuild
+     *         the reference build to check
+     * @return the message
+     */
+    protected String createStatusNotSufficientMessage(final Run<?, ?> referenceBuild) {
+        return String.format("-> ignoring reference build '%s' since it has a result of %s, but required is %s or better",
+                referenceBuild.getDisplayName(),
+                referenceBuild.getResult(),
+                requiredResult);
+    }
+
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
@@ -139,22 +200,24 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     }
 
     protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
-        Optional<Job<?, ?>> actualReferenceJob = resolveReferenceJob(log);
-        if (actualReferenceJob.isPresent()) {
-            Job<?, ?> reference = actualReferenceJob.get();
-            Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
-            if (lastCompletedBuild == null) {
-                log.logInfo("No completed build found");
-            }
-            else {
-                log.logInfo("Found reference build '%s' for target branch", lastCompletedBuild.getDisplayName());
+        Job<?, ?> reference = resolveReferenceJob(log).orElse(run.getParent()); // fallback is the same job
+        Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
+        if (lastCompletedBuild == null) {
+            log.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
 
+            return createEmptyReferenceBuild(run, log.getInfoMessages());
+        }
+        else {
+            log.logInfo("Found reference build '%s' of reference job '%s'", lastCompletedBuild.getDisplayName(),
+                    reference.getDisplayName());
+
+            if (hasRequiredResult(lastCompletedBuild)) {
                 return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
             }
-        }
-        log.logError("You need to define a valid reference job using the 'referenceJob' property");
+            log.logInfo(createStatusNotSufficientMessage(lastCompletedBuild));
 
-        return createEmptyReferenceBuild(run, log.getInfoMessages());
+            return createEmptyReferenceBuild(run, log.getInfoMessages());
+        }
     }
 
     protected ReferenceBuild createEmptyReferenceBuild(final Run<?, ?> run, final List<String> messages) {
@@ -162,7 +225,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     }
 
     /**
-     * Finds a reference job that should be used as starting point to find the reference build.
+     * Finds a reference job that should be used as a starting point to find the reference build.
      *
      * @param log
      *         the logger
@@ -192,7 +255,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      */
     protected Optional<Job<?, ?>> findJob(final String jobName, final FilteredLog log) {
         Optional<Job<?, ?>> job = jenkins.getJob(jobName);
-        if (!job.isPresent()) {
+        if (job.isEmpty()) {
             log.logInfo("There is no such job - maybe the job has been renamed or deleted?");
         }
         return job;
@@ -228,6 +291,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          *
          * @param project
          *         the project that is configured
+         *
          * @return the model with the possible reference jobs
          */
         @POST
@@ -256,6 +320,25 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
                 return FormValidation.ok();
             }
             return model.validateJob(referenceJob);
+        }
+
+        /**
+         * Returns the model with the possible build results.
+         *
+         * @param project
+         *         the project that is configured
+         *
+         * @return the model with the possible build results
+         */
+        @POST
+        public ListBoxModel doFillRequiredResult(@AncestorInPath final BuildableItem project) {
+            var resultModel = new ListBoxModel();
+            if (JENKINS.hasPermission(Item.CONFIGURE, project)) {
+                resultModel.add(Messages.RequiredResult_Failure(), Result.FAILURE.toString());
+                resultModel.add(Messages.RequiredResult_Unstable(), Result.UNSTABLE.toString());
+                resultModel.add(Messages.RequiredResult_Success(), Result.SUCCESS.toString());
+            }
+            return resultModel;
         }
     }
 }

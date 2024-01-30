@@ -85,34 +85,6 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
      * base branch in your repository. The builds of all other branches and pull requests will use this target branch as
      * baseline to search for a matching reference build.
      *
-     * @param defaultBranch
-     *         the name of the default branch
-     * @deprecated use {@link #setTargetBranch(String)} instead
-     */
-    @Deprecated
-    @DataBoundSetter
-    public void setDefaultBranch(final String defaultBranch) {
-        this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
-    }
-
-    /**
-     * Returns the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered
-     * the base branch in your repository. The builds of all other branches and pull requests will use this target branch
-     * as baseline to search for a matching reference build.
-     *
-     * @return the name of the target branch
-     * @deprecated use {@link #getTargetBranch()} instead
-     */
-    @Deprecated
-    public String getDefaultBranch() {
-        return defaultBranch;
-    }
-
-    /**
-     * Sets the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered the
-     * base branch in your repository. The builds of all other branches and pull requests will use this target branch as
-     * baseline to search for a matching reference build.
-     *
      * @param targetBranch
      *         the name of the default branch
      */
@@ -163,7 +135,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
                     return new ReferenceBuild(run, logger.getInfoMessages(), result);
                 }
-                logger.logInfo("No reference build found that contains matching commits");
+                logger.logInfo("No reference build with required status found that contains matching commits");
                 if (isLatestBuildIfNotFound()) {
                     logger.logInfo("Falling back to latest build of reference job: '%s'",
                             lastCompletedBuild.getDisplayName());

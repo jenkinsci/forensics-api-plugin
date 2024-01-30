@@ -38,14 +38,13 @@ class ReferenceRecorderTest {
         ReferenceRecorder recorder = new NullReferenceRecorder();
 
         assertThat(recorder)
-                .hasDefaultBranch(StringUtils.EMPTY)
                 .hasTargetBranch(StringUtils.EMPTY)
                 .hasScm(StringUtils.EMPTY);
     }
 
     /**
      * Verifies the first alternative: the current build is for a pull request part in a multi-branch project. In this
-     * case the target branch stored in the PR will be used as reference job.
+     *  case, the target branch stored in the PR will be used as the reference job.
      */
     @Test
     void shouldObtainReferenceFromPullRequestTarget() {
@@ -72,7 +71,7 @@ class ReferenceRecorderTest {
     /**
      * Verifies the second alternative: the current build is part of a multi-branch project (but not for a PR).
      * Additionally, a primary branch has been configured for the multi-branch project using the action {@link
-     * PrimaryInstanceMetadataAction}. In this case this configured primary target will be used as reference job.
+     * PrimaryInstanceMetadataAction}. In this case, this configured primary target will be used as the reference job.
      */
     @Test
     void shouldFindReferenceJobUsingPrimaryBranch() {

@@ -31,7 +31,7 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
 
     /**
      * Indicates that no reference build has been found. Note that this value is not used when the build has been found
-     * initially but has been deleted afterwards.
+     * initially but has been deleted afterward.
      */
     public static final String NO_REFERENCE_BUILD = "-";
 
@@ -65,10 +65,10 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
     private transient Run<?, ?> owner;
 
     /**
-     * Creates  a new instance of {@link ReferenceBuild} that indicates that no reference build has been found.
+     * Creates a new instance of {@link ReferenceBuild} that indicates that no reference build has been found.
      *
      * @param owner
-     *         the current run as owner of this action
+     *         the current run as the owner of this action
      * @param messages
      *         messages that show the steps the resolution process
      */
@@ -80,7 +80,7 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
      * Creates a new instance of {@link ReferenceBuild} that points to the specified reference build.
      *
      * @param owner
-     *         the current build as owner of this action
+     *         the current build as the owner of this action
      * @param messages
      *         messages that show the steps of the resolution process
      * @param referenceBuild
