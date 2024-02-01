@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -8,26 +9,14 @@
     <relativePath />
   </parent>
 
-  <artifactId>forensics-api</artifactId>
   <groupId>io.jenkins.plugins</groupId>
-  <packaging>hpi</packaging>
-  <name>Forensics API Plugin</name>
+  <artifactId>forensics-api</artifactId>
   <version>${revision}${changelist}</version>
+  <packaging>hpi</packaging>
 
+  <name>Forensics API Plugin</name>
   <description>Defines an API for Jenkins to mine and analyze data from a source code repository.</description>
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
-
-  <properties>
-    <revision>2.4.0</revision>
-    <changelist>-SNAPSHOT</changelist>
-
-    <module.name>${project.groupId}.forensics.api</module.name>
-
-    <!-- Library Dependencies Versions -->
-    <testcontainers.version>1.19.3</testcontainers.version>
-
-  </properties>
-
   <licenses>
     <license>
       <name>MIT license</name>
@@ -42,6 +31,24 @@
       <email>ullrich.hafner@gmail.com</email>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/jenkinsci/forensics-api-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/forensics-api-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
+    <tag>${scmTag}</tag>
+  </scm>
+
+  <properties>
+    <revision>2.4.0</revision>
+    <changelist>-SNAPSHOT</changelist>
+
+    <module.name>${project.groupId}.forensics.api</module.name>
+
+    <!-- Library Dependencies Versions -->
+    <testcontainers.version>1.19.3</testcontainers.version>
+
+  </properties>
 
   <dependencies>
 
@@ -97,8 +104,8 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
-      <scope>test</scope>
       <classifier>tests</classifier>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -139,6 +146,23 @@
     </dependency>
 
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+    <repository>
+      <id>incrementals.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/incrementals/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <build>
     <plugins>
@@ -185,31 +209,4 @@
 
     </plugins>
   </build>
-
-  <scm>
-    <connection>scm:git:https://github.com/jenkinsci/forensics-api-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/forensics-api-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
-    <tag>${scmTag}</tag>
-  </scm>
-
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </repository>
-    <repository>
-      <id>incrementals.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/incrementals/</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
-
 </project>
-

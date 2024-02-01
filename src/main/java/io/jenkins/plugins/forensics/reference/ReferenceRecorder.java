@@ -199,7 +199,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
                 return Optional.of(job);
             }
-            logger.logInfo("Consider configuring a reference job using the 'referenceJob' property");
+            logger.logInfo("Do not use a reference job and skip delta reporting");
         }
         return Optional.empty();
     }
