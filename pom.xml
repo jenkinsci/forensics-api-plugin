@@ -17,18 +17,6 @@
   <name>Forensics API Plugin</name>
   <description>Defines an API for Jenkins to mine and analyze data from a source code repository.</description>
   <url>https://github.com/jenkinsci/forensics-api-plugin</url>
-
-  <properties>
-    <revision>2.4.0</revision>
-    <changelist>-SNAPSHOT</changelist>
-
-    <module.name>${project.groupId}.forensics.api</module.name>
-
-    <!-- Library Dependencies Versions -->
-    <testcontainers.version>1.19.3</testcontainers.version>
-
-  </properties>
-
   <licenses>
     <license>
       <name>MIT license</name>
