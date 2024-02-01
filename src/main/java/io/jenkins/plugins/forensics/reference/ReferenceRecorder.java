@@ -194,6 +194,11 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             return findJobForTargetBranch(multiBranchProject, job, DEFAULT_TARGET_BRANCH, logger);
         }
         else {
+            if (StringUtils.isEmpty(getReferenceJob())) {
+                logger.logInfo("Falling back to current job '%s'", job.getDisplayName());
+
+                return Optional.of(job);
+            }
             logger.logInfo("Consider configuring a reference job using the 'referenceJob' property");
         }
         return Optional.empty();

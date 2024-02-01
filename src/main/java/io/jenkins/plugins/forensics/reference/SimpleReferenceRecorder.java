@@ -201,12 +201,10 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     }
 
     protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
-        Job<?, ?> reference = resolveReferenceJob(log).orElse(run.getParent()); // fallback is the same job
+        Job<?, ?> reference = resolveReferenceJob(log).orElseGet(() -> fallBackToCurrentJob(run, log));
         Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
         if (lastCompletedBuild == null) {
             log.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
-
-            return createEmptyReferenceBuild(run, log.getInfoMessages());
         }
         else {
             log.logInfo("Found reference build '%s' of reference job '%s'", lastCompletedBuild.getDisplayName(),
@@ -216,9 +214,14 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
                 return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
             }
             log.logInfo(createStatusNotSufficientMessage(lastCompletedBuild));
-
-            return createEmptyReferenceBuild(run, log.getInfoMessages());
         }
+        return createEmptyReferenceBuild(run, log.getInfoMessages());
+    }
+
+    private Job<?, ?> fallBackToCurrentJob(final Run<?, ?> run, final FilteredLog log) {
+        Job<?, ?> parent = run.getParent();
+        log.logInfo("Falling back to current job '%s'", parent.getDisplayName());
+        return parent;
     }
 
     protected ReferenceBuild createEmptyReferenceBuild(final Run<?, ?> run, final List<String> messages) {
@@ -241,6 +244,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
             return findJob(jobName, log);
         }
 
+        log.logInfo("No reference job configured");
         return Optional.empty();
     }
 

@@ -49,7 +49,9 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
         assertThat(findReferenceBuild(build)).contains(referenceBuild);
         assertThat(getConsoleLog(build))
-                .contains("Found reference build '#1' of reference job '" + job.getDisplayName());
+                .contains("No reference job configured",
+                        "Falling back to current job",
+                        "Found reference build '#1' of reference job '" + job.getDisplayName());
     }
 
     @Test
