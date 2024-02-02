@@ -66,9 +66,6 @@ import io.jenkins.plugins.util.LogHandler;
  */
 @SuppressWarnings("PMD.ExcessiveImports")
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
-    /** Indicates that no reference job has been defined yet. */
-    public static final String NO_REFERENCE_JOB = "-";
-
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;
     private Result requiredResult = Result.FAILURE;
@@ -116,21 +113,15 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      */
     @DataBoundSetter
     public void setReferenceJob(final String referenceJob) {
-        if (NO_REFERENCE_JOB.equals(referenceJob)) {
-            this.referenceJob = StringUtils.EMPTY;
-        }
         this.referenceJob = StringUtils.strip(referenceJob);
     }
 
     /**
-     * Returns the name of the reference job. If the job is not defined, then {@link #NO_REFERENCE_JOB} is returned.
+     * Returns the name of the reference job.
      *
-     * @return the name of reference job, or {@link #NO_REFERENCE_JOB} if undefined
+     * @return the name of reference job
      */
     public String getReferenceJob() {
-        if (StringUtils.isBlank(referenceJob)) {
-            return NO_REFERENCE_JOB;
-        }
         return referenceJob;
     }
 
@@ -267,7 +258,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     }
 
     private boolean isValidJobName(final String name) {
-        return StringUtils.isNotBlank(name) && !NO_REFERENCE_JOB.equals(name);
+        return StringUtils.isNotBlank(name);
     }
 
     /**

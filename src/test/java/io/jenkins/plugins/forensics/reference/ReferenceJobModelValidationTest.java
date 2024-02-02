@@ -12,7 +12,6 @@ import hudson.util.FormValidation.Kind;
 
 import io.jenkins.plugins.util.JenkinsFacade;
 
-import static io.jenkins.plugins.forensics.reference.ReferenceRecorder.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -55,7 +54,6 @@ class ReferenceJobModelValidationTest {
 
         assertThat(model.validateJob(jobName).kind).isEqualTo(Kind.OK);
         assertThat(model.validateJob("other").kind).isEqualTo(Kind.ERROR);
-        assertThat(model.validateJob(NO_REFERENCE_JOB).kind).isEqualTo(Kind.ERROR);
     }
 
     @Test
