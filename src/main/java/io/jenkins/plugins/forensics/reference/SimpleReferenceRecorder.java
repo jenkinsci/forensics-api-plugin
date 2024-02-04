@@ -84,6 +84,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      * @param jenkins
      *         facade to Jenkins
      */
+    @VisibleForTesting
     protected SimpleReferenceRecorder(final JenkinsFacade jenkins) {
         super();
 
