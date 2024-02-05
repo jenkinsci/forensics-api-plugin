@@ -68,7 +68,7 @@ import io.jenkins.plugins.util.LogHandler;
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;
-    private Result requiredResult = Result.FAILURE;
+    private Result requiredResult = Result.UNSTABLE; // @since 2.4.0
 
     /**
      * Creates a new instance of {@link SimpleReferenceRecorder}.
@@ -98,7 +98,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      */
     protected Object readResolve() {
         if (requiredResult == null) {
-            requiredResult = Result.FAILURE;
+            requiredResult = Result.UNSTABLE;
         }
         return this;
     }

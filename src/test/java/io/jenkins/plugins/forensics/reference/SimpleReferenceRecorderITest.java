@@ -89,29 +89,8 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         assertThat(getConsoleLog(current)).contains("No completed build found");
     }
 
-    @Test
-    void shouldUseFailedBuildsByDefault() {
-        WorkflowJob reference = createPipeline();
-        reference.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + "brokenCommand()\n"
-                        + " }\n", true));
-        Run<?, ?> referenceBuild = buildWithResult(reference, Result.FAILURE);
-
-        WorkflowJob job = createPipeline();
-        job.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + discoverReferenceJob(reference.getName())
-                        + " }\n", true));
-        Run<?, ?> current = buildSuccessfully(job);
-
-        assertThat(findReferenceBuild(current)).contains(referenceBuild);
-        assertThat(getConsoleLog(current))
-                .contains("Found reference build '#1' of reference job '" + reference.getDisplayName());
-    }
-
-    @ParameterizedTest(name = "[{index}] Required result: {0}")
-    @ValueSource(strings = {"SUCCESS", "UNSTABLE"})
+    @ParameterizedTest(name = "[{index}] Required result: \"{0}\"")
+    @ValueSource(strings = {"SUCCESS", "UNSTABLE", ""})
     @Issue("JENKINS-72015")
     void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) {
         WorkflowJob reference = createPipeline();
@@ -122,17 +101,25 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         buildWithResult(reference, Result.FAILURE);
 
         WorkflowJob job = createPipeline();
-        job.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + discoverReferenceJob(reference.getName(), String.format("requiredResult: '%s'", requiredResult))
-                        + " }\n", true));
+        String script;
+        if (StringUtils.isBlank(requiredResult)) {
+            script = "node {\n"
+                    + discoverReferenceJob(reference.getName())
+                    + " }\n";
+        }
+        else {
+            script = "node {\n"
+                    + discoverReferenceJob(reference.getName(), String.format("requiredResult: '%s'", requiredResult))
+                    + " }\n";
+        }
+        job.setDefinition(new CpsFlowDefinition(script, true));
 
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).isEmpty();
         assertThat(getConsoleLog(current)).contains(
                 String.format("-> ignoring reference build '#1' since it has a result of FAILURE, "
-                        + "but required is %s or better", requiredResult));
+                        + "but required is %s or better", StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
     }
 
     private String discoverReferenceJob(final String referenceJobName, final String... arguments) {

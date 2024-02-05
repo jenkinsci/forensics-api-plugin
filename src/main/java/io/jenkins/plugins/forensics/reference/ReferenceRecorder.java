@@ -56,10 +56,18 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     /**
      * Creates a new instance of {@link ReferenceRecorder}.
+     */
+    protected ReferenceRecorder() {
+        super();
+    }
+
+    /**
+     * Creates a new instance of {@link ReferenceRecorder}.
      *
      * @param jenkins
      *         facade to Jenkins
      */
+    @VisibleForTesting
     protected ReferenceRecorder(final JenkinsFacade jenkins) {
         super(jenkins);
     }
