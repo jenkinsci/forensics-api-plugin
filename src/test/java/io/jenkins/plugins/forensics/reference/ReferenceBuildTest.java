@@ -42,16 +42,16 @@ class ReferenceBuildTest {
     void shouldHandleMissingReferenceBuild() {
         Run<?, ?> currentBuild = mock(Run.class);
 
-        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.UNSTABLE);
+        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE);
 
-        assertThat(referenceBuild).doesNotHaveReferenceBuild();
-        assertThat(referenceBuild).hasOnlyMessages(MESSAGES);
-        assertThat(referenceBuild).hasOwner(currentBuild);
-        assertThat(referenceBuild).hasReferenceBuildId(ReferenceBuild.NO_REFERENCE_BUILD);
-        assertThat(referenceBuild).hasReferenceLink(
-                "Reference build '-' not found anymore - maybe the build has been renamed or deleted?");
+        assertThat(referenceBuild).doesNotHaveReferenceBuild()
+                .hasRequiredResult(Result.FAILURE)
+                .hasOnlyMessages(MESSAGES)
+                .hasOwner(currentBuild)
+                .hasReferenceBuildId(ReferenceBuild.NO_REFERENCE_BUILD)
+                .hasReferenceLink("Reference build '-' not found anymore - maybe the build has been renamed or deleted?");
+
         assertThat(referenceBuild.getReferenceBuild()).isEmpty();
-
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
         assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
@@ -70,12 +70,14 @@ class ReferenceBuildTest {
         Run<?, ?> targetBuild = mock(Run.class);
         when(targetBuild.getExternalizableId()).thenReturn(ID);
 
-        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.UNSTABLE, targetBuild);
+        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE, targetBuild);
 
-        assertThat(referenceBuild).hasReferenceBuild();
-        assertThat(referenceBuild).hasOnlyMessages(MESSAGES);
-        assertThat(referenceBuild).hasOwner(currentBuild);
-        assertThat(referenceBuild).hasReferenceBuildId(ID);
+        assertThat(referenceBuild)
+                .hasReferenceBuild()
+                .hasOnlyMessages(MESSAGES)
+                .hasOwner(currentBuild)
+                .hasReferenceBuildId(ID)
+                .hasRequiredResult(Result.FAILURE);
 
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();

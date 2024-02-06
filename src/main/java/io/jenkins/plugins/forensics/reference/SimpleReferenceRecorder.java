@@ -1,6 +1,5 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -157,20 +156,6 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         return result != null && result.isBetterOrEqualTo(requiredResult);
     }
 
-    /**
-     * Creates a message that the reference build has a result that is worse than the required result.
-     *
-     * @param referenceBuild
-     *         the reference build to check
-     * @return the message
-     */
-    protected String createStatusNotSufficientMessage(final Run<?, ?> referenceBuild) {
-        return String.format("-> ignoring reference build '%s' since it has a result of %s, but required is %s or better",
-                referenceBuild.getDisplayName(),
-                referenceBuild.getResult(),
-                requiredResult);
-    }
-
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
@@ -197,17 +182,50 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
         if (lastCompletedBuild == null) {
             log.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
+
+            return createEmptyReferenceBuild(run, log);
         }
         else {
-            log.logInfo("Found reference build '%s' of reference job '%s'", lastCompletedBuild.getDisplayName(),
-                    reference.getDisplayName());
+            log.logInfo("Found last completed build '%s' of reference job '%s'",
+                    lastCompletedBuild.getDisplayName(), reference.getDisplayName());
 
-            if (hasRequiredResult(lastCompletedBuild)) {
-                return new ReferenceBuild(run, log.getInfoMessages(), lastCompletedBuild);
-            }
-            log.logInfo(createStatusNotSufficientMessage(lastCompletedBuild));
+            return getReferenceBuildWithRequiredStatus(run, lastCompletedBuild, log)
+                    .orElse(createEmptyReferenceBuild(run, log));
         }
-        return createEmptyReferenceBuild(run, log.getInfoMessages());
+    }
+
+    /**
+     * Returns a reference build that satisfied the required status. Starting with the specified {@code start} build,
+     * the history of builds is searched for a build that satisfies the required status. If no such build is found, then
+     * a null object is returned.
+     *
+     * @param run
+     *         the run that is currently built
+     * @param start
+     *         the first build to start the search
+     * @param log
+     *         the logger
+     *
+     * @return the reference build that satisfies the required status (or empty if no such build is found)
+     */
+    protected Optional<ReferenceBuild> getReferenceBuildWithRequiredStatus(final Run<?, ?> run, final Run<?, ?> start, final FilteredLog log) {
+        for (Run<?, ?> reference = start; reference != null; reference = reference.getPreviousCompletedBuild()) {
+            if (hasRequiredResult(reference)) {
+                log.logInfo("-> %s '%s' has a result %s",
+                        getBuildName(start, reference),
+                        reference.getDisplayName(), reference.getResult());
+
+                return Optional.of(new ReferenceBuild(run, log.getInfoMessages(), requiredResult, reference));
+            }
+        }
+        log.logInfo("-> ignoring reference build '%s' or one of its predecessors since none have a result of %s or better",
+                start.getDisplayName(), requiredResult);
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private String getBuildName(final Run<?, ?> start, final Run<?, ?> reference) {
+        return reference == start ? "Build" : "Previous build";
     }
 
     private Job<?, ?> fallBackToCurrentJob(final Run<?, ?> run, final FilteredLog log) {
@@ -216,8 +234,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         return parent;
     }
 
-    protected ReferenceBuild createEmptyReferenceBuild(final Run<?, ?> run, final List<String> messages) {
-        return new ReferenceBuild(run, messages);
+    protected ReferenceBuild createEmptyReferenceBuild(final Run<?, ?> run, final FilteredLog messages) {
+        return new ReferenceBuild(run, messages.getInfoMessages(), requiredResult);
     }
 
     /**

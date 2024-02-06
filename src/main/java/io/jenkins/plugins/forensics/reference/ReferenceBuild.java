@@ -21,8 +21,8 @@ import io.jenkins.plugins.util.JenkinsFacade;
 import static j2html.TagCreator.*;
 
 /**
- * Stores the reference build for a given build. The reference build is a build in a different (or same) Jenkins job
- * that can be used to compute delta reports.
+ * Stores the selected reference build for a given build. The reference build is a build in a different (or same)
+ * Jenkins job that can be used to compute delta reports.
  *
  * @author Ullrich Hafner
  * @see ReferenceRecorder

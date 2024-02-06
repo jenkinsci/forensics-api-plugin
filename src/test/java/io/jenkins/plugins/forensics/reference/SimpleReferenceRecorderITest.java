@@ -51,7 +51,8 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         assertThat(getConsoleLog(build))
                 .contains("No reference job configured",
                         "Falling back to current job",
-                        "Found reference build '#1' of reference job '" + job.getDisplayName());
+                        "Found last completed build '#1' of reference job",
+                        "-> Build '#1' has a result SUCCESS");
     }
 
     @Test
@@ -118,8 +119,8 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
         assertThat(findReferenceBuild(current)).isEmpty();
         assertThat(getConsoleLog(current)).contains(
-                String.format("-> ignoring reference build '#1' since it has a result of FAILURE, "
-                        + "but required is %s or better", StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
+                String.format("-> ignoring reference build '#1' or one of its predecessors since none have a result of %s or better",
+                        StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
     }
 
     private String discoverReferenceJob(final String referenceJobName, final String... arguments) {
