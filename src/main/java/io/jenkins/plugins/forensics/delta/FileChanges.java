@@ -1,6 +1,7 @@
 package io.jenkins.plugins.forensics.delta;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,7 +17,6 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("PMD.DataClass")
 public class FileChanges implements Serializable {
-
     private static final long serialVersionUID = 6135245877389921937L;
 
     private final String fileName;
@@ -106,6 +106,30 @@ public class FileChanges implements Serializable {
         else {
             changes.put(change.getEditType(), Stream.of(change).collect(Collectors.toSet()));
         }
+    }
+
+    /**
+     * Returns all modified lines in this changed file.
+     *
+     * @return the modified line
+     */
+    public Set<Integer> getModifiedLines() {
+        return changes.values().stream()
+                .flatMap(Collection::stream)
+                .map(this::getModifiedLinesForChange)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Integer> getModifiedLinesForChange(final Change filter) {
+        if (filter.getEditType() == ChangeEditType.INSERT || filter.getEditType() == ChangeEditType.REPLACE) {
+            var lines = new HashSet<Integer>();
+            for (int line = filter.getFromLine(); line <= filter.getToLine(); line++) {
+                lines.add(line);
+            }
+            return lines;
+        }
+        return Set.of();
     }
 
     @Override

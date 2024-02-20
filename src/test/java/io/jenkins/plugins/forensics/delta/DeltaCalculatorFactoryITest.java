@@ -38,7 +38,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         DeltaCalculator nullCalculator = createDeltaCalculator("/", log);
 
         assertThat(nullCalculator).isInstanceOf(NullDeltaCalculator.class);
-        assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), "", log)).isEmpty();
+        assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), log)).isEmpty();
         assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_DELTA_CALCULATOR_FOUND,
                 ACTUAL_FACTORY_NULL_DELTA_CALCULATOR, EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
         assertThat(log.getErrorMessages()).isEmpty();

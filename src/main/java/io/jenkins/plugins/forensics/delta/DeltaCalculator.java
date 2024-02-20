@@ -3,6 +3,8 @@ package io.jenkins.plugins.forensics.delta;
 import java.io.Serializable;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import edu.hm.hafner.util.FilteredLog;
 
 import hudson.model.Run;
@@ -19,6 +21,23 @@ public abstract class DeltaCalculator implements Serializable {
      * Calculates the {@link Delta} between two passed Jenkins builds.
      *
      * @param build
+     *         the currently processed build
+     * @param referenceBuild
+     *         The reference build
+     * @param logger
+     *         The used log
+     *
+     * @return the delta if it could be calculated
+     */
+    public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
+            final FilteredLog logger) {
+        return calculateDelta(build, referenceBuild, StringUtils.EMPTY, logger);
+    }
+
+    /**
+     * Calculates the {@link Delta} between two passed Jenkins builds.
+     *
+     * @param build
      *         The currently processed build
      * @param referenceBuild
      *         The reference build
@@ -28,7 +47,9 @@ public abstract class DeltaCalculator implements Serializable {
      *         The used log
      *
      * @return the delta if it could be calculated
+     * @deprecated use {@link #calculateDelta(Run, Run, FilteredLog)} instead
      */
+    @Deprecated
     public abstract Optional<Delta> calculateDelta(Run<?, ?> build, Run<?, ?> referenceBuild,
             String scmKeyFilter, FilteredLog logger);
 

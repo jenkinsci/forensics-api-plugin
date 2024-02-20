@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
  * @author Nikolas Paripovic
  */
 class RelativeCountTrendChartTest {
-
     @Test
     void shouldCreate() {
         Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = new ArrayList<>();
@@ -74,5 +73,4 @@ class RelativeCountTrendChartTest {
         Build build = new Build(buildNumber);
         return new BuildResult<>(build, action);
     }
-
 }
