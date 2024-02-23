@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:c="/charts" >
+<j:jelly xmlns:j="jelly:core" xmlns:c="/charts" xmlns:st="jelly:stapler">
 
   <c:trend-setup suffix="commit-statistics">
     <div class="mb-3">
@@ -28,21 +28,6 @@
 
   <c:trend-chart it="${from}" title="${%Commit Statistics Trend}" enableLinks="true" configurationId="commit-statistics"/>
 
-  <script>
-    function fillCommitStatistics(trendConfiguration, jsonConfiguration) {
-      const type = jsonConfiguration['chartType'];
-      if (type) {
-        trendConfiguration.find('#' + type + '-commit-statistics').prop('checked', true);
-      }
-    }
-
-    function saveCommitStatistics(trendConfiguration) {
-      return {
-        'chartType': trendConfiguration.find('input[name=chartType-commit-statistics]:checked').attr('id').replace('-commit-statistics', '')
-      };
-    }
-
-    echartsJenkinsApi.configureTrend('commit-statistics', fillCommitStatistics, saveCommitStatistics)
-  </script>
+  <st:adjunct includes="io.jenkins.plugins.forensics.miner.CommitStatisticsJobAction.configure-trend"/>
 
 </j:jelly>
