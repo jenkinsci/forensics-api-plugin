@@ -1,5 +1,7 @@
 package io.jenkins.plugins.forensics.reference;
 
+import org.apache.commons.lang3.StringUtils;
+
 import edu.hm.hafner.util.VisibleForTesting;
 
 import hudson.util.ComboBoxModel;
@@ -45,7 +47,8 @@ class ReferenceJobModelValidation {
      * @return the validation result
      */
     public FormValidation validateJob(final String referenceJobName) {
-        if (jenkins.getJob(referenceJobName).isPresent()) {
+        if (StringUtils.isEmpty(referenceJobName)
+                || jenkins.getJob(referenceJobName).isPresent()) {
             return FormValidation.ok();
         }
         return FormValidation.error(Messages.FieldValidator_Error_ReferenceJobDoesNotExist());

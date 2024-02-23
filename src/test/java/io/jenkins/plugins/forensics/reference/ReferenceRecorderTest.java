@@ -3,6 +3,7 @@ package io.jenkins.plugins.forensics.reference;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import edu.hm.hafner.util.VisibleForTesting;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import hudson.model.Item;
 import hudson.model.Job;
+import hudson.model.Result;
 import hudson.model.Run;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
@@ -38,19 +40,87 @@ class ReferenceRecorderTest {
         ReferenceRecorder recorder = new NullReferenceRecorder();
 
         assertThat(recorder)
-                .hasDefaultBranch(StringUtils.EMPTY)
                 .hasTargetBranch(StringUtils.EMPTY)
-                .hasScm(StringUtils.EMPTY);
+                .hasScm(StringUtils.EMPTY)
+                .hasRequiredResult(Result.UNSTABLE);
     }
 
     /**
      * Verifies the first alternative: the current build is for a pull request part in a multi-branch project. In this
-     * case the target branch stored in the PR will be used as reference job.
+     *  case, the target branch stored in the PR will be used as the reference job.
      */
     @Test
     void shouldObtainReferenceFromPullRequestTarget() {
         FilteredLog log = createLog();
 
+        var referenceBuild = findReferenceBuild(log, build -> { });
+
+        assertThat(log.getInfoMessages()).contains(
+                "No reference job configured",
+                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                "-> no target branch configured in step",
+                "-> detected a pull or merge request for target branch 'pr-target'",
+                "-> inferred job for target branch: 'pr-target'",
+                "Found reference build 'pr-id' for target branch",
+                "-> Build 'pr-id' has a result SUCCESS");
+
+        assertThat(referenceBuild).hasReferenceBuildId("pr-id");
+    }
+
+    /**
+     * Verifies a variation of the first alternative: the found reference build has an insufficient result,
+     * so the predecessor will be chosen.
+     */
+    @Test
+    void shouldObtainReferenceFromPullRequestTargetWithMatchingResult() {
+        FilteredLog log = createLog();
+
+        var referenceBuild = findReferenceBuild(log, build -> {
+            var successful = createBuild("successful", Result.SUCCESS);
+            when(build.getPreviousCompletedBuild()).thenAnswer((a) -> successful);
+            when(build.getResult()).thenReturn(Result.FAILURE); // reference failed
+        });
+
+        assertThat(log.getInfoMessages()).contains(
+                "No reference job configured",
+                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                "-> no target branch configured in step",
+                "-> detected a pull or merge request for target branch 'pr-target'",
+                "-> inferred job for target branch: 'pr-target'",
+                "Found reference build 'pr-id' for target branch",
+                "-> Previous build 'successful' has a result SUCCESS");
+
+        assertThat(referenceBuild).hasReferenceBuildId("successful");
+    }
+
+    /**
+     * Verifies another variation of the first alternative: the found reference build has an insufficient result,
+     * but the predecessor as well.
+     */
+    @Test
+    void shouldFailToGetReferenceBecauseOfFailure() {
+        FilteredLog log = createLog();
+
+        var referenceBuild = findReferenceBuild(log, build -> {
+            var failure = createBuild("failure", Result.FAILURE);
+            when(build.getPreviousCompletedBuild()).thenAnswer((a) -> failure);
+            when(build.getResult()).thenReturn(Result.FAILURE); // reference failed as well
+        });
+
+        assertThat(log.getInfoMessages()).contains(
+                "No reference job configured",
+                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                "-> no target branch configured in step",
+                "-> detected a pull or merge request for target branch 'pr-target'",
+                "-> inferred job for target branch: 'pr-target'",
+                "Found reference build 'pr-id' for target branch",
+                "-> ignoring reference build 'pr-id' or one of its predecessors since none have a result of UNSTABLE or better",
+                "No reference build with required status found that contains matching commits");
+
+        assertThat(referenceBuild).doesNotHaveReferenceBuild();
+    }
+
+    private ReferenceBuild findReferenceBuild(final FilteredLog log, final Consumer<Run<?, ?>> configuration) {
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
@@ -60,19 +130,24 @@ class ReferenceRecorderTest {
         Run<?, ?> prBuild = configurePrJobAndBuild(recorder, topLevel, job);
         when(recorder.find(build, prBuild, log)).thenReturn(Optional.of(prBuild));
 
-        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+        configuration.accept(prBuild);
 
-        assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).contains("no target branch configured in step"))
-                .anySatisfy(m -> assertThat(m).contains("detected a pull or merge request for target branch 'pr-target'"));
+        return recorder.findReferenceBuild(build, log);
+    }
 
-        assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("pr-id");
+    private Run<?, ?> createBuild(final String displayName, final Result result) {
+        Run<?, ?> build = mock(Run.class);
+        when(build.getFullDisplayName()).thenReturn(displayName);
+        when(build.getDisplayName()).thenReturn(displayName);
+        when(build.getExternalizableId()).thenReturn(displayName);
+        when(build.getResult()).thenReturn(result);
+        return build;
     }
 
     /**
      * Verifies the second alternative: the current build is part of a multi-branch project (but not for a PR).
      * Additionally, a primary branch has been configured for the multi-branch project using the action {@link
-     * PrimaryInstanceMetadataAction}. In this case this configured primary target will be used as reference job.
+     * PrimaryInstanceMetadataAction}. In this case, this configured primary target will be used as the reference job.
      */
     @Test
     void shouldFindReferenceJobUsingPrimaryBranch() {
@@ -88,18 +163,20 @@ class ReferenceRecorderTest {
 
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
-        assertThat(log.getInfoMessages())
-                .anySatisfy(
-                        m -> assertThat(m).contains("Found a `MultiBranchProject`"))
-                .anySatisfy(
-                        m -> assertThat(m).contains("using configured primary branch 'main' of SCM as target branch"));
+        assertThat(log.getInfoMessages()).contains(
+                "No reference job configured",
+                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                "-> no target branch configured in step",
+                "-> using configured primary branch 'main' of SCM as target branch",
+                "Found reference build 'main-id' for target branch",
+                "-> Build 'main-id' has a result SUCCESS");
 
-        assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("main-id");
+        assertThat(referenceBuild).hasReferenceBuildId("main-id");
     }
 
     /**
      * Verifies the third alternative: the current build is for a pull request part in a multi-branch project. However,
-     * the step has been configured with the parameter {@code targetBranch}. In this case the configured target branch
+     * the step has been configured with the parameter {@code targetBranch}. In this case, the configured target branch
      * will override the target branch of the pull PR.
      */
     @Test
@@ -110,25 +187,30 @@ class ReferenceRecorderTest {
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
 
-        ReferenceRecorder recorder = createSut();
+        var scmFacade = mock(ScmFacade.class);
+        ReferenceRecorder recorder = createSut(scmFacade);
 
-        configurePrJobAndBuild(recorder, topLevel, job); // will not be used since target branch has been set
+        configurePrJobAndBuild(recorder, topLevel, job); // will not be used since the target branch has been set
         configureTargetJobAndBuild(recorder, topLevel, build, log);
 
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
-        assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).contains("using target branch 'target' as configured in step"))
-                .noneSatisfy(m -> assertThat(m).contains("detected a pull or merge request"));
+        assertThat(log.getInfoMessages()).contains(
+                "No reference job configured",
+                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                "-> using target branch 'target' as configured in step",
+                "-> inferred job for target branch: 'target'",
+                "Found reference build 'target-id' for target branch",
+                "-> Build 'target-id' has a result SUCCESS");
 
-        assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("target-id");
+        assertThat(referenceBuild).hasReferenceBuildId("target-id");
     }
 
     /**
      * Verifies the fourth alternative: the current build is part of a multi-branch project (but not for a PR).
      * Additionally, a primary branch has been configured for the multi-branch project using the action {@link
      * PrimaryInstanceMetadataAction}. However, the step has been configured with the parameter {@code targetBranch}. In
-     * this case the configured target branch will override the primary branch.
+     * this case, the configured target branch will override the primary branch.
      */
     @Test
     void targetShouldHavePrecedenceBeforePrimaryBranchTarget() {
@@ -146,10 +228,14 @@ class ReferenceRecorderTest {
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
-                .anySatisfy(m -> assertThat(m).contains("using target branch 'target' as configured in step"))
-                .noneSatisfy(m -> assertThat(m).contains("detected a pull or merge request"));
+                .contains("No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> using target branch 'target' as configured in step",
+                        "-> inferred job for target branch: 'target'",
+                        "Found reference build 'target-id' for target branch",
+                        "-> Build 'target-id' has a result SUCCESS");
 
-        assertThat(referenceBuild.getReferenceBuildId()).isEqualTo("target-id");
+        assertThat(referenceBuild).hasReferenceBuildId("target-id");
     }
 
     /**
@@ -175,7 +261,13 @@ class ReferenceRecorderTest {
     }
 
     private ReferenceRecorder createSut() {
-        return mock(ReferenceRecorder.class, CALLS_REAL_METHODS);
+        return createSut(mock(ScmFacade.class));
+    }
+
+    private ReferenceRecorder createSut(final ScmFacade scmFacade) {
+        var recorder = spy(ReferenceRecorder.class);
+        when(recorder.getScmFacade()).thenReturn(scmFacade);
+        return recorder;
     }
 
     private FilteredLog createLog() {
@@ -198,11 +290,10 @@ class ReferenceRecorderTest {
             final WorkflowMultiBranchProject topLevel, final Job<?, ?> job,
             final Run<?, ?> build, final FilteredLog log) {
         Job<?, ?> main = mock(Job.class);
-        Run<?, ?> mainBuild = mock(Run.class);
-        when(mainBuild.getExternalizableId()).thenReturn("main-id");
+        Run<?, ?> mainBuild = createBuild("main-id", Result.SUCCESS);
+
         when(main.getLastCompletedBuild()).thenAnswer(i -> mainBuild);
         when(main.getDisplayName()).thenReturn("main");
-
         when(main.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(mock(PrimaryInstanceMetadataAction.class));
 
         Item item = mock(Item.class);
@@ -216,14 +307,14 @@ class ReferenceRecorderTest {
     private Run<?, ?> configurePrJobAndBuild(final ReferenceRecorder recorder,
             final WorkflowMultiBranchProject parent, final Job<?, ?> job) {
         Job<?, ?> prJob = mock(Job.class);
+        when(prJob.getDisplayName()).thenReturn("pr-target");
         when(parent.getItemByBranchName("pr-target")).thenAnswer(i -> prJob);
-        Run<?, ?> prBuild = mock(Run.class);
-        when(prBuild.getExternalizableId()).thenReturn("pr-id");
+        Run<?, ?> prBuild = createBuild("pr-id", Result.SUCCESS);
         when(prJob.getLastCompletedBuild()).thenAnswer(i -> prBuild);
 
-        ScmFacade scmFacade = mock(ScmFacade.class);
         ChangeRequestSCMHead pr = mock(ChangeRequestSCMHead.class);
         when(pr.toString()).thenReturn("pr");
+        ScmFacade scmFacade = mock(ScmFacade.class);
         when(scmFacade.findHead(job)).thenReturn(Optional.of(pr));
         SCMHead target = mock(SCMHead.class);
         when(pr.getTarget()).thenReturn(target);
@@ -239,9 +330,9 @@ class ReferenceRecorderTest {
         recorder.setTargetBranch("target");
 
         Job<?, ?> targetJob = mock(Job.class);
+        when(targetJob.getDisplayName()).thenReturn("target");
         when(parent.getItemByBranchName("target")).thenAnswer(i -> targetJob);
-        Run<?, ?> targetBuild = mock(Run.class);
-        when(targetBuild.getExternalizableId()).thenReturn("target-id");
+        Run<?, ?> targetBuild = createBuild("target-id", Result.SUCCESS);
         when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
 
         when(recorder.find(build, targetBuild, log)).thenReturn(Optional.of(targetBuild));

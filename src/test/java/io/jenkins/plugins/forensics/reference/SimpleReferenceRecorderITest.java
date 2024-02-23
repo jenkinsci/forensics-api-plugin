@@ -1,13 +1,21 @@
 package io.jenkins.plugins.forensics.reference;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.Issue;
 
 import edu.hm.hafner.util.FilteredLog;
 
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
 import hudson.model.Run;
 
 import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
@@ -20,21 +28,35 @@ import static org.assertj.core.api.Assertions.*;
  * @author Ullrich Hafner
  */
 class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
-    /** Ensures that an error is shown if the publisher has been registered with an invalid configuration. */
     @Test
-    void shouldReportErrorBecauseReferenceJobIsUndefined() {
+    void shouldReportErrorBecauseReferenceJobIsUndefinedAndNoBuildsInSameSob() {
         FreeStyleProject job = createJob(StringUtils.EMPTY);
 
         Run<?, ?> build = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(build)).isEmpty();
         assertThat(getConsoleLog(build))
-                .contains("You need to define a valid reference job using the 'referenceJob' property");
+                .contains("No completed build found for reference job '" + job.getDisplayName());
     }
 
-    /** Finds the reference build in the selected job. */
     @Test
-    void shouldFindReferenceBuild() {
+    void shouldUseSameJobWhenNoReferenceJobIsDefined() {
+        FreeStyleProject job = createJob(StringUtils.EMPTY);
+
+        Run<?, ?> referenceBuild = buildSuccessfully(job);
+
+        Run<?, ?> build = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(build)).contains(referenceBuild);
+        assertThat(getConsoleLog(build))
+                .contains("No reference job configured",
+                        "Falling back to current job",
+                        "Found last completed build '#1' of reference job",
+                        "-> Build '#1' has a result SUCCESS");
+    }
+
+    @Test
+    void shouldFindReferenceBuildOfSelectedReferenceJob() {
         FreeStyleProject reference = createFreeStyleProject();
         Run<?, ?> baseline = buildSuccessfully(reference);
 
@@ -48,7 +70,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @Test
     void shouldUseLatestReferenceBuild() {
         FreeStyleProject reference = createFreeStyleProject();
-        buildSuccessfully(reference); // first build is ignored
+        buildSuccessfully(reference); // the first build is ignored
         Run<?, ?> baseline = buildSuccessfully(reference);
 
         FreeStyleProject job = createJob(reference.getName());
@@ -57,9 +79,8 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         assertThat(findReferenceBuild(current)).contains(baseline);
     }
 
-    /** Finds the reference build in the selected job. */
     @Test
-    void shouldFindNoReferenceBuild() {
+    void shouldFindNoReferenceBuildBecauseNoBuildHasBeenCompletedYet() {
         FreeStyleProject reference = createFreeStyleProject();
 
         FreeStyleProject job = createJob(reference.getName());
@@ -67,6 +88,45 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
         assertThat(findReferenceBuild(current)).isEmpty();
         assertThat(getConsoleLog(current)).contains("No completed build found");
+    }
+
+    @ParameterizedTest(name = "[{index}] Required result: \"{0}\"")
+    @ValueSource(strings = {"SUCCESS", "UNSTABLE", ""})
+    @Issue("JENKINS-72015")
+    void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) {
+        WorkflowJob reference = createPipeline();
+        reference.setDefinition(new CpsFlowDefinition(
+                "node {\n"
+                        + "brokenCommand()\n"
+                        + " }\n", true));
+        buildWithResult(reference, Result.FAILURE);
+
+        WorkflowJob job = createPipeline();
+        String script;
+        if (StringUtils.isBlank(requiredResult)) {
+            script = "node {\n"
+                    + discoverReferenceJob(reference.getName())
+                    + " }\n";
+        }
+        else {
+            script = "node {\n"
+                    + discoverReferenceJob(reference.getName(), String.format("requiredResult: '%s'", requiredResult))
+                    + " }\n";
+        }
+        job.setDefinition(new CpsFlowDefinition(script, true));
+
+        Run<?, ?> current = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(current)).isEmpty();
+        assertThat(getConsoleLog(current)).contains(
+                String.format("-> ignoring reference build '#1' or one of its predecessors since none have a result of %s or better",
+                        StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
+    }
+
+    private String discoverReferenceJob(final String referenceJobName, final String... arguments) {
+        var joiner = new StringJoiner(", ", ", ", "").setEmptyValue("");
+        Arrays.stream(arguments).forEach(joiner::add);
+        return String.format("discoverReferenceBuild(referenceJob: '%s'%s)%n", referenceJobName, joiner);
     }
 
     private Optional<Run<?, ?>> findReferenceBuild(final Run<?, ?> current) {

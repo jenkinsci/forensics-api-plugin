@@ -4,5 +4,8 @@
   <f:entry title="${%title.referenceJob}" field="referenceJob" description="${%description.referenceJob}">
     <f:combobox />
   </f:entry>
+  <f:entry title="${%title.requiredResult}" field="requiredResult" description="${%description.requiredResult}">
+    <f:select />
+  </f:entry>
 
 </j:jelly>

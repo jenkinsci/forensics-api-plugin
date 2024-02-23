@@ -56,10 +56,18 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     /**
      * Creates a new instance of {@link ReferenceRecorder}.
+     */
+    protected ReferenceRecorder() {
+        super();
+    }
+
+    /**
+     * Creates a new instance of {@link ReferenceRecorder}.
      *
      * @param jenkins
      *         facade to Jenkins
      */
+    @VisibleForTesting
     protected ReferenceRecorder(final JenkinsFacade jenkins) {
         super(jenkins);
     }
@@ -78,34 +86,6 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     public boolean isLatestBuildIfNotFound() {
         return latestBuildIfNotFound;
-    }
-
-    /**
-     * Sets the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered the
-     * base branch in your repository. The builds of all other branches and pull requests will use this target branch as
-     * baseline to search for a matching reference build.
-     *
-     * @param defaultBranch
-     *         the name of the default branch
-     * @deprecated use {@link #setTargetBranch(String)} instead
-     */
-    @Deprecated
-    @DataBoundSetter
-    public void setDefaultBranch(final String defaultBranch) {
-        this.defaultBranch = StringUtils.stripToEmpty(defaultBranch);
-    }
-
-    /**
-     * Returns the target branch for {@link MultiBranchProject multi-branch projects}: the target branch is considered
-     * the base branch in your repository. The builds of all other branches and pull requests will use this target branch
-     * as baseline to search for a matching reference build.
-     *
-     * @return the name of the target branch
-     * @deprecated use {@link #getTargetBranch()} instead
-     */
-    @Deprecated
-    public String getDefaultBranch() {
-        return defaultBranch;
     }
 
     /**
@@ -153,26 +133,38 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             Job<?, ?> reference = actualReferenceJob.get();
             Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
             if (lastCompletedBuild == null) {
-                logger.logInfo("No completed build found");
+                logger.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
             }
             else {
-                Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild, logger);
+                var referenceBuild = searchForReferenceBuildWithRequiredStatus(run, lastCompletedBuild, logger);
                 if (referenceBuild.isPresent()) {
-                    Run<?, ?> result = referenceBuild.get();
-                    logger.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
-
-                    return new ReferenceBuild(run, logger.getInfoMessages(), result);
-                }
-                logger.logInfo("No reference build found that contains matching commits");
-                if (isLatestBuildIfNotFound()) {
-                    logger.logInfo("Falling back to latest build of reference job: '%s'",
-                            lastCompletedBuild.getDisplayName());
-
-                    return new ReferenceBuild(run, logger.getInfoMessages(), lastCompletedBuild);
+                    return referenceBuild.get();
                 }
             }
         }
-        return new ReferenceBuild(run, logger.getInfoMessages());
+        return createEmptyReferenceBuild(run, logger);
+    }
+
+    private Optional<ReferenceBuild> searchForReferenceBuildWithRequiredStatus(final Run<?, ?> run,
+            final Run<?, ?> lastCompletedBuild, final FilteredLog logger) {
+        Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild, logger);
+        if (referenceBuild.isPresent()) {
+            Run<?, ?> result = referenceBuild.get();
+            logger.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
+
+            var referenceBuildWithRequiredStatus = getReferenceBuildWithRequiredStatus(run, result, logger);
+            if (referenceBuildWithRequiredStatus.isPresent()) {
+                return referenceBuildWithRequiredStatus;
+            }
+        }
+        logger.logInfo("No reference build with required status found that contains matching commits");
+        if (isLatestBuildIfNotFound()) {
+            logger.logInfo("Falling back to latest completed build of reference job: '%s'",
+                    lastCompletedBuild.getDisplayName());
+
+            return Optional.of(new ReferenceBuild(run, logger.getInfoMessages(), getRequiredResult(), lastCompletedBuild));
+        }
+        return Optional.empty();
     }
 
     private Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
@@ -222,7 +214,12 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             return findJobForTargetBranch(multiBranchProject, job, DEFAULT_TARGET_BRANCH, logger);
         }
         else {
-            logger.logInfo("Consider configuring a reference job using the 'referenceJob' property");
+            if (StringUtils.isEmpty(getReferenceJob())) {
+                logger.logInfo("Falling back to current job '%s'", job.getDisplayName());
+
+                return Optional.of(job);
+            }
+            logger.logInfo("Do not use a reference job and skip delta reporting");
         }
         return Optional.empty();
     }
