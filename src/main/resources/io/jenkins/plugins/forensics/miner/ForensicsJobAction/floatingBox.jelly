@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:c="/charts" >
+<j:jelly xmlns:j="jelly:core" xmlns:c="/charts" xmlns:st="jelly:stapler">
 
   <c:trend-setup suffix="forensics">
     <div class="mb-3">
@@ -40,21 +40,6 @@
 
   <c:trend-chart it="${from}" title="${%SCM Forensics Trend}" enableLinks="true" configurationId="forensics"/>
 
-  <script>
-    function fillForensics(trendConfiguration, jsonConfiguration) {
-      const type = jsonConfiguration['chartType'];
-      if (type) {
-        trendConfiguration.find('#' + type + '-forensics').prop('checked', true);
-      }
-    }
-
-    function saveForensics(trendConfiguration) {
-      return {
-        'chartType': trendConfiguration.find('input[name=chartType-forensics]:checked').attr('id').replace('-forensics', '')
-      };
-    }
-
-    echartsJenkinsApi.configureTrend('forensics', fillForensics, saveForensics)
-  </script>
+  <st:adjunct includes="io.jenkins.plugins.forensics.miner.ForensicsJobAction.configure-trend"/>
 
 </j:jelly>

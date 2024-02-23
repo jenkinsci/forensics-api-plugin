@@ -34,21 +34,9 @@
 
     </div>
 
-    <script>
-      {
-          const trendProxy = <st:bind value="${it}"/>;
-          trendProxy.getBuildTrendModel(function (lineModel) {
-              const openCommit = function (commit) {
-                  trendProxy.getCommitUrl(commit, function (commitUrl) {
-                      if (commitUrl.responseJSON.startsWith('http')) {
-                          window.location.assign(commitUrl.responseJSON);
-                      }
-                  });
-              };
-              echartsJenkinsApi.renderConfigurableZoomableTrendChart('churn-trend-chart', lineModel.responseJSON, null, openCommit);
-          });
-      }
-    </script>
+    <st:bind var="proxy" value="${it}" />
+    <st:adjunct includes="io.jenkins.plugins.forensics.miner.FileDetailsView.render-trend"/>
+
   </bs:page>
 
 </j:jelly>
