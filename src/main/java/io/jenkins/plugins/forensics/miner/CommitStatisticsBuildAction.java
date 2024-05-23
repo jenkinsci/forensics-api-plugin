@@ -70,10 +70,8 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
      */
     public boolean hasReferenceBuild() {
         ReferenceBuild referenceBuildAction = getReferenceBuild();
-        if (referenceBuildAction == null) {
-            return false;
-        }
-        return referenceBuildAction.hasReferenceBuild();
+
+        return referenceBuildAction != null && referenceBuildAction.hasReferenceBuild();
     }
 
     /**
