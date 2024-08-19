@@ -2,7 +2,7 @@ package io.jenkins.plugins.forensics.delta;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +54,14 @@ public class FileChanges implements Serializable {
         this.oldFileName = oldFileName;
         this.fileContent = fileContent;
         this.fileEditType = fileEditType;
-        this.changes = new HashMap<>(changes);
+        this.changes = createMap(changes);
+    }
+
+    private Map<ChangeEditType, Set<Change>> createMap(final Map<ChangeEditType, Set<Change>> existingChanges) {
+        if (existingChanges.isEmpty()) {
+            return new EnumMap<>(ChangeEditType.class);
+        }
+        return new EnumMap<>(existingChanges);
     }
 
     public String getFileName() {
@@ -74,7 +81,7 @@ public class FileChanges implements Serializable {
     }
 
     public Map<ChangeEditType, Set<Change>> getChanges() {
-        return new HashMap<>(changes);
+        return createMap(changes);
     }
 
     /**
