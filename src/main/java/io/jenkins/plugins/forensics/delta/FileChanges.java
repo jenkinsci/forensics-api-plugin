@@ -57,7 +57,7 @@ public class FileChanges implements Serializable {
         this.changes = createMap(changes);
     }
 
-    private EnumMap<ChangeEditType, Set<Change>> createMap(final Map<ChangeEditType, Set<Change>> existingChanges) {
+    private Map<ChangeEditType, Set<Change>> createMap(final Map<ChangeEditType, Set<Change>> existingChanges) {
         if (existingChanges.isEmpty()) {
             return new EnumMap<>(ChangeEditType.class);
         }
