@@ -1,11 +1,14 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
 
-  <f:entry title="${%title.referenceJob}" field="referenceJob" description="${%description.referenceJob}">
+  <f:entry title="${%title.referenceJob}" field="referenceJob" >
     <f:combobox />
   </f:entry>
-  <f:entry title="${%title.requiredResult}" field="requiredResult" description="${%description.requiredResult}">
+  <f:entry title="${%title.requiredResult}" field="requiredResult" >
     <f:select />
+  </f:entry>
+  <f:entry title="${%title.considerRunningBuild}" field="considerRunningBuild">
+    <f:checkbox />
   </f:entry>
 
 </j:jelly>

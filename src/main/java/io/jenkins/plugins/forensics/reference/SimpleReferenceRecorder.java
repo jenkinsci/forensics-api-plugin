@@ -63,11 +63,12 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Arne Schöntag
  * @author Ullrich Hafner
  */
-@SuppressWarnings("PMD.ExcessiveImports")
+@SuppressWarnings({"PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;
     private Result requiredResult = Result.UNSTABLE; // @since 2.4.0
+    private boolean considerRunningBuild = false;
 
     /**
      * Creates a new instance of {@link SimpleReferenceRecorder}.
@@ -177,20 +178,47 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         logHandler.log(log);
     }
 
+    /**
+     * If enabled, then running builds will be considered as reference build as well. Otherwise, only completed builds
+     * are considered. Enabling this option might cause problems if the reference build has not yet all the
+     * required results available.
+     *
+     * @param considerRunningBuild
+     *         if {@code true} then running builds will be considered as reference build as well
+     */
+    @DataBoundSetter
+    public void setConsiderRunningBuild(final boolean considerRunningBuild) {
+        this.considerRunningBuild = considerRunningBuild;
+    }
+
+    public boolean isConsiderRunningBuild() {
+        return considerRunningBuild;
+    }
+
     protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog log) {
-        Job<?, ?> reference = resolveReferenceJob(log).orElseGet(() -> fallBackToCurrentJob(run, log));
-        Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
-        if (lastCompletedBuild == null) {
-            log.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
+        var reference = resolveReferenceJob(log).orElseGet(() -> fallBackToCurrentJob(run, log));
+        var possibleLastCompletedBuild = getLastBuild(reference);
+        if (possibleLastCompletedBuild.isEmpty()) {
+            logNoBuildFound(reference, log);
 
             return createEmptyReferenceBuild(run, log);
         }
         else {
+            var lastBuild = possibleLastCompletedBuild.get();
             log.logInfo("Found last completed build '%s' of reference job '%s'",
-                    lastCompletedBuild.getDisplayName(), reference.getDisplayName());
+                    lastBuild.getDisplayName(), reference.getDisplayName());
 
-            return getReferenceBuildWithRequiredStatus(run, lastCompletedBuild, log)
+            return getReferenceBuildWithRequiredStatus(run, lastBuild, log)
                     .orElse(createEmptyReferenceBuild(run, log));
+        }
+    }
+
+    protected void logNoBuildFound(final Job<?, ?> reference, final FilteredLog log) {
+        if (isConsiderRunningBuild()) {
+            log.logInfo("No build found for reference job '%s'", reference.getDisplayName());
+        }
+        else {
+            log.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
         }
     }
 
@@ -278,6 +306,21 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
 
     private boolean isValidJobName(final String name) {
         return StringUtils.isNotBlank(name);
+    }
+
+    /**
+     * Returns the last build of the specified reference job. If the reference build is not completed and the
+     * option {@code considerRunningBuild} is set, then the last running build is returned. Otherwise, the last
+     * completed build is returned.
+     *
+     * @param reference the reference job
+     * @return the last build of the reference job
+     */
+    protected Optional<Run<?, ?>> getLastBuild(final Job<?, ?> reference) {
+        if (isConsiderRunningBuild()) {
+            return Optional.ofNullable(reference.getLastBuild());
+        }
+        return Optional.ofNullable(reference.getLastCompletedBuild());
     }
 
     /**
