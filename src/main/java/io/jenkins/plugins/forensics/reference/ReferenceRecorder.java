@@ -128,15 +128,15 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     @Override
     protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog logger) {
-        Optional<Job<?, ?>> actualReferenceJob = findReferenceJob(run, logger);
+        var actualReferenceJob = findReferenceJob(run, logger);
         if (actualReferenceJob.isPresent()) {
-            Job<?, ?> reference = actualReferenceJob.get();
-            Run<?, ?> lastCompletedBuild = reference.getLastCompletedBuild();
-            if (lastCompletedBuild == null) {
-                logger.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
+            var reference = actualReferenceJob.get();
+            var lastBuild = getLastBuild(reference);
+            if (lastBuild.isEmpty()) {
+                logNoBuildFound(reference, logger);
             }
             else {
-                var referenceBuild = searchForReferenceBuildWithRequiredStatus(run, lastCompletedBuild, logger);
+                var referenceBuild = searchForReferenceBuildWithRequiredStatus(run, lastBuild.get(), logger);
                 if (referenceBuild.isPresent()) {
                     return referenceBuild.get();
                 }
@@ -147,9 +147,9 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     private Optional<ReferenceBuild> searchForReferenceBuildWithRequiredStatus(final Run<?, ?> run,
             final Run<?, ?> lastCompletedBuild, final FilteredLog logger) {
-        Optional<Run<?, ?>> referenceBuild = find(run, lastCompletedBuild, logger);
+        var referenceBuild = find(run, lastCompletedBuild, logger);
         if (referenceBuild.isPresent()) {
-            Run<?, ?> result = referenceBuild.get();
+            var result = referenceBuild.get();
             logger.logInfo("Found reference build '%s' for target branch", result.getDisplayName());
 
             var referenceBuildWithRequiredStatus = getReferenceBuildWithRequiredStatus(run, result, logger);
@@ -168,7 +168,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     }
 
     private Optional<Job<?, ?>> findReferenceJob(final Run<?, ?> run, final FilteredLog log) {
-        Optional<Job<?, ?>> referenceJob = resolveReferenceJob(log);
+        var referenceJob = resolveReferenceJob(log);
         if (referenceJob.isPresent()) {
             return referenceJob;
         }
@@ -178,10 +178,10 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
     @SuppressWarnings("rawtypes")
     private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog logger) {
-        Job<?, ?> job = run.getParent();
-        ItemGroup<?> topLevel = job.getParent();
+        var job = run.getParent();
+        var topLevel = job.getParent();
         if (topLevel instanceof MultiBranchProject) {
-            MultiBranchProject<?, ?> multiBranchProject = (MultiBranchProject<?, ?>) topLevel;
+            var multiBranchProject = (MultiBranchProject<?, ?>) topLevel;
 
             logger.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
 
@@ -193,7 +193,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
             }
             logger.logInfo("-> no target branch configured in step", targetBranch);
 
-            Optional<SCMHead> possibleHead = findTargetBranchHead(job);
+            var possibleHead = findTargetBranchHead(job);
             if (possibleHead.isPresent()) {
                 SCMHead target = possibleHead.get();
                 logger.logInfo("-> detected a pull or merge request for target branch '%s'", target.getName());
@@ -201,7 +201,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
                 return findJobForTargetBranch(multiBranchProject, job, target.getName(), logger);
             }
 
-            Optional<? extends Job> possiblePrimaryBranch = findPrimaryBranch(topLevel);
+            var possiblePrimaryBranch = findPrimaryBranch(topLevel);
             if (possiblePrimaryBranch.isPresent()) {
                 Job<?, ?> primaryBranchJob = possiblePrimaryBranch.get();
                 logger.logInfo("-> using configured primary branch '%s' of SCM as target branch",

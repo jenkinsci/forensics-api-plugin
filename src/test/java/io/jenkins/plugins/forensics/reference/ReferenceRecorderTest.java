@@ -42,7 +42,9 @@ class ReferenceRecorderTest {
         assertThat(recorder)
                 .hasTargetBranch(StringUtils.EMPTY)
                 .hasScm(StringUtils.EMPTY)
-                .hasRequiredResult(Result.UNSTABLE);
+                .hasRequiredResult(Result.UNSTABLE)
+                .isNotLatestBuildIfNotFound()
+                .isNotConsiderRunningBuild();
     }
 
     /**
@@ -183,16 +185,62 @@ class ReferenceRecorderTest {
     void targetShouldHavePrecedenceBeforePullRequestTarget() {
         FilteredLog log = createLog();
 
+        ReferenceBuild referenceBuild = findReferenceWithRunningBuild(log, true);
+
+        assertThat(log.getInfoMessages()).contains(
+                "No reference job configured",
+                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                "-> using target branch 'target' as configured in step",
+                "-> inferred job for target branch: 'target'",
+                "Found reference build 'target-id' for target branch",
+                "-> Build 'target-id' has a result SUCCESS");
+
+        assertThat(referenceBuild).hasReferenceBuildId("target-id");
+    }
+
+    @Test
+    void shouldIgnoreRunningBuildsIfOptionIsDeactivated() {
+        FilteredLog log = createLog();
+
+        var noReferenceBuild = findReferenceWithRunningBuild(log, false);
+
+        assertThat(log.getInfoMessages()).contains(
+                "-> inferred job for target branch: 'target'",
+                "No completed build found for reference job 'target'");
+
+        assertThat(noReferenceBuild).hasReferenceBuildId("-");
+    }
+
+    private ReferenceBuild findReferenceWithRunningBuild(final FilteredLog log, final boolean isComplete) {
+        var build = mock(Run.class);
+        var job = createJob(build);
+        var topLevel = createMultiBranch(job);
+
+        var scmFacade = mock(ScmFacade.class);
+        var recorder = createSut(scmFacade);
+
+        configurePrJobAndBuild(recorder, topLevel, job); // will not be used since the target branch has been set
+        configureTargetJobAndBuild(recorder, topLevel, build, log, isComplete);
+
+        return recorder.findReferenceBuild(build, log);
+    }
+
+    @Test
+    void shouldTakeCareOfRunningBuildsOption() {
+        FilteredLog log = createLog();
+
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         WorkflowMultiBranchProject topLevel = createMultiBranch(job);
 
         var scmFacade = mock(ScmFacade.class);
         ReferenceRecorder recorder = createSut(scmFacade);
+        recorder.setConsiderRunningBuild(true);
 
         configurePrJobAndBuild(recorder, topLevel, job); // will not be used since the target branch has been set
-        configureTargetJobAndBuild(recorder, topLevel, build, log);
+        configureTargetJobAndBuild(recorder, topLevel, build, log, false);
 
+        when(recorder.isConsiderRunningBuild()).thenReturn(true);
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages()).contains(
@@ -223,7 +271,7 @@ class ReferenceRecorderTest {
         ReferenceRecorder recorder = createSut();
 
         configurePrimaryBranch(recorder, topLevel, job, build, log); // will not be used since target branch has been set
-        configureTargetJobAndBuild(recorder, topLevel, build, log);
+        configureTargetJobAndBuild(recorder, topLevel, build, log, true);
 
         ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
 
@@ -326,15 +374,20 @@ class ReferenceRecorderTest {
     }
 
     private Run<?, ?> configureTargetJobAndBuild(final ReferenceRecorder recorder,
-            final WorkflowMultiBranchProject parent, final Run<?, ?> build, final FilteredLog log) {
+            final WorkflowMultiBranchProject parent, final Run<?, ?> build, final FilteredLog log,
+            final boolean isComplete) {
         recorder.setTargetBranch("target");
 
         Job<?, ?> targetJob = mock(Job.class);
         when(targetJob.getDisplayName()).thenReturn("target");
         when(parent.getItemByBranchName("target")).thenAnswer(i -> targetJob);
         Run<?, ?> targetBuild = createBuild("target-id", Result.SUCCESS);
-        when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
-
+        if (isComplete) {
+            when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
+        }
+        else {
+            when(targetJob.getLastBuild()).thenAnswer(i -> targetBuild);
+        }
         when(recorder.find(build, targetBuild, log)).thenReturn(Optional.of(targetBuild));
 
         return targetBuild;

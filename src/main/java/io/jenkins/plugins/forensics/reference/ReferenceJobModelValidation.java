@@ -10,7 +10,7 @@ import hudson.util.FormValidation;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
- * Validates all properties of a configuration of a reference job.
+ * Validates all properties of a reference job configuration.
  *
  * @author Ullrich Hafner
  */
