@@ -172,6 +172,11 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
         FilteredLog log = new FilteredLog("Errors while computing the reference build:");
 
+        var existing = run.removeActions(ReferenceBuild.class);
+        if (existing) {
+            log.logError("Replaced existing reference build, this typically indicates a misconfiguration "
+                    + "as the reference should be constant");
+        }
         run.addAction(findReferenceBuild(run, log));
 
         LogHandler logHandler = new LogHandler(listener, "ReferenceFinder");

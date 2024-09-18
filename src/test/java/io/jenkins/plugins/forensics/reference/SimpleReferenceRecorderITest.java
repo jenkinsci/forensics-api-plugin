@@ -123,6 +123,30 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
                         StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
     }
 
+    @Test
+    @Issue("JENKINS-73380")
+    void shouldOverwriteReferenceBuild() {
+        WorkflowJob reference = createPipeline();
+        reference.setDefinition(new CpsFlowDefinition(
+                "node {\n"
+                        + "echo 'Hello Job'\n"
+                        + " }\n", true));
+        Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
+
+        var job = createPipeline();
+        var script = "node {\n"
+                    + discoverReferenceJob(reference.getName())
+                    + discoverReferenceJob(reference.getName())
+                    + " }\n";
+        job.setDefinition(new CpsFlowDefinition(script, true));
+
+        Run<?, ?> current = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(current)).contains(baseline);
+        assertThat(getConsoleLog(current)).contains(
+                "[-ERROR-] Replaced existing reference build, this typically indicates a misconfiguration as the reference should be constant");
+    }
+
     private String discoverReferenceJob(final String referenceJobName, final String... arguments) {
         var joiner = new StringJoiner(", ", ", ", "").setEmptyValue("");
         Arrays.stream(arguments).forEach(joiner::add);
