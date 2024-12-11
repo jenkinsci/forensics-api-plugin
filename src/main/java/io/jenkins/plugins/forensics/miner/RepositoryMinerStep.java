@@ -59,7 +59,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     }
 
     /**
-     * Called after de-serialization to retain backward compatibility or to populate new elements (that would be
+     * Called after deserialization to retain backward compatibility or to populate new elements (that would be
      * otherwise initialized to {@code null}).
      *
      * @return this
