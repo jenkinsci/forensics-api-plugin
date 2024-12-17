@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.util;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +14,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -118,12 +116,17 @@ class ScmResolverTest {
     }
 
     @Test
-    void shouldResolveScmForPipelineWithFlowNode() throws IOException {
-        WorkflowJob pipeline = createPipeline();
-        pipeline.setDefinition(createCpsFlowDefinition());
+    void shouldResolveScmForPipelineWithFlowNode() {
+        var pipeline = mock(WorkflowJob.class);
 
-        Run<?, ?> run = createRunFor(pipeline);
-        assertThatScmOf(run).isInstanceOf(SCM.class);
+        var empty = createRunFor(pipeline);
+        assertThatScmOf(empty).isInstanceOf(NullSCM.class);
+
+        var flowDefinition = createCpsFlowDefinition();
+        when(pipeline.getDefinition()).thenReturn(flowDefinition);
+
+        var withScmFromFlowDefinition = createRunFor(pipeline);
+        assertThatScmOf(withScmFromFlowDefinition).isInstanceOf(SCM.class);
     }
 
     private CpsScmFlowDefinition createCpsFlowDefinition() {
@@ -131,14 +134,6 @@ class ScmResolverTest {
         SCM git = mock(SCM.class);
         when(flowDefinition.getScm()).thenReturn(git);
         return flowDefinition;
-    }
-
-    private WorkflowJob createPipeline() throws IOException {
-        ItemGroup<?> group = mock(ItemGroup.class);
-        WorkflowJob pipeline = new WorkflowJob(group, "stub");
-        when(group.getRootDirFor(any())).thenReturn(Files.createTempFile("", "").toFile());
-        when(group.getFullName()).thenReturn("bla");
-        return pipeline;
     }
 
     @Test
