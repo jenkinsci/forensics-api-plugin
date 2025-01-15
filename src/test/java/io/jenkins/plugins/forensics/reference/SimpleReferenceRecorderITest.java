@@ -12,7 +12,6 @@ import org.junitpioneer.jupiter.Issue;
 
 import edu.hm.hafner.util.FilteredLog;
 
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
@@ -95,10 +94,12 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @Issue("JENKINS-72015")
     void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) {
         WorkflowJob reference = createPipeline();
-        reference.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + "brokenCommand()\n"
-                        + " }\n", true));
+        reference.setDefinition(createPipelineScript(
+                """
+                node {
+                    brokenCommand()
+                }
+                """));
         buildWithResult(reference, Result.FAILURE);
 
         WorkflowJob job = createPipeline();
@@ -113,7 +114,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
                     + discoverReferenceJob(reference.getName(), String.format("requiredResult: '%s'", requiredResult))
                     + " }\n";
         }
-        job.setDefinition(new CpsFlowDefinition(script, true));
+        job.setDefinition(createPipelineScript(script));
 
         Run<?, ?> current = buildSuccessfully(job);
 
@@ -127,10 +128,12 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @Issue("JENKINS-73380")
     void shouldOverwriteReferenceBuild() {
         WorkflowJob reference = createPipeline();
-        reference.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + "echo 'Hello Job'\n"
-                        + " }\n", true));
+        reference.setDefinition(createPipelineScript(
+                """
+                node {
+                    echo 'Hello Job'
+                }
+                """));
         Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
 
         var job = createPipeline();
@@ -138,7 +141,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
                     + discoverReferenceJob(reference.getName())
                     + discoverReferenceJob(reference.getName())
                     + " }\n";
-        job.setDefinition(new CpsFlowDefinition(script, true));
+        job.setDefinition(createPipelineScript(script));
 
         Run<?, ?> current = buildSuccessfully(job);
 

@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.delta;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -84,6 +85,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * A delta calculator for the test.
      */
     private static class TestDeltaCalculator extends DeltaCalculator {
+        @Serial
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
