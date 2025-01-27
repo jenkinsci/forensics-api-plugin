@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 
 import edu.hm.hafner.echarts.JacksonFacade;
 
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
 import hudson.model.Run;
@@ -99,7 +99,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
      * @return the new sub page
      */
     @SuppressWarnings("unused") //called by jelly view
-    public Object getDynamic(final String link, final StaplerRequest request, final StaplerResponse response) {
+    public Object getDynamic(final String link, final StaplerRequest2 request, final StaplerResponse2 response) {
         try {
             CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner);
 

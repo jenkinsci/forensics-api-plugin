@@ -23,6 +23,7 @@ import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Base class for recorders that find reference builds.
+ *
  * <p>
  * Several plugins that report build statistics (test results, code coverage, metrics, static analysis warnings)
  * typically show their reports in two different ways: either as absolute report (e.g., total number of tests or

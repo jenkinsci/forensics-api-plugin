@@ -14,6 +14,7 @@ import edu.hm.hafner.util.FilteredLog;
 
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -93,7 +94,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @ParameterizedTest(name = "[{index}] Required result: \"{0}\"")
     @ValueSource(strings = {"SUCCESS", "UNSTABLE", ""})
     @Issue("JENKINS-72015")
-    void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) {
+    void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) throws Descriptor.FormException {
         WorkflowJob reference = createPipeline();
         reference.setDefinition(new CpsFlowDefinition(
                 "node {\n"
@@ -125,7 +126,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
     @Test
     @Issue("JENKINS-73380")
-    void shouldOverwriteReferenceBuild() {
+    void shouldOverwriteReferenceBuild() throws Descriptor.FormException {
         WorkflowJob reference = createPipeline();
         reference.setDefinition(new CpsFlowDefinition(
                 "node {\n"

@@ -40,6 +40,7 @@ import io.jenkins.plugins.util.LogHandler;
 
 /**
  * A simple recorder that discovers a reference build from another given reference job.
+ *
  * <p>
  * Several plugins that report build statistics (test results, code coverage, metrics, static analysis warnings)
  * typically show their reports in two different ways: either as absolute report (e.g., total number of tests or
