@@ -1,12 +1,12 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
+
+import java.util.Optional;
 
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -69,7 +69,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;
     private Result requiredResult = Result.UNSTABLE; // @since 2.4.0
-    private boolean considerRunningBuild = false;
+    private boolean considerRunningBuild;
 
     /**
      * Creates a new instance of {@link SimpleReferenceRecorder}.
@@ -171,7 +171,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     @Override
     public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
             @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
-        FilteredLog log = new FilteredLog("Errors while computing the reference build:");
+        var log = new FilteredLog("Errors while computing the reference build:");
 
         var existing = run.removeActions(ReferenceBuild.class);
         if (existing) {
@@ -180,7 +180,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         }
         run.addAction(findReferenceBuild(run, log));
 
-        LogHandler logHandler = new LogHandler(listener, "ReferenceFinder");
+        var logHandler = new LogHandler(listener, "ReferenceFinder");
         logHandler.log(log);
     }
 
@@ -281,7 +281,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      * @return the reference job (if available)
      */
     protected Optional<Job<?, ?>> resolveReferenceJob(final FilteredLog log) {
-        String jobName = getReferenceJob();
+        var jobName = getReferenceJob();
         if (isValidJobName(jobName)) {
             log.logInfo("Configured reference job: '%s'", jobName);
 

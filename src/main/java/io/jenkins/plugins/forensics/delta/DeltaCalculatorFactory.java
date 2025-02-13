@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.delta;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-import edu.hm.hafner.util.FilteredLog;
 
 import hudson.ExtensionPoint;
 import hudson.FilePath;
@@ -96,7 +96,7 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      */
     private static Optional<DeltaCalculator> findDeltaCalculator(final Run<?, ?> run, final FilePath workTree,
             final TaskListener listener, final FilteredLog logger) {
-        SCM scm = new ScmResolver().getScm(run);
+        var scm = new ScmResolver().getScm(run);
         return findAllDeltaCalculatorFactoryInstances().stream()
                 .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scm, run, workTree,
                         listener, logger))

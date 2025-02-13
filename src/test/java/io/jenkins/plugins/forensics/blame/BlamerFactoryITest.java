@@ -1,12 +1,13 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import edu.hm.hafner.util.FilteredLog;
+
+import java.io.Serial;
+import java.util.Collection;
+import java.util.Optional;
 
 import hudson.FilePath;
 import hudson.model.Run;
@@ -36,8 +37,8 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     /** Verifies that a {@link NullBlamer} will be returned if no suitable blamer has been found. */
     @Test
     void shouldSelectNullBlamer() {
-        FilteredLog log = new FilteredLog("Foo");
-        Blamer nullBlamer = createBlamer("/", log);
+        var log = new FilteredLog("Foo");
+        var nullBlamer = createBlamer("/", log);
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
         assertThat(nullBlamer.blame(new FileLocations(), log)).isEmpty();
@@ -48,8 +49,8 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     /** Verifies that the correct {@link Blamer} instance is created for the first repository. */
     @Test
     void shouldSelectBlamerForFirstDirectory() {
-        FilteredLog log = new FilteredLog("Foo");
-        Blamer testBlamer = createBlamer("/test", log);
+        var log = new FilteredLog("Foo");
+        var testBlamer = createBlamer("/test", log);
 
         assertThat(log.getErrorMessages()).isEmpty();
         assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_CREATED_A_BLAMER);
@@ -65,7 +66,7 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      */
     @Test
     void shouldSelectBlamerForSecondDirectory() {
-        FilteredLog log = new FilteredLog("Foo");
+        var log = new FilteredLog("Foo");
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
         Blamer testBlamerSecondMatch = BlamerFactory.findBlamer(mock(Run.class), directories, TaskListener.NULL, log);
@@ -117,11 +118,12 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
 
     /** A blamer for the test. */
     private static class TestBlamer extends Blamer {
+        @Serial
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
         public Blames blame(final FileLocations fileLocations, final FilteredLog logger) {
-            Blames blames = new Blames();
+            var blames = new Blames();
             blames.add(new FileBlameBuilder().build(FILE_NAME));
             return blames;
         }

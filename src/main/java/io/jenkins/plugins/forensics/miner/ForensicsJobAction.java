@@ -1,8 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Optional;
-import java.util.function.Predicate;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.echarts.BuildResult;
@@ -12,6 +9,9 @@ import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+
+import java.util.Optional;
+import java.util.function.Predicate;
 
 import hudson.model.Job;
 import hudson.model.Run;
@@ -107,7 +107,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     LinesChartModel createChart(final Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory,
             final String configuration) {
         ChartModelConfiguration modelConfiguration = ChartModelConfiguration.fromJson(configuration);
-        ChartType chart = getChart(configuration);
+        var chart = getChart(configuration);
         if (chart == ChartType.LOC) {
             return new CodeMetricTrendChart().create(buildHistory, modelConfiguration);
         }
@@ -123,7 +123,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     }
 
     private ChartType getChart(final String configuration) {
-        String type = JACKSON_FACADE.getString(configuration, "chartType", "files");
+        var type = JACKSON_FACADE.getString(configuration, "chartType", "files");
         for (ChartType chartType : ChartType.values()) {
             if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
                 return chartType;

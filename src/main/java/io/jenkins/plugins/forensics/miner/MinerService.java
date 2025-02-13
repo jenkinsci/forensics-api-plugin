@@ -1,9 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import java.util.List;
 import java.util.Set;
-
-import edu.hm.hafner.util.FilteredLog;
 
 import hudson.model.Run;
 
@@ -33,7 +33,7 @@ public class MinerService {
      */
     public RepositoryStatistics queryStatisticsFor(final String scm, final Run<?, ?> build,
             final Set<String> files, final FilteredLog logger) {
-        RepositoryStatistics selected = new RepositoryStatistics();
+        var selected = new RepositoryStatistics();
 
         List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
         if (actions.isEmpty()) {
@@ -41,7 +41,7 @@ public class MinerService {
             return selected;
         }
 
-        RepositoryStatistics everything = actions.stream()
+        var everything = actions.stream()
                 .filter(a -> a.getScmKey().contains(scm))
                 .findAny()
                 .map(BuildAction::getResult)

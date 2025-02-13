@@ -1,10 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.echarts.Build;
@@ -12,6 +7,11 @@ import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LinesChartModel;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.InvisibleAction;
@@ -52,7 +52,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     private LinesChartModel createChartModel(final String configuration) {
         ChartModelConfiguration modelConfiguration = ChartModelConfiguration.fromJson(configuration);
 
-        ChartType chart = getChart(configuration);
+        var chart = getChart(configuration);
 
         Iterable<? extends BuildResult<CommitStatisticsBuildAction>> buildHistory
                 = createBuildHistory(modelConfiguration.getBuildCount());
@@ -65,7 +65,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     }
 
     private ChartType getChart(final String configuration) {
-        String type = JACKSON_FACADE.getString(configuration, "chartType", "delta");
+        var type = JACKSON_FACADE.getString(configuration, "chartType", "delta");
         for (ChartType chartType : ChartType.values()) {
             if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
                 return chartType;
@@ -84,7 +84,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
                     .findAny();
             if (latestAction.isPresent()) {
                 int buildTimeInSeconds = (int) (run.getTimeInMillis() / 1000);
-                Build build = new Build(run.getNumber(), run.getDisplayName(), buildTimeInSeconds);
+                var build = new Build(run.getNumber(), run.getDisplayName(), buildTimeInSeconds);
 
                 history.add(new BuildResult<>(build, latestAction.get()));
             }

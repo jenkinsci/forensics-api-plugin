@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.blame;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.Set;
  * @author Ullrich Hafner
  */
 public class Blames implements Serializable {
+    @Serial
     private static final long serialVersionUID = 7L; // release 0.7
 
     private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
@@ -37,7 +39,7 @@ public class Blames implements Serializable {
      */
     public void addAll(final Blames other) {
         for (String otherFile : other.getFiles()) {
-            FileBlame otherRequest = other.getBlame(otherFile);
+            var otherRequest = other.getBlame(otherFile);
             merge(otherFile, otherRequest);
         }
     }
@@ -104,7 +106,7 @@ public class Blames implements Serializable {
         if (blamesPerFile.containsKey(fileName)) {
             return blamesPerFile.get(fileName);
         }
-        throw new NoSuchElementException(String.format("No blame information for file '%s' stored", fileName));
+        throw new NoSuchElementException("No blame information for file '%s' stored".formatted(fileName));
     }
 
     @Override
@@ -115,7 +117,7 @@ public class Blames implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Blames blames = (Blames) o;
+        var blames = (Blames) o;
         return blamesPerFile.equals(blames.blamesPerFile);
     }
 

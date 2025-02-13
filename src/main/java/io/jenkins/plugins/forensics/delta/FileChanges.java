@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.delta;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings("PMD.DataClass")
 public class FileChanges implements Serializable {
+    @Serial
     private static final long serialVersionUID = 6135245877389921937L;
 
     private final String fileName;
@@ -106,7 +108,7 @@ public class FileChanges implements Serializable {
      *         The change to be stored
      */
     public void addChange(final Change change) {
-        ChangeEditType changeEditType = change.getEditType();
+        var changeEditType = change.getEditType();
         if (changes.containsKey(changeEditType)) {
             changes.get(changeEditType).add(change);
         }
@@ -147,7 +149,7 @@ public class FileChanges implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FileChanges that = (FileChanges) o;
+        var that = (FileChanges) o;
         return Objects.equals(fileName, that.fileName)
                 && Objects.equals(oldFileName, that.oldFileName)
                 && Objects.equals(fileContent, that.fileContent)

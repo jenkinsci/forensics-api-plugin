@@ -1,11 +1,12 @@
 package io.jenkins.plugins.forensics.delta;
 
-import java.io.Serializable;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Optional;
 
 import hudson.model.Run;
 
@@ -15,6 +16,7 @@ import hudson.model.Run;
  * @author Florian Orendi
  */
 public abstract class DeltaCalculator implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8641535877389921937L;
 
     /**
@@ -57,6 +59,7 @@ public abstract class DeltaCalculator implements Serializable {
      * A delta calculator that does nothing.
      */
     public static class NullDeltaCalculator extends DeltaCalculator {
+        @Serial
         private static final long serialVersionUID = 1564285974889709821L;
 
         @Override

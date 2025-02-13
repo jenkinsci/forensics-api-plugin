@@ -21,11 +21,11 @@ class CommitDiffItemTest extends SerializableTest<CommitDiffItem> {
 
     @Test
     void shouldCreateEmptyCommit() {
-        CommitDiffItem commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
+        var commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
 
         verifyEmptyCommit(commit);
 
-        CommitDiffItem another = new CommitDiffItem(commit);
+        var another = new CommitDiffItem(commit);
 
         verifyEmptyCommit(another);
     }
@@ -44,7 +44,7 @@ class CommitDiffItemTest extends SerializableTest<CommitDiffItem> {
 
     @Test
     void shouldChangeLines() {
-        CommitDiffItem commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
+        var commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
 
         commit.addLines(5);
         assertThat(commit).hasTotalAddedLines(5).hasTotalDeletedLines(0);
@@ -61,7 +61,7 @@ class CommitDiffItemTest extends SerializableTest<CommitDiffItem> {
 
     @Test
     void shouldAddPaths() {
-        CommitDiffItem commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
+        var commit = new CommitDiffItem(ID, AUTHOR, COMMITTED_AT);
 
         commit.setNewPath(asTreeString("new"));
 

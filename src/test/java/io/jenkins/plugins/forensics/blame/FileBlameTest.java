@@ -21,7 +21,7 @@ class FileBlameTest extends SerializableTest<FileBlame> {
 
     @Test
     void shouldCreateInstance() {
-        FileBlame request = createFileBlame("file");
+        var request = createFileBlame("file");
 
         assertThat(request).hasNoLines();
         assertThat(request.getFileName()).isEqualTo("file");
@@ -30,7 +30,7 @@ class FileBlameTest extends SerializableTest<FileBlame> {
         addDetails(request, 15);
         verifyDetails(request, 15);
 
-        FileBlame other = createFileBlame("file");
+        var other = createFileBlame("file");
         addDetails(other, 15);
 
         assertThat(request).isEqualTo(other);
@@ -52,14 +52,14 @@ class FileBlameTest extends SerializableTest<FileBlame> {
 
     @Test
     void shouldMergeRequest() {
-        FileBlame request = createSerializable();
+        var request = createSerializable();
 
-        FileBlame sameLine = createFileBlame("file");
+        var sameLine = createFileBlame("file");
         request.merge(sameLine);
         assertThat(request).hasLines(1);
         verifyDetails(request, 1);
 
-        FileBlame otherLine = createFileBlame("file");
+        var otherLine = createFileBlame("file");
         addDetails(otherLine, 2);
 
         request.merge(otherLine);
@@ -75,7 +75,7 @@ class FileBlameTest extends SerializableTest<FileBlame> {
 
     @Test
     void shouldReturnMeaningfulDefaults() {
-        FileBlame request = createFileBlame("file");
+        var request = createFileBlame("file");
 
         assertThat(request.getCommit(2)).isEqualTo(FileBlame.EMPTY);
         assertThat(request.getEmail(2)).isEqualTo(FileBlame.EMPTY);
@@ -85,7 +85,7 @@ class FileBlameTest extends SerializableTest<FileBlame> {
 
     @Test
     void shouldNormalizeFileName() {
-        FileBlame request = new FileBlameBuilder().build("C:\\path\\to\\file");
+        var request = new FileBlameBuilder().build("C:\\path\\to\\file");
 
         assertThat(request).hasNoLines();
         assertThat(request.getFileName()).isEqualTo("C:/path/to/file");
@@ -93,7 +93,7 @@ class FileBlameTest extends SerializableTest<FileBlame> {
 
     @Override
     protected FileBlame createSerializable() {
-        FileBlame request = createFileBlame("file");
+        var request = createFileBlame("file");
 
         addDetails(request, 1);
         assertThat(request).hasLines(1);

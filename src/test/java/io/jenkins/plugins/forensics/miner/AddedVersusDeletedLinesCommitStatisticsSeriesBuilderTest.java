@@ -1,8 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static io.jenkins.plugins.forensics.miner.AddedVersusDeletedLinesForensicsSeriesBuilder.*;
 import static org.assertj.core.api.Assertions.*;
@@ -11,8 +11,8 @@ import static org.mockito.Mockito.*;
 class AddedVersusDeletedLinesCommitStatisticsSeriesBuilderTest {
     @Test
     void shouldComputeSeries() {
-        AddedVersusDeletedLinesCommitStatisticsSeriesBuilder builder = new AddedVersusDeletedLinesCommitStatisticsSeriesBuilder();
-        CommitStatisticsBuildAction actionStub = createCommitStatisticsBuildActionStub(10, 20);
+        var builder = new AddedVersusDeletedLinesCommitStatisticsSeriesBuilder();
+        var actionStub = createCommitStatisticsBuildActionStub(10, 20);
 
         Map<String, Integer> series = builder.computeSeries(actionStub);
         assertThat(series)

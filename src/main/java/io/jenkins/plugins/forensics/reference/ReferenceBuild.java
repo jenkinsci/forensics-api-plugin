@@ -1,14 +1,15 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Result;
@@ -28,6 +29,7 @@ import static j2html.TagCreator.*;
  * @see ReferenceRecorder
  */
 public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
+    @Serial
     private static final long serialVersionUID = -4549516129641755356L;
 
     /**
@@ -50,12 +52,12 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
         if (!isValidBuildId(referenceBuildId)) {
             return NO_REFERENCE_BUILD;
         }
-        JenkinsFacade jenkinsFacade = new JenkinsFacade();
+        var jenkinsFacade = new JenkinsFacade();
         Optional<Run<?, ?>> possibleReferenceBuild = jenkinsFacade.getBuild(referenceBuildId);
         if (possibleReferenceBuild.isPresent()) {
             return createLink(possibleReferenceBuild.get(), jenkinsFacade);
         }
-        return String.format("#%s", referenceBuildId);
+        return "#%s".formatted(referenceBuildId);
     }
 
     private final String referenceBuildId;

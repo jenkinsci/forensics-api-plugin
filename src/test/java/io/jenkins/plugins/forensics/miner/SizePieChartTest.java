@@ -1,14 +1,13 @@
 package io.jenkins.plugins.forensics.miner;
 
+import org.junit.jupiter.api.Test;
+
+import edu.hm.hafner.echarts.PieData;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
-import edu.hm.hafner.echarts.PieChartModel;
-import edu.hm.hafner.echarts.PieData;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,24 +15,24 @@ import static org.mockito.Mockito.*;
 class SizePieChartTest {
     @Test
     void shouldCreateEmptyModel() {
-        SizePieChart chart = new SizePieChart();
+        var chart = new SizePieChart();
         RepositoryStatistics repositoryStatisticsStub = mock(RepositoryStatistics.class);
         int breakpoint = 1;
 
-        PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
+        var model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
 
         assertThat(model.getData()).isEmpty();
     }
 
     @Test
     void shouldCreateSinglePiSegment() {
-        SizePieChart chart = new SizePieChart();
+        var chart = new SizePieChart();
         int numberOfFileStatistics = 1;
-        RepositoryStatistics repositoryStatisticsStub = getRepositoryStatisticsStub(numberOfFileStatistics);
+        var repositoryStatisticsStub = getRepositoryStatisticsStub(numberOfFileStatistics);
         int breakpoint = 1;
         List<PieData> list = getPieData(breakpoint);
 
-        PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
+        var model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
 
         assertThat(model.getData())
                 .isNotEmpty()
@@ -44,7 +43,7 @@ class SizePieChartTest {
     private List<PieData> getPieData(final int... breakpoint) {
         List<PieData> list = new ArrayList<>();
         for (int i : breakpoint) {
-            PieData pieData = new PieData("< " + i, 1);
+            var pieData = new PieData("< " + i, 1);
             list.add(pieData);
         }
         return list;
@@ -68,14 +67,14 @@ class SizePieChartTest {
 
     @Test
     void shouldCreateTwoPieSegments() {
-        SizePieChart chart = new SizePieChart();
+        var chart = new SizePieChart();
         int numberOfFileStatistics = 2;
-        RepositoryStatistics repositoryStatisticsStub = getRepositoryStatisticsStub(numberOfFileStatistics);
+        var repositoryStatisticsStub = getRepositoryStatisticsStub(numberOfFileStatistics);
         int breakpoint1 = 1;
         int breakpoint2 = 2;
         List<PieData> list = getPieData(breakpoint1, breakpoint2);
 
-        PieChartModel model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint1,
+        var model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint1,
                 breakpoint2);
 
         assertThat(model.getData())

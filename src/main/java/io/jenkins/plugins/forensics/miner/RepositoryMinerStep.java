@@ -1,12 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -100,17 +100,17 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         int number = 0;
         for (SCM repository : new ScmResolver().getScms(run, getScm())) {
             long startOfMining = System.nanoTime();
-            LogHandler logHandler = new LogHandler(listener, "Forensics");
+            var logHandler = new LogHandler(listener, "Forensics");
 
-            FilteredLog logger = new FilteredLog("Errors while mining " + repository);
+            var logger = new FilteredLog("Errors while mining " + repository);
             logger.logInfo("Creating SCM miner to obtain statistics for affected repository files");
             logger.logInfo("-> checking SCM '%s'", repository.getKey());
 
             RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
             logHandler.log(logger);
 
-            RepositoryStatistics repositoryStatistics = previousBuildStatistics(scm, run);
-            RepositoryStatistics addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
+            var repositoryStatistics = previousBuildStatistics(scm, run);
+            var addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
 
             logHandler.log(logger);
             int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);

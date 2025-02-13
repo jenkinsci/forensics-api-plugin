@@ -1,15 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.ChartModelConfiguration.AxisType;
-import edu.hm.hafner.echarts.LinesDataSet;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static io.jenkins.plugins.forensics.miner.FilesCountSeriesBuilder.*;
 import static io.jenkins.plugins.forensics.miner.ResultStubs.*;
@@ -24,9 +23,9 @@ import static org.mockito.Mockito.*;
 class FilesCountSeriesBuilderTest {
     @Test
     void shouldHaveEmptyDataSetForEmptyIterator() {
-        FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
+        var builder = new FilesCountSeriesBuilder();
 
-        LinesDataSet model = builder.createDataSet(createConfiguration(), new ArrayList<>());
+        var model = builder.createDataSet(createConfiguration(), new ArrayList<>());
 
         assertThat(model.getDomainAxisSize()).isEqualTo(0);
         assertThat(model.getDataSetIds()).isEmpty();
@@ -40,11 +39,11 @@ class FilesCountSeriesBuilderTest {
 
     @Test
     void shouldHaveThreeValuesForSingleBuild() {
-        FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
+        var builder = new FilesCountSeriesBuilder();
 
         BuildResult<ForensicsBuildAction> singleResult = createResult(1, 1);
 
-        LinesDataSet dataSet = builder.createDataSet(createConfiguration(), Collections.singletonList(singleResult));
+        var dataSet = builder.createDataSet(createConfiguration(), Collections.singletonList(singleResult));
 
         assertThat(dataSet.getDomainAxisSize()).isEqualTo(1);
         assertThat(dataSet.getDomainAxisLabels()).containsExactly("#1");
@@ -56,13 +55,13 @@ class FilesCountSeriesBuilderTest {
 
     @Test
     void shouldHaveNotMoreValuesThatAllowed() {
-        FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
+        var builder = new FilesCountSeriesBuilder();
 
-        ChartModelConfiguration configuration = createConfiguration();
+        var configuration = createConfiguration();
         when(configuration.getBuildCount()).thenReturn(3);
         when(configuration.isBuildCountDefined()).thenReturn(true);
 
-        LinesDataSet dataSet = builder.createDataSet(configuration, Arrays.asList(
+        var dataSet = builder.createDataSet(configuration, Arrays.asList(
                 createResult(4, 4),
                 createResult(3, 3),
                 createResult(2, 2),

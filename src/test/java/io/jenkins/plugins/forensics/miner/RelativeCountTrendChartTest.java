@@ -1,15 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.SeriesBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,11 +22,11 @@ class RelativeCountTrendChartTest {
     @Test
     void shouldCreate() {
         Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = new ArrayList<>();
-        ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
+        var chartModelConfiguration = createChartModelConfiguration();
         SeriesBuilder<CommitStatisticsBuildAction> seriesBuilder = createSeriesBuilder();
 
-        RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
-        LinesChartModel linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
+        var relativeCountTrendChart = new RelativeCountTrendChart();
+        var linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
 
         assertThat(linesChartModel.getSeries()).isEmpty();
     }
@@ -35,11 +34,11 @@ class RelativeCountTrendChartTest {
     @Test
     void shouldCreateWithData() {
         Iterable<BuildResult<CommitStatisticsBuildAction>> buildResult = createBuildResultsWithData();
-        ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
+        var chartModelConfiguration = createChartModelConfiguration();
         SeriesBuilder<CommitStatisticsBuildAction> seriesBuilder = createSeriesBuilder();
 
-        RelativeCountTrendChart relativeCountTrendChart = new RelativeCountTrendChart();
-        LinesChartModel linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
+        var relativeCountTrendChart = new RelativeCountTrendChart();
+        var linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
 
         assertThat(linesChartModel.getSeries()).hasSize(3);
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
@@ -70,7 +69,7 @@ class RelativeCountTrendChartTest {
 
         when(action.getCommitStatistics()).thenReturn(commitStatistics);
 
-        Build build = new Build(buildNumber);
+        var build = new Build(buildNumber);
         return new BuildResult<>(build, action);
     }
 }

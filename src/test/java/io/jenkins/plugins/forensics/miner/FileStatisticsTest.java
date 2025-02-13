@@ -1,11 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
 import edu.hm.hafner.util.TreeStringBuilder;
+
+import java.util.Set;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 
@@ -22,7 +22,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
     @Test
     void shouldCreateFileStatistics() {
-        FileStatistics statistics = new FileStatisticsBuilder().build(FILE);
+        var statistics = new FileStatisticsBuilder().build(FILE);
         assertThat(statistics).hasFileName(FILE)
                 .hasNumberOfCommits(0)
                 .hasNumberOfAuthors(0)
@@ -31,7 +31,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(0);
 
-        CommitDiffItem first = new CommitDiffItem("1", "one", ONE_DAY * 2).addLines(1);
+        var first = new CommitDiffItem("1", "one", ONE_DAY * 2).addLines(1);
         statistics.inspectCommit(first);
         assertThat(statistics).hasNumberOfCommits(1)
                 .hasCommits(first)
@@ -41,7 +41,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
                 .hasLinesOfCode(1)
                 .hasAbsoluteChurn(1);
 
-        CommitDiffItem second = new CommitDiffItem("2", "one", ONE_DAY * 3).addLines(2);
+        var second = new CommitDiffItem("2", "one", ONE_DAY * 3).addLines(2);
         statistics.inspectCommit(second);
         assertThat(statistics).hasNumberOfCommits(2)
                 .hasCommits(first, second)
@@ -51,7 +51,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
                 .hasLinesOfCode(3)
                 .hasAbsoluteChurn(3);
 
-        CommitDiffItem third = new CommitDiffItem("3", "two", ONE_DAY * 4).deleteLines(1);
+        var third = new CommitDiffItem("3", "two", ONE_DAY * 4).deleteLines(1);
         statistics.inspectCommit(third);
         assertThat(statistics).hasNumberOfCommits(3)
                 .hasCommits(first, second, third)
@@ -61,7 +61,7 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
                 .hasLinesOfCode(2)
                 .hasAbsoluteChurn(4);
 
-        CommitDiffItem fourth = new CommitDiffItem("4", "three", ONE_DAY * 5).deleteLines(2);
+        var fourth = new CommitDiffItem("4", "three", ONE_DAY * 5).deleteLines(2);
         statistics.inspectCommit(fourth);
         assertThat(statistics).hasNumberOfCommits(4)
                 .hasCommits(first, second, third, fourth)
@@ -80,13 +80,13 @@ class FileStatisticsTest extends SerializableTest<FileStatistics> {
 
     @Override
     protected FileStatistics createSerializable() {
-        FileStatistics statistics = createStatistics(FILE);
+        var statistics = createStatistics(FILE);
 
-        CommitDiffItem commit = new CommitDiffItem("SHA", "author", 1)
+        var commit = new CommitDiffItem("SHA", "author", 1)
                 .addLines(5)
                 .deleteLines(8)
                 .setNewPath(new TreeStringBuilder().intern(FILE));
-        statistics.inspectCommits(Collections.singleton(commit));
+        statistics.inspectCommits(Set.of(commit));
 
         return statistics;
     }

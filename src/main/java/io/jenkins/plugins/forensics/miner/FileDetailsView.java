@@ -1,12 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
 import org.apache.commons.io.FilenameUtils;
 
 import edu.hm.hafner.echarts.JacksonFacade;
@@ -15,6 +8,13 @@ import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
@@ -193,14 +193,14 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         public LinesChartModel create(final FileStatistics fileStatistics,
                 final CommitDecorator decorator) {
-            LinesDataSet dataSet = createDataSetPerCommit(fileStatistics, decorator);
+            var dataSet = createDataSetPerCommit(fileStatistics, decorator);
 
-            LinesChartModel model = new LinesChartModel(dataSet);
+            var model = new LinesChartModel(dataSet);
             model.setDomainAxisItemName("Commit");
-            LineSeries added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), JenkinsPalette.GREEN.normal(),
+            var added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), JenkinsPalette.GREEN.normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             added.addAll(dataSet.getSeries(ADDED_KEY));
-            LineSeries deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), JenkinsPalette.RED.normal(),
+            var deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), JenkinsPalette.RED.normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.FILLED);
             deleted.addAll(dataSet.getSeries(DELETED_KEY));
 
@@ -211,7 +211,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
         private LinesDataSet createDataSetPerCommit(final FileStatistics current,
                 final CommitDecorator decorator) {
-            LinesDataSet model = new LinesDataSet();
+            var model = new LinesDataSet();
             for (CommitDiffItem commit : current.getCommits()) {
                 model.add(decorator.asText(commit.getId()), computeSeries(commit));
             }

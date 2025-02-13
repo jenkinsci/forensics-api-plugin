@@ -1,5 +1,12 @@
 package io.jenkins.plugins.forensics.blame;
 
+import edu.hm.hafner.util.PathUtil;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,19 +15,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import edu.hm.hafner.util.PathUtil;
-import edu.hm.hafner.util.TreeString;
-import edu.hm.hafner.util.TreeStringBuilder;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 /**
  * Stores the repository blames for several lines of a single file. File names are stored using the absolute path of the
  * file.
  *
  * @author Ullrich Hafner
  */
-public class FileBlame implements Iterable<Integer>, Serializable {
+public final class FileBlame implements Iterable<Integer>, Serializable {
+    @Serial
     private static final long serialVersionUID = 7L; // release 0.7
 
     static final String EMPTY = "-";
@@ -45,14 +47,14 @@ public class FileBlame implements Iterable<Integer>, Serializable {
      *
      * @return this
      */
-    protected Object readResolve() {
+    private Object readResolve() {
         if (timeByLine == null) {
             timeByLine = new HashMap<>();
         }
         if (blamesByLine == null) {
             blamesByLine = new HashMap<>();
             for (Integer line : lines) {
-                LineBlame lineBlame = new LineBlame();
+                var lineBlame = new LineBlame();
                 lineBlame.setName(nameByLine.get(line));
                 lineBlame.setEmail(emailByLine.get(line));
                 lineBlame.setCommit(commitByLine.get(line));
@@ -204,7 +206,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         }
         else {
             throw new IllegalArgumentException(
-                    String.format("File names must match! This instance: %s, other instance: %s",
+                    "File names must match! This instance: %s, other instance: %s".formatted(
                             getFileName(), other.getFileName()));
         }
     }
@@ -222,7 +224,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FileBlame integers = (FileBlame) o;
+        var integers = (FileBlame) o;
         return fileName.equals(integers.fileName) && Objects.equals(blamesByLine, integers.blamesByLine);
     }
 
@@ -233,6 +235,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
 
     @SuppressWarnings("PMD.DataClass")
     private static class LineBlame implements Serializable {
+        @Serial
         private static final long serialVersionUID = 7L; // release 0.7
         private String name = EMPTY;
         private String email = EMPTY;
@@ -279,7 +282,7 @@ public class FileBlame implements Iterable<Integer>, Serializable {
             if (o == null || getClass() != o.getClass()) {
                 return false;
             }
-            LineBlame lineBlame = (LineBlame) o;
+            var lineBlame = (LineBlame) o;
             return addedAt == lineBlame.addedAt
                     && name.equals(lineBlame.name)
                     && email.equals(lineBlame.email)

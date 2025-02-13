@@ -40,12 +40,12 @@ class AddedVersusDeletedLinesTrendChart {
      */
     <T> LinesChartModel create(final Iterable<? extends BuildResult<T>> results,
             final ChartModelConfiguration configuration, final SeriesBuilder<T> seriesBuilder) {
-        LinesDataSet dataSet = seriesBuilder.createDataSet(configuration, results);
+        var dataSet = seriesBuilder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel(dataSet);
-        LineSeries newSeries = getSeries(dataSet, "Added Lines", JenkinsPalette.GREEN,
+        var model = new LinesChartModel(dataSet);
+        var newSeries = getSeries(dataSet, "Added Lines", JenkinsPalette.GREEN,
                 AddedVersusDeletedLinesForensicsSeriesBuilder.ADDED);
-        LineSeries fixedSeries = getSeries(dataSet, "Deleted Lines", JenkinsPalette.RED,
+        var fixedSeries = getSeries(dataSet, "Deleted Lines", JenkinsPalette.RED,
                 AddedVersusDeletedLinesForensicsSeriesBuilder.DELETED);
 
         model.addSeries(newSeries, fixedSeries);
@@ -55,7 +55,7 @@ class AddedVersusDeletedLinesTrendChart {
 
     private LineSeries getSeries(final LinesDataSet dataSet,
             final String name, final JenkinsPalette color, final String dataSetId) {
-        LineSeries newSeries = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+        var newSeries = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.FILLED);
         newSeries.addAll(dataSet.getSeries(dataSetId));
         return newSeries;
     }
