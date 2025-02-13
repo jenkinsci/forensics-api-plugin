@@ -63,6 +63,7 @@ public final class FileStatistics implements Serializable {
      *
      * @return this
      */
+    @Serial
     @SuppressWarnings("deprecation")
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
     private Object readResolve() {

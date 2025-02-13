@@ -182,7 +182,6 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         var job = run.getParent();
         var topLevel = job.getParent();
         if (topLevel instanceof MultiBranchProject multiBranchProject) {
-
             logger.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
 
             var targetBranch = getTargetBranch();

@@ -47,6 +47,8 @@ public final class FileBlame implements Iterable<Integer>, Serializable {
      *
      * @return this
      */
+    @Serial
+    @SuppressWarnings("DataFlowIssue")
     private Object readResolve() {
         if (timeByLine == null) {
             timeByLine = new HashMap<>();
