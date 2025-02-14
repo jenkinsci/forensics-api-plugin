@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
+
+import java.util.NoSuchElementException;
 
 import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
 
@@ -28,7 +28,7 @@ class BlamesTest extends SerializableTest<Blames> {
 
     @Test
     void shouldCreateEmptyInstance() {
-        Blames empty = new Blames();
+        var empty = new Blames();
 
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
@@ -40,15 +40,15 @@ class BlamesTest extends SerializableTest<Blames> {
 
     @Test
     void shouldAddBlamesOfSingleFile() {
-        Blames blames = new Blames();
+        var blames = new Blames();
 
-        FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
+        var fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
         assertThatBlamesContainsOneFile(blames);
         assertThat(blames.getBlame(FILE_NAME)).isEqualTo(fileBlame);
 
-        FileBlame other = createBlame(2, NAME, EMAIL, COMMIT, TIME);
+        var other = createBlame(2, NAME, EMAIL, COMMIT, TIME);
         blames.add(other);
 
         assertThatBlamesContainsOneFile(blames);
@@ -56,7 +56,7 @@ class BlamesTest extends SerializableTest<Blames> {
         assertThat(blames.getBlame(FILE_NAME)).hasFileName(FILE_NAME);
         assertThat(blames.getBlame(FILE_NAME)).hasLines(1, 2);
 
-        FileBlame duplicate = createBlame(1, EMPTY, EMPTY, EMPTY, EMPTY_TIME);
+        var duplicate = createBlame(1, EMPTY, EMPTY, EMPTY, EMPTY_TIME);
         blames.add(duplicate);
 
         assertThat(blames.size()).isEqualTo(1);
@@ -68,9 +68,9 @@ class BlamesTest extends SerializableTest<Blames> {
 
     @Test
     void shouldConcatenateWorkspacePath() {
-        Blames blames = new Blames();
+        var blames = new Blames();
 
-        FileBlame fileBlame = createBlame("file.txt", 1, NAME, EMAIL, COMMIT, TIME);
+        var fileBlame = createBlame("file.txt", 1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
         assertThat(blames.size()).isEqualTo(1);
@@ -82,11 +82,11 @@ class BlamesTest extends SerializableTest<Blames> {
 
     @Test
     void shouldAddBlamesOfTwoFiles() {
-        Blames blames = new Blames();
+        var blames = new Blames();
 
-        FileBlame fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT, TIME);
+        var fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
-        FileBlame other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT, TIME);
+        var other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT, TIME);
         blames.add(other);
 
         verifyBlamesOfTwoFiles(blames, fileBlame, other);
@@ -94,12 +94,12 @@ class BlamesTest extends SerializableTest<Blames> {
 
     @Test
     void shouldMergeBlames() {
-        Blames blames = new Blames();
-        FileBlame fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT, TIME);
+        var blames = new Blames();
+        var fileBlame = createBlame(FILE_NAME, 1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
-        Blames otherBlames = new Blames();
-        FileBlame other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT, TIME);
+        var otherBlames = new Blames();
+        var other = createBlame(ANOTHER_FILE, 2, NAME, EMAIL, COMMIT, TIME);
         otherBlames.add(other);
 
         blames.addAll(otherBlames);
@@ -130,7 +130,7 @@ class BlamesTest extends SerializableTest<Blames> {
 
     private FileBlame createBlame(final String fileName, final int lineNumber, final String name, final String email,
             final String commit, final int time) {
-        FileBlame fileBlame = new FileBlameBuilder().build(fileName);
+        var fileBlame = new FileBlameBuilder().build(fileName);
         fileBlame.setName(lineNumber, name);
         fileBlame.setCommit(lineNumber, commit);
         fileBlame.setEmail(lineNumber, email);
@@ -140,9 +140,9 @@ class BlamesTest extends SerializableTest<Blames> {
 
     @Override
     protected Blames createSerializable() {
-        Blames blames = new Blames();
+        var blames = new Blames();
 
-        FileBlame fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
+        var fileBlame = createBlame(1, NAME, EMAIL, COMMIT, TIME);
         blames.add(fileBlame);
 
         return blames;

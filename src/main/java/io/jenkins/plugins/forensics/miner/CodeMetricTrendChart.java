@@ -7,7 +7,6 @@ import edu.hm.hafner.echarts.LineSeries;
 import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
-import edu.hm.hafner.echarts.LinesDataSet;
 
 import io.jenkins.plugins.echarts.JenkinsPalette;
 
@@ -35,15 +34,15 @@ class CodeMetricTrendChart {
      */
     LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
-        CodeMetricSeriesBuilder builder = new CodeMetricSeriesBuilder();
-        LinesDataSet dataSet = builder.createDataSet(configuration, results);
+        var builder = new CodeMetricSeriesBuilder();
+        var dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel(dataSet);
+        var model = new LinesChartModel(dataSet);
         JenkinsPalette[] colors = {JenkinsPalette.BLUE, JenkinsPalette.ORANGE};
         int index = 0;
         for (String name : dataSet.getDataSetIds()) {
             int colorIndex = (index++) % colors.length;
-            LineSeries series = new LineSeries(name, colors[colorIndex].normal(),
+            var series = new LineSeries(name, colors[colorIndex].normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.LINES);
             series.addAll(dataSet.getSeries(name));
             model.addSeries(series);

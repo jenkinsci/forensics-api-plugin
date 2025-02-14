@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.reference;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
 
 import hudson.model.Result;
 import hudson.model.Run;
@@ -28,7 +28,7 @@ class ReferenceBuildTest {
     void shouldAttachBuild() {
         Run<?, ?> currentBuild = mock(Run.class);
 
-        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.UNSTABLE);
+        var referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.UNSTABLE);
         assertThat(referenceBuild).hasOwner(currentBuild);
 
         Run<?, ?> newBuild = mock(Run.class);
@@ -42,7 +42,7 @@ class ReferenceBuildTest {
     void shouldHandleMissingReferenceBuild() {
         Run<?, ?> currentBuild = mock(Run.class);
 
-        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE);
+        var referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE);
 
         assertThat(referenceBuild).doesNotHaveReferenceBuild()
                 .hasRequiredResult(Result.FAILURE)
@@ -70,7 +70,7 @@ class ReferenceBuildTest {
         Run<?, ?> targetBuild = mock(Run.class);
         when(targetBuild.getExternalizableId()).thenReturn(ID);
 
-        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE, targetBuild);
+        var referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE, targetBuild);
 
         assertThat(referenceBuild)
                 .hasReferenceBuild()
@@ -94,7 +94,7 @@ class ReferenceBuildTest {
         when(jenkinsFacade.getAbsoluteUrl(any())).thenReturn("URL");
 
         when(targetBuild.getFullDisplayName()).thenReturn("Name");
-        ReferenceBuild referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, ID, Result.UNSTABLE, jenkinsFacade);
+        var referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, ID, Result.UNSTABLE, jenkinsFacade);
 
         assertThat(referenceBuild).hasReferenceBuild();
         assertThat(referenceBuild).hasOnlyMessages(MESSAGES);

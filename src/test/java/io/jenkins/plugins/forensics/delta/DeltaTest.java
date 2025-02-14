@@ -1,12 +1,11 @@
 package io.jenkins.plugins.forensics.delta;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -23,7 +22,7 @@ class DeltaTest {
 
     @Test
     void testDeltaGetters() {
-        Delta delta = createDelta();
+        var delta = createDelta();
 
         assertThat(delta.getCurrentCommit()).isEqualTo(CURRENT_COMMIT_ID);
         assertThat(delta.getReferenceCommit()).isEqualTo(REFERENCE_COMMIT_ID);
@@ -32,8 +31,8 @@ class DeltaTest {
 
     @Test
     void shouldThrowExceptionWhenGettingFileChangesWithUnknownFileId() {
-        Delta delta = createDelta();
-        String fileId = "unknown";
+        var delta = createDelta();
+        var fileId = "unknown";
 
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> delta.getFileChangesById(fileId))
@@ -42,11 +41,11 @@ class DeltaTest {
 
     @Test
     void shouldAddFileChanges() {
-        Delta delta = createDelta();
+        var delta = createDelta();
 
         assertThat(delta.getFileChangesMap()).isEmpty();
 
-        String fileIdOne = "id1";
+        var fileIdOne = "id1";
         FileChanges fileChangesOne = Mockito.mock(FileChanges.class);
         FileChanges fileChangesTwo = Mockito.mock(FileChanges.class);
 

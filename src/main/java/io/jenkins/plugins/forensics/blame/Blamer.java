@@ -1,8 +1,9 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.io.Serializable;
-
 import edu.hm.hafner.util.FilteredLog;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Obtains SCM blame information for several file locations.
@@ -10,6 +11,7 @@ import edu.hm.hafner.util.FilteredLog;
  * @author Lukas Krose
  */
 public abstract class Blamer implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1980235877389921937L;
 
     /**
@@ -28,6 +30,7 @@ public abstract class Blamer implements Serializable {
      * A blamer that does nothing.
      */
     public static class NullBlamer extends Blamer {
+        @Serial
         private static final long serialVersionUID = 6235885974889709821L;
 
         @Override

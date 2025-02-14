@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition;
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import hudson.model.AbstractBuild;
@@ -82,11 +81,11 @@ public class ScmResolver {
     }
 
     private Collection<? extends SCM> findScms(final Run<?, ?> run) {
-        if (run instanceof AbstractBuild) {
-            return extractFromProject((AbstractBuild<?, ?>) run);
+        if (run instanceof AbstractBuild<?, ?> build) {
+            return extractFromProject(build);
         }
-        if (run instanceof WorkflowRun) {
-            List<SCM> scms = ((WorkflowRun) run).getSCMs();
+        if (run instanceof WorkflowRun workflowRun) {
+            List<SCM> scms = workflowRun.getSCMs();
             if (!scms.isEmpty()) {
                 return scms;
             }
@@ -104,10 +103,10 @@ public class ScmResolver {
             return scms;
         }
 
-        if (job instanceof WorkflowJob) {
-            FlowDefinition definition = ((WorkflowJob) job).getDefinition();
-            if (definition instanceof CpsScmFlowDefinition) {
-                return asCollection(((CpsScmFlowDefinition) definition).getScm());
+        if (job instanceof WorkflowJob workflowJob) {
+            var definition = workflowJob.getDefinition();
+            if (definition instanceof CpsScmFlowDefinition flowDefinition) {
+                return asCollection(flowDefinition.getScm());
             }
         }
 
@@ -120,7 +119,7 @@ public class ScmResolver {
             return asCollection(project.getScm());
         }
 
-        SCM scm = project.getRootProject().getScm();
+        var scm = project.getRootProject().getScm();
         if (scm != null) {
             return asCollection(scm);
         }
@@ -129,6 +128,6 @@ public class ScmResolver {
     }
 
     private Set<SCM> asCollection(final SCM scm) {
-        return Collections.singleton(scm);
+        return Set.of(scm);
     }
 }

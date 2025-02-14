@@ -1,15 +1,15 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import hudson.model.Item;
@@ -37,7 +37,7 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldInitCorrectly() {
-        ReferenceRecorder recorder = new NullReferenceRecorder();
+        var recorder = new NullReferenceRecorder();
 
         assertThat(recorder)
                 .hasTargetBranch(StringUtils.EMPTY)
@@ -53,7 +53,7 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldObtainReferenceFromPullRequestTarget() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         var referenceBuild = findReferenceBuild(log, build -> { });
 
@@ -75,11 +75,11 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldObtainReferenceFromPullRequestTargetWithMatchingResult() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         var referenceBuild = findReferenceBuild(log, build -> {
             var successful = createBuild("successful", Result.SUCCESS);
-            when(build.getPreviousCompletedBuild()).thenAnswer((a) -> successful);
+            when(build.getPreviousCompletedBuild()).thenAnswer(a -> successful);
             when(build.getResult()).thenReturn(Result.FAILURE); // reference failed
         });
 
@@ -101,11 +101,11 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldFailToGetReferenceBecauseOfFailure() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         var referenceBuild = findReferenceBuild(log, build -> {
             var failure = createBuild("failure", Result.FAILURE);
-            when(build.getPreviousCompletedBuild()).thenAnswer((a) -> failure);
+            when(build.getPreviousCompletedBuild()).thenAnswer(a -> failure);
             when(build.getResult()).thenReturn(Result.FAILURE); // reference failed as well
         });
 
@@ -125,9 +125,9 @@ class ReferenceRecorderTest {
     private ReferenceBuild findReferenceBuild(final FilteredLog log, final Consumer<Run<?, ?>> configuration) {
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
-        WorkflowMultiBranchProject topLevel = createMultiBranch(job);
+        var topLevel = createMultiBranch(job);
 
-        ReferenceRecorder recorder = createSut();
+        var recorder = createSut();
 
         Run<?, ?> prBuild = configurePrJobAndBuild(recorder, topLevel, job);
         when(recorder.find(build, prBuild, log)).thenReturn(Optional.of(prBuild));
@@ -153,17 +153,17 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldFindReferenceJobUsingPrimaryBranch() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
-        WorkflowMultiBranchProject topLevel = createMultiBranch(job);
+        var topLevel = createMultiBranch(job);
 
-        ReferenceRecorder recorder = createSut();
+        var recorder = createSut();
 
         configurePrimaryBranch(recorder, topLevel, job, build, log);
 
-        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+        var referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages()).contains(
                 "No reference job configured",
@@ -183,9 +183,9 @@ class ReferenceRecorderTest {
      */
     @Test
     void targetShouldHavePrecedenceBeforePullRequestTarget() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
-        ReferenceBuild referenceBuild = findReferenceWithRunningBuild(log, true);
+        var referenceBuild = findReferenceWithRunningBuild(log, true);
 
         assertThat(log.getInfoMessages()).contains(
                 "No reference job configured",
@@ -200,7 +200,7 @@ class ReferenceRecorderTest {
 
     @Test
     void shouldIgnoreRunningBuildsIfOptionIsDeactivated() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         var noReferenceBuild = findReferenceWithRunningBuild(log, false);
 
@@ -227,21 +227,21 @@ class ReferenceRecorderTest {
 
     @Test
     void shouldTakeCareOfRunningBuildsOption() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
-        WorkflowMultiBranchProject topLevel = createMultiBranch(job);
+        var topLevel = createMultiBranch(job);
 
         var scmFacade = mock(ScmFacade.class);
-        ReferenceRecorder recorder = createSut(scmFacade);
+        var recorder = createSut(scmFacade);
         recorder.setConsiderRunningBuild(true);
 
         configurePrJobAndBuild(recorder, topLevel, job); // will not be used since the target branch has been set
         configureTargetJobAndBuild(recorder, topLevel, build, log, false);
 
         when(recorder.isConsiderRunningBuild()).thenReturn(true);
-        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+        var referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages()).contains(
                 "No reference job configured",
@@ -262,18 +262,18 @@ class ReferenceRecorderTest {
      */
     @Test
     void targetShouldHavePrecedenceBeforePrimaryBranchTarget() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
-        WorkflowMultiBranchProject topLevel = createMultiBranch(job);
+        var topLevel = createMultiBranch(job);
 
-        ReferenceRecorder recorder = createSut();
+        var recorder = createSut();
 
         configurePrimaryBranch(recorder, topLevel, job, build, log); // will not be used since target branch has been set
         configureTargetJobAndBuild(recorder, topLevel, build, log, true);
 
-        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+        var referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
                 .contains("No reference job configured",
@@ -292,14 +292,14 @@ class ReferenceRecorderTest {
      */
     @Test
     void shouldNotFindReferenceJobForMultiBranchProject() {
-        FilteredLog log = createLog();
+        var log = createLog();
 
         Run<?, ?> build = mock(Run.class);
         Job<?, ?> job = createJob(build);
         createMultiBranch(job);
 
-        ReferenceRecorder recorder = createSut();
-        ReferenceBuild referenceBuild = recorder.findReferenceBuild(build, log);
+        var recorder = createSut();
+        var referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
                 .anySatisfy(m -> assertThat(m).contains("Found a `MultiBranchProject`"))

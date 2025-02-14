@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import java.io.Serial;
+
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Run;
 
@@ -19,6 +21,7 @@ import io.jenkins.plugins.util.BuildAction;
  */
 @SuppressWarnings("PMD.DataClass")
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
+    @Serial
     private static final long serialVersionUID = -263122257268060032L;
     private static final String DEFAULT_FILE_NAME = "repository-statistics.xml";
 
@@ -109,14 +112,14 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
         if (number == 0) {
             return DEFAULT_FILE_NAME;
         }
-        return String.format("repository-statistics-%d.xml", number);
+        return "repository-statistics-%d.xml".formatted(number);
     }
 
     private String createUrlName(final int number) {
         if (number == 0) {
             return ForensicsJobAction.FORENSICS_ID;
         }
-        return String.format("%s-%d", ForensicsJobAction.FORENSICS_ID, number);
+        return "%s-%d".formatted(ForensicsJobAction.FORENSICS_ID, number);
     }
 
     @Override
@@ -185,6 +188,6 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
 
     @Override
     public String toString() {
-        return String.format("%s [%s]", urlName, scmKey);
+        return "%s [%s]".formatted(urlName, scmKey);
     }
 }

@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
+import edu.hm.hafner.util.FilteredLog;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-import edu.hm.hafner.util.FilteredLog;
 
 import hudson.ExtensionPoint;
 import hudson.FilePath;
@@ -106,7 +106,7 @@ public abstract class BlamerFactory implements ExtensionPoint {
 
     private static Optional<Blamer> findBlamer(final Run<?, ?> run, final FilePath workTree,
             final TaskListener listener, final FilteredLog logger) {
-        SCM scm = new ScmResolver().getScm(run);
+        var scm = new ScmResolver().getScm(run);
 
         return findAllExtensions().stream()
                 .map(blamerFactory -> blamerFactory.createBlamer(scm, run, workTree, listener, logger))

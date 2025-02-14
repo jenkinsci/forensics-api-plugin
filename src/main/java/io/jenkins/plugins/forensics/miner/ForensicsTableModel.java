@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.miner;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.FilenameUtils;
 
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableColumn.ColumnCss;
@@ -82,7 +82,7 @@ public class ForensicsTableModel extends TableModel {
          * @return the file name column (as HTML a tag)
          */
         public String getFileName() {
-            String fullPath = fileStatistics.getFileName();
+            var fullPath = fileStatistics.getFileName();
 
             return a().withHref("fileName." + fullPath.hashCode())
                     .withText(FilenameUtils.getName(fullPath))

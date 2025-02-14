@@ -1,21 +1,22 @@
 package io.jenkins.plugins.forensics.miner;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import hudson.model.Job;
-import hudson.model.Run;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import hudson.model.Job;
+import hudson.model.Run;
+
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the class {@link CommitStatisticsJobAction}.
@@ -33,7 +34,7 @@ class CommitStatisticsJobActionTest {
         Run<?, ?> run2 = createRun(2, "run2");
         Run<?, ?> run3 = createRun(3, "run3");
 
-        CommitStatisticsJobAction commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
+        var commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
         assertThat(commitStatisticsJobAction.isTrendVisible()).isFalse();
 
         when(job.getLastCompletedBuild()).thenAnswer(i -> run1);
@@ -52,7 +53,7 @@ class CommitStatisticsJobActionTest {
         configurationMap.put("numberOfDays", 0);
         configurationMap.put("chartType", chartType);
 
-        String configuration = toJson(configurationMap);
+        var configuration = toJson(configurationMap);
 
         Job<?, ?> job = mock(Job.class);
         Run<?, ?> run1 = createRun(1, "run1");
@@ -63,8 +64,8 @@ class CommitStatisticsJobActionTest {
         when(run1.getPreviousBuild()).thenAnswer(i -> run2);
         when(run2.getPreviousBuild()).thenAnswer(i -> run3);
 
-        CommitStatisticsJobAction commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
-        String chartModel = commitStatisticsJobAction.getConfigurableBuildTrendModel(configuration);
+        var commitStatisticsJobAction = new CommitStatisticsJobAction(job, SCM_KEY);
+        var chartModel = commitStatisticsJobAction.getConfigurableBuildTrendModel(configuration);
 
         assertThat(chartModel).isNotBlank();
 

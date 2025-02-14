@@ -1,5 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
+import org.apache.commons.lang3.StringUtils;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,11 +18,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-import org.apache.commons.lang3.StringUtils;
-
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 
 /**
@@ -25,6 +26,7 @@ import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
  * @author Ullrich Hafner
  */
 public class RepositoryStatistics implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8L; // release 0.8.0
 
     @CheckForNull
@@ -178,7 +180,7 @@ public class RepositoryStatistics implements Serializable {
         if (contains(fileName)) {
             return statisticsMapping.get(fileName);
         }
-        throw new NoSuchElementException(String.format("No information for file %s stored", fileName));
+        throw new NoSuchElementException("No information for file %s stored".formatted(fileName));
     }
 
     /**
@@ -188,13 +190,13 @@ public class RepositoryStatistics implements Serializable {
      *         the additional commits
      */
     public void addAll(final List<CommitDiffItem> commits) {
-        FileStatisticsBuilder builder = new FileStatisticsBuilder();
+        var builder = new FileStatisticsBuilder();
         for (CommitDiffItem commit : commits) {
             if (commit.isDelete()) {
                 statisticsMapping.remove(commit.getOldPath());
             }
             else if (commit.isMove()) {
-                FileStatistics existing = statisticsMapping.remove(commit.getOldPath());
+                var existing = statisticsMapping.remove(commit.getOldPath());
                 if (existing == null) {
                     statisticsMapping.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
                 }
@@ -277,7 +279,7 @@ public class RepositoryStatistics implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RepositoryStatistics that = (RepositoryStatistics) o;
+        var that = (RepositoryStatistics) o;
         return statisticsMapping.equals(that.statisticsMapping) && latestCommitId.equals(that.latestCommitId);
     }
 

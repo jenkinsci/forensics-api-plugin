@@ -1,13 +1,12 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import hudson.model.Job;
-import hudson.util.ComboBoxModel;
 import hudson.util.FormValidation.Kind;
 
 import io.jenkins.plugins.util.JenkinsFacade;
@@ -28,7 +27,7 @@ class ReferenceJobModelValidationTest {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
         when(jenkins.getAllJobNames()).thenReturn(new HashSet<>());
 
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
+        var model = new ReferenceJobModelValidation(jenkins);
 
         assertThat(model.getAllJobs()).isEmpty();
     }
@@ -36,7 +35,7 @@ class ReferenceJobModelValidationTest {
     @Test
     void shouldValidateToOkIfEmpty() {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
+        var model = new ReferenceJobModelValidation(jenkins);
 
         assertThat(model.validateJob("").kind).isEqualTo(Kind.OK);
         assertThat(model.validateJob(null).kind).isEqualTo(Kind.OK);
@@ -47,10 +46,10 @@ class ReferenceJobModelValidationTest {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
 
         Job<?, ?> job = mock(Job.class);
-        String jobName = "referenceJob";
+        var jobName = "referenceJob";
         when(jenkins.getJob(jobName)).thenReturn(Optional.of(job));
 
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
+        var model = new ReferenceJobModelValidation(jenkins);
 
         assertThat(model.validateJob(jobName).kind).isEqualTo(Kind.OK);
         assertThat(model.validateJob("other").kind).isEqualTo(Kind.ERROR);
@@ -60,13 +59,13 @@ class ReferenceJobModelValidationTest {
     void shouldContainSingleElementAndPlaceHolder() {
         JenkinsFacade jenkins = mock(JenkinsFacade.class);
         Job<?, ?> job = mock(Job.class);
-        String name = "Job Name";
+        var name = "Job Name";
         when(jenkins.getFullNameOf(job)).thenReturn(name);
-        when(jenkins.getAllJobNames()).thenReturn(Collections.singleton(name));
+        when(jenkins.getAllJobNames()).thenReturn(Set.of(name));
 
-        ReferenceJobModelValidation model = new ReferenceJobModelValidation(jenkins);
+        var model = new ReferenceJobModelValidation(jenkins);
 
-        ComboBoxModel actualModel = model.getAllJobs();
+        var actualModel = model.getAllJobs();
 
         assertThat(actualModel).hasSize(1).containsExactly(name);
     }

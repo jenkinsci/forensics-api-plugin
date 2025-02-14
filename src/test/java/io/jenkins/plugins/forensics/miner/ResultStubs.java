@@ -29,7 +29,7 @@ public final class ResultStubs {
         ForensicsBuildAction action = mock(ForensicsBuildAction.class);
         when(action.getNumberOfFiles()).thenReturn(numberOfFiles);
 
-        Build build = new Build(buildNumber);
+        var build = new Build(buildNumber);
 
         return new BuildResult<>(build, action);
     }

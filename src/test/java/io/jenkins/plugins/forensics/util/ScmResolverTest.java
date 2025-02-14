@@ -1,12 +1,12 @@
 package io.jenkins.plugins.forensics.util;
 
+import org.assertj.core.api.ObjectAssert;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
-import org.assertj.core.api.ObjectAssert;
-import org.junit.jupiter.api.Test;
 
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -82,8 +82,8 @@ class ScmResolverTest {
     void shouldSkipDuplicateScms() {
         Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
 
-        SCM first = createScm("key");
-        SCM second = createScm("otherKey");
+        var first = createScm("key");
+        var second = createScm("otherKey");
         when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Arrays.asList(first, second));
 
         Run<?, ?> run = createRunFor(pipeline);
@@ -99,8 +99,8 @@ class ScmResolverTest {
     void shouldFilterScms() {
         Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
 
-        SCM first = createScm("key");
-        SCM second = createScm("otherKey");
+        var first = createScm("key");
+        var second = createScm("otherKey");
         when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Arrays.asList(first, second));
 
         Run<?, ?> run = createRunFor(pipeline);

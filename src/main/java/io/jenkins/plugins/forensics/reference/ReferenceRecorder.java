@@ -1,12 +1,12 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
+
+import java.util.Collection;
+import java.util.Optional;
 
 import org.kohsuke.stapler.DataBoundSetter;
 import hudson.model.Item;
@@ -23,13 +23,14 @@ import io.jenkins.plugins.util.JenkinsFacade;
 
 /**
  * Base class for recorders that find reference builds.
+ *
  * <p>
  * Several plugins that report build statistics (test results, code coverage, metrics, static analysis warnings)
  * typically show their reports in two different ways: either as absolute report (e.g., total number of tests or
  * warnings, overall code coverage) or as relative delta report (e.g., additional tests, increased or decreased
- * coverage, new or fixed warnings). In order to compute a relative delta report a plugin needs to carefully select the
- * other build to compare the current results to (a so called reference build). For simple Jenkins jobs that build the
- * main branch of an SCM the reference build will be selected from one of the previous builds of the same job. For more
+ * coverage, new or fixed warnings). To compute a relative delta report, a plugin needs to carefully select the
+ * other build to compare the current results to (a so-called reference build). For simple Jenkins jobs that build the
+ * main branch of an SCM, the reference build will be selected from one of the previous builds of the same job. For more
  * complex branch source projects (i.e., projects that build several branches and pull requests in a connected job
  * hierarchy) it makes more sense to select a reference build from a job that builds the actual target branch (i.e., the
  * branch the current changes will be merged into). Here one typically is interested what changed in a branch or pull
@@ -51,7 +52,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     private static final String DEFAULT_TARGET_BRANCH = "master";
 
     private String defaultBranch = StringUtils.EMPTY;
-    private boolean latestBuildIfNotFound = false;
+    private boolean latestBuildIfNotFound;
     private String scm = StringUtils.EMPTY;
 
     /**
@@ -180,12 +181,10 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     private Optional<Job<?, ?>> discoverJobFromMultiBranchPipeline(final Run<?, ?> run, final FilteredLog logger) {
         var job = run.getParent();
         var topLevel = job.getParent();
-        if (topLevel instanceof MultiBranchProject) {
-            var multiBranchProject = (MultiBranchProject<?, ?>) topLevel;
-
+        if (topLevel instanceof MultiBranchProject multiBranchProject) {
             logger.logInfo("Found a `MultiBranchProject`, trying to resolve the target branch from the configuration");
 
-            String targetBranch = getTargetBranch();
+            var targetBranch = getTargetBranch();
             if (StringUtils.isNotEmpty(targetBranch)) {
                 logger.logInfo("-> using target branch '%s' as configured in step", targetBranch);
 
@@ -195,7 +194,7 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
 
             var possibleHead = findTargetBranchHead(job);
             if (possibleHead.isPresent()) {
-                SCMHead target = possibleHead.get();
+                var target = possibleHead.get();
                 logger.logInfo("-> detected a pull or merge request for target branch '%s'", target.getName());
 
                 return findJobForTargetBranch(multiBranchProject, job, target.getName(), logger);
@@ -280,8 +279,8 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     static class ScmFacade {
         Optional<ChangeRequestSCMHead> findHead(final Job<?, ?> job) {
             SCMHead head = HeadByItem.findHead(job);
-            if (head instanceof ChangeRequestSCMHead) {
-                return Optional.of((ChangeRequestSCMHead) head);
+            if (head instanceof ChangeRequestSCMHead mHead) {
+                return Optional.of(mHead);
             }
             return Optional.empty();
         }

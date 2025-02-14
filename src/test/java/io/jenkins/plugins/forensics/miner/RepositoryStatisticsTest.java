@@ -1,13 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Collections;
-import java.util.NoSuchElementException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
+
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 
@@ -26,7 +27,7 @@ class RepositoryStatisticsTest {
 
     @Test
     void shouldCreateEmptyInstance() {
-        RepositoryStatistics empty = new RepositoryStatistics();
+        var empty = new RepositoryStatistics();
 
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).isEmpty()
@@ -42,15 +43,15 @@ class RepositoryStatisticsTest {
 
     @Test
     void shouldAddStatisticsFor1File() {
-        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        var repositoryStatistics = new RepositoryStatistics();
         repositoryStatistics.add(createFileStatistics());
         verifyTotalsStatistics(repositoryStatistics, createFileStatistics());
     }
 
     @Test
     void shouldAddAllStatisticsFor1File() {
-        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
-        repositoryStatistics.addAll(Collections.singleton(createFileStatistics()));
+        var repositoryStatistics = new RepositoryStatistics();
+        repositoryStatistics.addAll(Set.of(createFileStatistics()));
         verifyTotalsStatistics(repositoryStatistics, createFileStatistics());
     }
 
@@ -64,8 +65,8 @@ class RepositoryStatisticsTest {
     }
 
     private FileStatistics createFileStatistics() {
-        FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        CommitDiffItem commit = new CommitDiffItem("1", "one", ONE_DAY * 9)
+        var fileStatistics = new FileStatisticsBuilder().build(FILE);
+        var commit = new CommitDiffItem("1", "one", ONE_DAY * 9)
                 .addLines(2)
                 .deleteLines(1)
                 .setNewPath(FILE_TREE_STRING);
@@ -75,7 +76,7 @@ class RepositoryStatisticsTest {
 
     @Test
     void shouldAddStatisticsFor1Commit() {
-        RepositoryStatistics statistics = new RepositoryStatistics();
+        var statistics = new RepositoryStatistics();
         statistics.addAll(Collections.singletonList(createCommit()));
         assertThat(statistics).isNotEmpty()
                 .hasFiles(FILE)

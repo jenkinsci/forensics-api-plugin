@@ -11,8 +11,8 @@ import static org.mockito.Mockito.*;
 class ForensicsTableModelTest {
     @Test
     void shouldCreateForensicsTableModel() {
-        RepositoryStatistics statistics = new RepositoryStatistics();
-        ForensicsTableModel tableModel = new ForensicsTableModel(statistics);
+        var statistics = new RepositoryStatistics();
+        var tableModel = new ForensicsTableModel(statistics);
 
         assertThat(tableModel).isNotNull();
         assertThat(tableModel).hasId(ForensicsJobAction.FORENSICS_ID);
@@ -32,13 +32,13 @@ class ForensicsTableModelTest {
 
     @Test
     void shouldReturnRows() {
-        RepositoryStatistics statistics = new RepositoryStatistics();
+        var statistics = new RepositoryStatistics();
         statistics.add(createFileStatistics());
-        ForensicsTableModel tableModel = new ForensicsTableModel(statistics);
+        var tableModel = new ForensicsTableModel(statistics);
         tableModel.getRows();
         assertThat(tableModel.getRows()).hasSize(1);
 
-        Object actual = tableModel.getRows().get(0);
+        var actual = tableModel.getRows().get(0);
         assertThat(actual).isInstanceOf(ForensicsRow.class);
         assertThat((ForensicsRow) actual).hasAuthorsSize(0);
     }
@@ -54,7 +54,7 @@ class ForensicsTableModelTest {
     @Test
     void checkForensicsRowGetters() {
         FileStatistics fileStatisticsStub = mock(FileStatistics.class);
-        ForensicsRow forensicsRow = new ForensicsRow(fileStatisticsStub);
+        var forensicsRow = new ForensicsRow(fileStatisticsStub);
 
         when(fileStatisticsStub.getFileName()).thenReturn("filename");
         when(fileStatisticsStub.getNumberOfAuthors()).thenReturn(1);

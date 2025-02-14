@@ -1,12 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.echarts.PieChartModel;
+import edu.hm.hafner.echarts.PieData;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.Function;
-
-import edu.hm.hafner.echarts.PieChartModel;
-import edu.hm.hafner.echarts.PieData;
 
 import io.jenkins.plugins.echarts.JenkinsPalette;
 
@@ -35,7 +35,7 @@ class SizePieChart {
      */
     public PieChartModel create(final RepositoryStatistics repositoryStatistics,
             final Function<FileStatistics, Integer> sizeMethod, final int... breakpoints) {
-        PieChartModel model = new PieChartModel();
+        var model = new PieChartModel();
         Map<Integer, Integer> distribution = new TreeMap<>();
         for (FileStatistics file : repositoryStatistics.getFileStatistics()) {
             distribution.merge(determineBreakpoint(sizeMethod.apply(file), breakpoints), 1, Integer::sum);

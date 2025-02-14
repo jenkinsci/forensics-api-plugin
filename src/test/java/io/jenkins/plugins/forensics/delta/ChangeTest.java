@@ -20,7 +20,7 @@ class ChangeTest {
 
     @Test
     void shouldHaveWorkingGetters() {
-        Change change = createChange();
+        var change = createChange();
         assertThat(change).hasEditType(EDIT_TYPE);
         assertThat(change).hasChangedFromLine(CHANGED_FROM_LINE);
         assertThat(change).hasChangedToLine(CHANGED_TO_LINE);

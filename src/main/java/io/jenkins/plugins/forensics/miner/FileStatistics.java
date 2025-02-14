@@ -1,16 +1,17 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.util.PathUtil;
+import edu.hm.hafner.util.TreeString;
+import edu.hm.hafner.util.TreeStringBuilder;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
-
-import edu.hm.hafner.util.PathUtil;
-import edu.hm.hafner.util.TreeString;
-import edu.hm.hafner.util.TreeStringBuilder;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import io.jenkins.plugins.forensics.blame.FileBlame;
 
@@ -27,7 +28,8 @@ import io.jenkins.plugins.forensics.blame.FileBlame;
  *
  * @author Ullrich Hafner
  */
-public class FileStatistics implements Serializable {
+public final class FileStatistics implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8L; // release 0.8.x
 
     private TreeString fileName;
@@ -61,9 +63,10 @@ public class FileStatistics implements Serializable {
      *
      * @return this
      */
+    @Serial
     @SuppressWarnings("deprecation")
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
-    protected Object readResolve() {
+    private Object readResolve() {
         if (commits == null) {
             commits = new ArrayList<>(); // restore an empty list for release < 0.8.x
             statistics = new CommitStatistics(numberOfCommits, numberOfAuthors);
@@ -179,7 +182,7 @@ public class FileStatistics implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FileStatistics that = (FileStatistics) o;
+        var that = (FileStatistics) o;
         return creationTime == that.creationTime && lastModificationTime == that.lastModificationTime
                 && Objects.equals(fileName, that.fileName) && Objects.equals(statistics, that.statistics)
                 && Objects.equals(commits, that.commits);

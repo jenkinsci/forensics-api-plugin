@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.blame;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Set;
  * @author Ullrich Hafner
  */
 public class FileLocations implements Serializable {
+    @Serial
     private static final long serialVersionUID = 8063580789984061223L;
 
     private final Map<String, Set<Integer>> linesPerFile = new HashMap<>();
@@ -101,7 +103,7 @@ public class FileLocations implements Serializable {
         if (containsFile(fileName)) {
             return Collections.unmodifiableSet(linesPerFile.get(fileName));
         }
-        throw new NoSuchElementException(String.format("No information for file '%s' stored", fileName));
+        throw new NoSuchElementException("No information for file '%s' stored".formatted(fileName));
     }
 
     @Override
@@ -112,7 +114,7 @@ public class FileLocations implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FileLocations that = (FileLocations) o;
+        var that = (FileLocations) o;
         return linesPerFile.equals(that.linesPerFile);
     }
 

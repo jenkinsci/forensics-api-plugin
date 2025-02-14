@@ -1,9 +1,5 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.StringJoiner;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,8 +8,10 @@ import org.junitpioneer.jupiter.Issue;
 
 import edu.hm.hafner.util.FilteredLog;
 
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.StringJoiner;
+
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -30,7 +28,7 @@ import static org.assertj.core.api.Assertions.*;
 class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @Test
     void shouldReportErrorBecauseReferenceJobIsUndefinedAndNoBuildsInSameSob() {
-        FreeStyleProject job = createJob(StringUtils.EMPTY);
+        var job = createJob(StringUtils.EMPTY);
 
         Run<?, ?> build = buildSuccessfully(job);
 
@@ -41,7 +39,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
     @Test
     void shouldUseSameJobWhenNoReferenceJobIsDefined() {
-        FreeStyleProject job = createJob(StringUtils.EMPTY);
+        var job = createJob(StringUtils.EMPTY);
 
         Run<?, ?> referenceBuild = buildSuccessfully(job);
 
@@ -57,10 +55,10 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
     @Test
     void shouldFindReferenceBuildOfSelectedReferenceJob() {
-        FreeStyleProject reference = createFreeStyleProject();
+        var reference = createFreeStyleProject();
         Run<?, ?> baseline = buildSuccessfully(reference);
 
-        FreeStyleProject job = createJob(reference.getName());
+        var job = createJob(reference.getName());
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).contains(baseline);
@@ -69,11 +67,11 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     /** Uses the latest of two builds as reference build. */
     @Test
     void shouldUseLatestReferenceBuild() {
-        FreeStyleProject reference = createFreeStyleProject();
+        var reference = createFreeStyleProject();
         buildSuccessfully(reference); // the first build is ignored
         Run<?, ?> baseline = buildSuccessfully(reference);
 
-        FreeStyleProject job = createJob(reference.getName());
+        var job = createJob(reference.getName());
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).contains(baseline);
@@ -81,9 +79,9 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
     @Test
     void shouldFindNoReferenceBuildBecauseNoBuildHasBeenCompletedYet() {
-        FreeStyleProject reference = createFreeStyleProject();
+        var reference = createFreeStyleProject();
 
-        FreeStyleProject job = createJob(reference.getName());
+        var job = createJob(reference.getName());
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).isEmpty();
@@ -94,14 +92,16 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @ValueSource(strings = {"SUCCESS", "UNSTABLE", ""})
     @Issue("JENKINS-72015")
     void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) {
-        WorkflowJob reference = createPipeline();
-        reference.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + "brokenCommand()\n"
-                        + " }\n", true));
+        var reference = createPipeline();
+        reference.setDefinition(createPipelineScript(
+                """
+                node {
+                    brokenCommand()
+                }
+                """));
         buildWithResult(reference, Result.FAILURE);
 
-        WorkflowJob job = createPipeline();
+        var job = createPipeline();
         String script;
         if (StringUtils.isBlank(requiredResult)) {
             script = "node {\n"
@@ -110,27 +110,29 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         }
         else {
             script = "node {\n"
-                    + discoverReferenceJob(reference.getName(), String.format("requiredResult: '%s'", requiredResult))
+                    + discoverReferenceJob(reference.getName(), "requiredResult: '%s'".formatted(requiredResult))
                     + " }\n";
         }
-        job.setDefinition(new CpsFlowDefinition(script, true));
+        job.setDefinition(createPipelineScript(script));
 
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).isEmpty();
         assertThat(getConsoleLog(current)).contains(
-                String.format("-> ignoring reference build '#1' or one of its predecessors since none have a result of %s or better",
+                "-> ignoring reference build '#1' or one of its predecessors since none have a result of %s or better".formatted(
                         StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
     }
 
     @Test
     @Issue("JENKINS-73380")
     void shouldOverwriteReferenceBuild() {
-        WorkflowJob reference = createPipeline();
-        reference.setDefinition(new CpsFlowDefinition(
-                "node {\n"
-                        + "echo 'Hello Job'\n"
-                        + " }\n", true));
+        var reference = createPipeline();
+        reference.setDefinition(createPipelineScript(
+                """
+                node {
+                    echo 'Hello Job'
+                }
+                """));
         Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
 
         var job = createPipeline();
@@ -138,7 +140,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
                     + discoverReferenceJob(reference.getName())
                     + discoverReferenceJob(reference.getName())
                     + " }\n";
-        job.setDefinition(new CpsFlowDefinition(script, true));
+        job.setDefinition(createPipelineScript(script));
 
         Run<?, ?> current = buildSuccessfully(job);
 
@@ -150,17 +152,17 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     private String discoverReferenceJob(final String referenceJobName, final String... arguments) {
         var joiner = new StringJoiner(", ", ", ", "").setEmptyValue("");
         Arrays.stream(arguments).forEach(joiner::add);
-        return String.format("discoverReferenceBuild(referenceJob: '%s'%s)%n", referenceJobName, joiner);
+        return "discoverReferenceBuild(referenceJob: '%s'%s)%n".formatted(referenceJobName, joiner);
     }
 
     private Optional<Run<?, ?>> findReferenceBuild(final Run<?, ?> current) {
-        ReferenceFinder referenceFinder = new ReferenceFinder();
+        var referenceFinder = new ReferenceFinder();
         return referenceFinder.findReference(current, new FilteredLog("LOG"));
     }
 
     private FreeStyleProject createJob(final String referenceJobName) {
-        FreeStyleProject job = createFreeStyleProject();
-        SimpleReferenceRecorder referenceRecorder = new SimpleReferenceRecorder();
+        var job = createFreeStyleProject();
+        var referenceRecorder = new SimpleReferenceRecorder();
         referenceRecorder.setReferenceJob(referenceJobName);
         job.getPublishersList().add(referenceRecorder);
         return job;
