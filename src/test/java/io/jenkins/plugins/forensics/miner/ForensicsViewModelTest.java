@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.function.Consumer;
 
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import hudson.model.Run;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
@@ -67,7 +67,7 @@ class ForensicsViewModelTest {
         var model = new ForensicsViewModel(mock(Run.class), repositoryStatistics, SCM_KEY);
 
         runWithNullDecorator(model,
-                m -> assertThat(m.getDynamic(createLink(), mock(StaplerRequest.class), mock(StaplerResponse.class)))
+                m -> assertThat(m.getDynamic(createLink(), mock(StaplerRequest2.class), mock(StaplerResponse2.class)))
                         .isInstanceOf(FileDetailsView.class)
         );
     }
@@ -79,8 +79,8 @@ class ForensicsViewModelTest {
         runWithNullDecorator(model,
                 m -> {
                     try {
-                        StaplerResponse staplerResponse = mock(StaplerResponse.class);
-                        assertThat(m.getDynamic("wrong-link", mock(StaplerRequest.class), staplerResponse)).isSameAs(m);
+                        StaplerResponse2 staplerResponse = mock(StaplerResponse2.class);
+                        assertThat(m.getDynamic("wrong-link", mock(StaplerRequest2.class), staplerResponse)).isSameAs(m);
                         verify(staplerResponse, times(1)).sendRedirect2(any(String.class));
                     }
                     catch (IOException exception) {
@@ -96,9 +96,9 @@ class ForensicsViewModelTest {
         runWithNullDecorator(model,
                 m -> {
                     try {
-                        StaplerResponse staplerResponse = mock(StaplerResponse.class);
+                        StaplerResponse2 staplerResponse = mock(StaplerResponse2.class);
                         doThrow(IOException.class).when(staplerResponse).sendRedirect2(any(String.class));
-                        assertThat(m.getDynamic("wrong-link", mock(StaplerRequest.class), staplerResponse)).isSameAs(m);
+                        assertThat(m.getDynamic("wrong-link", mock(StaplerRequest2.class), staplerResponse)).isSameAs(m);
                     }
                     catch (IOException exception) {
                         throw new UncheckedIOException(exception);
