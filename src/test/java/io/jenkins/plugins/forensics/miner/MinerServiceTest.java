@@ -1,11 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Arrays;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
+
+import java.util.Arrays;
 
 import hudson.model.Run;
 
@@ -27,10 +27,10 @@ class MinerServiceTest {
 
     @Test
     void shouldReturnEmptyStatisticsIfActionIsMissing() {
-        MinerService service = new MinerService();
-        FilteredLog logger = createLogger();
+        var service = new MinerService();
+        var logger = createLogger();
 
-        RepositoryStatistics statistics = service.queryStatisticsFor(
+        var statistics = service.queryStatisticsFor(
                 NO_SCM_FILTER, mock(Run.class), newLinkedHashSet(EXISTING_FILE), logger);
 
         assertThat(statistics).isEmpty();
@@ -40,10 +40,10 @@ class MinerServiceTest {
 
     @Test
     void shouldReturnEmptyStatisticsIfFilesAreEmpty() {
-        MinerService service = new MinerService();
-        FilteredLog logger = createLogger();
+        var service = new MinerService();
+        var logger = createLogger();
 
-        RepositoryStatistics statistics = service.queryStatisticsFor(
+        var statistics = service.queryStatisticsFor(
                 NO_SCM_FILTER, createBuild(createAction("scm")), emptySet(), logger);
 
         assertThat(statistics).isEmpty();
@@ -55,12 +55,12 @@ class MinerServiceTest {
 
     @Test
     void shouldFindSelectedFile() {
-        MinerService service = new MinerService();
+        var service = new MinerService();
 
         Run<?, ?> build = configureBuildWithSingleMiningResult();
 
-        FilteredLog logger = createLogger();
-        RepositoryStatistics statistics = service.queryStatisticsFor(
+        var logger = createLogger();
+        var statistics = service.queryStatisticsFor(
                 NO_SCM_FILTER, build, newLinkedHashSet(EXISTING_FILE), logger);
 
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
@@ -72,17 +72,17 @@ class MinerServiceTest {
 
     @Test
     void shouldFindSelectedFileForSelectedRepositories() {
-        ForensicsBuildAction actionWithResult = createAction("select");
+        var actionWithResult = createAction("select");
         appendResult(actionWithResult);
 
         Run<?, ?> build = mock(Run.class);
         when(build.getActions(ForensicsBuildAction.class))
                 .thenAnswer(i -> Arrays.asList(createAction("scm"), actionWithResult));
 
-        MinerService service = new MinerService();
+        var service = new MinerService();
 
-        FilteredLog logger = createLogger();
-        RepositoryStatistics statistics = service.queryStatisticsFor(
+        var logger = createLogger();
+        var statistics = service.queryStatisticsFor(
                 "select", build, newLinkedHashSet(EXISTING_FILE), logger);
 
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
@@ -94,12 +94,12 @@ class MinerServiceTest {
 
     @Test
     void shouldNotFindSelectedFile() {
-        MinerService service = new MinerService();
+        var service = new MinerService();
 
         Run<?, ?> build = configureBuildWithSingleMiningResult();
 
-        FilteredLog logger = createLogger();
-        RepositoryStatistics statistics = service.queryStatisticsFor(
+        var logger = createLogger();
+        var statistics = service.queryStatisticsFor(
                 NO_SCM_FILTER, build, newLinkedHashSet("not-existing"), logger);
 
         assertThat(statistics).isEmpty();
@@ -111,12 +111,12 @@ class MinerServiceTest {
 
     @Test
     void shouldHandleExistingAndNotExistingFiles() {
-        MinerService service = new MinerService();
+        var service = new MinerService();
 
         Run<?, ?> build = configureBuildWithSingleMiningResult();
 
-        FilteredLog logger = createLogger();
-        RepositoryStatistics statistics = service.queryStatisticsFor(
+        var logger = createLogger();
+        var statistics = service.queryStatisticsFor(
                 NO_SCM_FILTER, build, newLinkedHashSet(EXISTING_FILE, "not-existing"), logger);
 
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
@@ -127,7 +127,7 @@ class MinerServiceTest {
     }
 
     private Run<?, ?> configureBuildWithSingleMiningResult() {
-        ForensicsBuildAction action = createAction("scm");
+        var action = createAction("scm");
 
         appendResult(action);
 
@@ -135,7 +135,7 @@ class MinerServiceTest {
     }
 
     private void appendResult(final ForensicsBuildAction action) {
-        RepositoryStatistics everything = new RepositoryStatistics();
+        var everything = new RepositoryStatistics();
         everything.add(new FileStatisticsBuilder().build(EXISTING_FILE));
         when(action.getResult()).thenReturn(everything);
     }

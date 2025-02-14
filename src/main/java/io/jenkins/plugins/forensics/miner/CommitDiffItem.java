@@ -1,11 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.util.Generated;
+import edu.hm.hafner.util.TreeString;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.StringJoiner;
-
-import edu.hm.hafner.util.Generated;
-import edu.hm.hafner.util.TreeString;
 
 /**
  * Represents all changes related to a specific file in a given SCM commit (diff). For each commit the number of added
@@ -15,6 +16,7 @@ import edu.hm.hafner.util.TreeString;
  * @author Ullrich Hafner
  */
 public class CommitDiffItem implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L; // since 0.8.0
 
     /** Indicates that a file name has not been set or a file has been deleted. */
@@ -25,8 +27,8 @@ public class CommitDiffItem implements Serializable {
     private String author;
     private final int time;
 
-    private int totalAddedLines = 0;
-    private int totalDeletedLines = 0;
+    private int totalAddedLines;
+    private int totalDeletedLines;
 
     private TreeString oldPath = NO_FILE_AS_TREE_STRING;
     private TreeString newPath = NO_FILE_AS_TREE_STRING;
@@ -197,7 +199,7 @@ public class CommitDiffItem implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CommitDiffItem commit = (CommitDiffItem) o;
+        var commit = (CommitDiffItem) o;
         return time == commit.time
                 && totalAddedLines == commit.totalAddedLines && totalDeletedLines == commit.totalDeletedLines
                 && id.equals(commit.id) && author.equals(commit.author)

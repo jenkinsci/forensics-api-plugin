@@ -1,9 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.function.Consumer;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -13,6 +9,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.function.Consumer;
+
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import hudson.model.Run;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
@@ -36,7 +38,7 @@ class ForensicsViewModelTest {
     void shouldHandleEmptyModel() {
         Run<?, ?> owner = mock(Run.class);
 
-        ForensicsViewModel model = new ForensicsViewModel(owner, new RepositoryStatistics(), SCM_KEY);
+        var model = new ForensicsViewModel(owner, new RepositoryStatistics(), SCM_KEY);
 
         assertThat(model)
                 .hasOwner(owner)
@@ -60,11 +62,11 @@ class ForensicsViewModelTest {
 
     @Test
     void shouldGetFileDetailsViewInDynamic() {
-        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
-        FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE_NAME);
+        var repositoryStatistics = new RepositoryStatistics();
+        var fileStatistics = new FileStatisticsBuilder().build(FILE_NAME);
         repositoryStatistics.add(fileStatistics);
 
-        ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), repositoryStatistics, SCM_KEY);
+        var model = new ForensicsViewModel(mock(Run.class), repositoryStatistics, SCM_KEY);
 
         runWithNullDecorator(model,
                 m -> assertThat(m.getDynamic(createLink(), mock(StaplerRequest2.class), mock(StaplerResponse2.class)))
@@ -74,7 +76,7 @@ class ForensicsViewModelTest {
 
     @Test
     void shouldThrowNoSuchElementExceptionInGetDynamic() throws IOException {
-        ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
+        var model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
 
         runWithNullDecorator(model,
                 m -> {
@@ -91,7 +93,7 @@ class ForensicsViewModelTest {
 
     @Test
     void shouldThrowIOExceptionInGetDynamic() throws IOException {
-        ForensicsViewModel model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
+        var model = new ForensicsViewModel(mock(Run.class), new RepositoryStatistics(), SCM_KEY);
 
         runWithNullDecorator(model,
                 m -> {
@@ -121,4 +123,3 @@ class ForensicsViewModelTest {
         return "filename." + FILE_NAME.hashCode();
     }
 }
-

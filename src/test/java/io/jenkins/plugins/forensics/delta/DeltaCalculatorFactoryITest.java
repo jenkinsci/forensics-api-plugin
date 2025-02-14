@@ -1,12 +1,13 @@
 package io.jenkins.plugins.forensics.delta;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import edu.hm.hafner.util.FilteredLog;
+
+import java.io.Serial;
+import java.util.Collection;
+import java.util.Optional;
 
 import hudson.FilePath;
 import hudson.model.Run;
@@ -34,8 +35,8 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     /** Verifies that a {@link NullDeltaCalculator} will be returned if no suitable delta calculator has been found. */
     @Test
     void shouldSelectNullDeltaCalculatorIfNoCalculatorIsFound() {
-        FilteredLog log = new FilteredLog("Foo");
-        DeltaCalculator nullCalculator = createDeltaCalculator("/", log);
+        var log = new FilteredLog("Foo");
+        var nullCalculator = createDeltaCalculator("/", log);
 
         assertThat(nullCalculator).isInstanceOf(NullDeltaCalculator.class);
         assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), log)).isEmpty();
@@ -47,8 +48,8 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     /** Verifies that the correct {@link DeltaCalculator} instance is created for the first repository. */
     @Test
     void shouldSelectDeltaCalculatorForFirstDirectory() {
-        FilteredLog log = new FilteredLog("Foo");
-        DeltaCalculator deltaCalculator = createDeltaCalculator("/test", log);
+        var log = new FilteredLog("Foo");
+        var deltaCalculator = createDeltaCalculator("/test", log);
 
         assertThat(log.getErrorMessages()).isEmpty();
         assertThat(log.getInfoMessages()).containsOnly(ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR);
@@ -62,7 +63,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      */
     @Test
     void shouldSelectDeltaCalculatorForSecondDirectory() {
-        FilteredLog log = new FilteredLog("Foo");
+        var log = new FilteredLog("Foo");
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
         DeltaCalculator testDeltaSecondMatch = DeltaCalculatorFactory.findDeltaCalculator(mock(Run.class), directories,
@@ -84,6 +85,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * A delta calculator for the test.
      */
     private static class TestDeltaCalculator extends DeltaCalculator {
+        @Serial
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override

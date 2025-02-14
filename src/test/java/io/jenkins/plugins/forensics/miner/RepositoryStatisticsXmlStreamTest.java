@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.nio.file.Path;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
@@ -34,7 +32,7 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     }
 
     private RepositoryStatistics read(final String fileName) {
-        RepositoryStatisticsXmlStream repositoryStatisticsReader = new RepositoryStatisticsXmlStream();
+        var repositoryStatisticsReader = new RepositoryStatisticsXmlStream();
 
         return repositoryStatisticsReader.read(getResourceAsFile(fileName));
     }
@@ -43,7 +41,7 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
         assertThat(statistics)
                 .hasOnlyFiles(ISSUE_BUILDER, "/analysis/Report.java", "/analysis/FilteredLog.java");
 
-        FileStatistics fileStatistics = statistics.get(ISSUE_BUILDER);
+        var fileStatistics = statistics.get(ISSUE_BUILDER);
         assertThat(fileStatistics).hasFileName(ISSUE_BUILDER)
                 .hasCreationTime(1_506_775_701)
                 .hasLastModificationTime(1_546_429_687)
@@ -53,16 +51,16 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
 
     @Test
     void shouldWriteReport() {
-        RepositoryStatistics statistics = new RepositoryStatistics();
-        FileStatistics fileStatistics = new FileStatisticsBuilder().build(FILE);
-        CommitDiffItem first = new CommitDiffItem("1", "name", ONE_DAY * 2)
+        var statistics = new RepositoryStatistics();
+        var fileStatistics = new FileStatisticsBuilder().build(FILE);
+        var first = new CommitDiffItem("1", "name", ONE_DAY * 2)
                 .addLines(4)
                 .setNewPath(FILE_TREE_STRING);
-        CommitDiffItem second = new CommitDiffItem("2", "another", ONE_DAY * 3)
+        var second = new CommitDiffItem("2", "another", ONE_DAY * 3)
                 .addLines(4)
                 .deleteLines(3)
                 .setNewPath(FILE_TREE_STRING);
-        CommitDiffItem third = new CommitDiffItem("3", "another", ONE_DAY * 4)
+        var third = new CommitDiffItem("3", "another", ONE_DAY * 4)
                 .deleteLines(2)
                 .setNewPath(FILE_TREE_STRING);
         fileStatistics.inspectCommit(first);
@@ -70,14 +68,14 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
         fileStatistics.inspectCommit(third);
         statistics.add(fileStatistics);
 
-        RepositoryStatisticsXmlStream stream = new RepositoryStatisticsXmlStream();
-        Path path = createTempFile();
+        var stream = new RepositoryStatisticsXmlStream();
+        var path = createTempFile();
         stream.write(path, statistics);
 
-        RepositoryStatistics restored = stream.read(path);
+        var restored = stream.read(path);
 
         assertThat(restored).hasFiles(FILE);
-        FileStatistics restoredFile = restored.get(FILE);
+        var restoredFile = restored.get(FILE);
         assertThat(restoredFile)
                 .hasNumberOfAuthors(2)
                 .hasNumberOfCommits(3)

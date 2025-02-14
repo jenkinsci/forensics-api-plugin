@@ -1,8 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static io.jenkins.plugins.forensics.miner.RelativeCountForensicsSeriesBuilder.*;
 import static org.assertj.core.api.Assertions.*;
@@ -15,8 +15,8 @@ class RelativeCountCommitStatisticsSeriesBuilderTest {
         final int authorCount = 7;
         final int filesCount = 7;
 
-        RelativeCountCommitStatisticsSeriesBuilder relativeCountCommitStatisticsSeriesBuilder = new RelativeCountCommitStatisticsSeriesBuilder();
-        CommitStatisticsBuildAction commitStatisticsBuildActionStub = getCommitStatisticsBuildActionStub(
+        var relativeCountCommitStatisticsSeriesBuilder = new RelativeCountCommitStatisticsSeriesBuilder();
+        var commitStatisticsBuildActionStub = getCommitStatisticsBuildActionStub(
                 commitCount, authorCount, filesCount);
         Map<String, Integer> result = relativeCountCommitStatisticsSeriesBuilder.computeSeries(
                 commitStatisticsBuildActionStub);
@@ -38,4 +38,3 @@ class RelativeCountCommitStatisticsSeriesBuilderTest {
         return commitStatisticsBuildActionStub;
     }
 }
-

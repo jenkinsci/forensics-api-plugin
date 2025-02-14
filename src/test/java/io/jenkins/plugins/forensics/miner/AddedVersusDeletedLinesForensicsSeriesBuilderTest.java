@@ -1,9 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,7 +25,7 @@ class AddedVersusDeletedLinesForensicsSeriesBuilderTest {
     private CommitStatistics createCommitStatistics(final int added, final int deleted) {
         List<CommitDiffItem> commits = new ArrayList<>();
 
-        CommitDiffItem item = new CommitDiffItem("1", "author", 1);
+        var item = new CommitDiffItem("1", "author", 1);
         item.addLines(added).deleteLines(deleted);
 
         commits.add(item);

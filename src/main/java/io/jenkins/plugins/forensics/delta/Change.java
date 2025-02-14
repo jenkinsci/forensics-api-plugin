@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.delta;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,6 +17,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("PMD.DataClass")
 public class Change implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1543635877389921937L;
 
     private final ChangeEditType changeEditType;
@@ -89,7 +91,7 @@ public class Change implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Change change = (Change) o;
+        var change = (Change) o;
         return changedFromLine == change.changedFromLine && changedToLine == change.changedToLine
                 && fromLine == change.fromLine && toLine == change.toLine && changeEditType == change.changeEditType;
     }

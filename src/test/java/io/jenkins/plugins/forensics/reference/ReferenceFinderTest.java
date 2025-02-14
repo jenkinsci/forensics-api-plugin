@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
+
+import java.util.Optional;
 
 import hudson.model.Run;
 
@@ -19,14 +19,14 @@ import static org.mockito.Mockito.*;
 class ReferenceFinderTest {
     @Test
     void shouldNotFindReferenceIfThereIsNoAction() {
-        ReferenceFinder finder = new ReferenceFinder();
+        var finder = new ReferenceFinder();
 
         assertThat(finder.findReference(mock(Run.class), createLogger())).isEmpty();
     }
 
     @Test
     void shouldNotFindReferenceIfThereActionWithOutResult() {
-        ReferenceFinder finder = new ReferenceFinder();
+        var finder = new ReferenceFinder();
 
         Run<?, ?> build = mock(Run.class);
         ReferenceBuild reference = mock(ReferenceBuild.class);
@@ -36,7 +36,7 @@ class ReferenceFinderTest {
 
     @Test
     void shouldFindReference() {
-        ReferenceFinder finder = new ReferenceFinder();
+        var finder = new ReferenceFinder();
 
         Run<?, ?> build = mock(Run.class);
         ReferenceBuild reference = mock(ReferenceBuild.class);

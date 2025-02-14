@@ -1,8 +1,8 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Optional;
-
 import edu.hm.hafner.util.FilteredLog;
+
+import java.util.Optional;
 
 import hudson.model.Run;
 
@@ -24,7 +24,7 @@ public class ReferenceFinder {
      * @return the recorded reference build if available
      */
     public Optional<Run<?, ?>> findReference(final Run<?, ?> build, final FilteredLog log) {
-        ReferenceBuild action = build.getAction(ReferenceBuild.class);
+        var action = build.getAction(ReferenceBuild.class);
         if (action == null) {
             log.logInfo("Reference build recorder is not configured");
         }

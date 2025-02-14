@@ -1,11 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import edu.hm.hafner.util.FilteredLog;
+
+import java.util.Optional;
 
 import hudson.FilePath;
 import hudson.model.Run;
@@ -28,8 +28,8 @@ import static org.mockito.Mockito.*;
 class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @Test
     void shouldSelectNullMinerIfNoScmIsGiven() throws InterruptedException {
-        FilteredLog log = new FilteredLog("Foo");
-        RepositoryMiner nullMiner = createMiner("/", log);
+        var log = new FilteredLog("Foo");
+        var nullMiner = createMiner("/", log);
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
         assertThat(nullMiner.mine(new RepositoryStatistics(), log)).isEmpty();
@@ -42,8 +42,8 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
 
     @Test
     void shouldSelectMinerForFirstDirectory() throws InterruptedException {
-        FilteredLog log = new FilteredLog("Foo");
-        RepositoryMiner repositoryMiner = createMiner("/test", log);
+        var log = new FilteredLog("Foo");
+        var repositoryMiner = createMiner("/test", log);
 
         assertThat(repositoryMiner).isInstanceOf(TestMiner.class);
         assertThat(repositoryMiner.mine(new RepositoryStatistics(), log)).isNotEmpty();
@@ -95,7 +95,7 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
 
         @Override
         public RepositoryStatistics mine(final RepositoryStatistics previousStatistics, final FilteredLog logger) {
-            RepositoryStatistics statistics = new RepositoryStatistics();
+            var statistics = new RepositoryStatistics();
             statistics.add(new FileStatisticsBuilder().build("/file.txt"));
             statistics.addAll(previousStatistics);
             return statistics;

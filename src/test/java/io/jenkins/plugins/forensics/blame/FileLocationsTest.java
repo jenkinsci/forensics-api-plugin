@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
+
+import java.util.NoSuchElementException;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -21,7 +21,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
 
     @Test
     void shouldCreateEmptyInstance() {
-        FileLocations empty = new FileLocations();
+        var empty = new FileLocations();
 
         assertThat(empty).isEmpty();
         assertThat(empty.size()).isEqualTo(0);
@@ -33,7 +33,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
 
     @Test
     void shouldCreateSingleBlame() {
-        FileLocations locations = new FileLocations();
+        var locations = new FileLocations();
 
         locations.addLine(ABSOLUTE_PATH, 1);
 
@@ -46,7 +46,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
 
     @Test
     void shouldAddAdditionalLinesToRequest() {
-        FileLocations locations = new FileLocations();
+        var locations = new FileLocations();
 
         locations.addLine(ABSOLUTE_PATH, 1);
         locations.addLine(ABSOLUTE_PATH, 2);
@@ -59,7 +59,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
 
     @Test
     void shouldCreateTwoDifferentBlamerInput() {
-        FileLocations locations = createSerializable();
+        var locations = createSerializable();
 
         assertThat(locations.size()).isEqualTo(2);
         assertThat(locations).hasFiles(ABSOLUTE_PATH, ANOTHER_FILE);
@@ -67,7 +67,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
         assertThat(locations.getLines(ABSOLUTE_PATH)).containsExactly(1);
         assertThat(locations.getLines(ANOTHER_FILE)).containsExactly(2);
 
-        String wrongFile = "wrong file";
+        var wrongFile = "wrong file";
         assertThatThrownBy(() -> locations.getLines(wrongFile))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessageContaining(wrongFile);
@@ -75,7 +75,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
 
     @Override
     protected FileLocations createSerializable() {
-        FileLocations locations = new FileLocations();
+        var locations = new FileLocations();
 
         locations.addLine(ABSOLUTE_PATH, 1);
         locations.addLine(ANOTHER_FILE, 2);

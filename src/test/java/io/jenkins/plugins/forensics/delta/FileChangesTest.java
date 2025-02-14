@@ -1,11 +1,10 @@
 package io.jenkins.plugins.forensics.delta;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -24,7 +23,7 @@ class FileChangesTest {
 
     @Test
     void shouldCreateEmptyChanges() {
-        FileChanges fileChanges = createFileChanges();
+        var fileChanges = createFileChanges();
         assertThat(fileChanges).hasFileName(FILE_NAME)
                 .hasOldFileName(OLD_FILE_NAME)
                 .hasFileContent(FILE_CONTENT)
@@ -40,9 +39,9 @@ class FileChangesTest {
 
     @Test
     void shouldAddChange() {
-        FileChanges fileChanges = createFileChanges();
+        var fileChanges = createFileChanges();
 
-        ChangeEditType changeEditType = ChangeEditType.REPLACE;
+        var changeEditType = ChangeEditType.REPLACE;
 
         assertThat(fileChanges.getChanges()).isEmpty();
         assertThat(fileChanges.getChangesByType(changeEditType)).isEmpty();

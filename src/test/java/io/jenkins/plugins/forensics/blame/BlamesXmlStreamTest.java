@@ -1,7 +1,5 @@
 package io.jenkins.plugins.forensics.blame;
 
-import java.nio.file.Path;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.SerializableTest;
@@ -39,18 +37,18 @@ class BlamesXmlStreamTest extends SerializableTest<Blames> {
 
     @Test
     void shouldReadAndWriteBlames() {
-        BlamesXmlStream blamesReader = new BlamesXmlStream();
+        var blamesReader = new BlamesXmlStream();
 
-        Blames restored070 = blamesReader.read(getResourceAsFile("fileBlame-0.7.0.xml"));
-        Path saved = createTempFile();
+        var restored070 = blamesReader.read(getResourceAsFile("fileBlame-0.7.0.xml"));
+        var saved = createTempFile();
         blamesReader.write(saved, restored070);
 
-        Blames newFormat = blamesReader.read(saved);
+        var newFormat = blamesReader.read(saved);
         assertThatBlamesAreCorrect(newFormat);
     }
 
     private Blames read(final String fileName) {
-        BlamesXmlStream blamesReader = new BlamesXmlStream();
+        var blamesReader = new BlamesXmlStream();
 
         return blamesReader.read(getResourceAsFile(fileName));
     }
@@ -58,7 +56,7 @@ class BlamesXmlStreamTest extends SerializableTest<Blames> {
     private void assertThatBlamesAreCorrect(final Blames blames) {
         assertThat(blames.getFiles()).contains(REPORT, FILTERED_LOG);
 
-        FileBlame report = new FileBlameBuilder().build(REPORT_SRC);
+        var report = new FileBlameBuilder().build(REPORT_SRC);
         report.setCommit(768, "11d9cdf38bd029d970705b1151aef910cd873044");
         report.setName(768, "Ulli Hafner");
         report.setEmail(768, "ullrich.hafner@gmail.com");

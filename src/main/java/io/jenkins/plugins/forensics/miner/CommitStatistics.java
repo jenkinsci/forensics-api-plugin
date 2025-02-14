@@ -1,17 +1,18 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.Generated;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
-import java.util.Locale;
-
-import edu.hm.hafner.util.FilteredLog;
-import edu.hm.hafner.util.Generated;
 
 /**
  * Computes and stores aggregated statistics for a collection of commits.
@@ -19,6 +20,7 @@ import edu.hm.hafner.util.Generated;
  * @author Ullrich Hafner
  */
 public class CommitStatistics implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L; // since 0.8.0
 
     private final int addedLines;
@@ -108,7 +110,7 @@ public class CommitStatistics implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CommitStatistics that = (CommitStatistics) o;
+        var that = (CommitStatistics) o;
         return addedLines == that.addedLines && deletedLines == that.deletedLines
                 && authorCount == that.authorCount && commitCount == that.commitCount && filesCount == that.filesCount;
     }

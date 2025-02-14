@@ -1,11 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
 
 import hudson.model.Action;
 import hudson.model.InvisibleAction;
@@ -24,6 +25,7 @@ import io.jenkins.plugins.forensics.reference.ReferenceBuild;
  */
 @SuppressWarnings("PMD.DataClass")
 public class CommitStatisticsBuildAction extends InvisibleAction implements LastBuildAction, RunAction2, Serializable {
+    @Serial
     private static final long serialVersionUID = -263122257268060032L;
 
     @SuppressFBWarnings(value = "SE", justification = "transient field owner ist restored using a Jenkins callback")
@@ -69,7 +71,7 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
      * @return {@code true} if there is a reference build defined, {@code false} otherwise
      */
     public boolean hasReferenceBuild() {
-        ReferenceBuild referenceBuildAction = getReferenceBuild();
+        var referenceBuildAction = getReferenceBuild();
 
         return referenceBuildAction != null && referenceBuildAction.hasReferenceBuild();
     }
@@ -90,7 +92,7 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
      * @return the link
      */
     public String getReferenceBuildLink() {
-        ReferenceBuild build = getReferenceBuild();
+        var build = getReferenceBuild();
         if (build == null) {
             return ReferenceBuild.NO_REFERENCE_BUILD;
         }
@@ -99,7 +101,7 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
 
     @Override
     public String toString() {
-        return String.format("%s [%s]", scmKey, commitStatistics);
+        return "%s [%s]".formatted(scmKey, commitStatistics);
     }
 
     @Override
@@ -114,6 +116,6 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
 
     @Override
     public Collection<? extends Action> getProjectActions() {
-        return Collections.singleton(new CommitStatisticsJobAction(owner.getParent(), scmKey));
+        return Set.of(new CommitStatisticsJobAction(owner.getParent(), scmKey));
     }
 }

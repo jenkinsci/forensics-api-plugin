@@ -1,8 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.Serializable;
-
 import edu.hm.hafner.util.FilteredLog;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Obtains commit statistics for a source code repository. Computation of the commit statistics should be done
@@ -12,6 +13,7 @@ import edu.hm.hafner.util.FilteredLog;
  * @author Ullrich Hafner
  */
 public abstract class RepositoryMiner implements Serializable {
+    @Serial
     private static final long serialVersionUID = -8878714986510536182L;
 
     /**
@@ -34,6 +36,7 @@ public abstract class RepositoryMiner implements Serializable {
      * A repository miner that does nothing.
      */
     public static class NullMiner extends RepositoryMiner {
+        @Serial
         private static final long serialVersionUID = 6235885974889709821L;
 
         @Override

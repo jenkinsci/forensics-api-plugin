@@ -7,7 +7,6 @@ import edu.hm.hafner.echarts.LineSeries;
 import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
-import edu.hm.hafner.echarts.LinesDataSet;
 
 import io.jenkins.plugins.echarts.JenkinsPalette;
 
@@ -34,11 +33,11 @@ class FilesCountTrendChart {
      */
     public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
-        FilesCountSeriesBuilder builder = new FilesCountSeriesBuilder();
-        LinesDataSet dataSet = builder.createDataSet(configuration, results);
+        var builder = new FilesCountSeriesBuilder();
+        var dataSet = builder.createDataSet(configuration, results);
 
-        LinesChartModel model = new LinesChartModel(dataSet);
-        LineSeries series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), JenkinsPalette.BLUE.normal(),
+        var model = new LinesChartModel(dataSet);
+        var series = new LineSeries(Messages.TrendChart_Files_Legend_Label(), JenkinsPalette.BLUE.normal(),
                 StackedMode.SEPARATE_LINES, FilledMode.FILLED);
         if (dataSet.getDomainAxisSize() > 0) {
             series.addAll(dataSet.getSeries(FilesCountSeriesBuilder.TOTALS_KEY));

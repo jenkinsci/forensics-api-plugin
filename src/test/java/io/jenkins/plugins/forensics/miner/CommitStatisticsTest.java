@@ -1,14 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.SerializableTest;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
@@ -25,10 +25,10 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
     protected CommitStatistics createSerializable() {
         List<CommitDiffItem> commits = new ArrayList<>();
 
-        CommitDiffItem first = new CommitDiffItem("1", AUTHOR, 0);
+        var first = new CommitDiffItem("1", AUTHOR, 0);
         first.addLines(3).deleteLines(2);
         commits.add(first);
-        CommitDiffItem second = new CommitDiffItem("2", "anotherAuthor", 2);
+        var second = new CommitDiffItem("2", "anotherAuthor", 2);
         second.addLines(3).deleteLines(4);
         commits.add(second);
 
@@ -44,7 +44,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countDeletes(commits)).isZero();
         assertThat(CommitStatistics.countMoves(commits)).isZero();
 
-        CommitStatistics empty = new CommitStatistics(commits);
+        var empty = new CommitStatistics(commits);
         assertThat(empty).hasAddedLines(0)
                 .hasDeletedLines(0)
                 .hasLinesOfCode(0)
@@ -57,14 +57,14 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 0 lines added",
                 "-> 0 lines deleted");
 
-        CommitDiffItem first = new CommitDiffItem("1", AUTHOR, 0);
+        var first = new CommitDiffItem("1", AUTHOR, 0);
         first.addLines(3).deleteLines(2);
         commits.add(first);
 
         assertThat(CommitStatistics.countChanges(commits)).isOne();
         assertThat(CommitStatistics.countDeletes(commits)).isZero();
         assertThat(CommitStatistics.countMoves(commits)).isZero();
-        CommitStatistics firstCommit = new CommitStatistics(commits);
+        var firstCommit = new CommitStatistics(commits);
         assertThat(firstCommit).hasAddedLines(3)
                 .hasDeletedLines(2)
                 .hasLinesOfCode(1)
@@ -78,14 +78,14 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 3 lines added",
                 "-> 2 lines deleted");
 
-        CommitDiffItem second = new CommitDiffItem("2", "anotherAuthor", 2);
+        var second = new CommitDiffItem("2", "anotherAuthor", 2);
         second.addLines(3).deleteLines(4);
         commits.add(second);
 
         assertThat(CommitStatistics.countChanges(commits)).isEqualTo(2);
         assertThat(CommitStatistics.countDeletes(commits)).isZero();
         assertThat(CommitStatistics.countMoves(commits)).isZero();
-        CommitStatistics secondCommit = new CommitStatistics(commits);
+        var secondCommit = new CommitStatistics(commits);
         assertThat(secondCommit).hasAddedLines(6)
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
@@ -99,7 +99,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 6 lines added",
                 "-> 6 lines deleted");
 
-        CommitDiffItem third = new CommitDiffItem("2", AUTHOR, 2);
+        var third = new CommitDiffItem("2", AUTHOR, 2);
         third.setNewPath(asTreeString(CommitDiffItem.NO_FILE_NAME));
         third.setOldPath(asTreeString("old"));
         commits.add(third);
@@ -107,7 +107,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countChanges(commits)).isEqualTo(2);
         assertThat(CommitStatistics.countDeletes(commits)).isEqualTo(1);
         assertThat(CommitStatistics.countMoves(commits)).isZero();
-        CommitStatistics thirdCommit = new CommitStatistics(commits);
+        var thirdCommit = new CommitStatistics(commits);
         assertThat(thirdCommit).hasAddedLines(6)
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
@@ -122,7 +122,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
                 "-> 6 lines added",
                 "-> 6 lines deleted");
 
-        CommitDiffItem forth = new CommitDiffItem("3", AUTHOR, 3);
+        var forth = new CommitDiffItem("3", AUTHOR, 3);
         forth.setNewPath(asTreeString("new"));
         forth.setOldPath(asTreeString("old"));
         commits.add(forth);
@@ -130,7 +130,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countChanges(commits)).isEqualTo(2);
         assertThat(CommitStatistics.countDeletes(commits)).isEqualTo(1);
         assertThat(CommitStatistics.countMoves(commits)).isEqualTo(1);
-        CommitStatistics forthCommit = new CommitStatistics(commits);
+        var forthCommit = new CommitStatistics(commits);
         assertThat(forthCommit).hasAddedLines(6)
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
@@ -151,16 +151,16 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
     void shouldIgnoreCapitalizationOfEmailNames() {
         List<CommitDiffItem> commits = new ArrayList<>();
 
-        CommitDiffItem first = new CommitDiffItem("1", "theauthor@mailto.me", 0);
+        var first = new CommitDiffItem("1", "theauthor@mailto.me", 0);
         commits.add(first);
 
-        CommitStatistics firstCommit = new CommitStatistics(commits);
+        var firstCommit = new CommitStatistics(commits);
         assertThat(firstCommit).hasAuthorCount(1);
 
-        CommitDiffItem second = new CommitDiffItem("2", "Theauthor@mailto.me", 0);
+        var second = new CommitDiffItem("2", "Theauthor@mailto.me", 0);
         commits.add(second);
 
-        CommitStatistics secondCommit = new CommitStatistics(commits);
+        var secondCommit = new CommitStatistics(commits);
         assertThat(secondCommit).hasAuthorCount(1);
     }
 
@@ -169,7 +169,7 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
     }
 
     private FilteredLog logCommits(final List<CommitDiffItem> commits) {
-        FilteredLog log = new FilteredLog("Error");
+        var log = new FilteredLog("Error");
         CommitStatistics.logCommits(commits, log);
         return log;
     }

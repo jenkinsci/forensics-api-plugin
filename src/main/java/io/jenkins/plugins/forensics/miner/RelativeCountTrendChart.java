@@ -39,14 +39,14 @@ class RelativeCountTrendChart {
      */
     <T> LinesChartModel create(final Iterable<? extends BuildResult<T>> results,
             final ChartModelConfiguration configuration, final SeriesBuilder<T> seriesBuilder) {
-        LinesDataSet dataSet = seriesBuilder.createDataSet(configuration, results);
-        LinesChartModel model = new LinesChartModel(dataSet);
+        var dataSet = seriesBuilder.createDataSet(configuration, results);
+        var model = new LinesChartModel(dataSet);
         if (dataSet.getDomainAxisSize() > 0) {
-            LineSeries authors = getSeries(dataSet, "Authors", JenkinsPalette.BLUE,
+            var authors = getSeries(dataSet, "Authors", JenkinsPalette.BLUE,
                     RelativeCountForensicsSeriesBuilder.AUTHORS_KEY);
-            LineSeries commits = getSeries(dataSet, "Commits", JenkinsPalette.GREEN,
+            var commits = getSeries(dataSet, "Commits", JenkinsPalette.GREEN,
                     RelativeCountForensicsSeriesBuilder.COMMITS_KEY);
-            LineSeries files = getSeries(dataSet, "Modified files", JenkinsPalette.ORANGE,
+            var files = getSeries(dataSet, "Modified files", JenkinsPalette.ORANGE,
                     RelativeCountForensicsSeriesBuilder.FILES_KEY);
 
             model.addSeries(authors, commits, files);
@@ -57,7 +57,7 @@ class RelativeCountTrendChart {
 
     private LineSeries getSeries(final LinesDataSet dataSet,
             final String name, final JenkinsPalette color, final String dataSetId) {
-        LineSeries series = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.LINES);
+        var series = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.LINES);
         series.addAll(dataSet.getSeries(dataSetId));
         return series;
     }

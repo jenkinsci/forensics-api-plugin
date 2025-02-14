@@ -1,14 +1,13 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.LinesChartModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,10 +21,10 @@ class CodeMetricTrendChartTest {
     @Test
     void shouldCreateEmptyChart() {
         Iterable<BuildResult<ForensicsBuildAction>> buildResults = new ArrayList<>();
-        ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
+        var chartModelConfiguration = createChartModelConfiguration();
 
-        CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
-        LinesChartModel linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
+        var codeMetricTrendChart = new CodeMetricTrendChart();
+        var linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
 
         assertThat(linesChartModel.getSeries()).isEmpty();
         assertThat(linesChartModel.getBuildNumbers()).isEmpty();
@@ -35,10 +34,10 @@ class CodeMetricTrendChartTest {
     @Test
     void shouldCreateWithData() {
         Iterable<BuildResult<ForensicsBuildAction>> buildResults = createBuildResultsWithData();
-        ChartModelConfiguration chartModelConfiguration = createChartModelConfiguration();
+        var chartModelConfiguration = createChartModelConfiguration();
 
-        CodeMetricTrendChart codeMetricTrendChart = new CodeMetricTrendChart();
-        LinesChartModel linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
+        var codeMetricTrendChart = new CodeMetricTrendChart();
+        var linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
 
         assertThat(linesChartModel.getSeries()).hasSize(2);
         assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
@@ -56,7 +55,7 @@ class CodeMetricTrendChartTest {
 
     private BuildResult<ForensicsBuildAction> createResult(final int buildNumber) {
         ForensicsBuildAction action = mock(ForensicsBuildAction.class);
-        Build build = new Build(buildNumber);
+        var build = new Build(buildNumber);
         return new BuildResult<>(build, action);
     }
 

@@ -1,5 +1,6 @@
 package io.jenkins.plugins.forensics.delta;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("PMD.DataClass")
 public class Delta implements Serializable {
+    @Serial
     private static final long serialVersionUID = 5641235877389921937L;
 
     static final String ERROR_MESSAGE_UNKNOWN_FILE = "No information about changes for the file with the ID '%s' stored";
@@ -66,7 +68,7 @@ public class Delta implements Serializable {
         if (fileChangesMap.containsKey(fileId)) {
             return fileChangesMap.get(fileId);
         }
-        throw new NoSuchElementException(String.format(ERROR_MESSAGE_UNKNOWN_FILE, fileId));
+        throw new NoSuchElementException(ERROR_MESSAGE_UNKNOWN_FILE.formatted(fileId));
     }
 
     /**
@@ -92,7 +94,7 @@ public class Delta implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Delta delta = (Delta) o;
+        var delta = (Delta) o;
         return Objects.equals(currentCommit, delta.currentCommit)
                 && Objects.equals(referenceCommit, delta.referenceCommit)
                 && Objects.equals(fileChangesMap, delta.fileChangesMap);
