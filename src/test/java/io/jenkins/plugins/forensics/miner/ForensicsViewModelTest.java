@@ -7,14 +7,12 @@ import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.PieChartModel;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import org.kohsuke.stapler.StaplerRequest2;
-import org.kohsuke.stapler.StaplerResponse2;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.function.Consumer;
 
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import hudson.model.Run;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
