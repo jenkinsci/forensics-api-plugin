@@ -2,11 +2,14 @@ package io.jenkins.plugins.forensics.util;
 
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -101,12 +104,26 @@ class ScmResolverTest {
 
         var first = createScm("key");
         var second = createScm("otherKey");
-        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> Arrays.asList(first, second));
+        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> List.of(first, second));
 
         Run<?, ?> run = createRunFor(pipeline);
         assertThat(new ScmResolver().getScms(run, "ey")).hasSize(2);
         assertThat(new ScmResolver().getScms(run, "other")).hasSize(1);
-        assertThat(new ScmResolver().getScms(run, "key")).hasSize(1);
+        assertThat(new ScmResolver().getScms(run, "erK")).hasSize(1);
+    }
+
+    @ParameterizedTest(name = "Filter repository by case insensitive name {0}")
+    @ValueSource(strings = {"git", "repository", "GIT", "REPOSITORY", "git-repository", "Git-Repository"})
+    void shouldFilterScmCaseInsensitive(final String filter) {
+        Job<?, ?> pipeline = mock(Job.class, withSettings().extraInterfaces(SCMTriggerItem.class));
+
+        var scm = createScm("git-repository");
+        var other = createScm("other");
+        when(((SCMTriggerItem) pipeline).getSCMs()).thenAnswer(i -> List.of(scm, other));
+
+        Run<?, ?> run = createRunFor(pipeline);
+        assertThat(new ScmResolver().getScms(run, filter)).hasSize(1);
+        assertThat(new ScmResolver().getScms(run, "other")).hasSize(1);
     }
 
     private SCM createScm(final String key) {

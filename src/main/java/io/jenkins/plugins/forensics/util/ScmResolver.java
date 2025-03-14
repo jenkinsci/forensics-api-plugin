@@ -1,5 +1,7 @@
 package io.jenkins.plugins.forensics.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +57,7 @@ public class ScmResolver {
     public Collection<? extends SCM> getScms(final Run<?, ?> run, final String keyFilter) {
         return getScms(run)
                 .stream()
-                .filter(r -> r.getKey().contains(keyFilter))
+                .filter(r -> StringUtils.containsIgnoreCase(r.getKey(), keyFilter))
                 .collect(Collectors.toList());
     }
 
