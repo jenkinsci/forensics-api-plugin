@@ -17,6 +17,7 @@ import hudson.model.Run;
 import hudson.scm.NullSCM;
 import hudson.scm.SCM;
 import jenkins.triggers.SCMTriggerItem;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Resolves the used SCM in a given build.
@@ -55,7 +56,7 @@ public class ScmResolver {
     public Collection<? extends SCM> getScms(final Run<?, ?> run, final String keyFilter) {
         return getScms(run)
                 .stream()
-                .filter(r -> r.getKey().contains(keyFilter))
+                .filter(r -> StringUtils.containsIgnoreCase(r.getKey(), keyFilter)
                 .collect(Collectors.toList());
     }
 
