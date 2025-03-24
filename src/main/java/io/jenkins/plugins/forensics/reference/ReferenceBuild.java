@@ -3,7 +3,6 @@ package io.jenkins.plugins.forensics.reference;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.VisibleForTesting;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -65,7 +64,6 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
     private final JenkinsFacade jenkinsFacade;
     private final List<String> messages;
 
-    @SuppressFBWarnings(value = "SE", justification = "transient field owner ist restored using a Jenkins callback")
     private transient Run<?, ?> owner;
 
     /**
