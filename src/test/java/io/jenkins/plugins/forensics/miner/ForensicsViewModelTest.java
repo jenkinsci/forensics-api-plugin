@@ -5,7 +5,6 @@ import org.mockito.MockedStatic;
 
 import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.PieChartModel;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -106,7 +105,6 @@ class ForensicsViewModelTest {
                 });
     }
 
-    @SuppressFBWarnings(value = "RCN", justification = "False positive")
     private void runWithNullDecorator(final ForensicsViewModel model, final Consumer<ForensicsViewModel> modelConsumer) {
         try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
             commitDecoratorFactory
