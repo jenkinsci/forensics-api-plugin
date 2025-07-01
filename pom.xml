@@ -47,7 +47,7 @@
     <module.name>${project.groupId}.forensics.api</module.name>
 
     <!-- Library Dependencies Versions -->
-    <testcontainers.version>1.21.2</testcontainers.version>
+    <testcontainers.version>1.21.3</testcontainers.version>
 
   </properties>
 
