@@ -16,7 +16,6 @@ import java.util.stream.Stream;
  *
  * @author Florian Orendi
  */
-@SuppressWarnings("PMD.DataClass")
 public class FileChanges implements Serializable {
     @Serial
     private static final long serialVersionUID = 6135245877389921937L;

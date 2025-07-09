@@ -156,7 +156,6 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     /**
      * A table row that shows details about a specific file.
      */
-    @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
     public static class ForensicsRow {
         private final String id;
         private final String author;

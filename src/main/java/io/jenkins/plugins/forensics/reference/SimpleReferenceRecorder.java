@@ -64,7 +64,6 @@ import io.jenkins.plugins.util.LogHandler;
  * @author Arne Schöntag
  * @author Ullrich Hafner
  */
-@SuppressWarnings({"PMD.ExcessiveImports", "PMD.CouplingBetweenObjects"})
 public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep {
     private final JenkinsFacade jenkins;
     private String referenceJob = StringUtils.EMPTY;

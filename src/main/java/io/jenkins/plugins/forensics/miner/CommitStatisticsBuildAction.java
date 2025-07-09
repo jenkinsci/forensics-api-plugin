@@ -23,7 +23,6 @@ import io.jenkins.plugins.forensics.reference.ReferenceBuild;
  *
  * @author Ullrich Hafner
  */
-@SuppressWarnings("PMD.DataClass")
 public class CommitStatisticsBuildAction extends InvisibleAction implements LastBuildAction, RunAction2, Serializable {
     @Serial
     private static final long serialVersionUID = -263122257268060032L;

@@ -12,7 +12,6 @@ import java.util.Objects;
  *
  * @author Florian Orendi
  */
-@SuppressWarnings("PMD.DataClass")
 public class Delta implements Serializable {
     @Serial
     private static final long serialVersionUID = 5641235877389921937L;

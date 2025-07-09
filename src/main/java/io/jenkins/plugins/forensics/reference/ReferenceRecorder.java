@@ -47,7 +47,6 @@ import io.jenkins.plugins.util.JenkinsFacade;
  * @author Arne Schöntag
  * @author Ullrich Hafner
  */
-@SuppressWarnings("PMD.DataClass")
 public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     private static final String DEFAULT_TARGET_BRANCH = "master";
 
