@@ -67,7 +67,6 @@ public class ForensicsTableModel extends TableModel {
     /**
      * A table row that shows the source control statistics.
      */
-    @SuppressWarnings("PMD.DataClass") // Used to automatically convert to JSON object
     public static class ForensicsRow {
         private final FileStatistics fileStatistics;
 

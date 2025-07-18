@@ -19,7 +19,6 @@ import io.jenkins.plugins.util.BuildAction;
  *
  * @author Ullrich Hafner
  */
-@SuppressWarnings("PMD.DataClass")
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
     @Serial
     private static final long serialVersionUID = -263122257268060032L;
