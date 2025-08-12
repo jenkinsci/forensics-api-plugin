@@ -149,6 +149,25 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
                 "[-ERROR-] Replaced existing reference build, this typically indicates a misconfiguration as the reference should be constant");
     }
 
+    @Test
+    void shouldRunInDeclarativePipeline() {
+        var job = createPipeline();
+
+        job.setDefinition(createPipelineScript("pipeline {\n"
+                + "    agent 'any'\n"
+                + "    stages {\n"
+                + "        stage ('Discover a reference build') {\n"
+                + "            steps {\n"
+                + discoverReferenceJob(job.getName(), "requiredBuildResult: 'SUCCESS'")
+                + "            }\n"
+                + "        }\n"
+                + "    }\n"
+                + "}"));
+        Run<?, ?> baseline = buildWithResult(job, Result.SUCCESS);
+        Run<?, ?> second = buildSuccessfully(job);
+        assertThat(findReferenceBuild(second)).contains(baseline);
+    }
+
     private String discoverReferenceJob(final String referenceJobName, final String... arguments) {
         var joiner = new StringJoiner(", ", ", ", "").setEmptyValue("");
         Arrays.stream(arguments).forEach(joiner::add);

@@ -130,6 +130,22 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      * Sets that required build result of the reference build. If the reference build has a worse status, then the
      * selected reference build will not be used.
      *
+     * @param requiredBuildResult
+     *         the minimum required build result
+     */
+    @DataBoundSetter
+    public void setRequiredBuildResult(final String requiredBuildResult) {
+        this.requiredResult = Result.fromString(requiredBuildResult);
+    }
+
+    public String getRequiredBuildResult() {
+        return requiredResult != null ? requiredResult.toString() : StringUtils.EMPTY;
+    }
+
+    /**
+     * Sets that required build result of the reference build. If the reference build has a worse status, then the
+     * selected reference build will not be used.
+     *
      * @param requiredResult
      *         the minimum required build result
      */
