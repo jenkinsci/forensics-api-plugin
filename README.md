@@ -10,9 +10,8 @@ This Forensics API Jenkins plug-in defines an API to mine and analyze data from 
 This API plugin provides the following services:
 - **Blames**: Shows what revision and author last modified a specified set of lines of a file. This information can be 
 used to track the original commit that introduced a piece of code. 
-- **File statistics**: Incrementally collects global commit statistics for all repository files in the style of 
-  [Code as a Crime Scene](https://www.adamtornhill.com/articles/crimescene/codeascrimescene.htm) 
-  \[Adam Tornhill, November 2013\]. This includes:
+- **File statistics**: Incrementally collects global commit statistics for all repository files in the style of Code as a Crime Scene \[Adam Tornhill, November 2013\]. 
+This includes:
   - commits count
   - different authors count
   - creation time
