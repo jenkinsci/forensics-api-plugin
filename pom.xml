@@ -56,6 +56,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
+      <version>6.1167.v022176c7e0ca_</version>
     </dependency>
 
     <!-- Jenkins Plugin Dependencies -->
@@ -105,6 +106,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>plugin-util-api</artifactId>
+      <version>6.1167.v022176c7e0ca_</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
