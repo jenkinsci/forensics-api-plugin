@@ -41,11 +41,13 @@ class CodeMetricTrendChart {
         JenkinsPalette[] colors = {JenkinsPalette.BLUE, JenkinsPalette.ORANGE};
         int index = 0;
         for (String name : dataSet.getDataSetIds()) {
-            int colorIndex = (index++) % colors.length;
+            int colorIndex = index % colors.length;
             var series = new LineSeries(name, colors[colorIndex].normal(),
                     StackedMode.SEPARATE_LINES, FilledMode.LINES);
             series.addAll(dataSet.getSeries(name));
             model.addSeries(series);
+
+            index++;
         }
 
         return model;

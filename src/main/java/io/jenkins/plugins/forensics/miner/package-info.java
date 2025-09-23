@@ -1,5 +1,5 @@
 /**
- * Provides API classes to obtain commit statistics for files in a repository.
+ * Provides API classes to get commit statistics for files in a repository.
  */
 @DefaultAnnotation(NonNull.class)
 package io.jenkins.plugins.forensics.miner;

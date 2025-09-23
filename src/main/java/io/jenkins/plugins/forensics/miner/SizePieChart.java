@@ -42,7 +42,8 @@ class SizePieChart {
         }
         int color = 0;
         for (Entry<Integer, Integer> entry : distribution.entrySet()) {
-            model.add(new PieData("< " + entry.getKey(), entry.getValue()), JenkinsPalette.chartColor(color++).normal());
+            model.add(new PieData("< " + entry.getKey(), entry.getValue()), JenkinsPalette.chartColor(color).normal());
+            color++;
         }
         return model;
     }
