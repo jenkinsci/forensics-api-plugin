@@ -115,7 +115,9 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             logHandler.log(logger);
             int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
             run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds,
-                    repository.getKey(), number++));
+                    repository.getKey(), number));
+
+            number++;
         }
     }
 
