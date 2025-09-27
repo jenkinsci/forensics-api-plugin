@@ -2,7 +2,6 @@ package io.jenkins.plugins.forensics.reference;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
@@ -20,14 +19,13 @@ class Java25ITest {
     }
 
     @Test
-    @Issue("JENKINS-73380")
     void shouldOverwriteReferenceBuild() throws Exception {
         var reference = jenkins.createProject(WorkflowJob.class);
         reference.setDefinition(new CpsFlowDefinition(
                 """
                 node {
                     echo 'Hello Job';
-                    discoverGitReferenceBuild();
+                    discoverReferenceBuild();
                 }
                 """, true));
         jenkins.buildAndAssertSuccess(reference);
