@@ -1,6 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
@@ -125,7 +125,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     private ChartType getChart(final String configuration) {
         var type = JACKSON_FACADE.getString(configuration, "chartType", "files");
         for (ChartType chartType : ChartType.values()) {
-            if (StringUtils.equalsIgnoreCase(type, chartType.name())) {
+            if (Strings.CI.equals(type, (CharSequence) chartType.name())) {
                 return chartType;
             }
         }

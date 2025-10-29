@@ -33,10 +33,11 @@ public class FileChanges implements Serializable {
     /**
      * A map changes made to the file, mapped by the {@link ChangeEditType}.
      */
-    private final Map<ChangeEditType, Set<Change>> changes;
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final EnumMap<ChangeEditType, Set<Change>> changes;
 
     /**
-     * Constructor for an instance which wraps all changes made to a specific file.
+     * Wraps all changes made to a specific file.
      *
      * @param fileName
      *         The name of the file
@@ -58,7 +59,8 @@ public class FileChanges implements Serializable {
         this.changes = createMap(changes);
     }
 
-    private Map<ChangeEditType, Set<Change>> createMap(final Map<ChangeEditType, Set<Change>> existingChanges) {
+    @SuppressWarnings("PMD.LooseCoupling")
+    private EnumMap<ChangeEditType, Set<Change>> createMap(final Map<ChangeEditType, Set<Change>> existingChanges) {
         if (existingChanges.isEmpty()) {
             return new EnumMap<>(ChangeEditType.class);
         }

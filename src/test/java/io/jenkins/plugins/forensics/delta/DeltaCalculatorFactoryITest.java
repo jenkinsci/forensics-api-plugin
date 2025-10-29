@@ -89,6 +89,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         private static final long serialVersionUID = -2091805649078555383L;
 
         @Override
+        @SuppressWarnings("deprecation")
         public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
                 final String scmFilterKey, final FilteredLog logger) {
             return Optional.empty();

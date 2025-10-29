@@ -35,13 +35,17 @@ class AddedVersusDeletedLinesTrendChartTest {
         assertThatJson(model).node("series[1].name").isEqualTo("Deleted Lines");
     }
 
-    private SeriesBuilder createSeriesBuilderStub(final ChartModelConfiguration configuration,
+    private SeriesBuilder<ForensicsBuildAction> createSeriesBuilderStub(final ChartModelConfiguration configuration,
             final List<BuildResult<ForensicsBuildAction>> results) {
-        SeriesBuilder seriesBuilderStub = mock(SeriesBuilder.class);
+        SeriesBuilder<ForensicsBuildAction> seriesBuilderStub = createSeriesBuilder();
         LinesDataSet linesDataSet = mock(LinesDataSet.class);
-        when(seriesBuilderStub.createDataSet(configuration, results))
-                .thenReturn(linesDataSet);
+        when(seriesBuilderStub.createDataSet(configuration, results)).thenReturn(linesDataSet);
 
         return seriesBuilderStub;
+    }
+
+    @SuppressWarnings("unchecked")
+    private SeriesBuilder<ForensicsBuildAction> createSeriesBuilder() {
+        return mock(SeriesBuilder.class);
     }
 }

@@ -4,7 +4,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -19,7 +18,8 @@ public class Blames implements Serializable {
     @Serial
     private static final long serialVersionUID = 7L; // release 0.7
 
-    private final Map<String, FileBlame> blamesPerFile = new HashMap<>();
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final HashMap<String, FileBlame> blamesPerFile = new HashMap<>();
 
     /**
      * Adds the specified blame to this collection of blames.
@@ -68,7 +68,7 @@ public class Blames implements Serializable {
      * @return number of affected files with blames
      */
     public int size() {
-        return blamesPerFile.keySet().size();
+        return blamesPerFile.size();
     }
 
     /**

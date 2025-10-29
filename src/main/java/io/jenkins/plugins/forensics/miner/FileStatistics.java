@@ -41,7 +41,8 @@ public final class FileStatistics implements Serializable {
     private transient int numberOfCommits; // unused starting from 0.8.x
 
     private CommitStatistics statistics = new CommitStatistics(); // since 0.8.0
-    private List<CommitDiffItem> commits = new ArrayList<>(); // since 0.8.0
+    @SuppressWarnings("PMD.LooseCoupling")
+    private ArrayList<CommitDiffItem> commits = new ArrayList<>(); // since 0.8.0
 
     /**
      * Creates a new instance of {@link FileStatistics}.
