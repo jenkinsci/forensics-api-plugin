@@ -30,10 +30,13 @@ public class RepositoryStatistics implements Serializable {
     private static final long serialVersionUID = 8L; // release 0.8.0
 
     @CheckForNull
-    private Map<String, FileStatistics> statisticsPerFile; // before 0.8.0, mapped in readResolve
+    @SuppressWarnings("PMD.LooseCoupling")
+    private HashMap<String, FileStatistics> statisticsPerFile; // before 0.8.0, mapped in readResolve
 
-    private transient Map<String, FileStatistics> statisticsMapping = new HashMap<>();
-    private Collection<FileStatistics> fileStatistics = new ArrayList<>();
+    @SuppressWarnings("PMD.LooseCoupling")
+    private transient HashMap<String, FileStatistics> statisticsMapping = new HashMap<>();
+    @SuppressWarnings("PMD.LooseCoupling")
+    private ArrayList<FileStatistics> fileStatistics = new ArrayList<>();
 
     private String latestCommitId; // @since 0.8.0
     private CommitStatistics statistics = new CommitStatistics();

@@ -29,8 +29,8 @@ public final class FileBlame implements Iterable<Integer>, Serializable {
     static final int EMPTY_INTEGER = 0;
 
     private final TreeString fileName;
-    @CheckForNull // Deserialization of old format
-    private Map<Integer, LineBlame> blamesByLine = new HashMap<>();
+    @SuppressWarnings("PMD.LooseCoupling") @CheckForNull // Deserialization of old format
+    private HashMap<Integer, LineBlame> blamesByLine = new HashMap<>();
 
     /**
      * Creates a new instance of {@link FileBlame}.

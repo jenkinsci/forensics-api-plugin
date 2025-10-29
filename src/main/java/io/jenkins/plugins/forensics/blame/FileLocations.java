@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -20,7 +19,8 @@ public class FileLocations implements Serializable {
     @Serial
     private static final long serialVersionUID = 8063580789984061223L;
 
-    private final Map<String, Set<Integer>> linesPerFile = new HashMap<>();
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final HashMap<String, Set<Integer>> linesPerFile = new HashMap<>();
 
     /**
      * Adds the specified affected file and line number.
@@ -61,7 +61,7 @@ public class FileLocations implements Serializable {
      * @return number of affected files with blames
      */
     public int size() {
-        return linesPerFile.keySet().size();
+        return linesPerFile.size();
     }
 
     /**

@@ -22,6 +22,7 @@ import hudson.model.Run;
 
 import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableColumn;
+import io.jenkins.plugins.datatables.TableColumn.ColumnBuilder;
 import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.echarts.AsyncTrendChart;
 import io.jenkins.plugins.echarts.JenkinsPalette;
@@ -135,10 +136,12 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         public List<TableColumn> getColumns() {
             List<TableColumn> columns = new ArrayList<>();
 
-            columns.add(new TableColumn(Messages.Table_Column_CommitId(), "commitId"));
-            columns.add(new TableColumn(Messages.Table_Column_Author(), "author"));
-            columns.add(new TableColumn(Messages.Table_Column_AddedLines(), "addedLines"));
-            columns.add(new TableColumn(Messages.Table_Column_DeletedLines(), "deletedLines"));
+            var builder = new ColumnBuilder();
+
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_CommitId()).withDataPropertyKey("commitId").build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_Author()).withDataPropertyKey("author").build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_AddedLines()).withDataPropertyKey("addedLines").build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_DeletedLines()).withDataPropertyKey("deletedLines").build());
 
             return columns;
         }

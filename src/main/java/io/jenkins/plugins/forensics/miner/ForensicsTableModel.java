@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.jenkins.plugins.datatables.TableColumn;
+import io.jenkins.plugins.datatables.TableColumn.ColumnBuilder;
 import io.jenkins.plugins.datatables.TableColumn.ColumnCss;
 import io.jenkins.plugins.datatables.TableModel;
 
@@ -46,15 +47,36 @@ public class ForensicsTableModel extends TableModel {
     public List<TableColumn> getColumns() {
         List<TableColumn> columns = new ArrayList<>();
 
-        columns.add(new TableColumn(Messages.Table_Column_File(), "fileName"));
-        columns.add(new TableColumn(Messages.Table_Column_AuthorsSize(), "authorsSize"));
-        columns.add(new TableColumn(Messages.Table_Column_CommitsSize(), "commitsSize"));
-        columns.add(new TableColumn(Messages.Table_Column_LastCommit(), "modifiedAt")
-                .setHeaderClass(ColumnCss.DATE));
-        columns.add(new TableColumn(Messages.Table_Column_AddedAt(), "addedAt")
-                .setHeaderClass(ColumnCss.DATE));
-        columns.add(new TableColumn(Messages.Table_Column_LOC(), "linesOfCode"));
-        columns.add(new TableColumn(Messages.Table_Column_Churn(), "churn"));
+        var builder = new ColumnBuilder();
+
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_File())
+                .withDataPropertyKey("fileName")
+                .withHeaderClass(ColumnCss.NONE)
+                .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_AuthorsSize())
+                .withDataPropertyKey("authorsSize")
+                .withHeaderClass(ColumnCss.NONE)
+                .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_CommitsSize())
+                .withDataPropertyKey("commitsSize")
+                .withHeaderClass(ColumnCss.NONE)
+                .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_LastCommit())
+                .withDataPropertyKey("modifiedAt")
+                .withHeaderClass(ColumnCss.DATE)
+                .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_AddedAt())
+                .withDataPropertyKey("addedAt")
+                .withHeaderClass(ColumnCss.DATE)
+                .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_LOC())
+                .withDataPropertyKey("linesOfCode")
+                .withHeaderClass(ColumnCss.NONE)
+                .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_Churn())
+                .withDataPropertyKey("churn")
+                .withHeaderClass(ColumnCss.NONE)
+                .build());
 
         return columns;
     }

@@ -1,6 +1,6 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import edu.hm.hafner.util.VisibleForTesting;
 
@@ -62,7 +62,8 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
     private final String referenceBuildId;
     private Result requiredResult; // @since 2.4.0
     private final JenkinsFacade jenkinsFacade;
-    private final List<String> messages;
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final ArrayList<String> messages;
 
     private transient Run<?, ?> owner;
 
@@ -198,7 +199,7 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
     }
 
     private static boolean isValidBuildId(final String buildId) {
-        return !StringUtils.equals(buildId, NO_REFERENCE_BUILD);
+        return !Strings.CS.equals(buildId, NO_REFERENCE_BUILD);
     }
 
     /**

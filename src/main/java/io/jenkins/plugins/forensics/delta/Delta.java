@@ -22,7 +22,8 @@ public class Delta implements Serializable {
     private final String referenceCommit;
 
     /** Contains the changes for modified files, mapped by the file ID. */
-    private final Map<String, FileChanges> fileChangesMap;
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final HashMap<String, FileChanges> fileChangesMap;
 
     /**
      * Constructor for a delta instance which wraps code changes between the two passed commits.
