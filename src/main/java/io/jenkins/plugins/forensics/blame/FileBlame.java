@@ -244,7 +244,7 @@ public final class FileBlame implements Iterable<Integer>, Serializable {
         private String commit = EMPTY;
         private int addedAt = EMPTY_INTEGER;
 
-        public String getName() {
+        String getName() {
             return name;
         }
 
@@ -252,7 +252,7 @@ public final class FileBlame implements Iterable<Integer>, Serializable {
             this.name = name.intern();
         }
 
-        public String getEmail() {
+        String getEmail() {
             return email;
         }
 
@@ -260,7 +260,7 @@ public final class FileBlame implements Iterable<Integer>, Serializable {
             this.email = email.intern();
         }
 
-        public String getCommit() {
+        String getCommit() {
             return commit;
         }
 
@@ -268,7 +268,7 @@ public final class FileBlame implements Iterable<Integer>, Serializable {
             this.commit = commit.intern();
         }
 
-        public int getAddedAt() {
+        int getAddedAt() {
             return addedAt;
         }
 

@@ -34,7 +34,7 @@ class ReferenceJobModelValidation {
      *
      * @return the model with the possible reference jobs
      */
-    public ComboBoxModel getAllJobs() {
+    ComboBoxModel getAllJobs() {
         return new ComboBoxModel(jenkins.getAllJobNames());
     }
 
@@ -46,7 +46,7 @@ class ReferenceJobModelValidation {
      *
      * @return the validation result
      */
-    public FormValidation validateJob(final String referenceJobName) {
+    FormValidation validateJob(final String referenceJobName) {
         if (StringUtils.isEmpty(referenceJobName)
                 || jenkins.getJob(referenceJobName).isPresent()) {
             return FormValidation.ok();

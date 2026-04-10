@@ -193,7 +193,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         private static final String ADDED_KEY = "added";
         private static final String DELETED_KEY = "deleted";
 
-        public LinesChartModel create(final FileStatistics fileStatistics,
+        LinesChartModel create(final FileStatistics fileStatistics,
                 final CommitDecorator decorator) {
             var dataSet = createDataSetPerCommit(fileStatistics, decorator);
 

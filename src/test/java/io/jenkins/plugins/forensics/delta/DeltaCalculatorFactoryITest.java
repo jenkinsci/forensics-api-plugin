@@ -100,7 +100,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * Factory that does not return a delta calculator.
      */
     @TestExtension
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class EmptyFactory extends DeltaCalculatorFactory {
         @Override
         public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run,
@@ -115,7 +115,7 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * Factory that returns a delta calculator if the workspace contains the String {@code test}.
      */
     @TestExtension
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class ActualFactory extends DeltaCalculatorFactory {
         @Override
         public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run,
