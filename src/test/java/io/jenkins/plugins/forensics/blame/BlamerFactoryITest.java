@@ -88,7 +88,7 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * Factory that does not return a blamer.
      */
     @TestExtension
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class EmptyFactory extends BlamerFactory {
         @Override
         public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run, final FilePath workspace,
@@ -102,7 +102,7 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * Factory that returns a blamer if the workspace contains the String {@code test}.
      */
     @TestExtension
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class ActualFactory extends BlamerFactory {
         @Override
         public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run,

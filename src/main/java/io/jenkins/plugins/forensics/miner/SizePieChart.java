@@ -33,7 +33,7 @@ class SizePieChart {
      *
      * @return the chart model
      */
-    public PieChartModel create(final RepositoryStatistics repositoryStatistics,
+    PieChartModel create(final RepositoryStatistics repositoryStatistics,
             final Function<FileStatistics, Integer> sizeMethod, final int... breakpoints) {
         var model = new PieChartModel();
         Map<Integer, Integer> distribution = new TreeMap<>();

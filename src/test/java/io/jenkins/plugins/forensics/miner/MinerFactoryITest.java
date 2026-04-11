@@ -61,7 +61,7 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * Factory that does not return a blamer.
      */
     @TestExtension
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class EmptyFactory extends MinerFactory {
         @Override
         public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run, final FilePath workspace,
@@ -75,7 +75,7 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
      * Factory that returns a blamer if the workspace contains the String {@code test}.
      */
     @TestExtension
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class ActualFactory extends MinerFactory {
         @Override
         public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run,

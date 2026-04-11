@@ -31,7 +31,7 @@ class FilesCountTrendChart {
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    public LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
+    LinesChartModel create(final Iterable<? extends BuildResult<ForensicsBuildAction>> results,
             final ChartModelConfiguration configuration) {
         var builder = new FilesCountSeriesBuilder();
         var dataSet = builder.createDataSet(configuration, results);
