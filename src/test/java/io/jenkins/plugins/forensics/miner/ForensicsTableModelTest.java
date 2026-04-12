@@ -7,6 +7,7 @@ import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.forensics.miner.ForensicsTableModel.ForensicsRow;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
 import static org.mockito.Mockito.*;
 
 class ForensicsTableModelTest {
@@ -29,6 +30,14 @@ class ForensicsTableModelTest {
                         Messages.Table_Column_LOC(),
                         Messages.Table_Column_Churn()
                 );
+        assertThatJson(tableModel.getColumns().get(0).getDefinition()).node("render")
+                .isEqualTo("""
+                        {
+                          "_" : "display",
+                          "sort": "sort"
+                        }
+                        """);
+        assertThatJson(tableModel.getColumns().get(1).getDefinition()).node("render").isAbsent();
     }
 
     @Test

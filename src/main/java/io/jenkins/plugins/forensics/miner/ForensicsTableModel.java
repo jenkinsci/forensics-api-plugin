@@ -56,6 +56,7 @@ public class ForensicsTableModel extends TableModel {
                 .withHeaderClass(ColumnCss.NONE)
                 .build());
         columns.add(builder.withHeaderLabel(Messages.Table_Column_AuthorsSize())
+                .withPlainValueCell()
                 .withDataPropertyKey("authorsSize")
                 .withHeaderClass(ColumnCss.NONE)
                 .build());
@@ -99,8 +100,8 @@ public class ForensicsTableModel extends TableModel {
         }
 
         /**
-         * SHows the file name column: the column shows the name without the path. The full path is shown
-         * as an additional tooltip.
+         * Shows the file name column: the column shows the name without the path. The full path is shown as an
+         * additional tooltip.
          *
          * @return the file name column (as HTML a tag)
          */
