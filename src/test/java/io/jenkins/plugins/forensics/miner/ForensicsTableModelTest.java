@@ -2,6 +2,7 @@ package io.jenkins.plugins.forensics.miner;
 
 import org.junit.jupiter.api.Test;
 
+import io.jenkins.plugins.datatables.DetailedCell;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.forensics.miner.ForensicsTableModel.ForensicsRow;
 
@@ -64,14 +65,18 @@ class ForensicsTableModelTest {
         when(fileStatisticsStub.getLinesOfCode()).thenReturn(5);
         when(fileStatisticsStub.getAbsoluteChurn()).thenReturn(6);
 
+        var fileName = "<a href=\"fileName.-734768633\" data-bs-toggle=\"tooltip\" data-bs-placement=\"left\" title=\"filename\">filename</a>";
         assertThat(forensicsRow)
-                .hasFileName(
-                        "<a href=\"fileName.-734768633\" data-bs-toggle=\"tooltip\" data-bs-placement=\"left\" title=\"filename\">filename</a>")
                 .hasAuthorsSize(1)
                 .hasCommitsSize(2)
                 .hasModifiedAt(3)
                 .hasAddedAt(4)
                 .hasLinesOfCode(5)
                 .hasChurn(6);
+        assertThat(forensicsRow.getFileName()).isInstanceOfSatisfying(DetailedCell.class,
+                cell -> {
+                    assertThat(cell.getDisplay()).isEqualTo(fileName);
+                    assertThat(cell.getSort()).isEqualTo("filename");
+                });
     }
 }
