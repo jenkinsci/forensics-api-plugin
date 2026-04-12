@@ -1,9 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.echarts.JacksonFacade;
+
 import java.io.IOException;
 import java.util.NoSuchElementException;
-
-import edu.hm.hafner.echarts.JacksonFacade;
 
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
@@ -87,16 +87,16 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     }
 
     /**
-     * Returns a new sub page for the selected link.
+     * Returns a new subpage for the selected link.
      *
      * @param link
-     *         the link to identify the sub page to show
+     *         the link to identify the subpage to show
      * @param request
      *         Stapler request
      * @param response
      *         Stapler response
      *
-     * @return the new sub page
+     * @return the new subpage
      */
     @SuppressWarnings("unused") //called by jelly view
     public Object getDynamic(final String link, final StaplerRequest2 request, final StaplerResponse2 response) {
