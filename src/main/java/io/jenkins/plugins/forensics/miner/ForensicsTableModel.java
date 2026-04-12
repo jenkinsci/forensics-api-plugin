@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.jenkins.plugins.datatables.DetailedCell;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableColumn.ColumnBuilder;
 import io.jenkins.plugins.datatables.TableColumn.ColumnCss;
@@ -50,6 +51,7 @@ public class ForensicsTableModel extends TableModel {
         var builder = new ColumnBuilder();
 
         columns.add(builder.withHeaderLabel(Messages.Table_Column_File())
+                .withDetailedCell()
                 .withDataPropertyKey("fileName")
                 .withHeaderClass(ColumnCss.NONE)
                 .build());
@@ -98,18 +100,19 @@ public class ForensicsTableModel extends TableModel {
 
         /**
          * SHows the file name column: the column shows the name without the path. The full path is shown
-         * as additional tooltip.
+         * as an additional tooltip.
          *
          * @return the file name column (as HTML a tag)
          */
-        public String getFileName() {
+        public DetailedCell<?> getFileName() {
             var fullPath = fileStatistics.getFileName();
-
-            return a().withHref("fileName." + fullPath.hashCode())
-                    .withText(FilenameUtils.getName(fullPath))
+            var fileName = FilenameUtils.getName(fullPath);
+            var link = a().withHref("fileName." + fullPath.hashCode())
+                    .withText(fileName)
                     .attr("data-bs-toggle", "tooltip")
                     .attr("data-bs-placement", "left")
                     .withTitle(fullPath).render();
+            return new DetailedCell<>(link, fileName);
         }
 
         public int getAuthorsSize() {
