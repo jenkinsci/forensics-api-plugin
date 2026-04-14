@@ -10,6 +10,7 @@ import io.jenkins.plugins.datatables.DetailedCell;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableColumn.ColumnBuilder;
 import io.jenkins.plugins.datatables.TableColumn.ColumnCss;
+import io.jenkins.plugins.datatables.TableColumn.ColumnType;
 import io.jenkins.plugins.datatables.TableModel;
 
 import static j2html.TagCreator.*;
@@ -58,11 +59,11 @@ public class ForensicsTableModel extends TableModel {
         columns.add(builder.withHeaderLabel(Messages.Table_Column_AuthorsSize())
                 .withPlainValueCell()
                 .withDataPropertyKey("authorsSize")
-                .withHeaderClass(ColumnCss.NONE)
+                .withType(ColumnType.NUMBER)
                 .build());
         columns.add(builder.withHeaderLabel(Messages.Table_Column_CommitsSize())
                 .withDataPropertyKey("commitsSize")
-                .withHeaderClass(ColumnCss.NONE)
+                .withType(ColumnType.NUMBER)
                 .build());
         columns.add(builder.withHeaderLabel(Messages.Table_Column_LastCommit())
                 .withDataPropertyKey("modifiedAt")
@@ -74,11 +75,11 @@ public class ForensicsTableModel extends TableModel {
                 .build());
         columns.add(builder.withHeaderLabel(Messages.Table_Column_LOC())
                 .withDataPropertyKey("linesOfCode")
-                .withHeaderClass(ColumnCss.NONE)
+                .withType(ColumnType.NUMBER)
                 .build());
         columns.add(builder.withHeaderLabel(Messages.Table_Column_Churn())
                 .withDataPropertyKey("churn")
-                .withHeaderClass(ColumnCss.NONE)
+                .withType(ColumnType.NUMBER)
                 .build());
 
         return columns;
