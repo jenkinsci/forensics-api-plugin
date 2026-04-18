@@ -3,12 +3,12 @@ package io.jenkins.plugins.forensics.miner;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.PieChartModel;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.function.Consumer;
+import tools.jackson.databind.ObjectMapper;
 
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
@@ -50,7 +50,7 @@ class ForensicsViewModelTest {
     }
 
     private String createEmptyAuthorsModel() {
-        return new JacksonFacade().toJson(new PieChartModel());
+        return new ObjectMapper().writeValueAsString(new PieChartModel());
     }
 
     private String createEmptyCommitsModel() {

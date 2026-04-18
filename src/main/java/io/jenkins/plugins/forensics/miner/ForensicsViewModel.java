@@ -1,9 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
-import edu.hm.hafner.echarts.JacksonFacade;
-
 import java.io.IOException;
 import java.util.NoSuchElementException;
+import tools.jackson.databind.ObjectMapper;
 
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
@@ -70,7 +69,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @JavaScriptMethod
     @SuppressWarnings("unused") // Called by jelly view
     public String getAuthorsModel() {
-        return new JacksonFacade().toJson(new SizePieChart().create(repositoryStatistics,
+        return new ObjectMapper().writeValueAsString(new SizePieChart().create(repositoryStatistics,
                 FileStatistics::getNumberOfAuthors, 5, 10, 15, 25, 50));
     }
 
@@ -82,7 +81,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @JavaScriptMethod
     @SuppressWarnings("unused") // Called by jelly view
     public String getCommitsModel() {
-        return new JacksonFacade().toJson(new SizePieChart().create(repositoryStatistics,
+        return new ObjectMapper().writeValueAsString(new SizePieChart().create(repositoryStatistics,
                 FileStatistics::getNumberOfCommits, 5, 10, 25, 50, 100, 250));
     }
 
