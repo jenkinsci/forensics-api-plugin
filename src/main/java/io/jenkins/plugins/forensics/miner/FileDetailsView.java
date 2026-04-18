@@ -2,7 +2,6 @@ package io.jenkins.plugins.forensics.miner;
 
 import org.apache.commons.io.FilenameUtils;
 
-import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LineSeries;
 import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import tools.jackson.databind.ObjectMapper;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
@@ -104,7 +104,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     @SuppressWarnings("unused") // Called by jelly view
     @Override
     public String getBuildTrendModel() {
-        return new JacksonFacade().toJson(createChartModel());
+        return new ObjectMapper().writeValueAsString(createChartModel());
     }
 
     @Override

@@ -5,13 +5,17 @@ import org.apache.commons.lang3.Strings;
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LinesChartModel;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.InvisibleAction;
@@ -31,7 +35,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
         DELTA, COUNT
     }
 
-    private static final JacksonFacade JACKSON_FACADE = new JacksonFacade();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final String scmKey;
     private final Job<?, ?> owner;
@@ -46,7 +50,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     @JavaScriptMethod
     @Override
     public String getConfigurableBuildTrendModel(final String configuration) {
-        return new JacksonFacade().toJson(createChartModel(configuration));
+        return OBJECT_MAPPER.writeValueAsString(createChartModel(configuration));
     }
 
     private LinesChartModel createChartModel(final String configuration) {
@@ -65,7 +69,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     }
 
     private ChartType getChart(final String configuration) {
-        var type = JACKSON_FACADE.getString(configuration, "chartType", "delta");
+        var type = getStringFromJson(configuration, "chartType", "delta");
         for (ChartType chartType : ChartType.values()) {
             if (Strings.CI.equals(type, chartType.name())) {
                 return chartType;
@@ -73,6 +77,28 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
         }
 
         return ChartType.DELTA;
+    }
+
+    // TODO: why does this action not use the appropriate base class?
+    private String getStringFromJson(final String json, final String property, final String defaultValue) {
+        try {
+            var typeNode = getPropertyAsNode(json, property);
+            if (typeNode != null) {
+                return typeNode.asString(defaultValue);
+            }
+        }
+        catch (JacksonException exception) {
+            // ignore
+        }
+
+        return defaultValue;
+    }
+
+    @CheckForNull
+    private JsonNode getPropertyAsNode(final String json, final String property)
+            throws JacksonException {
+        var node = OBJECT_MAPPER.readValue(json, ObjectNode.class);
+        return node.get(property);
     }
 
     private Iterable<? extends BuildResult<CommitStatisticsBuildAction>> createBuildHistory(final int buildCount) {

@@ -4,7 +4,6 @@ import org.apache.commons.lang3.Strings;
 
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.JacksonFacade;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -29,7 +28,6 @@ import io.jenkins.plugins.echarts.BuildActionIterator;
 public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<ForensicsBuildAction> {
     static final String ICON = "symbol-solid/microscope plugin-font-awesome-api";
     static final String FORENSICS_ID = "forensics";
-    private static final JacksonFacade JACKSON_FACADE = new JacksonFacade();
 
     enum ChartType {
         FILES, LOC, DELTA, COUNT
@@ -123,7 +121,7 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     }
 
     private ChartType getChart(final String configuration) {
-        var type = JACKSON_FACADE.getString(configuration, "chartType", "files");
+        var type = getStringFromJson(configuration, "chartType", "files");
         for (ChartType chartType : ChartType.values()) {
             if (Strings.CI.equals(type, (CharSequence) chartType.name())) {
                 return chartType;
