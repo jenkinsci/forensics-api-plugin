@@ -100,7 +100,7 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @SuppressWarnings("unused") //called by jelly view
     public Object getDynamic(final String link, final StaplerRequest2 request, final StaplerResponse2 response) {
         try {
-            CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner);
+            CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner, scmKey);
 
             return new FileDetailsView(owner, link, repositoryStatistics, decorator);
         }
