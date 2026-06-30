@@ -150,6 +150,57 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     }
 
     @Test
+    @Issue("JENKINS-699")
+    void shouldRunInDeclarativePipelineWithAgentNone() {
+        var reference = createPipeline();
+        reference.setDefinition(createPipelineScript(
+                """
+                node {
+                    echo 'Hello from reference job'
+                }
+                """));
+        Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
+
+        var job = createPipeline();
+        job.setDefinition(createPipelineScript(
+                "pipeline {\n"
+                        + "    agent none\n"
+                        + "    stages {\n"
+                        + "        stage ('Discover reference build') {\n"
+                        + "            steps {\n"
+                        + discoverReferenceJob(reference.getName())
+                        + "            }\n"
+                        + "        }\n"
+                        + "    }\n"
+                        + "}"));
+        Run<?, ?> current = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(current)).contains(baseline);
+        assertThat(getConsoleLog(current))
+                .doesNotContain("Attempted to execute a step that requires a node context while 'agent none' was specified");
+    }
+
+    @Test
+    @Issue("JENKINS-699")
+    void shouldRunInScriptedPipelineWithoutNode() {
+        var reference = createPipeline();
+        reference.setDefinition(createPipelineScript(
+                """
+                node {
+                    echo 'Hello from reference job'
+                }
+                """));
+        Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
+
+        var job = createPipeline();
+        job.setDefinition(createPipelineScript(
+                discoverReferenceJob(reference.getName())));
+        Run<?, ?> current = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(current)).contains(baseline);
+    }
+
+    @Test
     void shouldRunInDeclarativePipeline() {
         var job = createPipeline();
 
