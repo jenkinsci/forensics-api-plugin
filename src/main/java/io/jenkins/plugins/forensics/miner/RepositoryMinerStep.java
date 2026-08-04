@@ -128,7 +128,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
             if (!actions.isEmpty()) {
                 return actions.stream()
-                        .filter(a -> a.getScmKey().contains(repository))
+                        .filter(a -> a.getScmKey().equals(repository))
                         .findAny()
                         .map(BuildAction::getResult)
                         .orElse(new RepositoryStatistics());

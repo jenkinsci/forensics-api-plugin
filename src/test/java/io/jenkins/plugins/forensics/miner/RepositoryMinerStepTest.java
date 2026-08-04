@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.Issue;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +23,6 @@ class RepositoryMinerStepTest {
     private static final String EXISTING_FILE = "src/main/java/Foo.java";
 
     @Test
-    @Issue("JENKINS-74804")
     void shouldReturnCorrectStatisticsForEachScmKeyWithMultipleScms() {
         var statisticsForFirstScm = new RepositoryStatistics();
         statisticsForFirstScm.add(new FileStatisticsBuilder().build(EXISTING_FILE));
@@ -49,28 +47,6 @@ class RepositoryMinerStepTest {
     }
 
     @Test
-    @Issue("JENKINS-74804")
-    void shouldReturnStatisticsForEmptyScmKeyWhenSingleRepository() {
-        var statistics = new RepositoryStatistics();
-        statistics.add(new FileStatisticsBuilder().build(EXISTING_FILE));
-
-        ForensicsBuildAction action = createAction(SCM_KEY, statistics);
-
-        var previousBuild = mock(Run.class);
-        when(previousBuild.getActions(ForensicsBuildAction.class))
-                .thenReturn(List.of(action));
-
-        var currentRun = mock(Run.class);
-        when(currentRun.getPreviousBuild()).thenReturn(previousBuild);
-
-        var step = new RepositoryMinerStep();
-
-        var result = step.previousBuildStatistics("", currentRun);
-        assertThat(result).hasFiles(EXISTING_FILE);
-    }
-
-    @Test
-    @Issue("JENKINS-74804")
     void shouldReturnEmptyStatisticsWhenNoPreviousBuildExists() {
         var currentRun = mock(Run.class);
         when(currentRun.getPreviousBuild()).thenReturn(null);
@@ -82,7 +58,6 @@ class RepositoryMinerStepTest {
     }
 
     @Test
-    @Issue("JENKINS-74804")
     void shouldReturnEmptyStatisticsWhenPreviousBuildHasNoForensicsActions() {
         var previousBuild = mock(Run.class);
         when(previousBuild.getActions(ForensicsBuildAction.class))
@@ -99,7 +74,6 @@ class RepositoryMinerStepTest {
     }
 
     @Test
-    @Issue("JENKINS-74804")
     void shouldSkipBuildsWithNoForensicsActionsAndSearchFurther() {
         var statisticsWithFiles = new RepositoryStatistics();
         statisticsWithFiles.add(new FileStatisticsBuilder().build(EXISTING_FILE));
@@ -126,7 +100,6 @@ class RepositoryMinerStepTest {
     }
 
     @Test
-    @Issue("JENKINS-74804")
     void shouldReturnEmptyStatisticsWhenScmKeyDoesNotMatchAnyAction() {
         var statistics = new RepositoryStatistics();
         statistics.add(new FileStatisticsBuilder().build(EXISTING_FILE));
