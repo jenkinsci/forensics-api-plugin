@@ -129,19 +129,23 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
     @Override
     protected ReferenceBuild findReferenceBuild(final Run<?, ?> run, final FilteredLog logger) {
         var actualReferenceJob = findReferenceJob(run, logger);
-        if (actualReferenceJob.isPresent()) {
-            var reference = actualReferenceJob.get();
-            var lastBuild = getLastBuild(reference);
-            if (lastBuild.isEmpty()) {
-                logNoBuildFound(reference, logger);
-            }
-            else {
-                var referenceBuild = searchForReferenceBuildWithRequiredStatus(run, lastBuild.get(), logger);
-                if (referenceBuild.isPresent()) {
-                    return referenceBuild.get();
-                }
-            }
+        if (actualReferenceJob.isEmpty()) {
+            return createEmptyReferenceBuild(run, logger);
         }
+
+        var reference = actualReferenceJob.get();
+        var lastBuild = getLastBuild(reference);
+        if (lastBuild.isEmpty()) {
+            logNoBuildFound(reference, logger);
+
+            return createEmptyReferenceBuild(run, logger);
+        }
+
+        var referenceBuild = searchForReferenceBuildWithRequiredStatus(run, lastBuild.get(), logger);
+        if (referenceBuild.isPresent()) {
+            return referenceBuild.get();
+        }
+
         return createEmptyReferenceBuild(run, logger);
     }
 
