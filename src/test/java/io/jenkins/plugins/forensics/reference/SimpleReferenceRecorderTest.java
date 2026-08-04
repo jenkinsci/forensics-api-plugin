@@ -23,6 +23,13 @@ import static org.mockito.Mockito.*;
 
 class SimpleReferenceRecorderTest {
     @Test
+    void shouldNotRequireWorkspace() {
+        var recorder = new SimpleReferenceRecorder();
+
+        assertThat(recorder.requiresWorkspace()).isFalse();
+    }
+
+    @Test
     void shouldFillModel() {
         var jenkins = mock(JenkinsFacade.class);
         var job = mock(BuildableItem.class);
