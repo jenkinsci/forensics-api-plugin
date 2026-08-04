@@ -15,10 +15,12 @@ import org.kohsuke.stapler.StaplerResponse2;
 import hudson.model.Run;
 
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+import io.jenkins.plugins.forensics.util.CommitDecorator;
 import io.jenkins.plugins.forensics.util.CommitDecorator.NullDecorator;
 import io.jenkins.plugins.forensics.util.CommitDecoratorFactory;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -105,10 +107,42 @@ class ForensicsViewModelTest {
                 });
     }
 
+    /**
+     * Verifies that {@link ForensicsViewModel#getDynamic} uses the stored {@code scmKey} when resolving the
+     * commit decorator. This prevents Global Libraries from hijacking commit URLs by ensuring only the
+     * SCM matching the stored key is consulted for link generation.
+     *
+     * @see <a href="https://github.com/jenkinsci/forensics-api-plugin/issues/682">Issue #682</a>
+     */
+    @Test
+    void shouldUseScmKeyToResolveCorrectCommitDecoratorForGlobalLibraries() {
+        var repositoryStatistics = new RepositoryStatistics();
+        var fileStatistics = new FileStatisticsBuilder().build(FILE_NAME);
+        repositoryStatistics.add(fileStatistics);
+
+        Run<?, ?> owner = mock(Run.class);
+        var model = new ForensicsViewModel(owner, repositoryStatistics, SCM_KEY);
+
+        CommitDecorator expectedDecorator = mock(CommitDecorator.class);
+        when(expectedDecorator.asLink(anyString())).thenReturn("<a href='https://correct-repo/commit/abc'>abc</a>");
+
+        try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
+            commitDecoratorFactory
+                    .when(() -> CommitDecoratorFactory.findCommitDecorator(eq(owner), eq(SCM_KEY)))
+                    .thenReturn(expectedDecorator);
+
+            Object result = model.getDynamic(createLink(), mock(StaplerRequest2.class), mock(StaplerResponse2.class));
+
+            assertThat(result).isInstanceOf(FileDetailsView.class);
+            commitDecoratorFactory.verify(() -> CommitDecoratorFactory.findCommitDecorator(eq(owner), eq(SCM_KEY)));
+            commitDecoratorFactory.verify(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)), never());
+        }
+    }
+
     private void runWithNullDecorator(final ForensicsViewModel model, final Consumer<ForensicsViewModel> modelConsumer) {
         try (MockedStatic<CommitDecoratorFactory> commitDecoratorFactory = mockStatic(CommitDecoratorFactory.class)) {
             commitDecoratorFactory
-                    .when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class)))
+                    .when(() -> CommitDecoratorFactory.findCommitDecorator(any(Run.class), anyString()))
                     .thenReturn(new NullDecorator());
 
             modelConsumer.accept(model);
