@@ -178,14 +178,36 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         return BuildStepMonitor.NONE;
     }
 
+    /**
+     * Returns {@code false} so that this step can be used in pipelines with {@code agent none} or without any
+     * workspace allocation. The step only queries job/build history and does not need access to the workspace.
+     *
+     * @return {@code false}
+     */
+    @Override
+    public boolean requiresWorkspace() {
+        return false;
+    }
+
     @Override
     public SimpleReferenceRecorderDescriptor getDescriptor() {
         return (SimpleReferenceRecorderDescriptor) super.getDescriptor();
     }
 
+    /**
+     * Discovers the reference build without requiring a workspace. This is the primary entry-point used when the
+     * step is executed with {@code agent none}.
+     *
+     * @param run
+     *         the current build
+     * @param env
+     *         the environment variables
+     * @param listener
+     *         the task listener
+     */
     @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
-            @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
+    public void perform(@NonNull final Run<?, ?> run, @NonNull final EnvVars env,
+            @NonNull final TaskListener listener) {
         var log = new FilteredLog("Errors while computing the reference build:");
 
         var existing = run.removeActions(ReferenceBuild.class);
@@ -197,6 +219,27 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
 
         var logHandler = new LogHandler(listener, "ReferenceFinder");
         logHandler.log(log);
+    }
+
+    /**
+     * Discovers the reference build. Delegates to {@link #perform(Run, EnvVars, TaskListener)} since no workspace
+     * is required.
+     *
+     * @param run
+     *         the current build
+     * @param workspace
+     *         the workspace (not used)
+     * @param env
+     *         the environment variables
+     * @param launcher
+     *         the launcher (not used)
+     * @param listener
+     *         the task listener
+     */
+    @Override
+    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
+            @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
+        perform(run, env, listener);
     }
 
     /**
