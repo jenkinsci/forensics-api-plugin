@@ -3,6 +3,7 @@ package io.jenkins.plugins.forensics.miner;
 import org.apache.commons.lang3.StringUtils;
 
 import edu.hm.hafner.util.FilteredLog;
+import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -109,7 +110,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
             logHandler.log(logger);
 
-            var repositoryStatistics = previousBuildStatistics(scm, run);
+            var repositoryStatistics = previousBuildStatistics(repository.getKey(), run);
             var addedRepositoryStatistics = miner.mine(repositoryStatistics, logger);
 
             logHandler.log(logger);
@@ -121,12 +122,13 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         }
     }
 
-    private RepositoryStatistics previousBuildStatistics(final String repository, final Run<?, ?> run) {
+    @VisibleForTesting
+    RepositoryStatistics previousBuildStatistics(final String repository, final Run<?, ?> run) {
         for (Run<?, ?> build = run.getPreviousBuild(); build != null; build = build.getPreviousBuild()) {
             List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
             if (!actions.isEmpty()) {
                 return actions.stream()
-                        .filter(a -> a.getScmKey().contains(repository))
+                        .filter(a -> a.getScmKey().equals(repository))
                         .findAny()
                         .map(BuildAction::getResult)
                         .orElse(new RepositoryStatistics());
