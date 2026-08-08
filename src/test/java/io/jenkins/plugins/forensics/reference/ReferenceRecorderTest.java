@@ -2,16 +2,19 @@ package io.jenkins.plugins.forensics.reference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.Issue;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import hudson.model.Action;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Result;
@@ -21,6 +24,7 @@ import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
 import io.jenkins.plugins.forensics.reference.ReferenceRecorder.ScmFacade;
+import io.jenkins.plugins.forensics.reference.SimpleReferenceRecorderTest.CoverageReportAction;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
@@ -306,6 +310,70 @@ class ReferenceRecorderTest {
                 .anySatisfy(m -> assertThat(m).contains("falling back to plugin default target branch 'master'"));
 
         assertThat(referenceBuild.getReferenceBuild()).isEmpty();
+    }
+
+    /**
+     * Verifies that the fallback to the latest build of the reference job skips those builds that do not provide the
+     * required action.
+     */
+    @Test
+    @Issue("JENKINS-72825")
+    void shouldFallBackToLatestBuildThatProvidesRequiredAction() {
+        var log = createLog();
+
+        Run<?, ?> build = mock(Run.class);
+        Job<?, ?> job = createJob(build);
+        var topLevel = createMultiBranch(job);
+
+        var recorder = createSut();
+        recorder.setLatestBuildIfNotFound(true);
+        recorder.setRequiredAction("CoverageReportAction");
+
+        var prBuild = configurePrJobAndBuild(recorder, topLevel, job); // 'find' returns no matching commits
+        var withReport = createBuild("with-report", Result.SUCCESS, new CoverageReportAction("coverage"));
+        when(prBuild.getPreviousCompletedBuild()).thenAnswer(a -> withReport);
+
+        var referenceBuild = recorder.findReferenceBuild(build, log);
+
+        assertThat(log.getInfoMessages()).contains(
+                "No reference build with required status found that contains matching commits",
+                "Falling back to latest completed build of reference job: 'with-report'");
+
+        assertThat(referenceBuild).hasReferenceBuildId("with-report");
+    }
+
+    /**
+     * Verifies that no reference build is returned if none of the builds in the history provides the required action,
+     * even if the fallback to the latest build has been enabled.
+     */
+    @Test
+    @Issue("JENKINS-72825")
+    void shouldNotFallBackToLatestBuildIfRequiredActionIsMissing() {
+        var log = createLog();
+
+        Run<?, ?> build = mock(Run.class);
+        Job<?, ?> job = createJob(build);
+        var topLevel = createMultiBranch(job);
+
+        var recorder = createSut();
+        recorder.setLatestBuildIfNotFound(true);
+        recorder.setRequiredAction("CoverageReportAction");
+
+        configurePrJobAndBuild(recorder, topLevel, job); // 'find' returns no matching commits
+
+        var referenceBuild = recorder.findReferenceBuild(build, log);
+
+        assertThat(log.getInfoMessages()).contains(
+                "No reference build with required status found that contains matching commits",
+                "-> no build that provides an action of type 'CoverageReportAction' found in the history of 'pr-id'");
+
+        assertThat(referenceBuild).doesNotHaveReferenceBuild();
+    }
+
+    private Run<?, ?> createBuild(final String displayName, final Result result, final Action... actions) {
+        var build = createBuild(displayName, result);
+        when(build.getAllActions()).thenAnswer(i -> List.of(actions));
+        return build;
     }
 
     private ReferenceRecorder createSut() {
