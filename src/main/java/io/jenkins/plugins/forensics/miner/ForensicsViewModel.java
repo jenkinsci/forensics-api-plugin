@@ -21,6 +21,8 @@ import io.jenkins.plugins.forensics.util.CommitDecoratorFactory;
  * @author Ullrich Hafner
  */
 public class ForensicsViewModel extends DefaultAsyncTableContentProvider implements ModelObject {
+    private static final String TEMPORAL_COUPLING_URL = "temporalCoupling";
+
     private final Run<?, ?> owner;
     private final RepositoryStatistics repositoryStatistics;
     private final String scmKey;
@@ -86,6 +88,27 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     }
 
     /**
+     * Returns whether the mined statistics contain temporal couplings, i.e. whether the temporal coupling view should
+     * be shown.
+     *
+     * @return {@code true} if there are temporal couplings, {@code false} otherwise
+     */
+    @SuppressWarnings("unused") // Called by jelly view
+    public boolean hasTemporalCouplings() {
+        return !repositoryStatistics.getTemporalCouplings().isEmpty();
+    }
+
+    /**
+     * Returns the relative URL of the temporal coupling view.
+     *
+     * @return the URL of the temporal coupling view
+     */
+    @SuppressWarnings("unused") // Called by jelly view
+    public String getTemporalCouplingUrl() {
+        return TEMPORAL_COUPLING_URL;
+    }
+
+    /**
      * Returns a new subpage for the selected link.
      *
      * @param link
@@ -99,6 +122,10 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
      */
     @SuppressWarnings("unused") //called by jelly view
     public Object getDynamic(final String link, final StaplerRequest2 request, final StaplerResponse2 response) {
+        if (TEMPORAL_COUPLING_URL.equals(link)) {
+            return new TemporalCouplingViewModel(owner, repositoryStatistics);
+        }
+
         try {
             CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner, scmKey);
 
