@@ -17,7 +17,6 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.model.Run;
 
-import io.jenkins.plugins.forensics.reference.SimpleReferenceRecorderTest.CoverageReportAction;
 import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
 
 import static org.assertj.core.api.Assertions.*;

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.Issue;
 
 import edu.hm.hafner.util.FilteredLog;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import java.util.List;
 import java.util.Set;
@@ -342,41 +341,5 @@ class SimpleReferenceRecorderTest {
 
     private FilteredLog createLog() {
         return new FilteredLog("test");
-    }
-
-    /**
-     * Simulates a report that is not recorded in every build (like the coverage report of the coverage plugin). The ID
-     * of the report is exposed as the URL name of this action.
-     *
-     * @author Akash Manna
-     */
-    static class CoverageReportAction implements Action {
-        private final String id;
-
-        CoverageReportAction(final String id) {
-            this.id = id;
-        }
-
-        @Override @CheckForNull
-        public String getIconFileName() {
-            return null;
-        }
-
-        @Override @CheckForNull
-        public String getDisplayName() {
-            return null;
-        }
-
-        @Override
-        public String getUrlName() {
-            return id;
-        }
-
-        /** Verifies that the supertypes of an action are considered by the filter as well. */
-        static final class MutationCoverageReportAction extends CoverageReportAction {
-            MutationCoverageReportAction(final String id) {
-                super(id);
-            }
-        }
     }
 }

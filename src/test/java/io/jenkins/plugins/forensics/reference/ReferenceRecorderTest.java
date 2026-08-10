@@ -24,7 +24,6 @@ import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
 import io.jenkins.plugins.forensics.reference.ReferenceRecorder.ScmFacade;
-import io.jenkins.plugins.forensics.reference.SimpleReferenceRecorderTest.CoverageReportAction;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
