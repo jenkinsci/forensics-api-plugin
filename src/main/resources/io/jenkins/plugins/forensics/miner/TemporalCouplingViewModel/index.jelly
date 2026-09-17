@@ -1,0 +1,27 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:dt="/data-tables" xmlns:bs="/bootstrap5">
+
+  <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
+
+  <bs:page it="${it}">
+
+    <st:adjunct includes="io.jenkins.plugins.bootstrap5"/>
+    <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+
+    <h4>${%Number of coupled files}: ${it.numberOfCouplings}</h4>
+
+    <div class="row py-3">
+
+      <div class="col">
+        <div id="temporal-coupling">
+          <bs:card title="${%Details}" fontAwesomeIcon="link">
+            <dt:table model="${it.getTableModel('temporal-coupling')}"/>
+          </bs:card>
+        </div>
+      </div>
+
+    </div>
+
+  </bs:page>
+
+</j:jelly>

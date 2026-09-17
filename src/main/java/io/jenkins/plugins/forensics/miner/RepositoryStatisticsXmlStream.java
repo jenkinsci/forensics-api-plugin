@@ -27,5 +27,6 @@ public class RepositoryStatisticsXmlStream extends AbstractXmlStream<RepositoryS
         xStream.alias("diff", CommitDiffItem.class);
         xStream.alias("repo", RepositoryStatistics.class);
         xStream.alias("file", FileStatistics.class);
+        xStream.alias("coupling", TemporalCoupling.class);
     }
 }
