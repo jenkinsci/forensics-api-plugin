@@ -1,6 +1,10 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/forensics" >
+<j:jelly xmlns:j="jelly:core" xmlns:f="/forensics" xmlns:l="/lib/form">
 
   <f:scm/>
+
+  <l:entry title="${%title.baseline}" field="baseline">
+    <l:select/>
+  </l:entry>
 
 </j:jelly>
