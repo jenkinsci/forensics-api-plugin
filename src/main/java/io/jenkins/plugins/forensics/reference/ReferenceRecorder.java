@@ -163,10 +163,20 @@ public abstract class ReferenceRecorder extends SimpleReferenceRecorder {
         }
         logger.logInfo("No reference build with required status found that contains matching commits");
         if (isLatestBuildIfNotFound()) {
-            logger.logInfo("Falling back to latest completed build of reference job: '%s'",
-                    lastCompletedBuild.getDisplayName());
+            var filter = createActionFilter();
+            var fallback = filter.findFirstAcceptedBuild(lastCompletedBuild);
+            if (fallback.isEmpty()) {
+                logger.logInfo("-> no build that provides an action %s found in the history of '%s'",
+                        filter, lastCompletedBuild.getDisplayName());
 
-            return Optional.of(new ReferenceBuild(run, logger.getInfoMessages(), getRequiredResult(), lastCompletedBuild));
+                return Optional.empty();
+            }
+
+            var latestBuild = fallback.get();
+            logger.logInfo("Falling back to latest completed build of reference job: '%s'",
+                    latestBuild.getDisplayName());
+
+            return Optional.of(new ReferenceBuild(run, logger.getInfoMessages(), getRequiredResult(), latestBuild));
         }
         return Optional.empty();
     }
