@@ -48,6 +48,7 @@ import io.jenkins.plugins.util.LogHandler;
  */
 public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     private String scm = StringUtils.EMPTY;
+    private Baseline baseline = Baseline.PREVIOUS;
 
     /**
      * Creates a new instance of {@link  RepositoryMinerStep}.
@@ -71,6 +72,9 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
         if (scm == null) {
             scm = StringUtils.EMPTY;
         }
+        if (baseline == null) {
+            baseline = Baseline.PREVIOUS;
+        }
         return this;
     }
 
@@ -88,6 +92,21 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
     public String getScm() {
         return scm;
+    }
+
+    /**
+     * Sets the baseline that should be used to compute the commits that are new in the current build.
+     *
+     * @param baseline
+     *         the baseline to use
+     */
+    @DataBoundSetter
+    public void setBaseline(final Baseline baseline) {
+        this.baseline = baseline;
+    }
+
+    public Baseline getBaseline() {
+        return baseline;
     }
 
     @Override
@@ -108,6 +127,7 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
             logger.logInfo("-> checking SCM '%s'", repository.getKey());
 
             RepositoryMiner miner = MinerFactory.findMiner(repository, run, workspace, listener, logger);
+            miner.setBaseline(baseline);
             logHandler.log(logger);
 
             var repositoryStatistics = previousBuildStatistics(repository.getKey(), run);

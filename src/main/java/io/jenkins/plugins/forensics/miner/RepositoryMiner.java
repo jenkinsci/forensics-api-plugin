@@ -16,6 +16,27 @@ public abstract class RepositoryMiner implements Serializable {
     @Serial
     private static final long serialVersionUID = -8878714986510536182L;
 
+    private Baseline baseline = Baseline.PREVIOUS;
+
+    /**
+     * Returns the baseline that is used to compute the commits that are new in the current build.
+     *
+     * @return the baseline
+     */
+    public Baseline getBaseline() {
+        return baseline;
+    }
+
+    /**
+     * Sets the baseline that is used to compute the commits that are new in the current build.
+     *
+     * @param baseline
+     *         the baseline to use
+     */
+    public void setBaseline(final Baseline baseline) {
+        this.baseline = baseline;
+    }
+
     /**
      * Obtains commit statistics for a source code repository.
      *
