@@ -27,11 +27,15 @@ import static j2html.TagCreator.*;
  * <li>total number of commits</li>
  * <li>time of last commit</li>
  * <li>time of first commit</li>
+ * <li>maximum temporal coupling</li>
  * </ul>
  *
  * @author Ullrich Hafner
  */
 public class ForensicsTableModel extends TableModel {
+    private static final int COUPLING_RESPONSIVE_PRIORITY = 20_000;
+    private static final double NO_COUPLING = 0.0;
+
     private final RepositoryStatistics statistics;
 
     ForensicsTableModel(final RepositoryStatistics statistics) {
@@ -81,13 +85,30 @@ public class ForensicsTableModel extends TableModel {
                 .withDataPropertyKey("churn")
                 .withType(ColumnType.NUMBER)
                 .build());
+        columns.add(builder.withHeaderLabel(Messages.Table_Column_MaxCoupling())
+                .withDataPropertyKey("maxCoupling")
+                .withType(ColumnType.NUMBER)
+                .withResponsivePriority(COUPLING_RESPONSIVE_PRIORITY)
+                .build());
 
         return columns;
     }
 
     @Override
     public List<Object> getRows() {
-        return statistics.getFileStatistics().stream().map(ForensicsRow::new).collect(Collectors.toList());
+        var couplings = statistics.getTemporalCouplings();
+
+        return statistics.getFileStatistics().stream()
+                .map(file -> new ForensicsRow(file, findMaxCoupling(couplings, file.getFileName())))
+                .collect(Collectors.toList());
+    }
+
+    private double findMaxCoupling(final List<TemporalCoupling> couplings, final String fileName) {
+        return couplings.stream()
+                .filter(coupling -> coupling.contains(fileName))
+                .mapToDouble(TemporalCoupling::getCouplingPercentage)
+                .max()
+                .orElse(NO_COUPLING);
     }
 
     /**
@@ -95,9 +116,11 @@ public class ForensicsTableModel extends TableModel {
      */
     public static class ForensicsRow {
         private final FileStatistics fileStatistics;
+        private final double maxCoupling;
 
-        ForensicsRow(final FileStatistics fileStatistics) {
+        ForensicsRow(final FileStatistics fileStatistics, final double maxCoupling) {
             this.fileStatistics = fileStatistics;
+            this.maxCoupling = maxCoupling;
         }
 
         /**
@@ -139,6 +162,16 @@ public class ForensicsTableModel extends TableModel {
 
         public int getChurn() {
             return fileStatistics.getAbsoluteChurn();
+        }
+
+        /**
+         * Returns the strongest temporal coupling of this file with any other repository file, given as percentage in
+         * the interval {@code [0.0, 100.0]}.
+         *
+         * @return the maximum coupling in percent, or {@code 0} if this file is not coupled with another file
+         */
+        public double getMaxCoupling() {
+            return maxCoupling;
         }
     }
 }

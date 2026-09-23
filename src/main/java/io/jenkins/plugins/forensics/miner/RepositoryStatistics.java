@@ -27,7 +27,7 @@ import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
  */
 public class RepositoryStatistics implements Serializable {
     @Serial
-    private static final long serialVersionUID = 8L; // release 0.8.0
+    private static final long serialVersionUID = 9L; // release 1.9.0
 
     @CheckForNull
     @SuppressWarnings("PMD.LooseCoupling")
@@ -42,6 +42,9 @@ public class RepositoryStatistics implements Serializable {
     private CommitStatistics statistics = new CommitStatistics();
     private int totalLinesOfCode;
     private int totalChurn;
+
+    @SuppressWarnings("PMD.LooseCoupling")
+    private ArrayList<TemporalCoupling> temporalCouplings = new ArrayList<>(); // since 1.9.0
 
     /**
      * Creates an empty instance of {@link RepositoryStatistics} with no latest commit ID set.
@@ -78,6 +81,9 @@ public class RepositoryStatistics implements Serializable {
         else { // before 0.8.0: restore map
             statisticsMapping = statisticsPerFile;
             statisticsPerFile = null; // set to null to remove the field from serialization
+        }
+        if (temporalCouplings == null) { // before 1.9.0: no couplings have been mined
+            temporalCouplings = new ArrayList<>();
         }
 
         return this;
@@ -272,6 +278,26 @@ public class RepositoryStatistics implements Serializable {
 
     public CommitStatistics getLatestStatistics() {
         return statistics;
+    }
+
+    /**
+     * Returns the temporal couplings of all repository files, i.e. the pairs of files that have been changed together
+     * in the same commit.
+     *
+     * @return the temporal couplings, or an empty list if the SCM does not provide this information
+     */
+    public List<TemporalCoupling> getTemporalCouplings() {
+        return Collections.unmodifiableList(temporalCouplings);
+    }
+
+    /**
+     * Sets the temporal couplings of all repository files.
+     *
+     * @param couplings
+     *         the temporal couplings to store
+     */
+    public void setTemporalCouplings(final List<TemporalCoupling> couplings) {
+        temporalCouplings = new ArrayList<>(couplings);
     }
 
     @Override
