@@ -1,0 +1,23 @@
+Some plugins do not record their results in every build: code coverage, for example, can be disabled on a
+per-build basis. If the automatically selected reference build does not contain such a report, then no delta
+report can be computed at all - the delta results are then silently empty.
+
+<p>
+  With this parameter you can restrict the search for a reference build to those builds that provide a specific
+  action (i.e., a specific report). All builds that do not provide such an action will be skipped, and the search
+  continues with the predecessors of these builds.
+</p>
+
+<p>
+  The action can be specified either by its fully qualified class name or by its simple class name. Supertypes and
+  interfaces of the actual action are considered as well, so it is possible to filter for a whole family of
+  actions. Some examples:
+</p>
+<dl>
+  <dt>io.jenkins.plugins.coverage.metrics.steps.CoverageBuildAction</dt>
+  <dd>The reference build must contain a code coverage report of the coverage plugin</dd>
+  <dt>CoverageBuildAction</dt>
+  <dd>The same filter, using the simple class name</dd>
+  <dt>&lt;empty&gt;</dt>
+  <dd>The type of the action is not relevant (this is the default behavior if unset)</dd>
+</dl>
