@@ -1,9 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.echarts.SeriesBuilder;
 import java.util.HashMap;
 import java.util.Map;
-
-import edu.hm.hafner.echarts.SeriesBuilder;
 
 /**
  * Builds one x-axis point for the series of a line chart showing the number of modified files, commits and
@@ -21,8 +20,7 @@ class RelativeCountForensicsSeriesBuilder extends SeriesBuilder<ForensicsBuildAc
         CommitStatistics commitStatistics;
         if (current.getTotalLinesOfCode() == 0) {
             commitStatistics = current.getResult().getLatestStatistics();
-        }
-        else {
+        } else {
             commitStatistics = current.getCommitStatistics();
         }
         return computeRelativeCountStatistics(commitStatistics);

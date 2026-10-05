@@ -1,25 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.io.FilenameUtils;
-
 import edu.hm.hafner.echarts.LineSeries;
 import edu.hm.hafner.echarts.LineSeries.FilledMode;
 import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-import tools.jackson.databind.ObjectMapper;
-
-import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
 import hudson.model.Run;
-
 import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableColumn.ColumnBuilder;
@@ -27,6 +14,15 @@ import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.echarts.AsyncTrendChart;
 import io.jenkins.plugins.echarts.JenkinsPalette;
 import io.jenkins.plugins.forensics.util.CommitDecorator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import org.apache.commons.io.FilenameUtils;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Creates a view for the selected link in the details table.
@@ -54,7 +50,9 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
      * @param decorator
      *         renders commit links
      */
-    public FileDetailsView(final Run<?, ?> owner, final String fileLink,
+    public FileDetailsView(
+            final Run<?, ?> owner,
+            final String fileLink,
             final RepositoryStatistics repositoryStatistics,
             final CommitDecorator decorator) {
         super();
@@ -67,10 +65,10 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
     }
 
     private FileStatistics filterStatistics() {
-        return repositoryStatistics.getFileStatistics()
-                .stream()
-                .filter(f -> String.valueOf(f.getFileName().hashCode()).equals(fileHash)).findAny().orElseThrow(
-                        () -> new NoSuchElementException("No file found with hash code " + fileHash));
+        return repositoryStatistics.getFileStatistics().stream()
+                .filter(f -> String.valueOf(f.getFileName().hashCode()).equals(fileHash))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("No file found with hash code " + fileHash));
     }
 
     public Run<?, ?> getOwner() {
@@ -138,19 +136,25 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
 
             var builder = new ColumnBuilder();
 
-            columns.add(builder.withHeaderLabel(Messages.Table_Column_CommitId()).withDataPropertyKey("commitId").build());
-            columns.add(builder.withHeaderLabel(Messages.Table_Column_Author()).withDataPropertyKey("author").build());
-            columns.add(builder.withHeaderLabel(Messages.Table_Column_AddedLines()).withDataPropertyKey("addedLines").build());
-            columns.add(builder.withHeaderLabel(Messages.Table_Column_DeletedLines()).withDataPropertyKey("deletedLines").build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_CommitId())
+                    .withDataPropertyKey("commitId")
+                    .build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_Author())
+                    .withDataPropertyKey("author")
+                    .build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_AddedLines())
+                    .withDataPropertyKey("addedLines")
+                    .build());
+            columns.add(builder.withHeaderLabel(Messages.Table_Column_DeletedLines())
+                    .withDataPropertyKey("deletedLines")
+                    .build());
 
             return columns;
         }
 
         @Override
         public List<Object> getRows() {
-            return fileStatistics
-                    .getCommits()
-                    .stream()
+            return fileStatistics.getCommits().stream()
                     .map(commit -> new ForensicsRow(commit, decorator))
                     .collect(Collectors.toList());
         }
@@ -193,17 +197,22 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
         private static final String ADDED_KEY = "added";
         private static final String DELETED_KEY = "deleted";
 
-        LinesChartModel create(final FileStatistics fileStatistics,
-                final CommitDecorator decorator) {
+        LinesChartModel create(final FileStatistics fileStatistics, final CommitDecorator decorator) {
             var dataSet = createDataSetPerCommit(fileStatistics, decorator);
 
             var model = new LinesChartModel(dataSet);
             model.setDomainAxisItemName("Commit");
-            var added = new LineSeries(Messages.TrendChart_Churn_Legend_Added(), JenkinsPalette.GREEN.normal(),
-                    StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+            var added = new LineSeries(
+                    Messages.TrendChart_Churn_Legend_Added(),
+                    JenkinsPalette.GREEN.normal(),
+                    StackedMode.SEPARATE_LINES,
+                    FilledMode.FILLED);
             added.addAll(dataSet.getSeries(ADDED_KEY));
-            var deleted = new LineSeries(Messages.TrendChart_Churn_Legend_Deleted(), JenkinsPalette.RED.normal(),
-                    StackedMode.SEPARATE_LINES, FilledMode.FILLED);
+            var deleted = new LineSeries(
+                    Messages.TrendChart_Churn_Legend_Deleted(),
+                    JenkinsPalette.RED.normal(),
+                    StackedMode.SEPARATE_LINES,
+                    FilledMode.FILLED);
             deleted.addAll(dataSet.getSeries(DELETED_KEY));
 
             model.addSeries(added, deleted);
@@ -211,8 +220,7 @@ public class FileDetailsView extends DefaultAsyncTableContentProvider implements
             return model;
         }
 
-        private LinesDataSet createDataSetPerCommit(final FileStatistics current,
-                final CommitDecorator decorator) {
+        private LinesDataSet createDataSetPerCommit(final FileStatistics current, final CommitDecorator decorator) {
             var model = new LinesDataSet();
             for (CommitDiffItem commit : current.getCommits()) {
                 model.add(decorator.asText(commit.getId()), computeSeries(commit));

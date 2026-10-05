@@ -47,8 +47,7 @@ public class Blames implements Serializable {
     private void merge(final String otherFile, final FileBlame otherRequest) {
         if (contains(otherFile)) {
             getBlame(otherFile).merge(otherRequest);
-        }
-        else {
+        } else {
             blamesPerFile.put(otherFile, otherRequest);
         }
     }

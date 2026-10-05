@@ -1,16 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.SerializableTest;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link CommitStatistics}.
@@ -45,17 +43,16 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countMoves(commits)).isZero();
 
         var empty = new CommitStatistics(commits);
-        assertThat(empty).hasAddedLines(0)
+        assertThat(empty)
+                .hasAddedLines(0)
                 .hasDeletedLines(0)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(0)
                 .hasAuthorCount(0)
                 .hasCommitCount(0);
 
-        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 0 commits with differences analyzed",
-                "-> 0 lines added",
-                "-> 0 lines deleted");
+        assertThat(logCommits(commits).getInfoMessages())
+                .containsExactly("-> 0 commits with differences analyzed", "-> 0 lines added", "-> 0 lines deleted");
 
         var first = new CommitDiffItem("1", AUTHOR, 0);
         first.addLines(3).deleteLines(2);
@@ -65,18 +62,20 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countDeletes(commits)).isZero();
         assertThat(CommitStatistics.countMoves(commits)).isZero();
         var firstCommit = new CommitStatistics(commits);
-        assertThat(firstCommit).hasAddedLines(3)
+        assertThat(firstCommit)
+                .hasAddedLines(3)
                 .hasDeletedLines(2)
                 .hasLinesOfCode(1)
                 .hasAbsoluteChurn(5)
                 .hasAuthorCount(1)
                 .hasCommitCount(1);
 
-        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 1 commits with differences analyzed",
-                "-> 1 MODIFY commit diff items",
-                "-> 3 lines added",
-                "-> 2 lines deleted");
+        assertThat(logCommits(commits).getInfoMessages())
+                .containsExactly(
+                        "-> 1 commits with differences analyzed",
+                        "-> 1 MODIFY commit diff items",
+                        "-> 3 lines added",
+                        "-> 2 lines deleted");
 
         var second = new CommitDiffItem("2", "anotherAuthor", 2);
         second.addLines(3).deleteLines(4);
@@ -86,18 +85,20 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countDeletes(commits)).isZero();
         assertThat(CommitStatistics.countMoves(commits)).isZero();
         var secondCommit = new CommitStatistics(commits);
-        assertThat(secondCommit).hasAddedLines(6)
+        assertThat(secondCommit)
+                .hasAddedLines(6)
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
                 .hasAuthorCount(2)
                 .hasCommitCount(2);
 
-        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 2 commits with differences analyzed",
-                "-> 2 MODIFY commit diff items",
-                "-> 6 lines added",
-                "-> 6 lines deleted");
+        assertThat(logCommits(commits).getInfoMessages())
+                .containsExactly(
+                        "-> 2 commits with differences analyzed",
+                        "-> 2 MODIFY commit diff items",
+                        "-> 6 lines added",
+                        "-> 6 lines deleted");
 
         var third = new CommitDiffItem("2", AUTHOR, 2);
         third.setNewPath(asTreeString(CommitDiffItem.NO_FILE_NAME));
@@ -108,19 +109,21 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countDeletes(commits)).isEqualTo(1);
         assertThat(CommitStatistics.countMoves(commits)).isZero();
         var thirdCommit = new CommitStatistics(commits);
-        assertThat(thirdCommit).hasAddedLines(6)
+        assertThat(thirdCommit)
+                .hasAddedLines(6)
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
                 .hasAuthorCount(2)
                 .hasCommitCount(2);
 
-        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 2 commits with differences analyzed",
-                "-> 2 MODIFY commit diff items",
-                "-> 1 DELETE commit diff items",
-                "-> 6 lines added",
-                "-> 6 lines deleted");
+        assertThat(logCommits(commits).getInfoMessages())
+                .containsExactly(
+                        "-> 2 commits with differences analyzed",
+                        "-> 2 MODIFY commit diff items",
+                        "-> 1 DELETE commit diff items",
+                        "-> 6 lines added",
+                        "-> 6 lines deleted");
 
         var forth = new CommitDiffItem("3", AUTHOR, 3);
         forth.setNewPath(asTreeString("new"));
@@ -131,20 +134,22 @@ class CommitStatisticsTest extends SerializableTest<CommitStatistics> {
         assertThat(CommitStatistics.countDeletes(commits)).isEqualTo(1);
         assertThat(CommitStatistics.countMoves(commits)).isEqualTo(1);
         var forthCommit = new CommitStatistics(commits);
-        assertThat(forthCommit).hasAddedLines(6)
+        assertThat(forthCommit)
+                .hasAddedLines(6)
                 .hasDeletedLines(6)
                 .hasLinesOfCode(0)
                 .hasAbsoluteChurn(12)
                 .hasAuthorCount(2)
                 .hasCommitCount(3);
 
-        assertThat(logCommits(commits).getInfoMessages()).containsExactly(
-                "-> 3 commits with differences analyzed",
-                "-> 2 MODIFY commit diff items",
-                "-> 1 RENAME commit diff items",
-                "-> 1 DELETE commit diff items",
-                "-> 6 lines added",
-                "-> 6 lines deleted");
+        assertThat(logCommits(commits).getInfoMessages())
+                .containsExactly(
+                        "-> 3 commits with differences analyzed",
+                        "-> 2 MODIFY commit diff items",
+                        "-> 1 RENAME commit diff items",
+                        "-> 1 DELETE commit diff items",
+                        "-> 6 lines added",
+                        "-> 6 lines deleted");
     }
 
     @Test

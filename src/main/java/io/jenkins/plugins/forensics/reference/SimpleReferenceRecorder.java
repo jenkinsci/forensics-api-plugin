@@ -1,19 +1,8 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.apache.commons.lang3.StringUtils;
-
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
-
-import java.util.Optional;
-
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.verb.POST;
-import org.jenkinsci.Symbol;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -32,11 +21,18 @@ import hudson.tasks.Recorder;
 import hudson.util.ComboBoxModel;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import jenkins.branch.MultiBranchProject;
-import jenkins.tasks.SimpleBuildStep;
-
 import io.jenkins.plugins.util.JenkinsFacade;
 import io.jenkins.plugins.util.LogHandler;
+import java.util.Optional;
+import jenkins.branch.MultiBranchProject;
+import jenkins.tasks.SimpleBuildStep;
+import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  * A simple recorder that discovers a reference build from another given reference job.
@@ -206,8 +202,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      *         the task listener
      */
     @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final EnvVars env,
-            @NonNull final TaskListener listener) {
+    public void perform(
+            @NonNull final Run<?, ?> run, @NonNull final EnvVars env, @NonNull final TaskListener listener) {
         var log = new FilteredLog("Errors while computing the reference build:");
 
         var existing = run.removeActions(ReferenceBuild.class);
@@ -237,8 +233,12 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      *         the task listener
      */
     @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
-            @NonNull final Launcher launcher, @NonNull final TaskListener listener) {
+    public void perform(
+            @NonNull final Run<?, ?> run,
+            @NonNull final FilePath workspace,
+            @NonNull final EnvVars env,
+            @NonNull final Launcher launcher,
+            @NonNull final TaskListener listener) {
         perform(run, env, listener);
     }
 
@@ -266,22 +266,20 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
             logNoBuildFound(reference, log);
 
             return createEmptyReferenceBuild(run, log);
-        }
-        else {
+        } else {
             var lastBuild = possibleLastCompletedBuild.get();
-            log.logInfo("Found last completed build '%s' of reference job '%s'",
+            log.logInfo(
+                    "Found last completed build '%s' of reference job '%s'",
                     lastBuild.getDisplayName(), reference.getDisplayName());
 
-            return getReferenceBuildWithRequiredStatus(run, lastBuild, log)
-                    .orElse(createEmptyReferenceBuild(run, log));
+            return getReferenceBuildWithRequiredStatus(run, lastBuild, log).orElse(createEmptyReferenceBuild(run, log));
         }
     }
 
     protected void logNoBuildFound(final Job<?, ?> reference, final FilteredLog log) {
         if (isConsiderRunningBuild()) {
             log.logInfo("No build found for reference job '%s'", reference.getDisplayName());
-        }
-        else {
+        } else {
             log.logInfo("No completed build found for reference job '%s'", reference.getDisplayName());
         }
     }
@@ -300,17 +298,19 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      *
      * @return the reference build that satisfies the required status (or empty if no such build is found)
      */
-    protected Optional<ReferenceBuild> getReferenceBuildWithRequiredStatus(final Run<?, ?> run, final Run<?, ?> start, final FilteredLog log) {
+    protected Optional<ReferenceBuild> getReferenceBuildWithRequiredStatus(
+            final Run<?, ?> run, final Run<?, ?> start, final FilteredLog log) {
         for (Run<?, ?> reference = start; reference != null; reference = reference.getPreviousCompletedBuild()) {
             if (hasRequiredResult(reference)) {
-                log.logInfo("-> %s '%s' has a result %s",
-                        getBuildName(start, reference),
-                        reference.getDisplayName(), reference.getResult());
+                log.logInfo(
+                        "-> %s '%s' has a result %s",
+                        getBuildName(start, reference), reference.getDisplayName(), reference.getResult());
 
                 return Optional.of(new ReferenceBuild(run, log.getInfoMessages(), requiredResult, reference));
             }
         }
-        log.logInfo("-> ignoring reference build '%s' or one of its predecessors since none have a result of %s or better",
+        log.logInfo(
+                "-> ignoring reference build '%s' or one of its predecessors since none have a result of %s or better",
                 start.getDisplayName(), requiredResult);
         return Optional.empty();
     }
@@ -413,7 +413,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
             super();
 
             this.jenkins = jenkins;
-            this.model =  model;
+            this.model = model;
         }
 
         @NonNull
@@ -456,8 +456,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
          */
         @POST
         @SuppressWarnings("unused") // Used in jelly validation
-        public FormValidation doCheckReferenceJob(@AncestorInPath final BuildableItem project,
-                @QueryParameter final String referenceJob) {
+        public FormValidation doCheckReferenceJob(
+                @AncestorInPath final BuildableItem project, @QueryParameter final String referenceJob) {
             if (!jenkins.hasPermission(Item.CONFIGURE, project)) {
                 return FormValidation.ok();
             }

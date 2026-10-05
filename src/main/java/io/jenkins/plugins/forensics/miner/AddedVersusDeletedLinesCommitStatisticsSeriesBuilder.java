@@ -1,10 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.util.Map;
+import static io.jenkins.plugins.forensics.miner.AddedVersusDeletedLinesForensicsSeriesBuilder.*;
 
 import edu.hm.hafner.echarts.SeriesBuilder;
-
-import static io.jenkins.plugins.forensics.miner.AddedVersusDeletedLinesForensicsSeriesBuilder.*;
+import java.util.Map;
 
 /**
  * Builds one x-axis point for the series of a line chart showing the added and deleted lines per build.

@@ -1,12 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.SerializableTest;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link CommitDiffItem}.
@@ -31,7 +30,8 @@ class CommitDiffItemTest extends SerializableTest<CommitDiffItem> {
     }
 
     private void verifyEmptyCommit(final CommitDiffItem commit) {
-        assertThat(commit).hasId(ID)
+        assertThat(commit)
+                .hasId(ID)
                 .hasAuthor(AUTHOR)
                 .hasTime(COMMITTED_AT)
                 .hasTotalAddedLines(0)
@@ -72,11 +72,7 @@ class CommitDiffItemTest extends SerializableTest<CommitDiffItem> {
                 .isNotDelete();
 
         commit.setOldPath(asTreeString("old"));
-        assertThat(commit)
-                .hasNewPath("new")
-                .hasOldPath("old")
-                .isMove()
-                .isNotDelete();
+        assertThat(commit).hasNewPath("new").hasOldPath("old").isMove().isNotDelete();
 
         commit.setNewPath(asTreeString(CommitDiffItem.NO_FILE_NAME));
         assertThat(commit)

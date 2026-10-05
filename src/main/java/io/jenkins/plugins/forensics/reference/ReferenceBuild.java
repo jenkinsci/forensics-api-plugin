@@ -1,24 +1,20 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.apache.commons.lang3.Strings;
+import static j2html.TagCreator.*;
 
 import edu.hm.hafner.util.VisibleForTesting;
-
+import hudson.model.Result;
+import hudson.model.Run;
+import io.jenkins.plugins.bootstrap5.MessagesViewModel;
+import io.jenkins.plugins.util.JenkinsFacade;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.kohsuke.stapler.StaplerProxy;
-import hudson.model.Result;
-import hudson.model.Run;
 import jenkins.model.RunAction2;
-
-import io.jenkins.plugins.bootstrap5.MessagesViewModel;
-import io.jenkins.plugins.util.JenkinsFacade;
-
-import static j2html.TagCreator.*;
+import org.apache.commons.lang3.Strings;
+import org.kohsuke.stapler.StaplerProxy;
 
 /**
  * Stores the selected reference build for a given build. The reference build is a build in a different (or same)
@@ -62,6 +58,7 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
     private final String referenceBuildId;
     private Result requiredResult; // @since 2.4.0
     private final JenkinsFacade jenkinsFacade;
+
     @SuppressWarnings("PMD.LooseCoupling")
     private final ArrayList<String> messages;
 
@@ -93,7 +90,10 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
      * @param referenceBuild
      *         the found reference build
      */
-    public ReferenceBuild(final Run<?, ?> owner, final List<String> messages, final Result requiredResult,
+    public ReferenceBuild(
+            final Run<?, ?> owner,
+            final List<String> messages,
+            final Result requiredResult,
             final Run<?, ?> referenceBuild) {
         this(owner, messages, referenceBuild.getExternalizableId(), requiredResult);
     }
@@ -128,13 +128,21 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
         this(owner, messages, referenceBuild.getExternalizableId(), Result.UNSTABLE);
     }
 
-    private ReferenceBuild(final Run<?, ?> owner, final List<String> messages, final String referenceBuildId, final Result requiredResult) {
+    private ReferenceBuild(
+            final Run<?, ?> owner,
+            final List<String> messages,
+            final String referenceBuildId,
+            final Result requiredResult) {
         this(owner, messages, referenceBuildId, requiredResult, new JenkinsFacade());
     }
 
     @VisibleForTesting
-    ReferenceBuild(final Run<?, ?> owner, final List<String> messages, final String referenceBuildId,
-            final Result requiredResult, final JenkinsFacade jenkinsFacade) {
+    ReferenceBuild(
+            final Run<?, ?> owner,
+            final List<String> messages,
+            final String referenceBuildId,
+            final Result requiredResult,
+            final JenkinsFacade jenkinsFacade) {
         this.owner = owner;
         this.messages = new ArrayList<>(messages);
         this.referenceBuildId = referenceBuildId;
@@ -178,15 +186,18 @@ public class ReferenceBuild implements RunAction2, Serializable, StaplerProxy {
      * @return the link
      */
     public String getReferenceLink() {
-        return getReferenceBuild().map(run -> createLink(run, jenkinsFacade))
-                .orElse(String.format("Reference build '%s' not found anymore "
-                        + "- maybe the build has been renamed or deleted?", getReferenceBuildId()));
+        return getReferenceBuild()
+                .map(run -> createLink(run, jenkinsFacade))
+                .orElse(String.format(
+                        "Reference build '%s' not found anymore " + "- maybe the build has been renamed or deleted?",
+                        getReferenceBuildId()));
     }
 
     private static String createLink(final Run<?, ?> run, final JenkinsFacade jenkinsFacade) {
         return a().withText(run.getFullDisplayName())
                 .withHref(jenkinsFacade.getAbsoluteUrl(run.getUrl()))
-                .withClasses("model-link", "inside").render();
+                .withClasses("model-link", "inside")
+                .render();
     }
 
     /**

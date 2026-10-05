@@ -4,7 +4,7 @@ import edu.hm.hafner.util.PathUtil;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
+import io.jenkins.plugins.forensics.blame.FileBlame;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
-
-import io.jenkins.plugins.forensics.blame.FileBlame;
 
 /**
  * Aggregates commit statistics for a given file. The following statistics are summed up:
@@ -41,6 +39,7 @@ public final class FileStatistics implements Serializable {
     private transient int numberOfCommits; // unused starting from 0.8.x
 
     private CommitStatistics statistics = new CommitStatistics(); // since 0.8.0
+
     @SuppressWarnings("PMD.LooseCoupling")
     private ArrayList<CommitDiffItem> commits = new ArrayList<>(); // since 0.8.0
 
@@ -66,7 +65,9 @@ public final class FileStatistics implements Serializable {
      */
     @Serial
     @SuppressWarnings("deprecation")
-    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    @SuppressFBWarnings(
+            value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+            justification = "Deserialization of instances that do not have all fields yet")
     private Object readResolve() {
         if (commits == null) {
             commits = new ArrayList<>(); // restore an empty list for release < 0.8.x
@@ -184,8 +185,10 @@ public final class FileStatistics implements Serializable {
             return false;
         }
         var that = (FileStatistics) o;
-        return creationTime == that.creationTime && lastModificationTime == that.lastModificationTime
-                && Objects.equals(fileName, that.fileName) && Objects.equals(statistics, that.statistics)
+        return creationTime == that.creationTime
+                && lastModificationTime == that.lastModificationTime
+                && Objects.equals(fileName, that.fileName)
+                && Objects.equals(statistics, that.statistics)
                 && Objects.equals(commits, that.commits);
     }
 

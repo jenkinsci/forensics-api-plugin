@@ -1,25 +1,21 @@
 package io.jenkins.plugins.forensics.delta;
 
-import org.junit.jupiter.api.Test;
-import org.jvnet.hudson.test.TestExtension;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.util.PathStubs.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.util.FilteredLog;
-
-import java.io.Serial;
-import java.util.Collection;
-import java.util.Optional;
-
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-
 import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
 import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static io.jenkins.plugins.util.PathStubs.*;
-import static org.mockito.Mockito.*;
+import java.io.Serial;
+import java.util.Collection;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.TestExtension;
 
 /**
  * Tests the class {@link DeltaCalculatorFactory}.
@@ -39,9 +35,13 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         var nullCalculator = createDeltaCalculator("/", log);
 
         assertThat(nullCalculator).isInstanceOf(NullDeltaCalculator.class);
-        assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), log)).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_DELTA_CALCULATOR_FOUND,
-                ACTUAL_FACTORY_NULL_DELTA_CALCULATOR, EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
+        assertThat(nullCalculator.calculateDelta(mock(Run.class), mock(Run.class), log))
+                .isEmpty();
+        assertThat(log.getInfoMessages())
+                .containsOnly(
+                        NO_SUITABLE_DELTA_CALCULATOR_FOUND,
+                        ACTUAL_FACTORY_NULL_DELTA_CALCULATOR,
+                        EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
@@ -66,19 +66,21 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         var log = new FilteredLog("Foo");
 
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
-        DeltaCalculator testDeltaSecondMatch = DeltaCalculatorFactory.findDeltaCalculator(mock(Run.class), directories,
-                TaskListener.NULL, log);
+        DeltaCalculator testDeltaSecondMatch =
+                DeltaCalculatorFactory.findDeltaCalculator(mock(Run.class), directories, TaskListener.NULL, log);
         assertThat(log.getErrorMessages()).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_DELTA_CALCULATOR,
-                ACTUAL_FACTORY_NULL_DELTA_CALCULATOR,
-                ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR);
+        assertThat(log.getInfoMessages())
+                .containsOnly(
+                        EMPTY_FACTORY_NULL_DELTA_CALCULATOR,
+                        ACTUAL_FACTORY_NULL_DELTA_CALCULATOR,
+                        ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR);
 
         assertThat(testDeltaSecondMatch).isInstanceOf(TestDeltaCalculator.class);
     }
 
     private DeltaCalculator createDeltaCalculator(final String path, final FilteredLog log) {
-        return DeltaCalculatorFactory.findDeltaCalculator(mock(Run.class), asSourceDirectories(createWorkspace(path)),
-                TaskListener.NULL, log);
+        return DeltaCalculatorFactory.findDeltaCalculator(
+                mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, log);
     }
 
     /**
@@ -90,8 +92,11 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
 
         @Override
         @SuppressWarnings("deprecation")
-        public Optional<Delta> calculateDelta(final Run<?, ?> build, final Run<?, ?> referenceBuild,
-                final String scmFilterKey, final FilteredLog logger) {
+        public Optional<Delta> calculateDelta(
+                final Run<?, ?> build,
+                final Run<?, ?> referenceBuild,
+                final String scmFilterKey,
+                final FilteredLog logger) {
             return Optional.empty();
         }
     }
@@ -103,9 +108,12 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class EmptyFactory extends DeltaCalculatorFactory {
         @Override
-        public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run,
+        public Optional<DeltaCalculator> createDeltaCalculator(
+                final SCM scm,
+                final Run<?, ?> run,
                 final FilePath workspace,
-                final TaskListener listener, final FilteredLog logger) {
+                final TaskListener listener,
+                final FilteredLog logger) {
             logger.logInfo(EMPTY_FACTORY_NULL_DELTA_CALCULATOR);
             return Optional.empty();
         }
@@ -118,8 +126,12 @@ class DeltaCalculatorFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class ActualFactory extends DeltaCalculatorFactory {
         @Override
-        public Optional<DeltaCalculator> createDeltaCalculator(final SCM scm, final Run<?, ?> run,
-                final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
+        public Optional<DeltaCalculator> createDeltaCalculator(
+                final SCM scm,
+                final Run<?, ?> run,
+                final FilePath workspace,
+                final TaskListener listener,
+                final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
                 logger.logInfo(ACTUAL_FACTORY_CREATED_A_DELTA_CALCULATOR);
                 return Optional.of(new DeltaCalculatorFactoryITest.TestDeltaCalculator());

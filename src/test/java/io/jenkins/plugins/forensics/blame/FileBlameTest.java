@@ -1,12 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.SerializableTest;
-
 import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link FileBlame}.
@@ -70,7 +68,8 @@ class FileBlameTest extends SerializableTest<FileBlame> {
 
         assertThatThrownBy(() -> request.merge(createFileBlame("wrong")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("wrong").hasMessageContaining("file");
+                .hasMessageContaining("wrong")
+                .hasMessageContaining("file");
     }
 
     @Test

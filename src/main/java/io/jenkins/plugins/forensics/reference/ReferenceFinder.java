@@ -1,10 +1,8 @@
 package io.jenkins.plugins.forensics.reference;
 
 import edu.hm.hafner.util.FilteredLog;
-
-import java.util.Optional;
-
 import hudson.model.Run;
+import java.util.Optional;
 
 /**
  * A small wrapper around the {@link ReferenceBuild} action to provide consumers a simple API to obtain a reference
@@ -27,8 +25,7 @@ public class ReferenceFinder {
         var action = build.getAction(ReferenceBuild.class);
         if (action == null) {
             log.logInfo("Reference build recorder is not configured");
-        }
-        else {
+        } else {
             log.logInfo("Obtaining reference build from reference recorder");
             Optional<Run<?, ?>> referenceBuild = action.getReferenceBuild();
             if (referenceBuild.isPresent()) {

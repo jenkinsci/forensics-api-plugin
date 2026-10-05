@@ -1,10 +1,9 @@
 package io.jenkins.plugins.forensics.delta;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link Change}.

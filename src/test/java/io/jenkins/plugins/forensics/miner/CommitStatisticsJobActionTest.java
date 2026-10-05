@@ -1,22 +1,19 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import hudson.model.Job;
-import hudson.model.Run;
-
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hudson.model.Job;
+import hudson.model.Run;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests the class {@link CommitStatisticsJobAction}.
@@ -69,27 +66,24 @@ class CommitStatisticsJobActionTest {
 
         assertThat(chartModel).isNotBlank();
 
-        assertThatJson(chartModel).node("domainAxisLabels")
-                .isArray().containsExactly("run1", "run2", "run3");
-        assertThatJson(chartModel).node("buildNumbers")
-                .isArray().containsExactly(1, 2, 3);
+        assertThatJson(chartModel).node("domainAxisLabels").isArray().containsExactly("run1", "run2", "run3");
+        assertThatJson(chartModel).node("buildNumbers").isArray().containsExactly(1, 2, 3);
     }
 
     private Run<?, ?> createRun(final int runNumber, final String displayName) {
         Run<?, ?> run = mock(Run.class);
         when(run.getNumber()).thenReturn(runNumber);
         when(run.getDisplayName()).thenReturn(displayName);
-        when(run.getActions(CommitStatisticsBuildAction.class)).thenReturn(
-                Collections.singletonList(new CommitStatisticsBuildAction(run, SCM_KEY, new CommitStatistics()))
-        );
+        when(run.getActions(CommitStatisticsBuildAction.class))
+                .thenReturn(Collections.singletonList(
+                        new CommitStatisticsBuildAction(run, SCM_KEY, new CommitStatistics())));
         return run;
     }
 
     private String toJson(final Object object) {
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
     }
