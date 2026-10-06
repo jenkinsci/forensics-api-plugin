@@ -1,14 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.SerializableTest;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
-
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link RepositoryStatisticsXmlStream}.
@@ -38,11 +36,11 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     }
 
     private void assertThatForensicsAreCorrect(final RepositoryStatistics statistics) {
-        assertThat(statistics)
-                .hasOnlyFiles(ISSUE_BUILDER, "/analysis/Report.java", "/analysis/FilteredLog.java");
+        assertThat(statistics).hasOnlyFiles(ISSUE_BUILDER, "/analysis/Report.java", "/analysis/FilteredLog.java");
 
         var fileStatistics = statistics.get(ISSUE_BUILDER);
-        assertThat(fileStatistics).hasFileName(ISSUE_BUILDER)
+        assertThat(fileStatistics)
+                .hasFileName(ISSUE_BUILDER)
                 .hasCreationTime(1_506_775_701)
                 .hasLastModificationTime(1_546_429_687)
                 .hasNumberOfAuthors(1)
@@ -53,16 +51,13 @@ class RepositoryStatisticsXmlStreamTest extends SerializableTest<RepositoryStati
     void shouldWriteReport() {
         var statistics = new RepositoryStatistics();
         var fileStatistics = new FileStatisticsBuilder().build(FILE);
-        var first = new CommitDiffItem("1", "name", ONE_DAY * 2)
-                .addLines(4)
-                .setNewPath(FILE_TREE_STRING);
+        var first = new CommitDiffItem("1", "name", ONE_DAY * 2).addLines(4).setNewPath(FILE_TREE_STRING);
         var second = new CommitDiffItem("2", "another", ONE_DAY * 3)
                 .addLines(4)
                 .deleteLines(3)
                 .setNewPath(FILE_TREE_STRING);
-        var third = new CommitDiffItem("3", "another", ONE_DAY * 4)
-                .deleteLines(2)
-                .setNewPath(FILE_TREE_STRING);
+        var third =
+                new CommitDiffItem("3", "another", ONE_DAY * 4).deleteLines(2).setNewPath(FILE_TREE_STRING);
         fileStatistics.inspectCommit(first);
         fileStatistics.inspectCommit(second);
         fileStatistics.inspectCommit(third);

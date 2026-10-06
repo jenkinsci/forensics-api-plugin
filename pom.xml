@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>analysis-pom</artifactId>
-    <version>12.3355.v3e1a_7b_2c861b_</version>
+    <version>12.3362.vd97f455460a_2</version>
     <relativePath />
   </parent>
 
@@ -27,8 +27,8 @@
 
   <developers>
     <developer>
-      <name>Ullrich Hafner</name>
       <id>uhafner</id>
+      <name>Ullrich Hafner</name>
       <email>ullrich.hafner@gmail.com</email>
     </developer>
   </developers>
@@ -36,8 +36,8 @@
   <scm>
     <connection>scm:git:https://github.com/jenkinsci/forensics-api-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/forensics-api-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
     <tag>${scmTag}</tag>
+    <url>https://github.com/jenkinsci/forensics-api-plugin</url>
   </scm>
 
   <properties>
@@ -52,10 +52,17 @@
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
-      <artifactId>plugin-util-api</artifactId>
+      <artifactId>bootstrap5-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>data-tables-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>echarts-api</artifactId>
     </dependency>
 
     <!-- Jenkins Plugin Dependencies -->
@@ -65,32 +72,25 @@
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
-      <artifactId>bootstrap5-api</artifactId>
+      <artifactId>jackson3-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>jquery3-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
-      <artifactId>echarts-api</artifactId>
+      <artifactId>plugin-util-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.jenkins.plugins</groupId>
-      <artifactId>data-tables-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.jenkins.plugins</groupId>
-      <artifactId>jackson3-api</artifactId>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>branch-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.plugins.workflow</groupId>
-      <artifactId>workflow-multibranch</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -101,8 +101,8 @@
       <artifactId>workflow-job</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>branch-api</artifactId>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-multibranch</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->
@@ -185,8 +185,7 @@
           <packages combine.children="append">
             <package>io.jenkins.plugins.forensics</package>
           </packages>
-          <excludes combine.children="append">
-          </excludes>
+          <excludes combine.children="append" />
           <entryPointClassPackage>io.jenkins.plugins.forensics.assertions</entryPointClassPackage>
         </configuration>
       </plugin>

@@ -1,30 +1,26 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
+import io.jenkins.plugins.forensics.reference.ReferenceRecorder.ScmFacade;
+import io.jenkins.plugins.util.JenkinsFacade;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.function.Consumer;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
-
-import io.jenkins.plugins.forensics.reference.ReferenceRecorder.ScmFacade;
-import io.jenkins.plugins.util.JenkinsFacade;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link ReferenceRecorder}.
@@ -55,16 +51,19 @@ class ReferenceRecorderTest {
     void shouldObtainReferenceFromPullRequestTarget() {
         var log = createLog();
 
-        var referenceBuild = findReferenceBuild(log, build -> { });
+        var referenceBuild = findReferenceBuild(log, build -> {
+            // no configuration
+        });
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
-                "-> no target branch configured in step",
-                "-> detected a pull or merge request for target branch 'pr-target'",
-                "-> inferred job for target branch: 'pr-target'",
-                "Found reference build 'pr-id' for target branch",
-                "-> Build 'pr-id' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> no target branch configured in step",
+                        "-> detected a pull or merge request for target branch 'pr-target'",
+                        "-> inferred job for target branch: 'pr-target'",
+                        "Found reference build 'pr-id' for target branch",
+                        "-> Build 'pr-id' has a result SUCCESS");
 
         assertThat(referenceBuild).hasReferenceBuildId("pr-id");
     }
@@ -83,14 +82,15 @@ class ReferenceRecorderTest {
             when(build.getResult()).thenReturn(Result.FAILURE); // reference failed
         });
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
-                "-> no target branch configured in step",
-                "-> detected a pull or merge request for target branch 'pr-target'",
-                "-> inferred job for target branch: 'pr-target'",
-                "Found reference build 'pr-id' for target branch",
-                "-> Previous build 'successful' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> no target branch configured in step",
+                        "-> detected a pull or merge request for target branch 'pr-target'",
+                        "-> inferred job for target branch: 'pr-target'",
+                        "Found reference build 'pr-id' for target branch",
+                        "-> Previous build 'successful' has a result SUCCESS");
 
         assertThat(referenceBuild).hasReferenceBuildId("successful");
     }
@@ -109,15 +109,16 @@ class ReferenceRecorderTest {
             when(build.getResult()).thenReturn(Result.FAILURE); // reference failed as well
         });
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
-                "-> no target branch configured in step",
-                "-> detected a pull or merge request for target branch 'pr-target'",
-                "-> inferred job for target branch: 'pr-target'",
-                "Found reference build 'pr-id' for target branch",
-                "-> ignoring reference build 'pr-id' or one of its predecessors since none have a result of UNSTABLE or better",
-                "No reference build with required status found that contains matching commits");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> no target branch configured in step",
+                        "-> detected a pull or merge request for target branch 'pr-target'",
+                        "-> inferred job for target branch: 'pr-target'",
+                        "Found reference build 'pr-id' for target branch",
+                        "-> ignoring reference build 'pr-id' or one of its predecessors since none have a result of UNSTABLE or better",
+                        "No reference build with required status found that contains matching commits");
 
         assertThat(referenceBuild).doesNotHaveReferenceBuild();
     }
@@ -165,13 +166,14 @@ class ReferenceRecorderTest {
 
         var referenceBuild = recorder.findReferenceBuild(build, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
-                "-> no target branch configured in step",
-                "-> using configured primary branch 'main' of SCM as target branch",
-                "Found reference build 'main-id' for target branch",
-                "-> Build 'main-id' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> no target branch configured in step",
+                        "-> using configured primary branch 'main' of SCM as target branch",
+                        "Found reference build 'main-id' for target branch",
+                        "-> Build 'main-id' has a result SUCCESS");
 
         assertThat(referenceBuild).hasReferenceBuildId("main-id");
     }
@@ -187,13 +189,14 @@ class ReferenceRecorderTest {
 
         var referenceBuild = findReferenceWithRunningBuild(log, true);
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
-                "-> using target branch 'target' as configured in step",
-                "-> inferred job for target branch: 'target'",
-                "Found reference build 'target-id' for target branch",
-                "-> Build 'target-id' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> using target branch 'target' as configured in step",
+                        "-> inferred job for target branch: 'target'",
+                        "Found reference build 'target-id' for target branch",
+                        "-> Build 'target-id' has a result SUCCESS");
 
         assertThat(referenceBuild).hasReferenceBuildId("target-id");
     }
@@ -204,9 +207,10 @@ class ReferenceRecorderTest {
 
         var noReferenceBuild = findReferenceWithRunningBuild(log, false);
 
-        assertThat(log.getInfoMessages()).contains(
-                "-> inferred job for target branch: 'target'",
-                "No completed build found for reference job 'target'");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "-> inferred job for target branch: 'target'",
+                        "No completed build found for reference job 'target'");
 
         assertThat(noReferenceBuild).hasReferenceBuildId("-");
     }
@@ -243,13 +247,14 @@ class ReferenceRecorderTest {
         when(recorder.isConsiderRunningBuild()).thenReturn(true);
         var referenceBuild = recorder.findReferenceBuild(build, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
-                "-> using target branch 'target' as configured in step",
-                "-> inferred job for target branch: 'target'",
-                "Found reference build 'target-id' for target branch",
-                "-> Build 'target-id' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
+                        "-> using target branch 'target' as configured in step",
+                        "-> inferred job for target branch: 'target'",
+                        "Found reference build 'target-id' for target branch",
+                        "-> Build 'target-id' has a result SUCCESS");
 
         assertThat(referenceBuild).hasReferenceBuildId("target-id");
     }
@@ -270,13 +275,15 @@ class ReferenceRecorderTest {
 
         var recorder = createSut();
 
-        configurePrimaryBranch(recorder, topLevel, job, build, log); // will not be used since target branch has been set
+        configurePrimaryBranch(
+                recorder, topLevel, job, build, log); // will not be used since target branch has been set
         configureTargetJobAndBuild(recorder, topLevel, build, log, true);
 
         var referenceBuild = recorder.findReferenceBuild(build, log);
 
         assertThat(log.getInfoMessages())
-                .contains("No reference job configured",
+                .contains(
+                        "No reference job configured",
                         "Found a `MultiBranchProject`, trying to resolve the target branch from the configuration",
                         "-> using target branch 'target' as configured in step",
                         "-> inferred job for target branch: 'target'",
@@ -334,9 +341,12 @@ class ReferenceRecorderTest {
         return job;
     }
 
-    private void configurePrimaryBranch(final ReferenceRecorder recorder,
-            final WorkflowMultiBranchProject topLevel, final Job<?, ?> job,
-            final Run<?, ?> build, final FilteredLog log) {
+    private void configurePrimaryBranch(
+            final ReferenceRecorder recorder,
+            final WorkflowMultiBranchProject topLevel,
+            final Job<?, ?> job,
+            final Run<?, ?> build,
+            final FilteredLog log) {
         Job<?, ?> main = mock(Job.class);
         Run<?, ?> mainBuild = createBuild("main-id", Result.SUCCESS);
 
@@ -352,8 +362,8 @@ class ReferenceRecorderTest {
         when(recorder.find(build, mainBuild, log)).thenReturn(Optional.of(mainBuild));
     }
 
-    private Run<?, ?> configurePrJobAndBuild(final ReferenceRecorder recorder,
-            final WorkflowMultiBranchProject parent, final Job<?, ?> job) {
+    private Run<?, ?> configurePrJobAndBuild(
+            final ReferenceRecorder recorder, final WorkflowMultiBranchProject parent, final Job<?, ?> job) {
         Job<?, ?> prJob = mock(Job.class);
         when(prJob.getDisplayName()).thenReturn("pr-target");
         when(parent.getItemByBranchName("pr-target")).thenAnswer(i -> prJob);
@@ -373,8 +383,11 @@ class ReferenceRecorderTest {
         return prBuild;
     }
 
-    private Run<?, ?> configureTargetJobAndBuild(final ReferenceRecorder recorder,
-            final WorkflowMultiBranchProject parent, final Run<?, ?> build, final FilteredLog log,
+    private Run<?, ?> configureTargetJobAndBuild(
+            final ReferenceRecorder recorder,
+            final WorkflowMultiBranchProject parent,
+            final Run<?, ?> build,
+            final FilteredLog log,
             final boolean isComplete) {
         recorder.setTargetBranch("target");
 
@@ -384,8 +397,7 @@ class ReferenceRecorderTest {
         Run<?, ?> targetBuild = createBuild("target-id", Result.SUCCESS);
         if (isComplete) {
             when(targetJob.getLastCompletedBuild()).thenAnswer(i -> targetBuild);
-        }
-        else {
+        } else {
             when(targetJob.getLastBuild()).thenAnswer(i -> targetBuild);
         }
         when(recorder.find(build, targetBuild, log)).thenReturn(Optional.of(targetBuild));

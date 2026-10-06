@@ -1,19 +1,16 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import hudson.model.Result;
 import hudson.model.Run;
-
 import io.jenkins.plugins.bootstrap5.MessagesViewModel;
 import io.jenkins.plugins.util.JenkinsFacade;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link ReferenceBuild}.
@@ -44,24 +41,25 @@ class ReferenceBuildTest {
 
         var referenceBuild = new ReferenceBuild(currentBuild, MESSAGES, Result.FAILURE);
 
-        assertThat(referenceBuild).doesNotHaveReferenceBuild()
+        assertThat(referenceBuild)
+                .doesNotHaveReferenceBuild()
                 .hasRequiredResult(Result.FAILURE)
                 .hasOnlyMessages(MESSAGES)
                 .hasOwner(currentBuild)
                 .hasReferenceBuildId(ReferenceBuild.NO_REFERENCE_BUILD)
-                .hasReferenceLink("Reference build '-' not found anymore - maybe the build has been renamed or deleted?");
+                .hasReferenceLink(
+                        "Reference build '-' not found anymore - maybe the build has been renamed or deleted?");
 
         assertThat(referenceBuild.getReferenceBuild()).isEmpty();
         assertThat(referenceBuild.getIconFileName()).isNull();
         assertThat(referenceBuild.getDisplayName()).isNull();
         assertThat(referenceBuild.getUrlName()).isEqualTo(ReferenceBuild.REFERENCE_DETAILS_URL);
 
-        assertThat(referenceBuild.getTarget()).isInstanceOfSatisfying(MessagesViewModel.class,
-                model -> {
-                    assertThat(model.getDisplayName()).isEqualTo("Reference build - Messages");
-                    assertThat(model.getErrorMessages()).isEmpty();
-                    assertThat(model.getInfoMessages()).containsAll(MESSAGES);
-                });
+        assertThat(referenceBuild.getTarget()).isInstanceOfSatisfying(MessagesViewModel.class, model -> {
+            assertThat(model.getDisplayName()).isEqualTo("Reference build - Messages");
+            assertThat(model.getErrorMessages()).isEmpty();
+            assertThat(model.getInfoMessages()).containsAll(MESSAGES);
+        });
     }
 
     @Test

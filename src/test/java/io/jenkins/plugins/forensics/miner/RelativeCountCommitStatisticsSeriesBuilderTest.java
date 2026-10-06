@@ -1,12 +1,11 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
 import static io.jenkins.plugins.forensics.miner.RelativeCountForensicsSeriesBuilder.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class RelativeCountCommitStatisticsSeriesBuilderTest {
     @Test
@@ -16,10 +15,9 @@ class RelativeCountCommitStatisticsSeriesBuilderTest {
         final int filesCount = 7;
 
         var relativeCountCommitStatisticsSeriesBuilder = new RelativeCountCommitStatisticsSeriesBuilder();
-        var commitStatisticsBuildActionStub = getCommitStatisticsBuildActionStub(
-                commitCount, authorCount, filesCount);
-        Map<String, Integer> result = relativeCountCommitStatisticsSeriesBuilder.computeSeries(
-                commitStatisticsBuildActionStub);
+        var commitStatisticsBuildActionStub = getCommitStatisticsBuildActionStub(commitCount, authorCount, filesCount);
+        Map<String, Integer> result =
+                relativeCountCommitStatisticsSeriesBuilder.computeSeries(commitStatisticsBuildActionStub);
 
         assertThat(result)
                 .containsEntry(COMMITS_KEY, commitCount)
@@ -27,8 +25,8 @@ class RelativeCountCommitStatisticsSeriesBuilderTest {
                 .containsEntry(FILES_KEY, filesCount);
     }
 
-    private CommitStatisticsBuildAction getCommitStatisticsBuildActionStub(final int commitCount, final int authorCount,
-            final int filesCount) {
+    private CommitStatisticsBuildAction getCommitStatisticsBuildActionStub(
+            final int commitCount, final int authorCount, final int filesCount) {
         CommitStatisticsBuildAction commitStatisticsBuildActionStub = mock(CommitStatisticsBuildAction.class);
         CommitStatistics commitStatistics = mock(CommitStatistics.class);
         when(commitStatisticsBuildActionStub.getCommitStatistics()).thenReturn(commitStatistics);

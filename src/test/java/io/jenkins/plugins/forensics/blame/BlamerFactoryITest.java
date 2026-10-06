@@ -1,26 +1,22 @@
 package io.jenkins.plugins.forensics.blame;
 
-import org.junit.jupiter.api.Test;
-import org.jvnet.hudson.test.TestExtension;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.util.PathStubs.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.util.FilteredLog;
-
-import java.io.Serial;
-import java.util.Collection;
-import java.util.Optional;
-
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-
 import io.jenkins.plugins.forensics.blame.Blamer.NullBlamer;
 import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
 import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static io.jenkins.plugins.util.PathStubs.*;
-import static org.mockito.Mockito.*;
+import java.io.Serial;
+import java.util.Collection;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.TestExtension;
 
 /**
  * Tests the class {@link BlamerFactory}.
@@ -42,7 +38,8 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
 
         assertThat(nullBlamer).isInstanceOf(NullBlamer.class);
         assertThat(nullBlamer.blame(new FileLocations(), log)).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(NO_SUITABLE_BLAMER_FOUND, ACTUAL_FACTORY_NULL_BLAMER, EMPTY_FACTORY_NULL_BLAMER);
+        assertThat(log.getInfoMessages())
+                .containsOnly(NO_SUITABLE_BLAMER_FOUND, ACTUAL_FACTORY_NULL_BLAMER, EMPTY_FACTORY_NULL_BLAMER);
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
@@ -71,8 +68,8 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
         Collection<FilePath> directories = asSourceDirectories(createWorkspace("/"), createWorkspace("/test"));
         Blamer testBlamerSecondMatch = BlamerFactory.findBlamer(mock(Run.class), directories, TaskListener.NULL, log);
         assertThat(log.getErrorMessages()).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(EMPTY_FACTORY_NULL_BLAMER, ACTUAL_FACTORY_NULL_BLAMER,
-                ACTUAL_FACTORY_CREATED_A_BLAMER);
+        assertThat(log.getInfoMessages())
+                .containsOnly(EMPTY_FACTORY_NULL_BLAMER, ACTUAL_FACTORY_NULL_BLAMER, ACTUAL_FACTORY_CREATED_A_BLAMER);
 
         assertThat(testBlamerSecondMatch).isInstanceOf(TestBlamer.class);
         assertThat(testBlamerSecondMatch.blame(new FileLocations(), log)).isNotEmpty();
@@ -80,8 +77,8 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     }
 
     private Blamer createBlamer(final String path, final FilteredLog log) {
-        return BlamerFactory.findBlamer(mock(Run.class), asSourceDirectories(createWorkspace(path)),
-                TaskListener.NULL, log);
+        return BlamerFactory.findBlamer(
+                mock(Run.class), asSourceDirectories(createWorkspace(path)), TaskListener.NULL, log);
     }
 
     /**
@@ -91,8 +88,12 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class EmptyFactory extends BlamerFactory {
         @Override
-        public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run, final FilePath workspace,
-                final TaskListener listener, final FilteredLog logger) {
+        public Optional<Blamer> createBlamer(
+                final SCM scm,
+                final Run<?, ?> run,
+                final FilePath workspace,
+                final TaskListener listener,
+                final FilteredLog logger) {
             logger.logInfo("EmptyFactory returned NullBlamer");
             return Optional.empty();
         }
@@ -105,8 +106,12 @@ class BlamerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class ActualFactory extends BlamerFactory {
         @Override
-        public Optional<Blamer> createBlamer(final SCM scm, final Run<?, ?> run,
-                final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
+        public Optional<Blamer> createBlamer(
+                final SCM scm,
+                final Run<?, ?> run,
+                final FilePath workspace,
+                final TaskListener listener,
+                final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
                 logger.logInfo("ActualFactory created a blamer");
                 return Optional.of(new TestBlamer());

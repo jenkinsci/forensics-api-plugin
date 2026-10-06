@@ -2,19 +2,16 @@ package io.jenkins.plugins.forensics.miner;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
+import hudson.model.Action;
+import hudson.model.InvisibleAction;
+import hudson.model.Run;
+import io.jenkins.plugins.forensics.reference.ReferenceBuild;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
-
-import hudson.model.Action;
-import hudson.model.InvisibleAction;
-import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.tasks.SimpleBuildStep.LastBuildAction;
-
-import io.jenkins.plugins.forensics.reference.ReferenceBuild;
 
 /**
  * Controls the life cycle of the commit statistics in a job. This action persists the results of a build and displays a
@@ -43,8 +40,8 @@ public class CommitStatisticsBuildAction extends InvisibleAction implements Last
      * @param commitStatistics
      *         the statistics to persist with this action
      */
-    public CommitStatisticsBuildAction(final Run<?, ?> owner,
-            final String scmKey, final CommitStatistics commitStatistics) {
+    public CommitStatisticsBuildAction(
+            final Run<?, ?> owner, final String scmKey, final CommitStatistics commitStatistics) {
         super();
 
         this.owner = owner;

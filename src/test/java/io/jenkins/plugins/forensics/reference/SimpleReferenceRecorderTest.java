@@ -1,11 +1,9 @@
 package io.jenkins.plugins.forensics.reference;
 
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.util.FilteredLog;
-
 import hudson.model.BuildableItem;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
@@ -14,12 +12,10 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.util.FormValidation;
 import hudson.util.FormValidation.Kind;
-
 import io.jenkins.plugins.forensics.reference.SimpleReferenceRecorder.SimpleReferenceRecorderDescriptor;
 import io.jenkins.plugins.util.JenkinsFacade;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class SimpleReferenceRecorderTest {
     @Test
@@ -43,8 +39,7 @@ class SimpleReferenceRecorderTest {
         when(jenkins.getAllJobNames()).thenReturn(jobs);
         when(jenkins.hasPermission(Item.CONFIGURE, job)).thenReturn(true);
 
-        assertThat(descriptor.doFillReferenceJobItems(job))
-                .containsExactlyInAnyOrderElementsOf(jobs);
+        assertThat(descriptor.doFillReferenceJobItems(job)).containsExactlyInAnyOrderElementsOf(jobs);
         assertThat(descriptor.doFillRequiredResultItems(job))
                 .extracting("value")
                 .containsExactlyInAnyOrder("FAILURE", "SUCCESS", "UNSTABLE");
@@ -70,9 +65,7 @@ class SimpleReferenceRecorderTest {
     void shouldConsiderRunningBuilds() {
         var recorder = new SimpleReferenceRecorder();
 
-        assertThat(recorder)
-                .hasRequiredResult(Result.UNSTABLE)
-                .isNotConsiderRunningBuild();
+        assertThat(recorder).hasRequiredResult(Result.UNSTABLE).isNotConsiderRunningBuild();
 
         var run = mock(Run.class);
         var job = mock(FreeStyleProject.class);
@@ -85,20 +78,22 @@ class SimpleReferenceRecorderTest {
 
         var noReferenceBuild = recorder.findReferenceBuild(run, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Falling back to current job 'reference'",
-                "No completed build found for reference job 'reference'");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Falling back to current job 'reference'",
+                        "No completed build found for reference job 'reference'");
 
         recorder.setConsiderRunningBuild(true);
 
         log = createLog();
         recorder.findReferenceBuild(run, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Falling back to current job 'reference'",
-                "No build found for reference job 'reference'");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Falling back to current job 'reference'",
+                        "No build found for reference job 'reference'");
 
         assertThat(noReferenceBuild).hasReferenceBuildId("-");
 
@@ -114,9 +109,10 @@ class SimpleReferenceRecorderTest {
         log = createLog();
         var referenceBuild = recorder.findReferenceBuild(run, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "Found last completed build 'reference-build' of reference job 'reference'",
-                "-> Build 'reference-build' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "Found last completed build 'reference-build' of reference job 'reference'",
+                        "-> Build 'reference-build' has a result SUCCESS");
         assertThat(referenceBuild).hasReferenceBuildId("reference-build-id");
 
         when(job.getLastCompletedBuild()).thenReturn(null);
@@ -126,10 +122,11 @@ class SimpleReferenceRecorderTest {
 
         var noCompletedBuild = recorder.findReferenceBuild(run, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "No reference job configured",
-                "Falling back to current job 'reference'",
-                "No completed build found for reference job 'reference'");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "No reference job configured",
+                        "Falling back to current job 'reference'",
+                        "No completed build found for reference job 'reference'");
 
         assertThat(noCompletedBuild).hasReferenceBuildId("-");
 
@@ -138,9 +135,10 @@ class SimpleReferenceRecorderTest {
         recorder.setConsiderRunningBuild(true);
         var runningBuild = recorder.findReferenceBuild(run, log);
 
-        assertThat(log.getInfoMessages()).contains(
-                "Found last completed build 'reference-build' of reference job 'reference'",
-                "-> Build 'reference-build' has a result SUCCESS");
+        assertThat(log.getInfoMessages())
+                .contains(
+                        "Found last completed build 'reference-build' of reference job 'reference'",
+                        "-> Build 'reference-build' has a result SUCCESS");
         assertThat(runningBuild).hasReferenceBuildId("reference-build-id");
     }
 

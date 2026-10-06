@@ -53,8 +53,12 @@ public class Change implements Serializable {
      * @param toLine
      *         The ending line of the inserted change
      */
-    public Change(final ChangeEditType changeEditType, final int changedFromLine, final int changedToLine,
-            final int fromLine, final int toLine) {
+    public Change(
+            final ChangeEditType changeEditType,
+            final int changedFromLine,
+            final int changedToLine,
+            final int fromLine,
+            final int toLine) {
         this.changeEditType = changeEditType;
         this.changedFromLine = changedFromLine;
         this.changedToLine = changedToLine;
@@ -91,8 +95,11 @@ public class Change implements Serializable {
             return false;
         }
         var change = (Change) o;
-        return changedFromLine == change.changedFromLine && changedToLine == change.changedToLine
-                && fromLine == change.fromLine && toLine == change.toLine && changeEditType == change.changeEditType;
+        return changedFromLine == change.changedFromLine
+                && changedToLine == change.changedToLine
+                && fromLine == change.fromLine
+                && toLine == change.toLine
+                && changeEditType == change.changeEditType;
     }
 
     @Override

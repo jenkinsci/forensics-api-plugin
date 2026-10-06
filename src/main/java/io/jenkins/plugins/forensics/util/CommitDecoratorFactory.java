@@ -1,18 +1,15 @@
 package io.jenkins.plugins.forensics.util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 import edu.hm.hafner.util.FilteredLog;
-
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import hudson.scm.RepositoryBrowser;
 import hudson.scm.SCM;
-
 import io.jenkins.plugins.forensics.util.CommitDecorator.NullDecorator;
 import io.jenkins.plugins.util.JenkinsFacade;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Jenkins' extension point that allows plugins to create {@link CommitDecorator} instances based on a supported {@link
@@ -48,7 +45,8 @@ public abstract class CommitDecoratorFactory implements ExtensionPoint {
         return findAllExtensions().stream()
                 .map(factory -> factory.createCommitDecorator(scm, logger))
                 .flatMap(Optional::stream)
-                .findFirst().orElse(new NullDecorator());
+                .findFirst()
+                .orElse(new NullDecorator());
     }
 
     /**

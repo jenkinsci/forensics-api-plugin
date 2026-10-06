@@ -1,18 +1,15 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import hudson.model.Job;
 import hudson.util.FormValidation.Kind;
-
 import io.jenkins.plugins.util.JenkinsFacade;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link ReferenceJobModelValidation}.

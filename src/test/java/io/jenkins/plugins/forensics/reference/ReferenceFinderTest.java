@@ -1,15 +1,12 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.junit.jupiter.api.Test;
-
-import edu.hm.hafner.util.FilteredLog;
-
-import java.util.Optional;
-
-import hudson.model.Run;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import edu.hm.hafner.util.FilteredLog;
+import hudson.model.Run;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link ReferenceFinder}.

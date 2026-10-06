@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.miner;
 
+import static org.mockito.Mockito.*;
+
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.util.VisibleForTesting;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Provides some factory methods to create stubs of {@link BuildResult build results}.
@@ -24,8 +24,7 @@ public final class ResultStubs {
      *         behavior
      */
     @VisibleForTesting
-    public static BuildResult<ForensicsBuildAction> createResult(final int buildNumber,
-            final int numberOfFiles) {
+    public static BuildResult<ForensicsBuildAction> createResult(final int buildNumber, final int numberOfFiles) {
         ForensicsBuildAction action = mock(ForensicsBuildAction.class);
         when(action.getNumberOfFiles()).thenReturn(numberOfFiles);
 

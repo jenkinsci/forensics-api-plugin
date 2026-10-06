@@ -16,7 +16,8 @@ public class Delta implements Serializable {
     @Serial
     private static final long serialVersionUID = 5641235877389921937L;
 
-    static final String ERROR_MESSAGE_UNKNOWN_FILE = "No information about changes for the file with the ID '%s' stored";
+    static final String ERROR_MESSAGE_UNKNOWN_FILE =
+            "No information about changes for the file with the ID '%s' stored";
 
     private final String currentCommit;
     private final String referenceCommit;
@@ -35,8 +36,8 @@ public class Delta implements Serializable {
      * @param fileChangesMap
      *         The map which contains the changes for modified files, mapped by the file ID.
      */
-    public Delta(final String currentCommit, final String referenceCommit,
-            final Map<String, FileChanges> fileChangesMap) {
+    public Delta(
+            final String currentCommit, final String referenceCommit, final Map<String, FileChanges> fileChangesMap) {
         this.currentCommit = currentCommit;
         this.referenceCommit = referenceCommit;
         this.fileChangesMap = new HashMap<>(fileChangesMap);

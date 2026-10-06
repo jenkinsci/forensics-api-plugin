@@ -1,10 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.io.FilenameUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import static j2html.TagCreator.*;
 
 import io.jenkins.plugins.datatables.DetailedCell;
 import io.jenkins.plugins.datatables.TableColumn;
@@ -12,8 +8,10 @@ import io.jenkins.plugins.datatables.TableColumn.ColumnBuilder;
 import io.jenkins.plugins.datatables.TableColumn.ColumnCss;
 import io.jenkins.plugins.datatables.TableColumn.ColumnType;
 import io.jenkins.plugins.datatables.TableModel;
-
-import static j2html.TagCreator.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Provides the dynamic model for the details table that shows the source control file statistics.
@@ -113,7 +111,8 @@ public class ForensicsTableModel extends TableModel {
                     .withText(fileName)
                     .attr("data-bs-toggle", "tooltip")
                     .attr("data-bs-placement", "left")
-                    .withTitle(fullPath).render();
+                    .withTitle(fullPath)
+                    .render();
             return new DetailedCell<>(link, fileName);
         }
 

@@ -1,16 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link CodeMetricTrendChart}.
@@ -40,7 +38,8 @@ class CodeMetricTrendChartTest {
         var linesChartModel = codeMetricTrendChart.create(buildResults, chartModelConfiguration);
 
         assertThat(linesChartModel.getSeries()).hasSize(2);
-        assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
+        assertThat(linesChartModel.getSeries())
+                .allSatisfy(series -> assertThat(series.getData()).hasSize(4));
         assertThat(linesChartModel.getBuildNumbers()).hasSize(4).containsExactly(1, 4, 7, 10);
     }
 

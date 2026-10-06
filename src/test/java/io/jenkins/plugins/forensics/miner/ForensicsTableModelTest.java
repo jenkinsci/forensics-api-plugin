@@ -1,14 +1,13 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
+import static org.mockito.Mockito.*;
 
 import io.jenkins.plugins.datatables.DetailedCell;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.forensics.miner.ForensicsTableModel.ForensicsRow;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
 
 class ForensicsTableModelTest {
     @Test
@@ -28,16 +27,18 @@ class ForensicsTableModelTest {
                         Messages.Table_Column_LastCommit(),
                         Messages.Table_Column_AddedAt(),
                         Messages.Table_Column_LOC(),
-                        Messages.Table_Column_Churn()
-                );
-        assertThatJson(tableModel.getColumns().get(0).getDefinition()).node("render")
+                        Messages.Table_Column_Churn());
+        assertThatJson(tableModel.getColumns().get(0).getDefinition())
+                .node("render")
                 .isEqualTo("""
                         {
                           "_" : "display",
                           "sort": "sort"
                         }
                         """);
-        assertThatJson(tableModel.getColumns().get(1).getDefinition()).node("render").isAbsent();
+        assertThatJson(tableModel.getColumns().get(1).getDefinition())
+                .node("render")
+                .isAbsent();
     }
 
     @Test
@@ -74,7 +75,8 @@ class ForensicsTableModelTest {
         when(fileStatisticsStub.getLinesOfCode()).thenReturn(5);
         when(fileStatisticsStub.getAbsoluteChurn()).thenReturn(6);
 
-        var fileName = "<a href=\"fileName.-734768633\" data-bs-toggle=\"tooltip\" data-bs-placement=\"left\" title=\"filename\">filename</a>";
+        var fileName =
+                "<a href=\"fileName.-734768633\" data-bs-toggle=\"tooltip\" data-bs-placement=\"left\" title=\"filename\">filename</a>";
         assertThat(forensicsRow)
                 .hasAuthorsSize(1)
                 .hasCommitsSize(2)
@@ -82,10 +84,9 @@ class ForensicsTableModelTest {
                 .hasAddedAt(4)
                 .hasLinesOfCode(5)
                 .hasChurn(6);
-        assertThat(forensicsRow.getFileName()).isInstanceOfSatisfying(DetailedCell.class,
-                cell -> {
-                    assertThat(cell.getDisplay()).isEqualTo(fileName);
-                    assertThat(cell.getSort()).isEqualTo("filename");
-                });
+        assertThat(forensicsRow.getFileName()).isInstanceOfSatisfying(DetailedCell.class, cell -> {
+            assertThat(cell.getDisplay()).isEqualTo(fileName);
+            assertThat(cell.getSort()).isEqualTo("filename");
+        });
     }
 }

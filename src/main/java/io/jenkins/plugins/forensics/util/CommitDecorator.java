@@ -1,10 +1,8 @@
 package io.jenkins.plugins.forensics.util;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Objects;
-
 import hudson.scm.RepositoryBrowser;
+import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A {@link RepositoryBrowser} for commits. Since a {@link RepositoryBrowser} has no API to generate links to simple

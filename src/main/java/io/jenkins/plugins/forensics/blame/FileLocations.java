@@ -38,8 +38,7 @@ public class FileLocations implements Serializable {
         Set<Integer> lines;
         if (contains(fileName)) {
             lines = linesPerFile.get(fileName);
-        }
-        else {
+        } else {
             lines = new HashSet<>();
         }
         lines.add(lineStart);

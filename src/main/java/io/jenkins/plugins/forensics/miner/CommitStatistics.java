@@ -2,7 +2,6 @@ package io.jenkins.plugins.forensics.miner;
 
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.Generated;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
@@ -111,8 +110,11 @@ public class CommitStatistics implements Serializable {
             return false;
         }
         var that = (CommitStatistics) o;
-        return addedLines == that.addedLines && deletedLines == that.deletedLines
-                && authorCount == that.authorCount && commitCount == that.commitCount && filesCount == that.filesCount;
+        return addedLines == that.addedLines
+                && deletedLines == that.deletedLines
+                && authorCount == that.authorCount
+                && commitCount == that.commitCount
+                && filesCount == that.filesCount;
     }
 
     @Override
@@ -133,13 +135,17 @@ public class CommitStatistics implements Serializable {
                 .toString();
     }
 
-    private static int getDistinctCount(final Collection<? extends CommitDiffItem> commits,
-            final Function<CommitDiffItem, String> property) {
-        return (int) commits.stream().map(property).map(s -> s.toLowerCase(Locale.ENGLISH)).distinct().count();
+    private static int getDistinctCount(
+            final Collection<? extends CommitDiffItem> commits, final Function<CommitDiffItem, String> property) {
+        return (int) commits.stream()
+                .map(property)
+                .map(s -> s.toLowerCase(Locale.ENGLISH))
+                .distinct()
+                .count();
     }
 
-    private static int count(final Collection<? extends CommitDiffItem> commits,
-            final ToIntFunction<CommitDiffItem> property) {
+    private static int count(
+            final Collection<? extends CommitDiffItem> commits, final ToIntFunction<CommitDiffItem> property) {
         return commits.stream().mapToInt(property).sum();
     }
 
