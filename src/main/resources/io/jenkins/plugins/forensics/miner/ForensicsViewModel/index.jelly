@@ -29,6 +29,18 @@
 
     </div>
 
+    <j:if test="${it.hasTemporalCouplings()}">
+      <div class="row py-3">
+
+        <div class="col">
+          <bs:card title="${%Temporal Coupling}" fontAwesomeIcon="link">
+            <a href="${it.temporalCouplingUrl}">${%Show all files that are frequently changed together}</a>
+          </bs:card>
+        </div>
+
+      </div>
+    </j:if>
+
     <div class="row py-3">
 
       <div class="col">

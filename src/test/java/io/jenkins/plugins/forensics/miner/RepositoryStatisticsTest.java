@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 class RepositoryStatisticsTest {
     private static final String NOTHING = "nothing";
     private static final String FILE = "file";
+    private static final String OTHER_FILE = "other-file";
     private static final TreeString FILE_TREE_STRING = new TreeStringBuilder().intern(FILE);
     private static final int ONE_DAY = 60 * 60 * 24;
 
@@ -33,6 +36,7 @@ class RepositoryStatisticsTest {
         assertThat(empty).isEmpty()
                 .hasNoFiles()
                 .hasNoFileStatistics()
+                .hasNoTemporalCouplings()
                 .hasLatestCommitId(StringUtils.EMPTY)
                 .hasTotalLinesOfCode(0)
                 .hasTotalChurn(0);
@@ -89,5 +93,62 @@ class RepositoryStatisticsTest {
                 .deleteLines(2)
                 .addLines(3)
                 .setNewPath(FILE_TREE_STRING);
+    }
+
+    @Test
+    void shouldHaveNoTemporalCouplingsByDefault() {
+        var statistics = new RepositoryStatistics();
+
+        assertThat(statistics).hasNoTemporalCouplings();
+        assertThat(statistics.getTemporalCouplings()).isEmpty();
+    }
+
+    @Test
+    void shouldStoreTemporalCouplings() {
+        var statistics = new RepositoryStatistics();
+
+        var first = new TemporalCoupling(FILE, OTHER_FILE, 5, 0.5);
+        var second = new TemporalCoupling(OTHER_FILE, NOTHING, 2, 0.25);
+        statistics.setTemporalCouplings(List.of(first, second));
+
+        assertThat(statistics).hasTemporalCouplings(first, second);
+        assertThat(statistics.getTemporalCouplings()).containsExactly(first, second);
+    }
+
+    @Test
+    void shouldReplaceExistingTemporalCouplings() {
+        var statistics = new RepositoryStatistics();
+
+        var first = new TemporalCoupling(FILE, OTHER_FILE, 5, 0.5);
+        statistics.setTemporalCouplings(List.of(first));
+
+        var second = new TemporalCoupling(OTHER_FILE, NOTHING, 2, 0.25);
+        statistics.setTemporalCouplings(List.of(second));
+
+        assertThat(statistics).hasTemporalCouplings(second);
+    }
+
+    @Test
+    void shouldNotReflectChangesOfTheSourceListInTheStoredTemporalCouplings() {
+        var statistics = new RepositoryStatistics();
+
+        var couplings = new ArrayList<TemporalCoupling>();
+        couplings.add(new TemporalCoupling(FILE, OTHER_FILE, 5, 0.5));
+        statistics.setTemporalCouplings(couplings);
+
+        couplings.add(new TemporalCoupling(OTHER_FILE, NOTHING, 2, 0.25));
+
+        assertThat(statistics.getTemporalCouplings()).hasSize(1);
+    }
+
+    @Test
+    void shouldNotAllowModificationsOfTheReturnedTemporalCouplings() {
+        var statistics = new RepositoryStatistics();
+        statistics.setTemporalCouplings(List.of(new TemporalCoupling(FILE, OTHER_FILE, 5, 0.5)));
+
+        var couplings = statistics.getTemporalCouplings();
+
+        assertThatExceptionOfType(UnsupportedOperationException.class)
+                .isThrownBy(() -> couplings.add(new TemporalCoupling(OTHER_FILE, NOTHING, 2, 0.25)));
     }
 }
