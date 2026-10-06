@@ -1,0 +1,15 @@
+Plugins that can record several results in the same build (like the coverage plugin, which can report a code
+coverage and a mutation coverage result) use an ID to distinguish these results. This ID is exposed as the URL
+name of the corresponding action.
+
+<p>
+  With this parameter you can restrict the search for a reference build to those builds that provide an action
+  with the given ID. All builds that do not provide such an action will be skipped, and the search continues with
+  the predecessors of these builds.
+</p>
+
+<p>
+  This parameter can be combined with the required action type: then the reference build must provide an action
+  that matches both the type and the ID. If the type is left empty, then the ID alone is used to select the
+  matching action. If this parameter is left empty, then the ID of the action is not relevant.
+</p>

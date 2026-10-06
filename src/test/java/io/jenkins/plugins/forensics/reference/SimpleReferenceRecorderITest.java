@@ -11,6 +11,7 @@ import edu.hm.hafner.util.FilteredLog;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
@@ -219,6 +220,70 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         assertThat(findReferenceBuild(second)).contains(baseline);
     }
 
+    /**
+     * Reproduces the reported problem: the report (e.g., the code coverage) is recorded only in some builds of the
+     * reference job. Without a filter the latest build is selected as reference build, even if it does not contain the
+     * report at all, so no delta can be computed. With the filter the last build that actually recorded the report is
+     * selected.
+     */
+    @Test
+    @Issue("JENKINS-72825")
+    void shouldSkipReferenceBuildsThatDoNotProvideTheRequiredAction() {
+        var reference = createFreeStyleProject();
+        Run<?, ?> withReport = buildSuccessfully(reference);
+        withReport.addAction(new CoverageReportAction("coverage"));
+        Run<?, ?> withoutReport = buildSuccessfully(reference); // the report is disabled in this build
+
+        var unfiltered = createJob(reference.getName());
+        assertThat(findReferenceBuild(buildSuccessfully(unfiltered))).contains(withoutReport);
+
+        var filtered = createJob(reference.getName(),
+                recorder -> recorder.setRequiredAction(CoverageReportAction.class.getName()));
+        Run<?, ?> current = buildSuccessfully(filtered);
+
+        assertThat(findReferenceBuild(current)).contains(withReport);
+        assertThat(getConsoleLog(current)).contains(
+                "Considering only builds that provide an action of type '%s'".formatted(
+                        CoverageReportAction.class.getName()),
+                "since it does not provide an action of type '%s'".formatted(
+                        CoverageReportAction.class.getName()));
+    }
+
+    @Test
+    @Issue("JENKINS-72825")
+    void shouldSelectReferenceBuildByActionId() {
+        var reference = createFreeStyleProject();
+        Run<?, ?> codeCoverage = buildSuccessfully(reference);
+        codeCoverage.addAction(new CoverageReportAction("code-coverage"));
+        Run<?, ?> mutationCoverage = buildSuccessfully(reference);
+        mutationCoverage.addAction(new CoverageReportAction("mutation-coverage"));
+
+        var job = createPipeline();
+        job.setDefinition(createPipelineScript("node {\n"
+                + discoverReferenceJob(reference.getName(), "requiredActionId: 'code-coverage'")
+                + " }\n"));
+
+        Run<?, ?> current = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(current)).contains(codeCoverage);
+        assertThat(getConsoleLog(current)).contains(
+                "Considering only builds that provide an action with ID 'code-coverage'");
+    }
+
+    @Test
+    @Issue("JENKINS-72825")
+    void shouldFindNoReferenceBuildIfTheRequiredActionIsNeverRecorded() {
+        var reference = createFreeStyleProject();
+        buildSuccessfully(reference);
+
+        var job = createJob(reference.getName(), recorder -> recorder.setRequiredAction("NotExistingAction"));
+        Run<?, ?> current = buildSuccessfully(job);
+
+        assertThat(findReferenceBuild(current)).isEmpty();
+        assertThat(getConsoleLog(current)).contains(
+                "or better and provide an action of type 'NotExistingAction'");
+    }
+
     private String discoverReferenceJob(final String referenceJobName, final String... arguments) {
         var joiner = new StringJoiner(", ", ", ", "").setEmptyValue("");
         Arrays.stream(arguments).forEach(joiner::add);
@@ -231,9 +296,15 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     }
 
     private FreeStyleProject createJob(final String referenceJobName) {
+        return createJob(referenceJobName, recorder -> { });
+    }
+
+    private FreeStyleProject createJob(final String referenceJobName,
+            final Consumer<SimpleReferenceRecorder> configuration) {
         var job = createFreeStyleProject();
         var referenceRecorder = new SimpleReferenceRecorder();
         referenceRecorder.setReferenceJob(referenceJobName);
+        configuration.accept(referenceRecorder);
         job.getPublishersList().add(referenceRecorder);
         return job;
     }

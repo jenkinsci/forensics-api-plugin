@@ -19,6 +19,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
@@ -69,6 +70,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
     private String referenceJob = StringUtils.EMPTY;
     private Result requiredResult = Result.UNSTABLE; // @since 2.4.0
     private boolean considerRunningBuild;
+    private String requiredAction = StringUtils.EMPTY; // @since 2.6.0
+    private String requiredActionId = StringUtils.EMPTY; // @since 2.6.0
 
     /**
      * Creates a new instance of {@link SimpleReferenceRecorder}.
@@ -100,6 +103,8 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         if (requiredResult == null) {
             requiredResult = Result.UNSTABLE;
         }
+        requiredAction = StringUtils.stripToEmpty(requiredAction);
+        requiredActionId = StringUtils.stripToEmpty(requiredActionId);
         return this;
     }
 
@@ -171,6 +176,48 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
         var result = referenceBuild.getResult();
 
         return result != null && result.isBetterOrEqualTo(requiredResult);
+    }
+
+    /**
+     * Sets the type of an {@link Action} that the reference build must provide: builds without such an action will be
+     * skipped. The type is matched against the fully qualified or the simple class name of the action, its supertypes
+     * and its interfaces.
+     *
+     * @param requiredAction
+     *         the class name of the required action, or an empty string if the type of the action is not relevant
+     */
+    @DataBoundSetter
+    public void setRequiredAction(final String requiredAction) {
+        this.requiredAction = StringUtils.stripToEmpty(requiredAction);
+    }
+
+    public String getRequiredAction() {
+        return requiredAction;
+    }
+
+    /**
+     * Sets the ID of an {@link Action} that the reference build must provide: builds without such an action will be
+     * skipped. The ID of an action is given by its {@link Action#getUrlName() URL name}.
+     *
+     * @param requiredActionId
+     *         the ID of the required action, or an empty string if the ID of the action is not relevant
+     */
+    @DataBoundSetter
+    public void setRequiredActionId(final String requiredActionId) {
+        this.requiredActionId = StringUtils.stripToEmpty(requiredActionId);
+    }
+
+    public String getRequiredActionId() {
+        return requiredActionId;
+    }
+
+    /**
+     * Creates the filter that selects the reference build by the actions it provides.
+     *
+     * @return the action filter
+     */
+    ActionFilter createActionFilter() {
+        return new ActionFilter(requiredAction, requiredActionId);
     }
 
     @Override
@@ -301,17 +348,26 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      * @return the reference build that satisfies the required status (or empty if no such build is found)
      */
     protected Optional<ReferenceBuild> getReferenceBuildWithRequiredStatus(final Run<?, ?> run, final Run<?, ?> start, final FilteredLog log) {
+        var filter = createActionFilter();
+        if (filter.isEnabled()) {
+            log.logInfo("Considering only builds that provide an action %s", filter);
+        }
         for (Run<?, ?> reference = start; reference != null; reference = reference.getPreviousCompletedBuild()) {
             if (hasRequiredResult(reference)) {
-                log.logInfo("-> %s '%s' has a result %s",
-                        getBuildName(start, reference),
-                        reference.getDisplayName(), reference.getResult());
+                if (filter.accepts(reference)) {
+                    log.logInfo("-> %s '%s' has a result %s",
+                            getBuildName(start, reference),
+                            reference.getDisplayName(), reference.getResult());
 
-                return Optional.of(new ReferenceBuild(run, log.getInfoMessages(), requiredResult, reference));
+                    return Optional.of(new ReferenceBuild(run, log.getInfoMessages(), requiredResult, reference));
+                }
+                log.logInfo("-> skipping %s '%s' since it does not provide an action %s",
+                        StringUtils.uncapitalize(getBuildName(start, reference)),
+                        reference.getDisplayName(), filter);
             }
         }
-        log.logInfo("-> ignoring reference build '%s' or one of its predecessors since none have a result of %s or better",
-                start.getDisplayName(), requiredResult);
+        log.logInfo("-> ignoring reference build '%s' or one of its predecessors since none have a result of %s or better%s",
+                start.getDisplayName(), requiredResult, filter.getRequirementSuffix());
         return Optional.empty();
     }
 

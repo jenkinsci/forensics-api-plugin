@@ -10,5 +10,13 @@
   <f:entry title="${%title.considerRunningBuild}" field="considerRunningBuild">
     <f:checkbox />
   </f:entry>
+  <f:advanced>
+    <f:entry title="${%title.requiredAction}" field="requiredAction">
+      <f:textbox />
+    </f:entry>
+    <f:entry title="${%title.requiredActionId}" field="requiredActionId">
+      <f:textbox />
+    </f:entry>
+  </f:advanced>
 
 </j:jelly>
