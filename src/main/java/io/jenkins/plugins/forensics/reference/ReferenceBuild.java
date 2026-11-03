@@ -1,6 +1,6 @@
 package io.jenkins.plugins.forensics.reference;
 
-import static j2html.TagCreator.*;
+import static j2html.TagCreator.a;
 
 import edu.hm.hafner.util.VisibleForTesting;
 import hudson.model.Result;

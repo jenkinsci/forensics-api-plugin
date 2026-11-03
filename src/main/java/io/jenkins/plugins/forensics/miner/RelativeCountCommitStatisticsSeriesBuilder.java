@@ -1,6 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
-import static io.jenkins.plugins.forensics.miner.RelativeCountForensicsSeriesBuilder.*;
+import static io.jenkins.plugins.forensics.miner.RelativeCountForensicsSeriesBuilder.computeRelativeCountStatistics;
 
 import edu.hm.hafner.echarts.SeriesBuilder;
 import java.util.Map;

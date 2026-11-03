@@ -1,10 +1,10 @@
 package io.jenkins.plugins.forensics.miner;
 
+import static org.mockito.Mockito.*;
+
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.util.VisibleForTesting;
-
-import static org.mockito.Mockito.*;
 
 /**
  * Provides some factory methods to create stubs of {@link BuildResult build results}.

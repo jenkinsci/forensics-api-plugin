@@ -392,6 +392,7 @@ public class SimpleReferenceRecorder extends Recorder implements SimpleBuildStep
      */
     @Extension
     @Symbol("discoverReferenceBuild")
+    @SuppressWarnings("PMD.InternalApiUsage")
     public static class SimpleReferenceRecorderDescriptor extends BuildStepDescriptor<Publisher> {
         private final JenkinsFacade jenkins;
         private final ReferenceJobModelValidation model;
