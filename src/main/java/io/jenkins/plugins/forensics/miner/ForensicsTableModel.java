@@ -1,6 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
-import static j2html.TagCreator.*;
+import static j2html.TagCreator.a;
 
 import io.jenkins.plugins.datatables.DetailedCell;
 import io.jenkins.plugins.datatables.TableColumn;

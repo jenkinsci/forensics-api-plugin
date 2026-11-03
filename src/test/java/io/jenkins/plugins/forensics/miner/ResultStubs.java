@@ -24,6 +24,7 @@ public final class ResultStubs {
      *         behavior
      */
     @VisibleForTesting
+    @SuppressWarnings("PMD.InternalApiUsage")
     public static BuildResult<ForensicsBuildAction> createResult(final int buildNumber, final int numberOfFiles) {
         ForensicsBuildAction action = mock(ForensicsBuildAction.class);
         when(action.getNumberOfFiles()).thenReturn(numberOfFiles);
