@@ -1,18 +1,9 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
-
 import edu.hm.hafner.util.FilteredLog;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import java.util.List;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.jenkinsci.Symbol;
-import org.jenkinsci.plugins.workflow.steps.Step;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -24,11 +15,16 @@ import hudson.scm.SCM;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
-import jenkins.tasks.SimpleBuildStep;
-
 import io.jenkins.plugins.forensics.util.ScmResolver;
 import io.jenkins.plugins.util.BuildAction;
 import io.jenkins.plugins.util.LogHandler;
+import java.util.List;
+import jenkins.tasks.SimpleBuildStep;
+import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.plugins.workflow.steps.Step;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 /**
  * A pipeline {@link Step} or Freestyle or Maven {@link Recorder} that obtains statistics for all repository files. The
@@ -66,7 +62,9 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
      * @return this
      */
     @SuppressWarnings("unused")
-    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    @SuppressFBWarnings(
+            value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+            justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (scm == null) {
             scm = StringUtils.EMPTY;
@@ -91,8 +89,13 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
     }
 
     @Override
-    public void perform(@NonNull final Run<?, ?> run, @NonNull final FilePath workspace, @NonNull final EnvVars env,
-            @NonNull final Launcher launcher, @NonNull final TaskListener listener) throws InterruptedException {
+    public void perform(
+            @NonNull final Run<?, ?> run,
+            @NonNull final FilePath workspace,
+            @NonNull final EnvVars env,
+            @NonNull final Launcher launcher,
+            @NonNull final TaskListener listener)
+            throws InterruptedException {
         mineRepositories(run, workspace, listener);
     }
 
@@ -115,8 +118,8 @@ public class RepositoryMinerStep extends Recorder implements SimpleBuildStep {
 
             logHandler.log(logger);
             int miningDurationSeconds = (int) (1 + (System.nanoTime() - startOfMining) / 1_000_000_000L);
-            run.addAction(new ForensicsBuildAction(run, addedRepositoryStatistics, miningDurationSeconds,
-                    repository.getKey(), number));
+            run.addAction(new ForensicsBuildAction(
+                    run, addedRepositoryStatistics, miningDurationSeconds, repository.getKey(), number));
 
             number++;
         }

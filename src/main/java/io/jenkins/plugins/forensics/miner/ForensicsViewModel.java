@@ -1,18 +1,16 @@
 package io.jenkins.plugins.forensics.miner;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import tools.jackson.databind.ObjectMapper;
-
-import org.kohsuke.stapler.StaplerRequest2;
-import org.kohsuke.stapler.StaplerResponse2;
-import org.kohsuke.stapler.bind.JavaScriptMethod;
 import hudson.model.ModelObject;
 import hudson.model.Run;
-
 import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.forensics.util.CommitDecorator;
 import io.jenkins.plugins.forensics.util.CommitDecoratorFactory;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Server side model that provides the data for the details view of the repository statistics. The layout of the
@@ -69,8 +67,9 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @JavaScriptMethod
     @SuppressWarnings("unused") // Called by jelly view
     public String getAuthorsModel() {
-        return new ObjectMapper().writeValueAsString(new SizePieChart().create(repositoryStatistics,
-                FileStatistics::getNumberOfAuthors, 5, 10, 15, 25, 50));
+        return new ObjectMapper()
+                .writeValueAsString(new SizePieChart()
+                        .create(repositoryStatistics, FileStatistics::getNumberOfAuthors, 5, 10, 15, 25, 50));
     }
 
     /**
@@ -81,8 +80,9 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
     @JavaScriptMethod
     @SuppressWarnings("unused") // Called by jelly view
     public String getCommitsModel() {
-        return new ObjectMapper().writeValueAsString(new SizePieChart().create(repositoryStatistics,
-                FileStatistics::getNumberOfCommits, 5, 10, 25, 50, 100, 250));
+        return new ObjectMapper()
+                .writeValueAsString(new SizePieChart()
+                        .create(repositoryStatistics, FileStatistics::getNumberOfCommits, 5, 10, 25, 50, 100, 250));
     }
 
     /**
@@ -97,18 +97,16 @@ public class ForensicsViewModel extends DefaultAsyncTableContentProvider impleme
      *
      * @return the new subpage
      */
-    @SuppressWarnings("unused") //called by jelly view
+    @SuppressWarnings("unused") // called by jelly view
     public Object getDynamic(final String link, final StaplerRequest2 request, final StaplerResponse2 response) {
         try {
             CommitDecorator decorator = CommitDecoratorFactory.findCommitDecorator(owner, scmKey);
 
             return new FileDetailsView(owner, link, repositoryStatistics, decorator);
-        }
-        catch (NoSuchElementException nse) {
+        } catch (NoSuchElementException nse) {
             try {
                 response.sendRedirect2("../");
-            }
-            catch (IOException ignore) {
+            } catch (IOException ignore) {
                 // ignore
             }
             return this; // fallback on broken URLs

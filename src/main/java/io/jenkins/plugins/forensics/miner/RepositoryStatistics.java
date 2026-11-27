@@ -1,10 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,8 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.ToIntFunction;
-
-import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides access to the SCM commit statistics of all repository files up to a specific commit.
@@ -35,6 +32,7 @@ public class RepositoryStatistics implements Serializable {
 
     @SuppressWarnings("PMD.LooseCoupling")
     private transient HashMap<String, FileStatistics> statisticsMapping = new HashMap<>();
+
     @SuppressWarnings("PMD.LooseCoupling")
     private ArrayList<FileStatistics> fileStatistics = new ArrayList<>();
 
@@ -65,7 +63,9 @@ public class RepositoryStatistics implements Serializable {
      *
      * @return this
      */
-    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    @SuppressFBWarnings(
+            value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+            justification = "Deserialization of instances that do not have all fields yet")
     @SuppressWarnings("PMD.NullAssignment")
     protected Object readResolve() {
         if (latestCommitId == null) {
@@ -74,8 +74,7 @@ public class RepositoryStatistics implements Serializable {
         if (statisticsPerFile == null) { // since 0.8.0: rebuild mapping
             statisticsMapping = new HashMap<>();
             fileStatistics.forEach(s -> statisticsMapping.put(s.getFileName(), s));
-        }
-        else { // before 0.8.0: restore map
+        } else { // before 0.8.0: restore map
             statisticsMapping = statisticsPerFile;
             statisticsPerFile = null; // set to null to remove the field from serialization
         }
@@ -197,18 +196,15 @@ public class RepositoryStatistics implements Serializable {
         for (CommitDiffItem commit : commits) {
             if (commit.isDelete()) {
                 statisticsMapping.remove(commit.getOldPath());
-            }
-            else if (commit.isMove()) {
+            } else if (commit.isMove()) {
                 var existing = statisticsMapping.remove(commit.getOldPath());
                 if (existing == null) {
                     statisticsMapping.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
-                }
-                else {
+                } else {
                     statisticsMapping.put(commit.getNewPath(), existing);
                 }
                 statisticsMapping.get(commit.getNewPath()).inspectCommit(commit);
-            }
-            else {
+            } else {
                 statisticsMapping.putIfAbsent(commit.getNewPath(), builder.build(commit.getNewPath()));
                 statisticsMapping.get(commit.getNewPath()).inspectCommit(commit);
             }

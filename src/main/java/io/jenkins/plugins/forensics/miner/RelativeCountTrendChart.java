@@ -8,7 +8,6 @@ import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
 import edu.hm.hafner.echarts.SeriesBuilder;
-
 import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
@@ -35,17 +34,19 @@ class RelativeCountTrendChart {
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    <T> LinesChartModel create(final Iterable<? extends BuildResult<T>> results,
-            final ChartModelConfiguration configuration, final SeriesBuilder<T> seriesBuilder) {
+    <T> LinesChartModel create(
+            final Iterable<? extends BuildResult<T>> results,
+            final ChartModelConfiguration configuration,
+            final SeriesBuilder<T> seriesBuilder) {
         var dataSet = seriesBuilder.createDataSet(configuration, results);
         var model = new LinesChartModel(dataSet);
         if (dataSet.getDomainAxisSize() > 0) {
-            var authors = getSeries(dataSet, "Authors", JenkinsPalette.BLUE,
-                    RelativeCountForensicsSeriesBuilder.AUTHORS_KEY);
-            var commits = getSeries(dataSet, "Commits", JenkinsPalette.GREEN,
-                    RelativeCountForensicsSeriesBuilder.COMMITS_KEY);
-            var files = getSeries(dataSet, "Modified files", JenkinsPalette.ORANGE,
-                    RelativeCountForensicsSeriesBuilder.FILES_KEY);
+            var authors =
+                    getSeries(dataSet, "Authors", JenkinsPalette.BLUE, RelativeCountForensicsSeriesBuilder.AUTHORS_KEY);
+            var commits = getSeries(
+                    dataSet, "Commits", JenkinsPalette.GREEN, RelativeCountForensicsSeriesBuilder.COMMITS_KEY);
+            var files = getSeries(
+                    dataSet, "Modified files", JenkinsPalette.ORANGE, RelativeCountForensicsSeriesBuilder.FILES_KEY);
 
             model.addSeries(authors, commits, files);
         }
@@ -53,8 +54,8 @@ class RelativeCountTrendChart {
         return model;
     }
 
-    private LineSeries getSeries(final LinesDataSet dataSet,
-            final String name, final JenkinsPalette color, final String dataSetId) {
+    private LineSeries getSeries(
+            final LinesDataSet dataSet, final String name, final JenkinsPalette color, final String dataSetId) {
         var series = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.LINES);
         series.addAll(dataSet.getSeries(dataSetId));
         return series;

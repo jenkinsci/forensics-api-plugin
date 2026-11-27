@@ -1,16 +1,13 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-import java.util.List;
-
-import hudson.model.Run;
-
-import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
-
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import hudson.model.Run;
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link RepositoryMinerStep}.
@@ -31,8 +28,7 @@ class RepositoryMinerStepTest {
         ForensicsBuildAction secondScmAction = createAction(OTHER_SCM_KEY, new RepositoryStatistics());
 
         var previousBuild = mock(Run.class);
-        when(previousBuild.getActions(ForensicsBuildAction.class))
-                .thenReturn(List.of(firstScmAction, secondScmAction));
+        when(previousBuild.getActions(ForensicsBuildAction.class)).thenReturn(List.of(firstScmAction, secondScmAction));
 
         var currentRun = mock(Run.class);
         when(currentRun.getPreviousBuild()).thenReturn(previousBuild);
@@ -60,8 +56,7 @@ class RepositoryMinerStepTest {
     @Test
     void shouldReturnEmptyStatisticsWhenPreviousBuildHasNoForensicsActions() {
         var previousBuild = mock(Run.class);
-        when(previousBuild.getActions(ForensicsBuildAction.class))
-                .thenReturn(Collections.emptyList());
+        when(previousBuild.getActions(ForensicsBuildAction.class)).thenReturn(Collections.emptyList());
         when(previousBuild.getPreviousBuild()).thenReturn(null);
 
         var currentRun = mock(Run.class);
@@ -81,13 +76,11 @@ class RepositoryMinerStepTest {
         ForensicsBuildAction actionWithStats = createAction(SCM_KEY, statisticsWithFiles);
 
         var buildWithActions = mock(Run.class);
-        when(buildWithActions.getActions(ForensicsBuildAction.class))
-                .thenReturn(List.of(actionWithStats));
+        when(buildWithActions.getActions(ForensicsBuildAction.class)).thenReturn(List.of(actionWithStats));
         when(buildWithActions.getPreviousBuild()).thenReturn(null);
 
         var buildWithNoActions = mock(Run.class);
-        when(buildWithNoActions.getActions(ForensicsBuildAction.class))
-                .thenReturn(Collections.emptyList());
+        when(buildWithNoActions.getActions(ForensicsBuildAction.class)).thenReturn(Collections.emptyList());
         when(buildWithNoActions.getPreviousBuild()).thenReturn(buildWithActions);
 
         var currentRun = mock(Run.class);
@@ -107,8 +100,7 @@ class RepositoryMinerStepTest {
         ForensicsBuildAction action = createAction(SCM_KEY, statistics);
 
         var previousBuild = mock(Run.class);
-        when(previousBuild.getActions(ForensicsBuildAction.class))
-                .thenReturn(List.of(action));
+        when(previousBuild.getActions(ForensicsBuildAction.class)).thenReturn(List.of(action));
 
         var currentRun = mock(Run.class);
         when(currentRun.getPreviousBuild()).thenReturn(previousBuild);

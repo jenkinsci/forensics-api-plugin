@@ -1,14 +1,13 @@
 package io.jenkins.plugins.forensics.delta;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import nl.jqno.equalsverifier.EqualsVerifier;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link FileChanges}.
@@ -24,7 +23,8 @@ class FileChangesTest {
     @Test
     void shouldCreateEmptyChanges() {
         var fileChanges = createFileChanges();
-        assertThat(fileChanges).hasFileName(FILE_NAME)
+        assertThat(fileChanges)
+                .hasFileName(FILE_NAME)
                 .hasOldFileName(OLD_FILE_NAME)
                 .hasFileContent(FILE_CONTENT)
                 .hasFileEditType(FILE_EDIT_TYPE)
@@ -53,9 +53,9 @@ class FileChangesTest {
         var unrelated = createChange(ChangeEditType.DELETE, 1000, 2000);
         fileChanges.addChange(unrelated);
 
-        assertThat(fileChanges.getChanges()).containsOnly(
-                entry(changeEditType, Set.of(first, second)),
-                entry(ChangeEditType.DELETE, Set.of(unrelated)));
+        assertThat(fileChanges.getChanges())
+                .containsOnly(
+                        entry(changeEditType, Set.of(first, second)), entry(ChangeEditType.DELETE, Set.of(unrelated)));
         assertThat(fileChanges.getChangesByType(changeEditType)).containsExactlyInAnyOrder(first, second);
         assertThat(fileChanges).hasModifiedLines(10, 11, 12, 13, 14, 100);
     }

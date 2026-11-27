@@ -1,19 +1,17 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
-
-import edu.hm.hafner.echarts.BuildResult;
-import edu.hm.hafner.echarts.ChartModelConfiguration;
-import edu.hm.hafner.echarts.ChartModelConfiguration.AxisType;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 import static io.jenkins.plugins.forensics.miner.FilesCountSeriesBuilder.*;
 import static io.jenkins.plugins.forensics.miner.ResultStubs.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import edu.hm.hafner.echarts.BuildResult;
+import edu.hm.hafner.echarts.ChartModelConfiguration;
+import edu.hm.hafner.echarts.ChartModelConfiguration.AxisType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link FilesCountSeriesBuilder}.
@@ -61,12 +59,9 @@ class FilesCountSeriesBuilderTest {
         when(configuration.getBuildCount()).thenReturn(3);
         when(configuration.isBuildCountDefined()).thenReturn(true);
 
-        var dataSet = builder.createDataSet(configuration, Arrays.asList(
-                createResult(4, 4),
-                createResult(3, 3),
-                createResult(2, 2),
-                createResult(1, 1)
-        ));
+        var dataSet = builder.createDataSet(
+                configuration,
+                Arrays.asList(createResult(4, 4), createResult(3, 3), createResult(2, 2), createResult(1, 1)));
 
         assertThat(dataSet.getDomainAxisSize()).isEqualTo(3);
         assertThat(dataSet.getDomainAxisLabels()).containsExactly("#2", "#3", "#4");

@@ -1,14 +1,13 @@
 package io.jenkins.plugins.forensics.delta;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import nl.jqno.equalsverifier.EqualsVerifier;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Tests the class {@link Delta}.

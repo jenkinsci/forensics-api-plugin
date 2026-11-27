@@ -1,12 +1,10 @@
 package io.jenkins.plugins.forensics.blame;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.SerializableTest;
-
 import java.util.NoSuchElementException;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link FileLocations}.
@@ -27,8 +25,7 @@ class FileLocationsTest extends SerializableTest<FileLocations> {
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
 
-        assertThatExceptionOfType(NoSuchElementException.class)
-                .isThrownBy(() -> empty.getLines(RELATIVE_PATH));
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> empty.getLines(RELATIVE_PATH));
     }
 
     @Test

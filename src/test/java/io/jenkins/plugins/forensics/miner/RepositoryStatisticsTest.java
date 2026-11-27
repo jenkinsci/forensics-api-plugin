@@ -1,18 +1,15 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.TreeString;
 import edu.hm.hafner.util.TreeStringBuilder;
-
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link RepositoryStatistics}.
@@ -30,15 +27,15 @@ class RepositoryStatisticsTest {
         var empty = new RepositoryStatistics();
 
         assertThat(empty.size()).isEqualTo(0);
-        assertThat(empty).isEmpty()
+        assertThat(empty)
+                .isEmpty()
                 .hasNoFiles()
                 .hasNoFileStatistics()
                 .hasLatestCommitId(StringUtils.EMPTY)
                 .hasTotalLinesOfCode(0)
                 .hasTotalChurn(0);
 
-        assertThatExceptionOfType(NoSuchElementException.class)
-                .isThrownBy(() -> empty.get(NOTHING));
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> empty.get(NOTHING));
     }
 
     @Test
@@ -56,7 +53,8 @@ class RepositoryStatisticsTest {
     }
 
     private void verifyTotalsStatistics(final RepositoryStatistics statistics, final FileStatistics fileStatistics) {
-        assertThat(statistics).isNotEmpty()
+        assertThat(statistics)
+                .isNotEmpty()
                 .hasFiles(FILE)
                 .hasFileStatistics(fileStatistics)
                 .hasTotalLinesOfCode(1)
@@ -78,16 +76,14 @@ class RepositoryStatisticsTest {
     void shouldAddStatisticsFor1Commit() {
         var statistics = new RepositoryStatistics();
         statistics.addAll(Collections.singletonList(createCommit()));
-        assertThat(statistics).isNotEmpty()
+        assertThat(statistics)
+                .isNotEmpty()
                 .hasFiles(FILE)
                 .hasTotalLinesOfCode(1)
                 .hasTotalChurn(5);
     }
 
     private CommitDiffItem createCommit() {
-        return new CommitDiffItem("SHA", "author", 1)
-                .deleteLines(2)
-                .addLines(3)
-                .setNewPath(FILE_TREE_STRING);
+        return new CommitDiffItem("SHA", "author", 1).deleteLines(2).addLines(3).setNewPath(FILE_TREE_STRING);
     }
 }

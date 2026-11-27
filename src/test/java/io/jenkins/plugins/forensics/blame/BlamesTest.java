@@ -1,14 +1,11 @@
 package io.jenkins.plugins.forensics.blame;
 
-import org.junit.jupiter.api.Test;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 
 import edu.hm.hafner.util.SerializableTest;
-
-import java.util.NoSuchElementException;
-
 import io.jenkins.plugins.forensics.blame.FileBlame.FileBlameBuilder;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import java.util.NoSuchElementException;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link Blames}.
@@ -34,8 +31,7 @@ class BlamesTest extends SerializableTest<Blames> {
         assertThat(empty.size()).isEqualTo(0);
         assertThat(empty).hasNoFiles();
 
-        assertThatExceptionOfType(NoSuchElementException.class)
-                .isThrownBy(() -> empty.getBlame(FILE_NAME));
+        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> empty.getBlame(FILE_NAME));
     }
 
     @Test
@@ -123,13 +119,18 @@ class BlamesTest extends SerializableTest<Blames> {
         assertThat(blames.contains(FILE_NAME)).isTrue();
     }
 
-    private FileBlame createBlame(final int lineNumber, final String name, final String email, final String commit,
-            final int time) {
+    private FileBlame createBlame(
+            final int lineNumber, final String name, final String email, final String commit, final int time) {
         return createBlame(FILE_NAME, lineNumber, name, email, commit, time);
     }
 
-    private FileBlame createBlame(final String fileName, final int lineNumber, final String name, final String email,
-            final String commit, final int time) {
+    private FileBlame createBlame(
+            final String fileName,
+            final int lineNumber,
+            final String name,
+            final String email,
+            final String commit,
+            final int time) {
         var fileBlame = new FileBlameBuilder().build(fileName);
         fileBlame.setName(lineNumber, name);
         fileBlame.setCommit(lineNumber, commit);

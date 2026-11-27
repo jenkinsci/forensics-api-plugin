@@ -1,22 +1,18 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.Strings;
-
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-
-import java.util.Optional;
-import java.util.function.Predicate;
-
 import hudson.model.Job;
 import hudson.model.Run;
-
 import io.jenkins.plugins.echarts.AsyncConfigurableTrendJobAction;
 import io.jenkins.plugins.echarts.BuildActionIterator;
+import java.util.Optional;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.Strings;
 
 /**
  * A job action displays a link on the side panel of a job that refers to the last build that contains forensic results
@@ -30,7 +26,10 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
     static final String FORENSICS_ID = "forensics";
 
     enum ChartType {
-        FILES, LOC, DELTA, COUNT
+        FILES,
+        LOC,
+        DELTA,
+        COUNT
     }
 
     private final String scmKey;
@@ -44,17 +43,16 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
         return this::createIterator;
     }
 
-    @NonNull @VisibleForTesting
+    @NonNull
+    @VisibleForTesting
     BuildActionIterator<ForensicsBuildAction> createIterator() {
         Predicate<ForensicsBuildAction> predicate = a -> scmKey.equals(a.getScmKey());
         Run<?, ?> lastCompletedBuild = getOwner().getLastCompletedBuild();
         Optional<ForensicsBuildAction> latestAction;
         if (lastCompletedBuild == null) {
             latestAction = Optional.empty();
-        }
-        else {
-            latestAction = lastCompletedBuild.getActions(ForensicsBuildAction.class)
-                    .stream()
+        } else {
+            latestAction = lastCompletedBuild.getActions(ForensicsBuildAction.class).stream()
                     .filter(predicate)
                     .findAny();
         }
@@ -102,20 +100,20 @@ public class ForensicsJobAction extends AsyncConfigurableTrendJobAction<Forensic
         return FORENSICS_ID;
     }
 
-    LinesChartModel createChart(final Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory,
-            final String configuration) {
+    LinesChartModel createChart(
+            final Iterable<? extends BuildResult<ForensicsBuildAction>> buildHistory, final String configuration) {
         ChartModelConfiguration modelConfiguration = ChartModelConfiguration.fromJson(configuration);
         var chart = getChart(configuration);
         if (chart == ChartType.LOC) {
             return new CodeMetricTrendChart().create(buildHistory, modelConfiguration);
         }
         if (chart == ChartType.DELTA) {
-            return new AddedVersusDeletedLinesTrendChart().create(buildHistory, modelConfiguration,
-                    new AddedVersusDeletedLinesForensicsSeriesBuilder());
+            return new AddedVersusDeletedLinesTrendChart()
+                    .create(buildHistory, modelConfiguration, new AddedVersusDeletedLinesForensicsSeriesBuilder());
         }
         if (chart == ChartType.COUNT) {
-            return new RelativeCountTrendChart().create(buildHistory, modelConfiguration,
-                    new RelativeCountForensicsSeriesBuilder());
+            return new RelativeCountTrendChart()
+                    .create(buildHistory, modelConfiguration, new RelativeCountForensicsSeriesBuilder());
         }
         return new FilesCountTrendChart().create(buildHistory, modelConfiguration);
     }

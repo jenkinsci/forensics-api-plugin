@@ -1,13 +1,10 @@
 package io.jenkins.plugins.forensics.miner;
 
 import edu.hm.hafner.util.FilteredLog;
-
+import hudson.model.Run;
+import io.jenkins.plugins.util.BuildAction;
 import java.util.List;
 import java.util.Set;
-
-import hudson.model.Run;
-
-import io.jenkins.plugins.util.BuildAction;
 
 /**
  * Queries the repository statistics of a build for a subselection of results.
@@ -31,8 +28,8 @@ public class MinerService {
      *
      * @return the statistics for the selected files, if available
      */
-    public RepositoryStatistics queryStatisticsFor(final String scm, final Run<?, ?> build,
-            final Set<String> files, final FilteredLog logger) {
+    public RepositoryStatistics queryStatisticsFor(
+            final String scm, final Run<?, ?> build, final Set<String> files, final FilteredLog logger) {
         var selected = new RepositoryStatistics();
 
         List<ForensicsBuildAction> actions = build.getActions(ForensicsBuildAction.class);
@@ -46,14 +43,14 @@ public class MinerService {
                 .findAny()
                 .map(BuildAction::getResult)
                 .orElse(new RepositoryStatistics());
-        logger.logInfo("Extracting repository forensics for %d affected files (files in repository: %d)",
+        logger.logInfo(
+                "Extracting repository forensics for %d affected files (files in repository: %d)",
                 files.size(), everything.size());
 
         for (String file : files) {
             if (everything.contains(file)) {
                 selected.add(everything.get(file));
-            }
-            else {
+            } else {
                 logger.logError("No statistics found for file '%s'", file);
             }
         }

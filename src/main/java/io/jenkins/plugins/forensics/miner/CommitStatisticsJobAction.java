@@ -1,28 +1,24 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.Strings;
-
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-
+import hudson.model.InvisibleAction;
+import hudson.model.Job;
+import hudson.model.Run;
+import io.jenkins.plugins.echarts.AsyncConfigurableTrendChart;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.Strings;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
-
-import org.kohsuke.stapler.bind.JavaScriptMethod;
-import hudson.model.InvisibleAction;
-import hudson.model.Job;
-import hudson.model.Run;
-
-import io.jenkins.plugins.echarts.AsyncConfigurableTrendChart;
 
 /**
  * This job action is responsible to render the historical trend of the commit statistics via its associated
@@ -32,7 +28,8 @@ import io.jenkins.plugins.echarts.AsyncConfigurableTrendChart;
  */
 public class CommitStatisticsJobAction extends InvisibleAction implements AsyncConfigurableTrendChart {
     enum ChartType {
-        DELTA, COUNT
+        DELTA,
+        COUNT
     }
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -58,14 +55,17 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
 
         var chart = getChart(configuration);
 
-        Iterable<? extends BuildResult<CommitStatisticsBuildAction>> buildHistory
-                = createBuildHistory(modelConfiguration.getBuildCount());
+        Iterable<? extends BuildResult<CommitStatisticsBuildAction>> buildHistory =
+                createBuildHistory(modelConfiguration.getBuildCount());
         if (chart == ChartType.DELTA) {
-            return new AddedVersusDeletedLinesTrendChart().create(buildHistory, modelConfiguration,
-                    new AddedVersusDeletedLinesCommitStatisticsSeriesBuilder());
+            return new AddedVersusDeletedLinesTrendChart()
+                    .create(
+                            buildHistory,
+                            modelConfiguration,
+                            new AddedVersusDeletedLinesCommitStatisticsSeriesBuilder());
         }
-        return new RelativeCountTrendChart().create(buildHistory, modelConfiguration,
-                new RelativeCountCommitStatisticsSeriesBuilder());
+        return new RelativeCountTrendChart()
+                .create(buildHistory, modelConfiguration, new RelativeCountCommitStatisticsSeriesBuilder());
     }
 
     private ChartType getChart(final String configuration) {
@@ -86,8 +86,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
             if (typeNode != null) {
                 return typeNode.asString(defaultValue);
             }
-        }
-        catch (JacksonException exception) {
+        } catch (JacksonException exception) {
             // ignore
         }
 
@@ -95,8 +94,7 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     }
 
     @CheckForNull
-    private JsonNode getPropertyAsNode(final String json, final String property)
-            throws JacksonException {
+    private JsonNode getPropertyAsNode(final String json, final String property) throws JacksonException {
         var node = OBJECT_MAPPER.readValue(json, ObjectNode.class);
         return node.get(property);
     }
@@ -104,10 +102,10 @@ public class CommitStatisticsJobAction extends InvisibleAction implements AsyncC
     private Iterable<? extends BuildResult<CommitStatisticsBuildAction>> createBuildHistory(final int buildCount) {
         List<BuildResult<CommitStatisticsBuildAction>> history = new ArrayList<>();
         for (Run<?, ?> run = owner.getLastCompletedBuild(); run != null; run = run.getPreviousBuild()) {
-            Optional<CommitStatisticsBuildAction> latestAction = run.getActions(CommitStatisticsBuildAction.class)
-                    .stream()
-                    .filter(a -> scmKey.equals(a.getScmKey()))
-                    .findAny();
+            Optional<CommitStatisticsBuildAction> latestAction =
+                    run.getActions(CommitStatisticsBuildAction.class).stream()
+                            .filter(a -> scmKey.equals(a.getScmKey()))
+                            .findAny();
             if (latestAction.isPresent()) {
                 int buildTimeInSeconds = (int) (run.getTimeInMillis() / 1000);
                 var build = new Build(run.getNumber(), run.getDisplayName(), buildTimeInSeconds);

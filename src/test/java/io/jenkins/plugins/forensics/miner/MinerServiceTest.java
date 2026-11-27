@@ -1,20 +1,16 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
-
-import edu.hm.hafner.util.FilteredLog;
-
-import java.util.Arrays;
-
-import hudson.model.Run;
-
-import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
-
 import static io.jenkins.plugins.forensics.assertions.Assertions.*;
 import static java.util.Collections.*;
 import static org.assertj.core.util.Sets.*;
 import static org.mockito.Mockito.*;
+
+import edu.hm.hafner.util.FilteredLog;
+import hudson.model.Run;
+import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
+import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link MinerService}.
@@ -30,8 +26,8 @@ class MinerServiceTest {
         var service = new MinerService();
         var logger = createLogger();
 
-        var statistics = service.queryStatisticsFor(
-                NO_SCM_FILTER, mock(Run.class), newLinkedHashSet(EXISTING_FILE), logger);
+        var statistics =
+                service.queryStatisticsFor(NO_SCM_FILTER, mock(Run.class), newLinkedHashSet(EXISTING_FILE), logger);
 
         assertThat(statistics).isEmpty();
         assertThat(logger.getErrorMessages()).isEmpty();
@@ -43,13 +39,14 @@ class MinerServiceTest {
         var service = new MinerService();
         var logger = createLogger();
 
-        var statistics = service.queryStatisticsFor(
-                NO_SCM_FILTER, createBuild(createAction("scm")), emptySet(), logger);
+        var statistics =
+                service.queryStatisticsFor(NO_SCM_FILTER, createBuild(createAction("scm")), emptySet(), logger);
 
         assertThat(statistics).isEmpty();
         assertThat(logger.getErrorMessages()).isEmpty();
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository forensics for 0 affected files (files in repository: 0)",
+                .containsExactly(
+                        "Extracting repository forensics for 0 affected files (files in repository: 0)",
                         "-> 0 affected files processed");
     }
 
@@ -60,13 +57,13 @@ class MinerServiceTest {
         Run<?, ?> build = configureBuildWithSingleMiningResult();
 
         var logger = createLogger();
-        var statistics = service.queryStatisticsFor(
-                NO_SCM_FILTER, build, newLinkedHashSet(EXISTING_FILE), logger);
+        var statistics = service.queryStatisticsFor(NO_SCM_FILTER, build, newLinkedHashSet(EXISTING_FILE), logger);
 
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
         assertThat(logger.getErrorMessages()).isEmpty();
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository forensics for 1 affected files (files in repository: 1)",
+                .containsExactly(
+                        "Extracting repository forensics for 1 affected files (files in repository: 1)",
                         "-> 1 affected files processed");
     }
 
@@ -82,13 +79,13 @@ class MinerServiceTest {
         var service = new MinerService();
 
         var logger = createLogger();
-        var statistics = service.queryStatisticsFor(
-                "select", build, newLinkedHashSet(EXISTING_FILE), logger);
+        var statistics = service.queryStatisticsFor("select", build, newLinkedHashSet(EXISTING_FILE), logger);
 
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
         assertThat(logger.getErrorMessages()).isEmpty();
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository forensics for 1 affected files (files in repository: 1)",
+                .containsExactly(
+                        "Extracting repository forensics for 1 affected files (files in repository: 1)",
                         "-> 1 affected files processed");
     }
 
@@ -99,13 +96,13 @@ class MinerServiceTest {
         Run<?, ?> build = configureBuildWithSingleMiningResult();
 
         var logger = createLogger();
-        var statistics = service.queryStatisticsFor(
-                NO_SCM_FILTER, build, newLinkedHashSet("not-existing"), logger);
+        var statistics = service.queryStatisticsFor(NO_SCM_FILTER, build, newLinkedHashSet("not-existing"), logger);
 
         assertThat(statistics).isEmpty();
         assertThat(logger.getErrorMessages()).isNotEmpty().contains("No statistics found for file 'not-existing'");
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository forensics for 1 affected files (files in repository: 1)",
+                .containsExactly(
+                        "Extracting repository forensics for 1 affected files (files in repository: 1)",
                         "-> 0 affected files processed");
     }
 
@@ -122,7 +119,8 @@ class MinerServiceTest {
         assertThat(statistics).isNotEmpty().hasFiles(EXISTING_FILE);
         assertThat(logger.getErrorMessages()).isNotEmpty().contains("No statistics found for file 'not-existing'");
         assertThat(logger.getInfoMessages())
-                .containsExactly("Extracting repository forensics for 2 affected files (files in repository: 1)",
+                .containsExactly(
+                        "Extracting repository forensics for 2 affected files (files in repository: 1)",
                         "-> 1 affected files processed");
     }
 
@@ -142,8 +140,7 @@ class MinerServiceTest {
 
     private Run<?, ?> createBuild(final ForensicsBuildAction action) {
         Run<?, ?> build = mock(Run.class);
-        when(build.getActions(ForensicsBuildAction.class))
-                .thenAnswer(i -> singletonList(action));
+        when(build.getActions(ForensicsBuildAction.class)).thenAnswer(i -> singletonList(action));
         return build;
     }
 

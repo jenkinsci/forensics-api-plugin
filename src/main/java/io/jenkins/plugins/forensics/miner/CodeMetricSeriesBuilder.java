@@ -1,9 +1,8 @@
 package io.jenkins.plugins.forensics.miner;
 
+import edu.hm.hafner.echarts.SeriesBuilder;
 import java.util.HashMap;
 import java.util.Map;
-
-import edu.hm.hafner.echarts.SeriesBuilder;
 
 /**
  * Builds one x-axis point for the series of a line chart showing total number of lines of code for all files in the

@@ -1,16 +1,12 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.apache.commons.lang3.StringUtils;
-
 import edu.hm.hafner.util.VisibleForTesting;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import java.io.Serial;
-
-import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Run;
-
 import io.jenkins.plugins.util.BuildAction;
+import java.io.Serial;
+import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.StaplerProxy;
 
 /**
  * Controls the life cycle of the forensics results in a job. This action persists the results of a build and displays a
@@ -22,6 +18,7 @@ import io.jenkins.plugins.util.BuildAction;
 public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> implements StaplerProxy {
     @Serial
     private static final long serialVersionUID = -263122257268060032L;
+
     private static final String DEFAULT_FILE_NAME = "repository-statistics.xml";
 
     private final int miningDurationSeconds;
@@ -33,7 +30,7 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     private final int numberOfFiles;
     private final int totalLinesOfCode; // since 1.1.0
     private final int totalChurn; // since 1.1.0
-    private CommitStatistics commitStatistics;  // since 1.1.0
+    private CommitStatistics commitStatistics; // since 1.1.0
 
     /**
      * Creates a new instance of {@link ForensicsBuildAction}.
@@ -49,8 +46,12 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      * @param number
      *         unique number of the results (used as part of the serialization file name)
      */
-    public ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final int miningDurationSeconds, final String scmKey, final int number) {
+    public ForensicsBuildAction(
+            final Run<?, ?> owner,
+            final RepositoryStatistics repositoryStatistics,
+            final int miningDurationSeconds,
+            final String scmKey,
+            final int number) {
         this(owner, repositoryStatistics, true, miningDurationSeconds, scmKey, number);
     }
 
@@ -71,8 +72,13 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
      *         unique number of the results (used as part of the serialization file name)
      */
     @VisibleForTesting
-    ForensicsBuildAction(final Run<?, ?> owner, final RepositoryStatistics repositoryStatistics,
-            final boolean canSerialize, final int miningDurationSeconds, final String scmKey, final int number) {
+    ForensicsBuildAction(
+            final Run<?, ?> owner,
+            final RepositoryStatistics repositoryStatistics,
+            final boolean canSerialize,
+            final int miningDurationSeconds,
+            final String scmKey,
+            final int number) {
         super(owner, repositoryStatistics, false);
 
         numberOfFiles = repositoryStatistics.size();
@@ -92,7 +98,9 @@ public class ForensicsBuildAction extends BuildAction<RepositoryStatistics> impl
     }
 
     @Override
-    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "Deserialization of instances that do not have all fields yet")
+    @SuppressFBWarnings(
+            value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+            justification = "Deserialization of instances that do not have all fields yet")
     protected Object readResolve() {
         if (scmKey == null) {
             scmKey = StringUtils.EMPTY;

@@ -1,24 +1,20 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
-import org.jvnet.hudson.test.TestExtension;
+import static io.jenkins.plugins.forensics.assertions.Assertions.*;
+import static io.jenkins.plugins.util.PathStubs.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.util.FilteredLog;
-
-import java.util.Optional;
-
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-
 import io.jenkins.plugins.forensics.miner.FileStatistics.FileStatisticsBuilder;
 import io.jenkins.plugins.forensics.miner.RepositoryMiner.NullMiner;
 import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
-
-import static io.jenkins.plugins.forensics.assertions.Assertions.*;
-import static io.jenkins.plugins.util.PathStubs.*;
-import static org.mockito.Mockito.*;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.jvnet.hudson.test.TestExtension;
 
 /**
  * Tests the class {@link MinerFactory}.
@@ -33,10 +29,11 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
 
         assertThat(nullMiner).isInstanceOf(NullMiner.class);
         assertThat(nullMiner.mine(new RepositoryStatistics(), log)).isEmpty();
-        assertThat(log.getInfoMessages()).containsOnly(
-                "-> No suitable miner found.",
-                "ActualFactory returned NullMiner",
-                "EmptyFactory returned NullMiner");
+        assertThat(log.getInfoMessages())
+                .containsOnly(
+                        "-> No suitable miner found.",
+                        "ActualFactory returned NullMiner",
+                        "EmptyFactory returned NullMiner");
         assertThat(log.getErrorMessages()).isEmpty();
     }
 
@@ -53,8 +50,7 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     }
 
     private RepositoryMiner createMiner(final String path, final FilteredLog log) {
-        return MinerFactory.findMiner(mock(SCM.class), mock(Run.class), createWorkspace(path),
-                TaskListener.NULL, log);
+        return MinerFactory.findMiner(mock(SCM.class), mock(Run.class), createWorkspace(path), TaskListener.NULL, log);
     }
 
     /**
@@ -64,8 +60,12 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class EmptyFactory extends MinerFactory {
         @Override
-        public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run, final FilePath workspace,
-                final TaskListener listener, final FilteredLog logger) {
+        public Optional<RepositoryMiner> createMiner(
+                final SCM scm,
+                final Run<?, ?> run,
+                final FilePath workspace,
+                final TaskListener listener,
+                final FilteredLog logger) {
             logger.logInfo("EmptyFactory returned NullMiner");
             return Optional.empty();
         }
@@ -78,8 +78,12 @@ class MinerFactoryITest extends IntegrationTestWithJenkinsPerSuite {
     @SuppressWarnings({"unused", "PMD.PublicMemberInNonPublicType"})
     public static class ActualFactory extends MinerFactory {
         @Override
-        public Optional<RepositoryMiner> createMiner(final SCM scm, final Run<?, ?> run,
-                final FilePath workspace, final TaskListener listener, final FilteredLog logger) {
+        public Optional<RepositoryMiner> createMiner(
+                final SCM scm,
+                final Run<?, ?> run,
+                final FilePath workspace,
+                final TaskListener listener,
+                final FilteredLog logger) {
             if (workspace.getRemote().contains("test")) {
                 logger.logInfo("ActualFactory created a miner");
                 return Optional.of(new TestMiner());

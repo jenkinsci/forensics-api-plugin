@@ -1,16 +1,14 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.echarts.PieData;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
 
 class SizePieChartTest {
     @Test
@@ -34,10 +32,7 @@ class SizePieChartTest {
 
         var model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint);
 
-        assertThat(model.getData())
-                .isNotEmpty()
-                .hasSize(list.size())
-                .isEqualTo(list);
+        assertThat(model.getData()).isNotEmpty().hasSize(list.size()).isEqualTo(list);
     }
 
     private List<PieData> getPieData(final int... breakpoint) {
@@ -74,12 +69,9 @@ class SizePieChartTest {
         int breakpoint2 = 2;
         List<PieData> list = getPieData(breakpoint1, breakpoint2);
 
-        var model = chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint1,
-                breakpoint2);
+        var model =
+                chart.create(repositoryStatisticsStub, FileStatistics::getNumberOfCommits, breakpoint1, breakpoint2);
 
-        assertThat(model.getData())
-                .isNotEmpty()
-                .hasSize(list.size())
-                .isEqualTo(list);
+        assertThat(model.getData()).isNotEmpty().hasSize(list.size()).isEqualTo(list);
     }
 }

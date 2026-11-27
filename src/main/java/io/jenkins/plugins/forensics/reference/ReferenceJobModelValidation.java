@@ -1,13 +1,10 @@
 package io.jenkins.plugins.forensics.reference;
 
-import org.apache.commons.lang3.StringUtils;
-
 import edu.hm.hafner.util.VisibleForTesting;
-
 import hudson.util.ComboBoxModel;
 import hudson.util.FormValidation;
-
 import io.jenkins.plugins.util.JenkinsFacade;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Validates all properties of a reference job configuration.

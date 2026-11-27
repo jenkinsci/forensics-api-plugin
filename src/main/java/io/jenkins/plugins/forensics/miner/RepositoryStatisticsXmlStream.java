@@ -1,7 +1,6 @@
 package io.jenkins.plugins.forensics.miner;
 
 import hudson.util.XStream2;
-
 import io.jenkins.plugins.util.AbstractXmlStream;
 
 /**

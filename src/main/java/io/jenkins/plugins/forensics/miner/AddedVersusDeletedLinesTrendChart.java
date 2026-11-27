@@ -8,7 +8,6 @@ import edu.hm.hafner.echarts.LineSeries.StackedMode;
 import edu.hm.hafner.echarts.LinesChartModel;
 import edu.hm.hafner.echarts.LinesDataSet;
 import edu.hm.hafner.echarts.SeriesBuilder;
-
 import io.jenkins.plugins.echarts.JenkinsPalette;
 
 /**
@@ -36,23 +35,25 @@ class AddedVersusDeletedLinesTrendChart {
      *
      * @return the chart model, ready to be serialized to JSON
      */
-    <T> LinesChartModel create(final Iterable<? extends BuildResult<T>> results,
-            final ChartModelConfiguration configuration, final SeriesBuilder<T> seriesBuilder) {
+    <T> LinesChartModel create(
+            final Iterable<? extends BuildResult<T>> results,
+            final ChartModelConfiguration configuration,
+            final SeriesBuilder<T> seriesBuilder) {
         var dataSet = seriesBuilder.createDataSet(configuration, results);
 
         var model = new LinesChartModel(dataSet);
-        var newSeries = getSeries(dataSet, "Added Lines", JenkinsPalette.GREEN,
-                AddedVersusDeletedLinesForensicsSeriesBuilder.ADDED);
-        var fixedSeries = getSeries(dataSet, "Deleted Lines", JenkinsPalette.RED,
-                AddedVersusDeletedLinesForensicsSeriesBuilder.DELETED);
+        var newSeries = getSeries(
+                dataSet, "Added Lines", JenkinsPalette.GREEN, AddedVersusDeletedLinesForensicsSeriesBuilder.ADDED);
+        var fixedSeries = getSeries(
+                dataSet, "Deleted Lines", JenkinsPalette.RED, AddedVersusDeletedLinesForensicsSeriesBuilder.DELETED);
 
         model.addSeries(newSeries, fixedSeries);
 
         return model;
     }
 
-    private LineSeries getSeries(final LinesDataSet dataSet,
-            final String name, final JenkinsPalette color, final String dataSetId) {
+    private LineSeries getSeries(
+            final LinesDataSet dataSet, final String name, final JenkinsPalette color, final String dataSetId) {
         var newSeries = new LineSeries(name, color.normal(), StackedMode.SEPARATE_LINES, FilledMode.FILLED);
         newSeries.addAll(dataSet.getSeries(dataSetId));
         return newSeries;

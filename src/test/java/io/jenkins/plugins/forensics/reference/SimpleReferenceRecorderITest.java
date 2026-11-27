@@ -1,24 +1,20 @@
 package io.jenkins.plugins.forensics.reference;
 
+import static org.assertj.core.api.Assertions.*;
+
+import edu.hm.hafner.util.FilteredLog;
+import hudson.model.FreeStyleProject;
+import hudson.model.Result;
+import hudson.model.Run;
+import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.StringJoiner;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.Issue;
-
-import edu.hm.hafner.util.FilteredLog;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.StringJoiner;
-
-import hudson.model.FreeStyleProject;
-import hudson.model.Result;
-import hudson.model.Run;
-
-import io.jenkins.plugins.util.IntegrationTestWithJenkinsPerSuite;
-
-import static org.assertj.core.api.Assertions.*;
 
 /**
  * Tests the class {@link SimpleReferenceRecorder}.
@@ -47,7 +43,8 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
         assertThat(findReferenceBuild(build)).contains(referenceBuild);
         assertThat(getConsoleLog(build))
-                .contains("No reference job configured",
+                .contains(
+                        "No reference job configured",
                         "Falling back to current job",
                         "Found last completed build '#1' of reference job",
                         "-> Build '#1' has a result SUCCESS");
@@ -93,8 +90,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
     @Issue("JENKINS-72015")
     void shouldSkipFailedBuildsIfResultIsWorseThanRequired(final String requiredResult) {
         var reference = createPipeline();
-        reference.setDefinition(createPipelineScript(
-                """
+        reference.setDefinition(createPipelineScript("""
                 node {
                     brokenCommand()
                 }
@@ -104,11 +100,8 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         var job = createPipeline();
         String script;
         if (StringUtils.isBlank(requiredResult)) {
-            script = "node {\n"
-                    + discoverReferenceJob(reference.getName())
-                    + " }\n";
-        }
-        else {
+            script = "node {\n" + discoverReferenceJob(reference.getName()) + " }\n";
+        } else {
             script = "node {\n"
                     + discoverReferenceJob(reference.getName(), "requiredResult: '%s'".formatted(requiredResult))
                     + " }\n";
@@ -118,17 +111,17 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).isEmpty();
-        assertThat(getConsoleLog(current)).contains(
-                "-> ignoring reference build '#1' or one of its predecessors since none have a result of %s or better".formatted(
-                        StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
+        assertThat(getConsoleLog(current))
+                .contains(
+                        "-> ignoring reference build '#1' or one of its predecessors since none have a result of %s or better"
+                                .formatted(StringUtils.defaultIfBlank(requiredResult, "UNSTABLE")));
     }
 
     @Test
     @Issue("JENKINS-73380")
     void shouldOverwriteReferenceBuild() {
         var reference = createPipeline();
-        reference.setDefinition(createPipelineScript(
-                """
+        reference.setDefinition(createPipelineScript("""
                 node {
                     echo 'Hello Job'
                 }
@@ -137,24 +130,24 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
 
         var job = createPipeline();
         var script = "node {\n"
-                    + discoverReferenceJob(reference.getName())
-                    + discoverReferenceJob(reference.getName())
-                    + " }\n";
+                + discoverReferenceJob(reference.getName())
+                + discoverReferenceJob(reference.getName())
+                + " }\n";
         job.setDefinition(createPipelineScript(script));
 
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).contains(baseline);
-        assertThat(getConsoleLog(current)).contains(
-                "[-ERROR-] Replaced existing reference build, this typically indicates a misconfiguration as the reference should be constant");
+        assertThat(getConsoleLog(current))
+                .contains(
+                        "[-ERROR-] Replaced existing reference build, this typically indicates a misconfiguration as the reference should be constant");
     }
 
     @Test
     @Issue("JENKINS-699")
     void shouldRunInDeclarativePipelineWithAgentNone() {
         var reference = createPipeline();
-        reference.setDefinition(createPipelineScript(
-                """
+        reference.setDefinition(createPipelineScript("""
                 node {
                     echo 'Hello from reference job'
                 }
@@ -162,30 +155,29 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
 
         var job = createPipeline();
-        job.setDefinition(createPipelineScript(
-                "pipeline {\n"
-                        + "    agent none\n"
-                        + "    stages {\n"
-                        + "        stage ('Discover reference build') {\n"
-                        + "            steps {\n"
-                        + discoverReferenceJob(reference.getName())
-                        + "            }\n"
-                        + "        }\n"
-                        + "    }\n"
-                        + "}"));
+        job.setDefinition(createPipelineScript("pipeline {\n"
+                + "    agent none\n"
+                + "    stages {\n"
+                + "        stage ('Discover reference build') {\n"
+                + "            steps {\n"
+                + discoverReferenceJob(reference.getName())
+                + "            }\n"
+                + "        }\n"
+                + "    }\n"
+                + "}"));
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).contains(baseline);
         assertThat(getConsoleLog(current))
-                .doesNotContain("Attempted to execute a step that requires a node context while 'agent none' was specified");
+                .doesNotContain(
+                        "Attempted to execute a step that requires a node context while 'agent none' was specified");
     }
 
     @Test
     @Issue("JENKINS-699")
     void shouldRunInScriptedPipelineWithoutNode() {
         var reference = createPipeline();
-        reference.setDefinition(createPipelineScript(
-                """
+        reference.setDefinition(createPipelineScript("""
                 node {
                     echo 'Hello from reference job'
                 }
@@ -193,8 +185,7 @@ class SimpleReferenceRecorderITest extends IntegrationTestWithJenkinsPerSuite {
         Run<?, ?> baseline = buildWithResult(reference, Result.SUCCESS);
 
         var job = createPipeline();
-        job.setDefinition(createPipelineScript(
-                discoverReferenceJob(reference.getName())));
+        job.setDefinition(createPipelineScript(discoverReferenceJob(reference.getName())));
         Run<?, ?> current = buildSuccessfully(job);
 
         assertThat(findReferenceBuild(current)).contains(baseline);

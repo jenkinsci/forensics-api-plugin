@@ -1,20 +1,17 @@
 package io.jenkins.plugins.forensics.delta;
 
 import edu.hm.hafner.util.FilteredLog;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.scm.SCM;
-
 import io.jenkins.plugins.forensics.delta.DeltaCalculator.NullDeltaCalculator;
 import io.jenkins.plugins.forensics.util.ScmResolver;
 import io.jenkins.plugins.util.JenkinsFacade;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Jenkins' extension point that allows plugins to create {@link DeltaCalculator} instances based on a supported {@link
@@ -38,8 +35,11 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      * @return a delta calculator for the SCM of the specified build or a {@link NullDeltaCalculator} if the SCM is not
      *         supported
      */
-    public static DeltaCalculator findDeltaCalculator(final Run<?, ?> run,
-            final Collection<FilePath> scmDirectories, final TaskListener listener, final FilteredLog logger) {
+    public static DeltaCalculator findDeltaCalculator(
+            final Run<?, ?> run,
+            final Collection<FilePath> scmDirectories,
+            final TaskListener listener,
+            final FilteredLog logger) {
         return scmDirectories.stream()
                 .map(directory -> findDeltaCalculator(run, directory, listener, logger))
                 .flatMap(Optional::stream)
@@ -64,16 +64,20 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      * @return a delta calculator for the SCM of the specified build or a {@link NullDeltaCalculator} if the SCM is not
      *         supported
      */
-    public static DeltaCalculator findDeltaCalculator(final String scm, final Run<?, ?> run,
-            final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
+    public static DeltaCalculator findDeltaCalculator(
+            final String scm,
+            final Run<?, ?> run,
+            final FilePath workTree,
+            final TaskListener listener,
+            final FilteredLog logger) {
         Collection<? extends SCM> scms = new ScmResolver().getScms(run, scm);
         if (scms.isEmpty()) {
             logger.logInfo("-> no SCMs found to be processed");
             return new NullDeltaCalculator();
         }
         return findAllDeltaCalculatorFactoryInstances().stream()
-                .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scms.iterator().next(), run,
-                        workTree, listener, logger))
+                .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(
+                        scms.iterator().next(), run, workTree, listener, logger))
                 .flatMap(Optional::stream)
                 .findFirst()
                 .orElseGet(() -> createNullDeltaCalculator(logger));
@@ -94,12 +98,12 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      * @return a delta calculator for the SCM of the specified build or a {@link NullDeltaCalculator} if the SCM is not
      *         supported
      */
-    private static Optional<DeltaCalculator> findDeltaCalculator(final Run<?, ?> run, final FilePath workTree,
-            final TaskListener listener, final FilteredLog logger) {
+    private static Optional<DeltaCalculator> findDeltaCalculator(
+            final Run<?, ?> run, final FilePath workTree, final TaskListener listener, final FilteredLog logger) {
         var scm = new ScmResolver().getScm(run);
         return findAllDeltaCalculatorFactoryInstances().stream()
-                .map(deltaCalculatorFactory -> deltaCalculatorFactory.createDeltaCalculator(scm, run, workTree,
-                        listener, logger))
+                .map(deltaCalculatorFactory ->
+                        deltaCalculatorFactory.createDeltaCalculator(scm, run, workTree, listener, logger))
                 .flatMap(Optional::stream)
                 .findFirst();
     }
@@ -114,11 +118,9 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      */
     private static DeltaCalculator createNullDeltaCalculator(final FilteredLog logger) {
         if (findAllDeltaCalculatorFactoryInstances().isEmpty()) {
-            logger.logInfo(
-                    "-> No delta calculator installed yet. "
-                            + "You need to install the 'git-forensics' plugin to enable it for Git.");
-        }
-        else {
+            logger.logInfo("-> No delta calculator installed yet. "
+                    + "You need to install the 'git-forensics' plugin to enable it for Git.");
+        } else {
             logger.logInfo("-> No suitable delta calculator found.");
         }
         return new NullDeltaCalculator();
@@ -149,6 +151,6 @@ public abstract class DeltaCalculatorFactory implements ExtensionPoint {
      *
      * @return a matching delta calculator instance
      */
-    public abstract Optional<DeltaCalculator> createDeltaCalculator(SCM scm, Run<?, ?> run, FilePath workspace,
-            TaskListener listener, FilteredLog logger);
+    public abstract Optional<DeltaCalculator> createDeltaCalculator(
+            SCM scm, Run<?, ?> run, FilePath workspace, TaskListener listener, FilteredLog logger);
 }

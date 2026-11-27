@@ -1,17 +1,15 @@
 package io.jenkins.plugins.forensics.miner;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import edu.hm.hafner.echarts.Build;
 import edu.hm.hafner.echarts.BuildResult;
 import edu.hm.hafner.echarts.ChartModelConfiguration;
 import edu.hm.hafner.echarts.SeriesBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class {@link RelativeCountTrendChart}.
@@ -41,7 +39,8 @@ class RelativeCountTrendChartTest {
         var linesChartModel = relativeCountTrendChart.create(buildResult, chartModelConfiguration, seriesBuilder);
 
         assertThat(linesChartModel.getSeries()).hasSize(3);
-        assertThat(linesChartModel.getSeries()).allSatisfy(series -> assertThat(series.getData()).hasSize(4));
+        assertThat(linesChartModel.getSeries())
+                .allSatisfy(series -> assertThat(series.getData()).hasSize(4));
     }
 
     private Iterable<BuildResult<CommitStatisticsBuildAction>> createBuildResultsWithData() {
@@ -61,7 +60,8 @@ class RelativeCountTrendChartTest {
         return new RelativeCountCommitStatisticsSeriesBuilder();
     }
 
-    private BuildResult<CommitStatisticsBuildAction> createResult(final int buildNumber, final int added, final int deleted) {
+    private BuildResult<CommitStatisticsBuildAction> createResult(
+            final int buildNumber, final int added, final int deleted) {
         CommitStatisticsBuildAction action = mock(CommitStatisticsBuildAction.class);
         CommitStatistics commitStatistics = mock(CommitStatistics.class);
         when(commitStatistics.getAddedLines()).thenReturn(added);

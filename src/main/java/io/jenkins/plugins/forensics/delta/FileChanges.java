@@ -50,8 +50,12 @@ public class FileChanges implements Serializable {
      * @param changes
      *         The changes made to the file
      */
-    public FileChanges(final String fileName, final String oldFileName, final String fileContent,
-            final FileEditType fileEditType, final Map<ChangeEditType, Set<Change>> changes) {
+    public FileChanges(
+            final String fileName,
+            final String oldFileName,
+            final String fileContent,
+            final FileEditType fileEditType,
+            final Map<ChangeEditType, Set<Change>> changes) {
         this.fileName = fileName;
         this.oldFileName = oldFileName;
         this.fileContent = fileContent;
@@ -112,8 +116,7 @@ public class FileChanges implements Serializable {
         var changeEditType = change.getEditType();
         if (changes.containsKey(changeEditType)) {
             changes.get(changeEditType).add(change);
-        }
-        else {
+        } else {
             changes.put(change.getEditType(), Stream.of(change).collect(Collectors.toSet()));
         }
     }

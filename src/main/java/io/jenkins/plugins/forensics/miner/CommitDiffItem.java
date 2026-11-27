@@ -2,7 +2,6 @@ package io.jenkins.plugins.forensics.miner;
 
 import edu.hm.hafner.util.Generated;
 import edu.hm.hafner.util.TreeString;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -21,6 +20,7 @@ public class CommitDiffItem implements Serializable {
 
     /** Indicates that a file name has not been set or a file has been deleted. */
     static final String NO_FILE_NAME = "/dev/null";
+
     private static final TreeString NO_FILE_AS_TREE_STRING = TreeString.valueOf(NO_FILE_NAME);
 
     private String id;
@@ -201,9 +201,12 @@ public class CommitDiffItem implements Serializable {
         }
         var commit = (CommitDiffItem) o;
         return time == commit.time
-                && totalAddedLines == commit.totalAddedLines && totalDeletedLines == commit.totalDeletedLines
-                && id.equals(commit.id) && author.equals(commit.author)
-                && oldPath.equals(commit.oldPath) && newPath.equals(commit.newPath);
+                && totalAddedLines == commit.totalAddedLines
+                && totalDeletedLines == commit.totalDeletedLines
+                && id.equals(commit.id)
+                && author.equals(commit.author)
+                && oldPath.equals(commit.oldPath)
+                && newPath.equals(commit.newPath);
     }
 
     @Override
